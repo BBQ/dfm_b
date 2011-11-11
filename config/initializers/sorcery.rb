@@ -58,7 +58,7 @@ Rails.application.config.sorcery.configure do |config|
   else
     app_id_or_api_key = '224070640979332'
     app_secret = '9b50de7d4eaec54540833d19d5643bed'
-    url = "http://test.dish.fm/oauths/callback?provider=facebook"
+    url = "http://dish.fm/oauths/callback?provider=facebook"
   end
   
   config.facebook.key = app_id_or_api_key
