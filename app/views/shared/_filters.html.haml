@@ -1,0 +1,26 @@
+#filters
+	%script
+		= render '/shared/markers'
+	#inside
+		#map_canvas
+		-form_tag '/onmap', :id => 'onmap' do
+			= check_box_tag 'redo_search_in_map'
+			= label_tag 'redo_search_in_map', 'Искать рядом'
+			= image_submit_tag 'blank.gif', :id => 'search_submit_img'
+		/ .hd
+		/ 	Средняя сумма чека
+		/ #cost
+		/ 	#min
+		/ 		200
+		/ 	#max
+		/ 		2000
+		/ #slider
+		/ #amount
+		/ 	1100 руб.
+		/ .hd
+		/ 	Прочие параметры
+		/ 	= link_to image_tag('filters_arrow_down_small.png') + image_tag('filters_arrow_right_small.png', :class => 'hidden'), '#', :class => 'more'
+		/ #more_filters
+		/ 	В разработке.
+		/ 	%br
+		/ 	dish.fm © 2011

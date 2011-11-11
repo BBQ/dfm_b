@@ -1,0 +1,21 @@
+#add_review
+	.close_popup
+		= image_tag 'close_popup.png'
+	%h2
+		Оставить отзыв о блюде
+	= form_for @review, :url => { :action => "add" }, :html => {:class => "fb_form", :multipart => true} do |f|
+		= text_field_tag 'restaurant', @dish.restaurant.name
+		= text_field_tag 'dish', @dish.name
+		.rate_high
+			%select.stars
+				- 10.times do |i|
+					%option{ :value => i}
+		= f.text_area :text
+		= label_tag 'Опубликовать в Facebook', nil, :id => 'post_to_facebook_label'		
+		= check_box_tag 'post_to_facebook', :id => 'post_to_facebook'		
+		#tricky
+			#upload_button
+				Загрузить фотографию
+			= f.file_field :image, :id => 'upload'
+		= hidden_field_tag 'feedback[rating]'
+		= f.submit "Сохранить отзыв", :class => 'review_submit'

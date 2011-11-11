@@ -1,0 +1,19 @@
+#restaurant_menu
+	- @categories.each do |category|
+		.category
+			= category.dish_category.name.capitalize_first_letter
+		%ul
+			- reset_cycle("shifty")
+			- @dishes.each do |dish|
+				- if dish.dish_category_id == category.dish_category.id
+					%li{:class => cycle("first", nil, :name => "shifty")}
+						.price
+							=dish.price
+							.votes
+								%span
+									8,9
+								(34 votes)
+						.name
+							=dish.name
+							.desc
+								=dish.description

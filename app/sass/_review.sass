@@ -1,0 +1,139 @@
+.feed_obj
+	background: #e2ded6
+	font-family: bell
+	float: left
+	margin: 0 0 10px 10px	
+	.feed
+		background: #f6f5f3
+		border-radius: 5px
+		border: 1px solid #f6f5f2
+		box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.15)
+		padding: 5px
+		float: left
+		display: block
+		z-index: 2
+		position: relative
+		.heart
+			position: absolute
+			top: 188px
+			left: 50px
+			border-radius: 30px 30px 0 0
+			.like_me
+				background: url('/images/like_me.png') no-repeat 0 -53px
+				width: 96px
+				height: 53px
+				display: none
+				border-radius: 30px 30px 0 0
+			.like_me.active
+				background: url('/images/like_me.png') no-repeat 0 0
+		.hd
+			text-shadow: 1px 1px 0 #fff
+			color: #a99c83
+			img
+				margin: 0 5px 0 0
+				float: left
+				width: 30px
+			a
+				color: #2b8da2
+				font-size: 0.9em
+				text-decoration: none
+				float: left
+				&:hover
+					text-decoration: underline
+		.photo
+			.thumb
+				margin: 5px auto 0 auto
+				width: 192px
+		.review
+			.data
+				font-size: 0.8em
+				color: #453624
+				float: left
+				width: 192px
+				line-height: 0.9em
+				a
+					float: left
+					font-family: bell_bold
+					color: #453624
+					text-decoration: none
+					&:hover
+						text-decoration: underline
+				.rate
+					float: left
+					font-size: 0.9em
+					margin-left: 3px
+					margin-bottom: 5px
+					img
+						padding: 0
+						margin: 0
+				.text
+					clear: both	
+					padding: 2px 5px 5px 3px
+					a
+						margin-right: 3px
+				a.like, a.comment
+					float: right
+					font-size: 0.8em
+					color: #a39372
+					background: url('/images/like.png') no-repeat 0 0
+					text-decoration: none
+					height: 8px
+					margin-left: 5px
+					padding: 4px 0 4px 20px
+					&:hover
+						background: url('/images/like.png') no-repeat 0 -16px
+						color: #e62600
+						padding: 4px 0 4px 20px
+				a.active
+					background: url('/images/like.png') no-repeat 0 -16px
+					color: #e62600
+					padding: 4px 0 4px 20px
+				a.comment
+					margin-left: 10px 
+					background: url('/images/comment.png') no-repeat 0 0
+					padding: 4px 0 4px 24px
+					&:hover
+						background: url('/images/comment.png') no-repeat 0 -16px
+						color: #2c7dba
+						padding: 4px 0 4px 24px
+	.comments
+		display: none
+		background: #e2ded6
+		border-radius: 0 0 5px 5px	
+		box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.15)
+		clear: both
+		float: left
+		z-index: 1
+		font-size: 0.75em
+		color: #453624
+		padding: 10px 0
+		border: 1px solid #ece9e3
+		border-top: none
+		padding: 0 5px 
+		img
+			float: left
+			width: 30px
+			padding-bottom: 5px
+		a
+			float: left
+			color: #453624
+			margin-right: 5px
+			padding-top: 5px
+			&:hover
+				text-decoration: none
+		.text	
+			width: 182px
+			padding: 5px
+		.hr
+			margin-top: 5px
+			clear: both
+			border-top: 1px solid #bdb8b2
+			border-bottom: 1px solid #f1efeb
+		.add_comment
+			width: 145px
+			height: 50px
+			padding: 0 5px
+			margin: 5px 0
+		// .comment_form
+		// 	display: none
+					

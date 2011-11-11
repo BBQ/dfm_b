@@ -1,0 +1,53 @@
+ul#control
+	margin: 0 auto
+	width: 360px
+	
+	.active
+		background: url('/images/ctrl_bg.png') repeat-x top left
+		display: block
+		ul.sub
+			display: block
+			li
+				display: block
+	
+	#feed, #ratings
+		width: 180px
+		height: 78px
+		&:hover	
+			background: url('/images/ctrl_bg.png') repeat-x top left
+			ul.sub
+				display: block
+	li
+		float: left
+		a
+			text-decoration: none
+		#feed_ctrl, #rate_ctrl
+			font-size: 2em
+			float: right
+			color: #6a2c0b
+			padding: 8px 15px 0 0
+			text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.75)
+		#rate_ctrl
+			float: left
+			padding: 8px 0 0 15px
+				
+		ul.sub
+			display: none
+			clear: both
+			float: left
+			li
+				margin-left: 21px
+				a
+					color: #fff8e5
+					font-family: bell
+					font-size: 1.1em
+					text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25)
+					&:hover
+						text-decoration: underline
+				a.active
+					text-decoration: underline
+					background: none
+		ul.rate
+			padding-left: 15px 
+			li
+				margin: 0 20px 0 0

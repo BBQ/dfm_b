@@ -1,0 +1,61 @@
+#search_box
+	float: right
+	margin-top: 70px
+	margin-right: 95px
+		
+	#location
+		float: left
+		font-size: 0.9em
+		text-shadow: 1px 1px 0  rgba(255, 255, 255, 0.75)
+		font-family: bell
+		color: #3b3b3b
+		text-decoration: none
+		display: block
+		background: url("/images/city_bg.png") no-repeat
+		padding: 2px 2px 0 15px
+		height: 20px
+		position: relative
+		z-index: 4
+		img
+			margin-left: 5px
+
+	#search
+		background: url('/images/search_form_bg.png') no-repeat
+		float: left
+		position: relative
+		z-index: 4
+
+		#search_find
+			background: none
+			color: #3b3b3b
+			border: none
+			margin-left: 25px
+			margin-top: 2px
+			float: left
+			width: 182px
+			font-family: bell
+			font-size: 0.85em
+		
+		#search_submit_img
+			border-radius: 0 10px 10px 0
+			height: 20px
+			margin-left: 8px
+			width: 20px		
+
+	#cities
+		display: none
+		background: #ece8d9
+		width: 135px
+		border-radius: 10px
+		border: 1px solid #fff
+		font-size: 0.9em
+		text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.75)
+		font-family: bell
+		position: absolute
+		z-index: 3
+		margin-top: 21px
+		li
+			padding: 2px 5px
+			&:hover
+				background: #dbd6c5
+				cursor: pointer

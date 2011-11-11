@@ -1,0 +1,19 @@
+#profile_obj
+	#profile
+		Жанна Шарипова
+		#inside
+			=image_tag '/assets/users/566/wertwetrwet347r6523463y.jpg'
+			#followers
+				134 followers
+			#following
+				100 following
+			=link_to 'Изменить профиль', '', :id => 'change_info'
+		#comments
+			=render 'activity'
+	.size
+		=render 'shared/tags'
+		%h2
+			Мой выбор в категории: Вегетарианская пицца
+		- 4.times do
+			=render 'dishfeed/review'
+	

@@ -1,0 +1,64 @@
+class Review < ActiveRecord::Base
+  belongs_to :dish
+  belongs_to :restaurant
+  belongs_to :user
+  
+  has_many :comments
+  has_many :likes
+  
+  default_scope order('id DESC')
+  
+  mount_uploader :photo, ImageUploader 
+  
+  def review_exist?(user_id, dish_id)
+    if fb = Review.where('user_id = ? && dish_id = ? && web = 1', user_id, dish_id).first
+      fb
+    end
+  end  
+  
+  def save_review(user_review)
+   
+    rating = user_review[:rating].to_i
+    dish = Dish.find(user_review[:dish_id])
+    restaurant = Restaurant.find_by_id(user_review[:restaurant_id])
+    network = Network.find_by_id(restaurant.network_id)
+  
+    if fb = review_exist?(user_review[:user_id], user_review[:dish_id])
+      if rating > 0
+        dish.rating -= fb.rating
+        dish.rating += rating
+        dish.save
+        if restaurant
+          restaurant.rating -= fb.rating
+          restaurant.rating += rating
+          restaurant.save
+        end
+        network.rating -= fb.rating
+        network.rating += rating
+        network.save
+      end
+      review = Review.find(fb.id)
+      review.rating = rating if rating > 0
+      review.comment = user_review[:comment] unless user_review[:comment].blank?
+      review.save
+      status = 'updated'
+    else
+      dish.reviews.create(user_review)  
+      if rating > 0
+          dish.rating += rating
+          dish.votes += 1
+          dish.save
+          if restaurant
+            restaurant.rating += rating
+            restaurant.votes += 1
+            restaurant.save
+          end
+          network.rating += rating
+          network.votes += 1
+          network.save
+      end
+      status = 'created'
+    end
+    {:status => 'updated', :dish => dish}
+  end 
+end

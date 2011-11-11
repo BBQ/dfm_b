@@ -1,0 +1,33 @@
+- i = 0
+- @networks.each do |network|
+	.restaurant_obj
+		.restaurant
+			.hd
+				.number=i+=1
+				= link_to network.name.capitalize_first_letter, network_path(network.id), :class => 'show'			
+			- if network.restaurants.first.restaurant_images.first
+				= link_to (image_tag network.restaurants.first.restaurant_images.first.photo_url, :class => 'thumb'), network_path(network.id), :class => 'show'
+			- else
+				= link_to (image_tag network.restaurants.first.photo_url, :class => 'thumb'), network_path(network.id), :class => 'show'				
+			.dishes
+				- network.dishes.take(5).each do |dish|
+					= link_to image_tag(dish.photo_url), dish_path(dish.id), :class => 'show'	
+			.text
+				Лучшие блюда: 	
+				- network.dishes.shuffle.take(3).each do |dish|
+					= link_to dish.name, dish_path(dish.id), :class => 'show'
+					,								
+			.rate
+				- rate = network.votes.to_i != 0 ? (network.rating/network.votes).to_i : 0				
+				- if rate
+					- rate.times do
+						= image_tag 'star_filled.png', :class => 'star'
+					- (10-rate).times do
+						= image_tag 'star_empty.png', :class => 'star'
+				- else
+					- 10.times do
+						= image_tag 'star_empty.png', :class => 'star'
+				.mark
+					= network.votes.to_i != 0 ? "%.1f" % (network.rating/network.votes.to_f) : 0
+				.voices
+					(#{network.votes} голосов)

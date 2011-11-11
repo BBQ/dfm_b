@@ -1,0 +1,70 @@
+#popup
+	.close_popup
+		= image_tag 'close_popup.png'
+	.side_div
+		%h2 Адрес ресторана
+		#map_canvas_popup
+		.number 1
+		Каретный ряд, 3, стр. 15а, сад "Эрмитаж". М. Маяковская, Пушкинская Тел: (495) 221 45 45
+		%p
+			%span Режим работы:
+			пн-вс 12:00 - 6:00
+		%p
+			%span Кредитные карты:
+			Не принимаются
+		%p
+			%span Доставка:
+			нет
+		%p
+			%span Парковка:
+			есть
+		%p
+			%span	
+				Wi-Fi:
+			есть
+		= link_to 'Все адреса (132)', dish_path('1'), :class => 'link_button'
+	.center_div
+		%h2=@dish.name
+		.rate
+			- rate = @dish.votes.to_i != 0 ? (@dish.rating/@dish.votes).to_i : 0				
+			- if rate
+				- rate.times do
+					= image_tag 'star_filled.png', :class => 'star'
+				- (10-rate).times do
+					= image_tag 'star_empty.png', :class => 'star'
+			- else
+				- 10.times do
+					= image_tag 'star_empty.png', :class => 'star'
+			.mark
+				= @dish.votes.to_i != 0 ? "%.1f" % (@dish.rating/@dish.votes.to_f) : 0
+			.voices
+				(#{@dish.votes} голосов)
+		.info
+			- if @dish.description
+				= @dish.description.capitalize_first_letter
+		#your_rate
+			%div
+				Ваша оценка:
+				%span
+					9.0
+			= link_to image_tag('del_rate.png'), dish_path('1')
+		= link_to 'Написать рецензию', dish_path('1'), :class => 'link_button'
+		
+		#restaurant_content
+			= render 'popup/review'
+			
+	.side_div
+		%h2 Похожие блюда рядом
+		- 7.times do
+			.place
+				%p
+					=link_to raw('Название ресторана <br /> Каретный Ряд, 3, стр. 15,сад "Эрмитаж"'), restaurant_path(1)
+				%p
+					%span 9,6 
+					(350 голосов)
+		.clear
+
+		
+	
+			
+			

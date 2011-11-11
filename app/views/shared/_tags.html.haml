@@ -1,0 +1,27 @@
+#tags
+	=link_to image_tag('tags_arrow_down_small.png') + image_tag('tags_arrow_right_small.png', :class => 'hidden'), '#', :class =>'more'
+	%ul
+		%li.letter
+			А
+		- 2.times do
+			%li=link_to 'Арбуз', "#"
+		%li.letter
+			Б
+		- 5.times do
+			%li=link_to 'Брокколи', "#"
+		%li.letter
+			В
+		- 4.times do
+			%li=link_to 'Вино', "#"
+		%li.letter.cut
+			Г
+		- 10.times do
+			%li.cut=link_to 'Гоголь', "#"
+		%li.letter.cut
+			Д
+		- 7.times do
+			%li.cut=link_to 'Джипси', "#"
+		%li.letter.cut
+			Е
+		- 2.times do
+			%li.cut=link_to 'Ежик в тумане', "#"

@@ -1,0 +1,2 @@
+$("#comments<%= @review.id %>").html("<%= escape_javascript(render "dishfeed/comment", :review => @review) %>");
+$("#comments_<%= @review.id %>").html("<%= @review.count_comments %>");

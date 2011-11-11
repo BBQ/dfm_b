@@ -1,0 +1,22 @@
+- i = 0
+- @restaurants.each do |restaurant|
+	.restaurant_obj
+		.restaurant
+			.hd
+				.number=i+1
+				= link_to restaurant.name, restaurant_path(restaurant.id), :class => 'show'
+			= link_to (image_tag restaurant.photo_url, :class => 'thumb'), restaurant_path(restaurant.id), :class => 'show'
+			.dishes
+				- 5.times do
+					= link_to image_tag('/assets/dishes/432/235r234crv23rt3.jpg'), dish_path('1'), :class => 'show'	
+			.text
+				Очень вкусно и красиво переливаются золотые блестки!
+			.rate
+				- 3.times do
+					= image_tag 'star_filled.png', :class => 'star'
+				- 7.times do
+					= image_tag 'star_empty.png', :class => 'star'
+				.mark
+					8.9
+				.voices
+					(1105 голосов)

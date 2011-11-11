@@ -1,0 +1,55 @@
+.ui-rating .ui-rating-star, .ui-rating .ui-rating-cancel{
+    width:20px;
+    height:20px;
+    float:left;
+    text-decoration:none;
+    vertical-align:bottom;
+    background-image:url('/images/star.png');
+    background-repeat:no-repeat;
+}
+.ui-rating a {
+	cursor: pointer;
+}
+.ui-rating-full  {
+    background-position:left top;
+}
+
+.ui-rating-half  {
+    background-position:left -17px;
+}
+
+.ui-rating-empty {
+    background-position:left -34px;
+}
+
+.ui-rating-hover {
+    background-position:left -51px;
+}
+
+	.rate_high .ui-rating .ui-rating-star, .rate_high .ui-rating .ui-rating-cancel{
+	    width:38px;
+	    height:38px;
+	    float:left;
+	    text-decoration:none;
+	    vertical-align:bottom;
+	    background-image:url('/images/star_high.png');
+	    background-repeat:no-repeat;
+	}
+	.rate_high .ui-rating a {
+		cursor: pointer;
+	}
+	.rate_high .ui-rating-full  {
+	    background-position:left top;
+	}
+
+	.rate_high .ui-rating-half  {
+	    background-position:left -38px;
+	}
+
+	.rate_high .ui-rating-empty {
+	    background-position:left -76px;
+	}
+
+	.rate_high .ui-rating-hover {
+	    background-position:left -114px;
+	}

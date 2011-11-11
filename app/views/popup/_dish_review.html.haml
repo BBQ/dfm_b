@@ -1,0 +1,77 @@
+#popup
+	.close_popup
+		= image_tag 'close_popup.png'
+	.side_div
+		%h2 Адрес ресторана
+		#map_canvas_popup
+		.number 1
+		= "#{@review.restaurant.address}, Тел: #{@review.restaurant.phone}"
+		%p
+			%span Режим работы:
+			= @review.restaurant.time
+		%p
+			%span Кредитные карты:
+			- if @review.restaurant.cc
+				Принимаются
+			-else
+				Не принимаются
+		%p
+			%span Доставка:
+			нет
+		%p
+			%span Парковка:
+			есть
+		%p
+			%span	
+				Wi-Fi:
+			- if @review.restaurant.wifi
+				есть
+			-else
+				нет
+		= link_to "Все адреса (#{@restaurants})", dish_path('1'), :class => 'link_button'
+	.center_div
+		%h2= @review.dish.name
+		.rate
+			- rate = @review.dish.votes.to_i != 0 ? (@review.dish.rating/@review.dish.votes).to_i : 0				
+			- if rate
+				- rate.times do
+					= image_tag 'star_filled.png', :class => 'star'
+				- (10-rate).times do
+					= image_tag 'star_empty.png', :class => 'star'
+			- else
+				- 10.times do
+					= image_tag 'star_empty.png', :class => 'star'
+			.mark
+				= @review.dish.votes.to_i != 0 ? "%.1f" % (@review.dish.rating/@review.dish.votes.to_f) : 0
+			.voices
+				(#{@review.dish.votes} голосов)
+		.info
+			- if @review.dish.description
+				= @review.dish.description.capitalize_first_letter
+		#your_rate
+			%div
+				Ваша оценка:
+				%span
+					9.0
+			= link_to image_tag('del_rate.png'), dish_path('1')
+		= link_to 'Написать рецензию', dish_path('1'), :class => 'link_button'
+		
+		#restaurant_content
+			- @dish = @review
+			= render 'popup/review'
+			
+	.side_div
+		%h2 Похожие блюда рядом
+		- 7.times do
+			.place
+				%p
+					=link_to raw('Название ресторана <br /> Каретный Ряд, 3, стр. 15,сад "Эрмитаж"'), restaurant_path(1)
+				%p
+					%span 9,6 
+					(350 голосов)
+		.clear
+
+		
+	
+			
+			

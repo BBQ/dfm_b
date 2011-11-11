@@ -1,0 +1,18 @@
+#restaurant_review
+	= image_tag @dish.photo_url, :id => 'full_photo'
+	.review
+		= link_to image_tag('/assets/users/321/324253424563567466tr3w564.jpg'), dish_path('1')
+		.data
+			= link_to 'Жанна Ш.', dish_path('1')
+			.rate
+				- 3.times do
+					= image_tag 'star_filled.png', :class => 'star'
+				- 7.times do
+					= image_tag 'star_empty.png', :class => 'star'
+			.text
+				=@dish.text
+		= link_to  image_tag('twit.png', :id => 'tw'), dish_path('1')
+		= link_to  image_tag('fblike.png', :id => 'fbl'), dish_path('1')
+		.clear
+	.comments
+		=render 'dishfeed/comment' , :review => @dish, :show_all => 1

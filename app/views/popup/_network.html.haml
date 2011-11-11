@@ -1,0 +1,74 @@
+#popup
+	.close_popup
+		= image_tag 'close_popup.png'
+	.side_div
+		%h2 Адрес ресторана
+		#map_canvas_popup
+		.number 1
+		-restaurant = @network.restaurants.shuffle.first
+		= "#{restaurant.address}, Тел: #{restaurant.phone}"
+		%p
+			%span Режим работы:
+			= restaurant.time
+		%p
+			%span Кредитные карты:
+			- if restaurant.cc
+				Принимаются
+			-else
+				Не принимаются
+		%p
+			%span Доставка:
+			нет
+		%p
+			%span Парковка:
+			есть
+		%p
+			%span	Wi-Fi:
+			нет
+		= link_to "Все адреса (#{@network.restaurants.count})", network_details_path(:id => @network.id, :action =>'addresses'), :class => 'link_button'
+	.center_div
+		%h2=@network.name.capitalize_first_letter
+		.rate
+			- rate = @network.votes.to_i != 0 ? (@network.rating/@network.votes).to_i : 0				
+			- if rate
+				- rate.times do
+					= image_tag 'star_filled.png', :class => 'star'
+				- (10-rate).times do
+					= image_tag 'star_empty.png', :class => 'star'
+			- else
+				- 10.times do
+					= image_tag 'star_empty.png', :class => 'star'
+			.mark
+				= @network.votes.to_i != 0 ? "%.1f" % (@network.rating/@network.votes.to_f) : 0
+			.voices
+				(#{@network.votes} голосов)
+		.info
+			Европейская кухня, русская кухня, террасы, 1500-2500 рублей, бизнес-ланч
+			/ бесплатный вайфай
+		= link_to 'Написать рецензию', '', :class => 'link_button'
+		
+		%ul#menu_list
+			%li= link_to 'Рейтинг блюд', network_details_path(:id => @network.id, :action =>'dishes'), :class => 'menu_button'
+			%li= link_to 'Меню', network_details_path(:id => @network.id, :action =>'menu'), :class => 'menu_button'
+			%li= link_to 'Рецензии', network_details_path(:id => @network.id, :action =>'reviews'), :class => 'menu_button'
+			%li= link_to 'Адреса', network_details_path(:id => @network.id, :action =>'addresses'), :class => 'menu_button'
+		
+		#restaurant_content
+			= render 'popup/network_dishes'
+			/ = render 'popup/review'
+			
+	.side_div
+		%h2 Похожие места
+		- 7.times do
+			.place
+				%p
+					=link_to raw('Название ресторана <br /> Каретный Ряд, 3, стр. 15,сад "Эрмитаж"'), restaurant_path(1)
+				%p
+					%span 9,6 
+					(350 голосов)
+
+		
+	
+			
+			
+	

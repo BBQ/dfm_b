@@ -1,0 +1,77 @@
+@import "fonts"
+
+body
+	background: url('/images/bg.jpg')
+	margin: 0
+	padding: 0
+a
+	font-family: bell
+	
+ul
+	margin: 0
+	padding: 0
+	list-style: none
+	
+h2
+	font-family: bell_bold
+	font-size: 2em
+	color: #6a2d0c
+	font-weight: normal
+	text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.75)
+	margin: 10px
+	
+img
+	border: none
+	
+.hidden
+	display: none
+	
+.clear
+	clear: both
+	
+#header
+	background: url('/images/hd_bg.png') repeat-x	
+	min-height: 100px
+	
+	#logo
+		float: left
+		background: url('/images/logo.png')
+		width: 162px
+		height: 39px
+		margin: 5px 0 0 50px
+	
+	#camera
+		float: left
+		margin: 10px
+		
+	@import "search"
+	@import "logged"
+	@import "controls"
+
+#popup_layer
+	overflow-x: auto
+	overflow-y: scroll
+	left: 0
+	right: 0
+	bottom: 0
+	top: 0
+	position: fixed
+	z-index: 6
+	display: none
+	background: rgba(255, 255, 255, 0.4)
+	
+#container
+	padding: 10px 0
+	#wrapper
+		width: 1070px
+		margin: 0 auto
+		
+
+@import "add_review"	
+@import "popup"
+@import "tags"
+@import "filters"	
+@import "dish"				
+@import "network"	
+@import "profile"
+@import "review"
