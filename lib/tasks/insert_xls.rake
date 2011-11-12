@@ -1,7 +1,7 @@
 # encoding: utf-8
 task :xls => :environment do  
-  current_path = File.dirname(__FILE__).sub('/lib/tasks', '')+ '/import'
-  path = current_path + "/Dantes/data.xlsx"
+  current_path = File.dirname(__FILE__).sub('/lib/tasks', '')+ '/import/Starbucks'
+  path = current_path + "/data.xlsx"
   parser = Excelx.new(path, false, :ignore)
    
   # Parse Restaurants

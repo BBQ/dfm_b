@@ -13,8 +13,8 @@ class Restaurant < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader 
   
-  # geocoded_by :geo_address, :latitude  => :lat, :longitude => :lon
-  #   after_validation :geocode, :if => :address_changed?
+  geocoded_by :geo_address, :latitude  => :lat, :longitude => :lon
+  after_validation :geocode, :if => :address_changed?
   
   def geo_address
     [city, address].compact.join(', ').gsub(/ТРЦ.*|ТЦ.*|ТК.*|ТДК.*|\(.*|Бизнес.*|к\/т.*|СКК.*|МО,|гостиница.*/, '')

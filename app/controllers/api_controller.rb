@@ -154,7 +154,7 @@ class ApiController < ApplicationController
         params[:review][:photo] = File.open(image.photo.file.file)  
         # image.delete
       else
-        return render :json => {:error => {:description => 'Не удалось загрузить фото', :code => 3}}
+        return render :json => {:error => {:description => 'Пожалуйста подождите, фото ещё не загрузилось. =)', :code => 3}}
       end
     
       if !params[:review][:dish_id] && params[:dish][:name] # && params[:dish][:type_id] && params[:dish][:subtype_id]
