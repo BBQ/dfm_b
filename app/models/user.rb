@@ -23,11 +23,12 @@ class User < ActiveRecord::Base
   def get_user_by_fb_token(access_token)
     rest = Koala::Facebook::GraphAndRestAPI.new(access_token) # pre-1.2beta
     result = rest.get_object("me")
-    unless User.find_by_facebook_id(result["id"]).id
+    unless id = User.find_by_facebook_id(result["id"]).id
       data[:email] = result["id"]
       data[:name] = result["name"]
       data[:id] = result["id"]
       User.create(data).id
+      User.new.get_user_fb_friends(access_token)
     end
   end
   
@@ -40,8 +41,15 @@ class User < ActiveRecord::Base
     access_token = oauth.get_access_token(code)
   end
   
-  def get_user_fb_friends(code)
-    system "rake get_facebook_friends ACCESS_TOKEN='#{User.new.get_user_fb_token(code)}' &"
+  def get_user_fb_friends(code_or_access_token)
+    if code_or_access_token
+      if access_token = User.new.get_user_fb_token(code)
+        access_token
+      elsif rest = Koala::Facebook::GraphAndRestAPI.new(access_token)
+        access_token = code_or_access_token         
+      end
+    end
+    system "rake get_facebook_friends ACCESS_TOKEN='#{access_token}' &" if access_token
   end
   
 
