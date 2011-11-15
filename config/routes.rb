@@ -22,8 +22,10 @@ Dishfm::Application.routes.draw do
   
   match 'dishfeed' => 'dishfeed#index', :as => :dishfeed
   match 'reviews/:id' => 'reviews#show', :as => :review
+  match 'reviews/delete/:id' => 'reviews#delete', :as => :delete_review
   
   match 'likes/add/:id' => 'likes#add', :as => :like
+  match 'sessions/check/' => 'sessions#check', :as => :check_user_ajax
   
   match 'profile' => 'profile#index', :as => :profile
   match ':controller(/:action(/:id(.:format)))'

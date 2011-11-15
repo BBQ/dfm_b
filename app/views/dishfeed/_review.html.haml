@@ -1,36 +1,37 @@
-- @reviews.each do |review|
-	- like_active = ''
-	- if logged_in?
-		- @i_like.each do |like| 
-			- if like.user_id == current_user.id && like.review_id == review.id
-				- like_active = 'active'
-	.feed_obj
-		.feed
-			.hd
-				= link_to image_tag("http://graph.facebook.com/#{review.user.facebook_id}/picture?type=square"), dish_path('1')
-				= link_to truncate(review.dish.name, :length => 20), review_path(review.id), :class => 'show'
-				%br
-				= link_to '@ '+truncate(review.restaurant.network.name.capitalize_first_letter, :length => 20), network_path(review.restaurant.network.id), :class => 'show'
-			.photo
-				- if review.photo?
-					= link_to (image_tag review.photo.thumb.url, :class => 'thumb'), review_path(review.id), :class => 'show'
-				.heart
-					= link_to '', like_path(review.id), :class => "like_me #{like_active}"
-			.review
-				.data
-					.rate			
-						- if review.rating
-							- review.rating.times do
-								= image_tag 'star_filled.png', :class => 'star'
-							- (10-review.rating).times do
-								= image_tag 'star_empty.png', :class => 'star'
-						- else
-							- 10.times do
-								= image_tag 'star_empty.png', :class => 'star'
-					.text
-						= link_to review.user.name.split.first + ' ' + review.user.name.split.second[0] + '. ', dish_path('1')
-						= review.text.capitalize_first_letter
-					= link_to review.count_comments, '#', :class => 'comment', :id => "comments_#{review.id}"
-					= link_to review.count_likes, like_path(review.id), :class => "like #{like_active}", :id => "like#{review.id}"
-		.comments{:id => "comments#{review.id}"}
-			=render 'dishfeed/comment', :review => review
+#reviews
+	- @reviews.each do |review|
+		- like_active = ''
+		- if logged_in?
+			- @i_like.each do |like| 
+				- if like.user_id == current_user.id && like.review_id == review.id
+					- like_active = 'active'
+		.feed_obj
+			.feed
+				.hd
+					= link_to image_tag("http://graph.facebook.com/#{review.user.facebook_id}/picture?type=square"), review_path(review.id), :class => 'show'
+					= link_to truncate(review.dish.name, :length => 20), review_path(review.id), :class => 'show'
+					%br
+					= link_to '@ '+truncate(review.restaurant.network.name.capitalize_first_letter, :length => 20), network_path(review.restaurant.network.id), :class => 'show'
+				.photo
+					- if review.photo?
+						= link_to (image_tag review.photo.thumb.url, :class => 'thumb'), review_path(review.id), :class => 'show'
+					.heart
+						= link_to '', like_path(review.id), :class => "like_me #{like_active}"
+				.review
+					.data
+						.rate			
+							- if review.rating
+								- review.rating.times do
+									= image_tag 'star_filled.png', :class => 'star'
+								- (10-review.rating).times do
+									= image_tag 'star_empty.png', :class => 'star'
+							- else
+								- 10.times do
+									= image_tag 'star_empty.png', :class => 'star'
+						.text
+							= link_to review.user.name.split.first + ' ' + review.user.name.split.second[0] + '. ', review_path(review.id), :class => 'show'
+							= review.text.capitalize_first_letter
+						= link_to review.count_comments, '#', :class => 'comment', :id => "comments_#{review.id}"
+						= link_to review.count_likes, like_path(review.id), :class => "like #{like_active}", :id => "like#{review.id}"
+			.comments{:id => "comments#{review.id}"}
+				=render 'dishfeed/comment', :review => review

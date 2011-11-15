@@ -1,0 +1,8 @@
+#simple_popup
+	.close#close_fb_connect
+		= image_tag 'close_popup.png'
+	#fb_message
+		.center.message#close_fb_connect_message
+			Пожалуйста, авторизируйтесь:
+		= link_to image_tag('fb_connect.png', :id => 'fb_loader_img'), auth_at_provider_path(:provider => :facebook), :id => 'fb_connect'
+		= image_tag 'fb_connect_loader.gif', :class => 'hidden', :id => 'fb_loader'

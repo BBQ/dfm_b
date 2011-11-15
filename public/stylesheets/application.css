@@ -46,14 +46,13 @@ img {
     background: url("/images/logo.png");
     width: 162px;
     height: 39px;
-    margin: 5px 0 0 50px; }
+    margin-top: 5px; }
   #header #camera {
     float: left;
     margin: 10px; }
   #header #search_box {
     float: right;
-    margin-top: 70px;
-    margin-right: 95px; }
+    margin-top: 70px; }
     #header #search_box #location {
       float: left;
       font-size: 0.9em;
@@ -146,7 +145,7 @@ img {
     height: 26px;
     width: 100px;
     position: absolute;
-    right: 50px;
+    right: 10px;
     top: 10px; }
     #header #fb_login:hover {
       text-decoration: underline; }
@@ -215,9 +214,10 @@ img {
 
 #container {
   padding: 10px 0; }
-  #container #wrapper {
-    width: 1070px;
-    margin: 0 auto; }
+
+#wrapper, #head_wrapper {
+  width: 1070px;
+  margin: 0 auto; }
 
 #add_review {
   width: 470px;
@@ -308,6 +308,39 @@ img {
     margin: 10px auto; }
   #add_review .review_submit_hover {
     background: url("/images/b_gold_button.png") 0 -52px; }
+
+#simple_popup {
+  background: #f2efea;
+  text-align: center;
+  padding: 60px 20px;
+  position: fixed;
+  border-radius: 5px;
+  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.5);
+  font-family: bell;
+  font-size: 1.5em;
+  left: 50%;
+  z-index: 9;
+  top: 50%;
+  width: 620px;
+  margin-top: -105px;
+  margin-left: -300px;
+  cursor: pointer; }
+  #simple_popup .close {
+    position: absolute;
+    text-align: right;
+    right: 0;
+    margin-right: -45px;
+    margin-top: -60px; }
+  #simple_popup #fb_message {
+    margin: 0 auto; }
+  #simple_popup .message {
+    float: left;
+    margin: 15px 0;
+    color: #237b8b;
+    text-shadow: 0px 1px 0 rgba(255, 255, 255, 0.5); }
+  #simple_popup a {
+    float: left;
+    margin: 0 10px; }
 
 #popup {
   width: 1000px;
@@ -1027,8 +1060,9 @@ img {
           background: url("/images/comment.png") no-repeat 0 -16px;
           color: #2c7dba;
           padding: 4px 0 4px 24px; }
+  .feed_obj .comment_form {
+    display: none; }
   .feed_obj .comments {
-    display: none;
     background: #e2ded6;
     border-radius: 0 0 5px 5px;
     box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.15);

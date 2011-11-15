@@ -1,5 +1,7 @@
 class SessionsController < ApplicationController
-  def new
+  
+  def check
+    @result = current_user ? 1 : 0
   end
   
   def create

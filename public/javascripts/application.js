@@ -24,20 +24,10 @@ $(document).ready(function() {
 				$('.sub li a').removeClass('active').removeClass('selected')
 				$('li a', $(this).children('ul.sub')).first().addClass('active').addClass('selected')
 				$.getScript($('li a', $(this).children('ul.sub')).first().attr('href'), function() {
-					if ($("#map_canvas").length)
-						var map = new google.maps.Map($("#map_canvas")[0], myOptions);
-						$(".stars").rating({showCancel: null});
-						//Filters Slider
-						$("#slider").slider({ 
-							animate: true,
-							min: 200,
-							max: 2000,
-							step: 50,
-							value: 1100,
-							slide: function(event, ui) {
-								$("#amount").text(ui.value + ' руб.')}
-						});
-						floats()
+					floats();
+					load_map();
+					stars();
+					slider();
 				});
 			}
 		return false
@@ -57,20 +47,10 @@ $(document).ready(function() {
 		$('.sub li a').removeClass('active').removeClass('selected')
 		$(this).addClass('active').addClass('selected')
 		$.getScript(this.href, function() {
-			if ($("#map_canvas").length)
-				var map = new google.maps.Map($("#map_canvas")[0], myOptions);
-				$(".stars").rating({showCancel: null});
-				//Filters Slider
-				$("#slider").slider({ 
-					animate: true,
-					min: 200,
-					max: 2000,
-					step: 50,
-					value: 1100,
-					slide: function(event, ui) {
-						$("#amount").text(ui.value + ' руб.')}
-				});
-				floats()
+			floats();
+			load_map();
+			stars();
+			slider();
 		});
 	});
 	
@@ -85,7 +65,10 @@ $(document).ready(function() {
 	});
 	
 	//Rating for vote
-	$(".stars").rating({showCancel: null});
+	stars()
+	function stars() {
+		$(".stars").rating({showCancel: null});
+	}
 	
 	//Likes
 	$('.photo').live({
@@ -99,14 +82,19 @@ $(document).ready(function() {
 		});
 	
 	$('.like_me, .like').click(function(){
-		$(this).toggleClass('active')
-		if ($(this).hasClass('like_me'))
-			$(this).parents('.feed').children('.review').children('.data').children('.like').toggleClass('active')
-		else
-			$(this).parents('.feed').children('.photo').children('.heart').children('.like_me').toggleClass('active')
-		$.getScript(this.href)
+		obj = $(this)
+		success = 0
+		$.getScript(this.href, function(){
+			if(success == 1){
+				obj.toggleClass('active')
+				if (obj.hasClass('like_me'))
+					obj.parents('.feed').children('.review').children('.data').children('.like').toggleClass('active')
+				else
+					obj.parents('.feed').children('.photo').children('.heart').children('.like_me').toggleClass('active')
+			}
+		})
 		return false
-	})
+	})	
 	
 	//Search
 	$('#search_find').blur(function(){
@@ -120,15 +108,18 @@ $(document).ready(function() {
 	});	
 	
 	//Filters Slider
-	$("#slider").slider({ 
-		animate: true,
-		min: 200,
-		max: 2000,
-		step: 50,
-		value: 1100,
-		slide: function(event, ui) {
-			$("#amount").text(ui.value + ' руб.')}
-		});
+	slider()
+	function slider() {
+		$("#slider").slider({ 
+			animate: true,
+			min: 200,
+			max: 2000,
+			step: 50,
+			value: 1100,
+			slide: function(event, ui) {
+				$("#amount").text(ui.value + ' руб.')}
+			});
+	}
 		
 	//More Filters
 	$('.more', '#filters').live('click',function(){
@@ -162,12 +153,49 @@ $(document).ready(function() {
 			$('#review_submit').toggleClass('review_submit_hover')
 	})
 	
+	// Fb_connect
+	$('#fb_connect').live('click', function(){
+		$(this).remove()
+		$('#fb_loader').show()
+		$('#simple_popup .message').html('Авторизирую').css('margin-top','0').parent().css('width','285px')
+		
+	})
+	
+	// Hide popup on click out
+	$("body").live('click', function(e){
+		if (e.target.id != 'simple_popup' && e.target.id != 'fb_loader_img' && !$('#simple_popup').has(e.target).length){
+			$("#simple_popup").remove();	
+		}
+		if (!$('#popup').has(e.target).length)
+		{
+			$("#popup_layer").hide();
+			$('body').css('overflow-y', 'scroll').css('padding-right', '0')
+		}
+	});
+	
+	$("body").live('keyup', function(e) {
+    if (e.keyCode == 27) {
+			if ($("#popup_layer").length){
+				$("#popup_layer").hide();
+				$('body').css('overflow-y', 'scroll').css('padding-right', '0')
+			}
+			if ($("#popup_layer").length){
+				$("#simple_popup").remove();
+			}
+    }
+	});
+	
+	// Close simple popup
+	$('.close').live('click', function(){
+		$(this).parent().remove()
+		return false
+	})
+	
 	//Show info-popup
 	$('.show').live('click', function(){
 		$.getScript(this.href, function(){
-			if ($("#map_canvas_popup").length)
-				var map = new google.maps.Map($("#map_canvas_popup")[0], myOptions);
-				$('body').css('overflow', 'hidden').css('padding-right', '15px')
+			$('body').css('overflow', 'hidden').css('padding-right', '15px')
+			load_map();
 		});
 		return false
 	})
@@ -181,10 +209,13 @@ $(document).ready(function() {
 	
 	//Show add comment field
 	$('.comment').live('click', function(){
-		// element = $(this).parents('.feed').next('.comments').children('form')
-		
-		element = $(this).parents('.feed').next('.comments')
-		element.slideToggle(10, function() {$('#wrapper').masonry('reload')})
+		result = 0
+		obj = $(this).parents('.feed').next('.comments').children('.comment_form')
+		$.getScript('/sessions/check/user', function() {
+			if (result == 1){
+				obj.slideToggle(10, function() {$('#reviews').masonry('reload')})
+			}
+		});
 		return false
 	});
 	
@@ -223,14 +254,15 @@ $(document).ready(function() {
 		    itemSelector : '.restaurant_obj'
 		  });
 		});
-		var $wrapper = $('#wrapper');
-		$wrapper.imagesLoaded(function(){
-		  $wrapper.masonry({
+		var $reviews = $('#reviews');
+		$reviews.imagesLoaded(function(){
+		  $reviews.masonry({
 		    itemSelector : '.feed_obj',
 				isResizable: true,
 		  });
 		});
-	}	
+	}		
+	
 })
 //Google maps
 // Gmaps.map.markers = [{"lng": "37.5981", "lat": "55.7534", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|1", "description": "Ресторан тайской кухни ТАЙ ТАЙ", "title": "Ресторан тайской кухни ТАЙ ТАЙ"},{"lng": "37.6416", "lat": "55.7586", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|1", "description": "Ресторан тайской кухни ТАЙ ТАЙ", "title": "Ресторан тайской кухни ТАЙ ТАЙ"},{"lng": "37.562", "lat": "55.732", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|2", "description": "Nooning", "title": "Nooning"},{"lng": "37.5932", "lat": "55.731", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|3", "description": "Белый Журавль", "title": "Белый Журавль"},{"lng": "37.6605", "lat": "55.7629", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|4", "description": "15-й шар", "title": "15-й шар"},{"lng": "37.7949", "lat": "55.758", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|5", "description": "Новогиреевское", "title": "Новогиреевское"},{"lng": "37.5054", "lat": "55.8089", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|6", "description": "Очарование Востока", "title": "Очарование Востока"},{"lng": "37.6404", "lat": "55.7575", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|7", "description": "Art-Garbage Запасник", "title": "Art-Garbage Запасник"},{"lng": "37.5249", "lat": "55.6677", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|8", "description": "Пещера (на Новаторов)", "title": "Пещера (на Новаторов)"},{"lng": "37.6062", "lat": "55.7668", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|9", "description": "Пивной бар на Пушкинской", "title": "Пивной бар на Пушкинской"},{"lng": "37.6082", "lat": "55.7672", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|10", "description": "Bocconcino", "title": "Bocconcino"},{"lng": "37.488", "lat": "55.732", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|10", "description": "Bocconcino", "title": "Bocconcino"},{"lng": "37.5982", "lat": "55.7829", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|10", "description": "Bocconcino", "title": "Bocconcino"},{"lng": "37.6356", "lat": "55.7392", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|11", "description": "Giovedi Cafe", "title": "Giovedi Cafe"},{"lng": "37.6356", "lat": "55.7392", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|12", "description": "Giovedi Cafe", "title": "Giovedi Cafe"},{"lng": "37.4907", "lat": "55.8104", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|13", "description": "Райхан", "title": "Райхан"},{"lng": "37.6605", "lat": "55.7629", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|14", "description": "15-й шар", "title": "15-й шар"},{"lng": "37.7744", "lat": "55.7595", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|15", "description": "Amigos", "title": "Amigos"},{"lng": "37.5509", "lat": "55.6642", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|16", "description": "Очаг Султана", "title": "Очаг Султана"},{"lng": "37.6115", "lat": "55.7318", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|17", "description": "Панчо Вилья", "title": "Панчо Вилья"},{"lng": "37.5826", "lat": "55.8025", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|18", "description": "BeerМаркет", "title": "BeerМаркет"},{"lng": "37.5834", "lat": "55.7917", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|19", "description": "Пиво-Хаус", "title": "Пиво-Хаус"},{"lng": "37.6357", "lat": "55.7773", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|20", "description": "Cocon Home", "title": "Cocon Home"}];

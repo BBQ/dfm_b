@@ -1,5 +1,6 @@
 # encoding: utf-8
 class Restaurant < ActiveRecord::Base
+  
   has_many :dishes
   has_many :reviews
   belongs_to :network  
@@ -21,7 +22,27 @@ class Restaurant < ActiveRecord::Base
   end
     
   def as_json(options={})
-    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon])
+    self[:rating] = self.network.rating
+    self[:votes] = self.network.votes
+    
+    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon], :methods => :dish_images )
+  end
+  
+  def dish_images
+    photos = Array.new
+    network = Network.find_by_id(self.network_id)
+    network.dishes.order('photo DESC').take(4).each do |dish|
+      if dish.photo && dish.photo.iphone.url != '/images/noimage.jpg'
+        photos.push(dish.photo.iphone.url)
+      else
+        reviews = Review.where('network_id = ?', network.id).order('photo DESC')
+        reviews.take(4).each do |review|
+          photos.push(review.photo.iphone.url)
+        end
+      end
+    end
+    photos
+      
   end
   
   def self.near(lat, lon, rad = 1)

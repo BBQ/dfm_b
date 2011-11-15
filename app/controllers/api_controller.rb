@@ -21,17 +21,11 @@ class ApiController < ApplicationController
     count = restaurants.count
     restaurants = restaurants.limit("#{offset}, #{limit}")
     
-    restaurants.each do |restaurant|
-      network = Network.find_by_id(restaurant.network_id)
-      restaurant.rating = network.rating;
-      restaurant.votes = network.votes;
-    end
-    
     return render :json => {
-      :restaurants => restaurants.as_json, 
-      :count => count, 
-      :error => $error
-    }
+          :restaurants => restaurants.as_json, 
+          :count => count, 
+          :error => $error
+        }
 
   end
   
@@ -145,20 +139,20 @@ class ApiController < ApplicationController
   
   def add_review
     if params[:uuid] && params[:review][:restaurant_id] && params[:review][:rating] && params[:access_token]
+      params[:review][:network_id] = Restaurant.find_by_id(params[:review][:restaurant_id])[:network_id]
       
       return render :json => {:error => {:description => 'Ресторан не найден', :code => 1}} unless Restaurant.find_by_id(params[:review][:restaurant_id])
-      
       return render :json => {:error => {:description => 'Не верный рейтинг', :code => 2}} if params[:review][:rating].to_i > 10 || params[:review][:rating].to_i < 1
 
       if image = Image.find_by_uuid(params[:uuid])
         params[:review][:photo] = File.open(image.photo.file.file)  
-        # image.delete
+        image.destroy
       else
         return render :json => {:error => {:description => 'Пожалуйста подождите, фото ещё не загрузилось. =)', :code => 3}}
       end
     
       if !params[:review][:dish_id] && params[:dish][:name] # && params[:dish][:type_id] && params[:dish][:subtype_id]
-        params[:dish][:network_id] = Restaurant.find_by_id(params[:review][:restaurant_id])[:network_id]
+        params[:dish][:network_id] = params[:review][:network_id]
         params[:dish][:rating] = params[:review][:rating]
         params[:dish][:restaurant_id] = params[:review][:restaurant_id]
         params[:dish][:dish_type_id] = 9 #добавлено пользователем

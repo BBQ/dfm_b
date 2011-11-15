@@ -1,0 +1,5 @@
+<% if @result == 1 %>
+	var result = 1
+<% else %>
+	$("#wrapper").prepend("<%= escape_javascript(render "shared/fb_connect") %>")
+<%end%>

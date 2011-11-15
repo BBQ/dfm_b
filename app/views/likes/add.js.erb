@@ -1,1 +1,6 @@
-$("#like<%= @review[:result].id %>").html("<%= @review[:result].count_likes %>");
+<% if @review %>
+	var success = 1
+	$("#like<%= @review[:result].id %>").html("<%= @review[:result].count_likes %>")
+<% else %>
+	$("#wrapper").prepend("<%= escape_javascript(render "shared/fb_connect") %>")
+<%end%>

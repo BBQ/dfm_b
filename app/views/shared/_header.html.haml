@@ -1,53 +1,54 @@
 #header
-	= link_to '', dish_path('1'), :id => 'logo'
-	= link_to image_tag('camera.png'), dish_path('1'), :id => 'camera'
-	%ul#control
-		%li#feed.selected.active
-			= link_to image_tag('ctrl_feed.png', :id => 'feed_img'), dish_path('1'), :id => 'feed_ctrl'
-			%ul.sub
-				%li
-					= link_to 'все', dishfeed_path, :class => 'active selected'
-				%li
-					= link_to 'друзья', dishfeed_path
-				%li
-					= link_to 'моё', dishfeed_path
-		%li#ratings
-			= link_to image_tag('ctrl_rate.png', :id => 'rate_img'), dish_path('1'), :id => 'rate_ctrl'
-			%ul.sub.rate
-				%li
-					= link_to 'рестораны', networks_path
-				%li
-					= link_to 'блюда', dishes_path
-		- if current_user
-			%li#logged
-				= link_to '', logout_path, :id => 'logged_img', :style => "background: center center url('http://graph.facebook.com/#{current_user.facebook_id}/picture?type=square')" 
-				= link_to current_user.name.split.first, logout_path, :id => 'logged_name' 
+	#head_wrapper
+		= link_to '', dish_path('1'), :id => 'logo'
+		/ = link_to image_tag('camera.png'), dish_path('1'), :id => 'camera'
+		%ul#control
+			%li#feed.selected.active
+				= link_to image_tag('ctrl_feed.png', :id => 'feed_img'), dish_path('1'), :id => 'feed_ctrl'
 				%ul.sub
 					%li
-						= link_to 'настройки', dishfeed_path
+						= link_to 'все', dishfeed_path, :class => 'active selected'
 					%li
-						= link_to 'выход', logout_path
-		- else 
-			= link_to "Войти", auth_at_provider_path(:provider => :facebook), :id => 'fb_login'
-	#search_box
-		= link_to ("Москва" + image_tag('arr_down_city.png')).html_safe, dish_path('1'), :id => 'location'
-		-form_tag '/search', :id => 'search' do
-			= text_field_tag 'search[find]', 'искать блюдо, ресторан, кухню'
-			= image_submit_tag 'blank.gif', :id => 'search_submit_img'
-		%ul#cities
-			%li Екатеринбург
-			%li Казань
-			%li	Краснодар
-			%li Красноярск
-			%li Минск
-			%li Москва
-			%li	Нижний Новгород
-			%li Новосибирск
-			%li Омск
-			%li Пермь
-			%li Ростов-на-Дону
-			%li Самара
-			%li	Санкт-Петербург
-			%li	Уфа
-			%li Харьков
-			%li Челябинск
+						= link_to 'друзья', dishfeed_path
+					%li
+						= link_to 'моё', dishfeed_path
+			%li#ratings
+				= link_to image_tag('ctrl_rate.png', :id => 'rate_img'), dish_path('1'), :id => 'rate_ctrl'
+				%ul.sub.rate
+					%li
+						= link_to 'рестораны', networks_path
+					%li
+						= link_to 'блюда', dishes_path
+			- if current_user
+				%li#logged
+					= link_to '', logout_path, :id => 'logged_img', :style => "background: center center url('http://graph.facebook.com/#{current_user.facebook_id}/picture?type=square')" 
+					= link_to current_user.name.split.first, logout_path, :id => 'logged_name' 
+					%ul.sub
+						%li
+							= link_to 'настройки', dishfeed_path
+						%li
+							= link_to 'выход', logout_path
+			- else 
+				= link_to "Войти", auth_at_provider_path(:provider => :facebook), :id => 'fb_login'
+		#search_box
+			= link_to ("Москва" + image_tag('arr_down_city.png')).html_safe, dish_path('1'), :id => 'location'
+			-form_tag '/search', :id => 'search' do
+				= text_field_tag 'search[find]', 'искать блюдо, ресторан, кухню'
+				= image_submit_tag 'blank.gif', :id => 'search_submit_img'
+			%ul#cities
+				%li Екатеринбург
+				%li Казань
+				%li	Краснодар
+				%li Красноярск
+				%li Минск
+				%li Москва
+				%li	Нижний Новгород
+				%li Новосибирск
+				%li Омск
+				%li Пермь
+				%li Ростов-на-Дону
+				%li Самара
+				%li	Санкт-Петербург
+				%li	Уфа
+				%li Харьков
+				%li Челябинск
