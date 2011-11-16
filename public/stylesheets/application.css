@@ -782,6 +782,9 @@ img {
       float: left;
       margin-right: 5px;
       padding: 0 4px; }
+    .dish .hd .n_block {
+      height: 20px;
+      float: left; }
   .dish img {
     margin: 0 auto;
     margin-bottom: 5px;

@@ -6,7 +6,7 @@ class Dish < ActiveRecord::Base
   belongs_to :network
   has_many :reviews
   
-  default_scope order('photo DESC, rating/votes DESC')
+  # default_scope order('rating/votes DESC, photo DESC')
   
   mount_uploader :photo, ImageUploader
 end

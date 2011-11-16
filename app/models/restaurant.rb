@@ -30,19 +30,21 @@ class Restaurant < ActiveRecord::Base
   
   def dish_images
     photos = Array.new
-    network = Network.find_by_id(self.network_id)
-    network.dishes.order('photo DESC').take(4).each do |dish|
+    dishes = Network.find_by_id(network_id).dishes.order('photo DESC')
+    
+    dishes.take(4).each do |dish|
       if dish.photo && dish.photo.iphone.url != '/images/noimage.jpg'
         photos.push(dish.photo.iphone.url)
-      else
-        reviews = Review.where('network_id = ?', network.id).order('photo DESC')
-        reviews.take(4).each do |review|
-          photos.push(review.photo.iphone.url)
-        end
+      end
+    end
+    
+    if photos.count < 4
+      reviews = Review.where('network_id = ?', network.id).order('count_likes DESC')
+      reviews.take(4).each do |review|
+        photos.push(review.photo.iphone.url)
       end
     end
     photos
-      
   end
   
   def self.near(lat, lon, rad = 1)

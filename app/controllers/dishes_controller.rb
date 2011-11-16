@@ -1,7 +1,7 @@
 class DishesController < ApplicationController
   def index
     @review = Review.new
-    @dishes = Dish.order('photo DESC').limit('100')
+    @dishes = Dish.order('rating/votes DESC, photo DESC').limit('100')
   end
   
   def show
