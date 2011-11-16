@@ -1,4 +1,206 @@
-// Chris Richards 2009
-// rating control for jQuery. version 1.05
-// http://zensoftware.org/
-(function($){$.fn.rating=function(e){var f={showCancel:true,cancelValue:null,startValue:null};$.extend(f,e);var g={hoverOver:function(a){var b=$(a.target);if(b.hasClass("ui-rating-cancel")){b.addClass("ui-rating-cancel-full")}else{b.prevAll().andSelf().not(".ui-rating-cancel").addClass("ui-rating-hover")}},hoverOut:function(a){var b=$(a.target);if(b.hasClass("ui-rating-cancel")){b.addClass("ui-rating-cancel-empty").removeClass("ui-rating-cancel-full")}else{b.prevAll().andSelf().not(".ui-rating-cancel").removeClass("ui-rating-hover")}},click:function(a){var b=$(a.target);var c=f.cancelValue;if(b.hasClass("ui-rating-cancel")){g.empty(b)}else{b.closest(".ui-rating-star").prevAll().andSelf().not(".ui-rating-cancel").attr("className","ui-rating-star ui-rating-full");b.closest(".ui-rating-star").nextAll().not(".ui-rating-cancel").attr("className","ui-rating-star ui-rating-empty");b.siblings(".ui-rating-cancel").attr("className","ui-rating-cancel ui-rating-cancel-empty");c=b.attr("value")}if(!a.data.hasChanged){$(a.data.selectBox).val(c).trigger("change")}},change:function(a){var b=$(this).val();g.setValue(b,a.data.container,a.data.selectBox)},setValue:function(a,b,c){var d={"target":null,"data":{}};d.target=$(".ui-rating-star[value="+a+"]",b);d.data.selectBox=c;d.data.hasChanged=true;g.click(d)},empty:function(a){a.attr("className","ui-rating-cancel ui-rating-cancel-empty").nextAll().attr("className","ui-rating-star ui-rating-empty")}};var h={createContainer:function(a){var b=$("<div/>").attr({title:a.title,className:"ui-rating"}).insertAfter(a);return b},createStar:function(a,b){$("<a/>").attr({className:"ui-rating-star ui-rating-empty",title:$(a).text(),value:a.value}).appendTo(b)},createCancel:function(a,b){$("<a/>").attr({className:"ui-rating-cancel ui-rating-cancel-empty",title:"Cancel"}).appendTo(b)}};return this.each(function(){if($(this).attr("type")!=="select-one"){return}var a=this;$(a).css("display","none");var b=$(a).attr("id");if(""===b){b="ui-rating-"+$.data(a);$(a).attr("id",b)}var c=h.createContainer(a);$(c).bind("mouseover",g.hoverOver).bind("mouseout",g.hoverOut).bind("click",{"selectBox":a},g.click);if(f.showCancel){h.createCancel(this,c)}$("option",a).each(function(){h.createStar(this,c)});if(0!==$("#"+b+" option[selected]").size()){g.setValue($(a).val(),c,a)}else{var d=null!==f.startValue?f.startValue:f.cancelValue;g.setValue(d,c,a);$(a).val(d)}$(this).bind("change",{"selectBox":a,"container":c},g.change)})}})(jQuery);
+//
+// rating Plugin
+// By Chris Richards
+// Last Update: 6/21/2011
+// Turns a select box into a star rating control.
+//
+//
+// Updated by Dovy Paukstys 21 Sept. 2011
+// Fixed the click to clear out stars not working with newer jquery, but may not have ever worked.
+// Also fixed it so on a new page load it will properly populate the stars as they should be.
+//
+//
+
+//Keeps '$' pointing to the jQuery version
+(function ($) { 
+	
+	$.fn.rating = function(options)
+	{
+		//
+		// Settings
+		//
+		var settings =
+		{
+			showCancel: true,
+			cancelValue: null,
+			cancelTitle: "Cancel",
+			startValue: null,
+			disabled: false
+		};
+
+
+        //
+        // Methods
+        //
+        var methods = {
+           hoverOver: function(evt)
+			{
+				var elm = $(evt.target);
+				
+				//Are we over the Cancel or the star?
+				if( elm.hasClass("ui-rating-cancel") )
+				{
+					elm.addClass("ui-rating-cancel-full");
+				} 
+				else 
+				{
+					elm.prevAll().andSelf()
+						.not(".ui-rating-cancel")
+						.addClass("ui-rating-hover");
+				}
+			},
+			hoverOut: function(evt)
+			{
+				var elm = $(evt.target);
+				//Are we over the Cancel or the star?
+				if( elm.hasClass("ui-rating-cancel") )
+				{
+					elm.addClass("ui-rating-cancel-empty")
+						.removeClass("ui-rating-cancel-full");
+				}
+				else
+				{
+					elm.prevAll().andSelf()
+						.not(".ui-rating-cancel")
+						.removeClass("ui-rating-hover");
+				}
+			},
+			click: function(evt)
+			{
+				var elm = $(evt.target);
+				var value = settings.cancelValue;
+				//Are we over the Cancel or the star?
+				elm.parents(".content-box-content:first").removeClass('formerror');
+				if( elm.hasClass("ui-rating-cancel") ) {
+                    methods.empty(elm, elm.parent());
+				}
+				else
+				{
+					//Set us, and the stars before us as full
+					elm.closest(".ui-rating-star").prevAll().andSelf()
+						.not(".ui-rating-cancel")
+						.prop("className", "ui-rating-star ui-rating-full");
+					//Set the stars after us as empty 
+					elm.closest(".ui-rating-star").nextAll()
+						.not(".ui-rating-cancel")
+						.prop("className", "ui-rating-star ui-rating-empty");
+					//Uncheck the cancel
+					elm.siblings(".ui-rating-cancel")
+						.prop("className", "ui-rating-cancel ui-rating-cancel-empty");
+					//Use our value
+					value = elm.attr("value");
+				}
+				
+				//Set the select box to the new value
+				if( !evt.data.hasChanged )
+				{
+					$(evt.data.selectBox).val( value ).trigger("change");
+				}
+			},
+			change: function(evt)
+			{
+				var value =  $(this).val();
+				methods.setValue(value, evt.data.container, evt.data.selectBox);
+				if (isDirty)
+		            isDirty = true;				
+			},
+			setValue: function(value, container, selectBox)
+			{
+				//Set a new target and let the method know the select has already changed.
+				var evt = {"target": null, "data": {}};
+
+				evt.target = $(".ui-rating-star[title="+ value +"]", container);				
+				evt.data.selectBox = selectBox;
+				evt.data.hasChanged = true;
+				methods.click(evt);
+			},
+			empty: function(elm, parent)
+			{
+				// Fix to remove all stars
+				parent.find('.ui-rating-star').removeClass('ui-rating-full');
+				parent.find('.ui-rating-star').addClass('ui-rating-empty');				
+				//Clear all of the stars
+				elm.prop("className", "ui-rating-cancel ui-rating-cancel-empty")
+					.nextAll().prop("className", "ui-rating-star ui-rating-empty");
+			}
+ 
+        };
+
+        //
+		// Process the matched elements
+		//
+		return this.each(function() {
+            var self = $(this),
+                elm,
+                val;
+
+            // we only want to process single select
+            if ('select-one' !== this.type) { return; }
+            // don't process the same control more than once
+            if (self.prop('hasProcessed')) { return; }
+
+            // if options exist, merge with our settings
+            if (options) { $.extend( settings, options); }
+
+            // hide the select box because we are going to replace it with our control
+            self.hide();
+            // mark the element so we don't process it more than once.
+            self.prop('hasProcessed', true);
+            
+            //
+            // create the new HTML element
+            // 
+            // create a div and add it after the select box
+            elm = $("<div/>").prop({
+                title: this.title,  // if there was a title, preserve it.
+                className: "ui-rating"
+            }).insertAfter( self );
+            // create all of the stars
+            $('option', self).each(function() {
+                // only convert options with a value
+				if(this.value!="")
+				{
+                    $("<a/>").prop({
+                        className: "ui-rating-star ui-rating-empty",
+                        title: $(this).text(),   // perserve the option text as a title.
+                        value: this.value        // perserve the value.
+                    }).appendTo(elm);
+				}    
+            });
+            // create the cancel
+            if (true == settings.showCancel) {
+                $("<a/>").prop({
+					className: "ui-rating-cancel ui-rating-cancel-empty",
+					title: settings.cancelTitle
+				}).appendTo(elm);
+            }
+            // perserve the selected value
+            //
+            if ( 0 !==  $('option:selected', self).size() ) {
+                //methods.setValue(                
+                methods.setValue( self.val(), elm, self );
+            } else {
+                //Use a start value if we have it, otherwise use the cancel value.
+				val = null !== settings.startValue ? settings.startValue : settings.cancelValue;
+				methods.setValue( val, elm, self );
+				//Make sure the selectbox knows our desision
+				self.val(val);
+            }
+            
+            //Should we do any binding?
+			if( true !== settings.disabled && self.prop("disabled") !== true )
+			{	
+			    //Bind our events to the container
+			    $(elm).bind("mouseover", methods.hoverOver)
+				    .bind("mouseout", methods.hoverOut)
+				    .bind("click",{"selectBox": self}, methods.click);
+			}	
+
+            //Update the stars if the selectbox value changes.
+			self.bind("change", {"selectBox": self, "container": elm},  methods.change);
+
+        });
+		
+	};
+
+})(jQuery);
