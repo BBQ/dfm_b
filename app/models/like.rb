@@ -1,6 +1,7 @@
 class Like < ActiveRecord::Base
   
   belongs_to :review
+  belongs_to :user
   
   def unlike?(user_id, review_id)
     if unlike = Like.where('user_id = ? && review_id = ?', user_id, review_id).first

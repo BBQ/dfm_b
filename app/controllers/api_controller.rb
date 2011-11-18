@@ -26,7 +26,6 @@ class ApiController < ApplicationController
           :count => count, 
           :error => $error
         }
-
   end
   
   def upload_photo
@@ -41,8 +40,17 @@ class ApiController < ApplicationController
     }
   end
   
-  def get_reviews
+  def get_review
     
+    review = Review.find_by_id(params[:review_id]).as_json if params[:review_id]
+    return render :json => {
+      :review => review,
+      :error => $error
+    }
+  end
+  
+  def get_reviews
+  
     limit = params[:limit] ? params[:limit] : 25
     offset = params[:offset] ? params[:offset] : 0
     reviews = Review.limit("#{offset}, #{limit}").order('id').includes(:dish)

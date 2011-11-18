@@ -1,6 +1,7 @@
 class Review < ActiveRecord::Base
   belongs_to :dish
   belongs_to :restaurant
+  belongs_to :network
   belongs_to :user
   
   has_many :comments
@@ -9,6 +10,20 @@ class Review < ActiveRecord::Base
   default_scope order('id DESC')
   
   mount_uploader :photo, ImageUploader 
+  
+  def as_json(options={})
+    self.restaurant.rating = self.network.rating
+    self.restaurant.votes = self.network.votes
+        
+    super(:only => [:text], 
+          :include => { 
+            :dish => {:only => [:name, :rating, :votes]},
+            :restaurant => {:only => [:name, :rating, :votes]},
+            :likes => {:include => {:user => { :only => [:name]}}},
+            :comments => {:only => [:text, :created_at], :include => {:user => { :only => [:name, :facebook_id]}}}
+          })
+  end
+  
   
   def review_exist?(user_id, dish_id)
     if fb = Review.where('user_id = ? && dish_id = ? && web = 1', user_id, dish_id).first
