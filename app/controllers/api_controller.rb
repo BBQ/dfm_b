@@ -43,10 +43,10 @@ class ApiController < ApplicationController
   def get_review
     
     review = Review.find_by_id(params[:review_id]).as_json if params[:review_id]
-    return render :json => {
-      :review => review,
+    return render :json => [
+      review,
       :error => $error
-    }
+    ]
   end
   
   def get_reviews

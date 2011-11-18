@@ -5,10 +5,7 @@
 			.hd
 				.number=i+=1
 				= link_to network.name.capitalize_first_letter, network_path(network.id), :class => 'show'			
-			- if network.restaurants.first.restaurant_images.first
-				= link_to (image_tag network.restaurants.first.restaurant_images.first.photo_url, :class => 'thumb'), network_path(network.id), :class => 'show'
-			- else
-				= link_to (image_tag network.restaurants.first.photo_url, :class => 'thumb'), network_path(network.id), :class => 'show'				
+			= link_to (image_tag @image_url, :class => 'thumb'), network_path(network.id), :class => 'show'				
 			.dishes
 				- network.dishes.take(5).each do |dish|
 					= link_to image_tag(dish.photo_url), dish_path(dish.id), :class => 'show'	

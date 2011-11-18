@@ -2,8 +2,8 @@ class DishesController < ApplicationController
   def index
     per_page = 24
     @review = Review.new
+    @t = params[:page].to_i == 0 (params[:page].to_i - 1) * per_page
     @dishes = Dish.order('rating/votes DESC, photo DESC').page(params[:page]).per(per_page)
-    @k = params[:page] ? ((params[:page].to_i) -1) * per_page : 0
     
     @markers = Array.new
     @dishes.first.network.restaurants.each do |restaurant|

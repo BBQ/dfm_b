@@ -1,7 +1,7 @@
 .dish
 	.hd
 		.n_block
-			.number=@k+=1
+			.number=@t+=1
 		= link_to '"' + truncate(dish.name, :length => 20) + '"', dish_path(dish.id), :class => 'show'
 		%br
 		- if dish.network

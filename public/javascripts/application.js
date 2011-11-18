@@ -319,8 +319,8 @@ function nearBottomOfPage() {
 
 // Infinit scroll
 function infinit_scroll() {
-	loading = false;
-	page = 1;
+	var loading = false,
+			page = 1;
   $(window).scroll(function(){
 		if ($('#dishes').length) {
    	 if (loading)
