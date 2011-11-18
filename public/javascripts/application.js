@@ -1,6 +1,13 @@
 $(document).ready(function() {
 	
-	//Список городов
+	// Init
+	float_filters()
+	slider()
+	floats()
+	stars()
+	infinit_scroll()
+		
+	//Cities list
 	$('#location').click(function(){
 		$('#cities').slideToggle('fast')
 		return false
@@ -13,23 +20,24 @@ $(document).ready(function() {
 		return false
 	});
 	
-	//Центральное меню
+	//Main menu
 	var menu_set = '#ratings, #feed, #logged'
 	$(menu_set).click(function(e){
-			if(!$(this).hasClass('selected')) {
-				$(menu_set).removeClass('selected')
-				$(this).addClass('selected')
-			}
-			if (e.target === this || e.target.id == 'feed_img' || e.target.id == 'rate_img' || e.target.id == 'logged_img') {
-				$('.sub li a').removeClass('active').removeClass('selected')
-				$('li a', $(this).children('ul.sub')).first().addClass('active').addClass('selected')
-				$.getScript($('li a', $(this).children('ul.sub')).first().attr('href'), function() {
-					floats();
-					load_map();
-					stars();
-					slider();
-				});
-			}
+		if(!$(this).hasClass('selected')) {
+			$(menu_set).removeClass('selected')
+			$(this).addClass('selected')
+		}
+		if (e.target === this || e.target.id == 'feed_img' || e.target.id == 'rate_img' || e.target.id == 'logged_img') {
+			$('.sub li a').removeClass('active').removeClass('selected')
+			$('li a', $(this).children('ul.sub')).first().addClass('active').addClass('selected')
+			$.getScript($('li a', $(this).children('ul.sub')).first().attr('href'), function() {
+				floats();
+				load_map();
+				stars();
+				slider();
+				float_filters();
+			});
+		}
 		return false
 	});	
 	
@@ -46,12 +54,14 @@ $(document).ready(function() {
 	$('.sub li a').click(function(){
 		$('.sub li a').removeClass('active').removeClass('selected')
 		$(this).addClass('active').addClass('selected')
-		$.getScript(this.href, function() {
+			$.getScript(this.href, function() {
 			floats();
 			load_map();
 			stars();
 			slider();
+			float_filters();
 		});
+		return false
 	});
 	
 	$('.sub li a').mouseover(function(){
@@ -63,12 +73,6 @@ $(document).ready(function() {
 		$(this).removeClass('active')
 		$('.sub li a.selected').addClass('active')
 	});
-	
-	//Rating for vote
-	stars()
-	function stars() {
-		$(".stars").rating({showCancel: null});
-	}
 	
 	//Likes
 	$('.photo').live({
@@ -106,20 +110,6 @@ $(document).ready(function() {
 		if ($(this).val() == 'искать блюдо, ресторан, кухню')
 		$(this).val('')
 	});	
-	
-	//Filters Slider
-	slider()
-	function slider() {
-		$("#slider").slider({ 
-			animate: true,
-			min: 200,
-			max: 2000,
-			step: 50,
-			value: 1100,
-			slide: function(event, ui) {
-				$("#amount").text(ui.value + ' руб.')}
-			});
-	}
 		
 	//More Filters
 	$('.more', '#filters').live('click',function(){
@@ -238,51 +228,40 @@ $(document).ready(function() {
       return false;
     }
 	});
-	
-	// Floats
-	floats()
-	function floats() {
-		var $dishes = $('#dishes');
-		$dishes.imagesLoaded(function(){
-		  $dishes.masonry({
-		    itemSelector : '.dish'
-		  });
-		});
-		var $restaurants = $('#restaurants');
-		$restaurants.imagesLoaded(function(){
-		  $restaurants.masonry({
-		    itemSelector : '.restaurant_obj'
-		  });
-		});
-		var $reviews = $('#reviews');
-		$reviews.imagesLoaded(function(){
-		  $reviews.masonry({
-		    itemSelector : '.feed_obj',
-				isResizable: true,
-		  });
-		});
-	}		
-	
+		
 })
+
+//Floating filters
+function float_filters(obj) {
+	obj = obj ? $(obj) : $("#filters")
+	if (obj.length){ 
+	  var pos = obj.offset()
+	  $(window).scroll(function () {
+			styles = $(document).scrollTop() > pos.top ? {'position':'fixed', 'left':pos.left, 'top':0} : {'position':'relative', 'left':0}
+			obj.css(styles)
+	  });
+	}
+	// offset = $(document).scrollTop() > y ? $(document).scrollTop() - y +"px" : "0px"
+	// scroll_obj.animate({'margin-top':offset},{duration:0,queue:false});
+}
+
 //Google maps
-// Gmaps.map.markers = [{"lng": "37.5981", "lat": "55.7534", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|1", "description": "Ресторан тайской кухни ТАЙ ТАЙ", "title": "Ресторан тайской кухни ТАЙ ТАЙ"},{"lng": "37.6416", "lat": "55.7586", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|1", "description": "Ресторан тайской кухни ТАЙ ТАЙ", "title": "Ресторан тайской кухни ТАЙ ТАЙ"},{"lng": "37.562", "lat": "55.732", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|2", "description": "Nooning", "title": "Nooning"},{"lng": "37.5932", "lat": "55.731", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|3", "description": "Белый Журавль", "title": "Белый Журавль"},{"lng": "37.6605", "lat": "55.7629", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|4", "description": "15-й шар", "title": "15-й шар"},{"lng": "37.7949", "lat": "55.758", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|5", "description": "Новогиреевское", "title": "Новогиреевское"},{"lng": "37.5054", "lat": "55.8089", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|6", "description": "Очарование Востока", "title": "Очарование Востока"},{"lng": "37.6404", "lat": "55.7575", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|7", "description": "Art-Garbage Запасник", "title": "Art-Garbage Запасник"},{"lng": "37.5249", "lat": "55.6677", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|8", "description": "Пещера (на Новаторов)", "title": "Пещера (на Новаторов)"},{"lng": "37.6062", "lat": "55.7668", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|9", "description": "Пивной бар на Пушкинской", "title": "Пивной бар на Пушкинской"},{"lng": "37.6082", "lat": "55.7672", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|10", "description": "Bocconcino", "title": "Bocconcino"},{"lng": "37.488", "lat": "55.732", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|10", "description": "Bocconcino", "title": "Bocconcino"},{"lng": "37.5982", "lat": "55.7829", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|10", "description": "Bocconcino", "title": "Bocconcino"},{"lng": "37.6356", "lat": "55.7392", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|11", "description": "Giovedi Cafe", "title": "Giovedi Cafe"},{"lng": "37.6356", "lat": "55.7392", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|12", "description": "Giovedi Cafe", "title": "Giovedi Cafe"},{"lng": "37.4907", "lat": "55.8104", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|13", "description": "Райхан", "title": "Райхан"},{"lng": "37.6605", "lat": "55.7629", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|14", "description": "15-й шар", "title": "15-й шар"},{"lng": "37.7744", "lat": "55.7595", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|15", "description": "Amigos", "title": "Amigos"},{"lng": "37.5509", "lat": "55.6642", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|16", "description": "Очаг Султана", "title": "Очаг Султана"},{"lng": "37.6115", "lat": "55.7318", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|17", "description": "Панчо Вилья", "title": "Панчо Вилья"},{"lng": "37.5826", "lat": "55.8025", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|18", "description": "BeerМаркет", "title": "BeerМаркет"},{"lng": "37.5834", "lat": "55.7917", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|19", "description": "Пиво-Хаус", "title": "Пиво-Хаус"},{"lng": "37.6357", "lat": "55.7773", "picture": "http://chart.apis.google.com/chart?chst=d_map_spin&chld=0.5|0|ff776b|12|_|20", "description": "Cocon Home", "title": "Cocon Home"}];
 function load_map() {
   var myOptions = {
-    zoom: 6,
-    center: new google.maps.LatLng(-33.9, 151.2),
 		mapTypeControl: false,
 		streetViewControl: false,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   }
   if ($("#map_canvas").length) {
 		var map = new google.maps.Map($("#map_canvas")[0], myOptions);
+		setMarkers(map, markers);
 	}
 	if ($("#map_canvas_popup").length) {
 		var map = new google.maps.Map($("#map_canvas_popup")[0], myOptions);
 	}
-  setMarkers(map, markers);
 }
 
+// Add markers to the map
 function setMarkers(map, locations) {
   // Add markers to the map
 
@@ -312,9 +291,10 @@ function setMarkers(map, locations) {
       // coordinate closes the poly by connecting to the first
       // coordinate.
   var shape = {
-      coord: [1, 1, 1, 20, 18, 20, 18 , 1],
+      coord: [1, 1, 1, 20, 18, 20, 18, 1],
       type: 'poly'
   };
+	var bounds = new google.maps.LatLngBounds();
   for (var i = 0; i < locations.length; i++) {
     var beach = locations[i];
     var myLatLng = new google.maps.LatLng(beach[1], beach[2]);
@@ -327,5 +307,77 @@ function setMarkers(map, locations) {
         title: beach[0],
         zIndex: beach[3]
     });
+	bounds.extend(myLatLng);
+  map.fitBounds(bounds);
   }
+}
+
+//Get bottom of page
+function nearBottomOfPage() {
+  return $(window).scrollTop() > $(document).height() - $(window).height() - 200;
+}
+
+// Infinit scroll
+function infinit_scroll() {
+	loading = false;
+	page = 1;
+  $(window).scroll(function(){
+		if ($('#dishes').length) {
+   	 if (loading)
+	      return;
+			if(nearBottomOfPage()) {
+	      loading=true;
+	      page++;
+				$.getScript('/dishes?page=' + page, function() {
+					$dishes = $('#dishes')
+					$dishes.imagesLoaded(function(){
+					  $dishes.masonry('reload')
+					});
+					$(".stars").rating({showCancel: null});
+	        loading=false;
+				});
+			}
+    }
+	});
+}
+
+//Filters Slider
+function slider() {
+	$("#slider").slider({ 
+		animate: true,
+		min: 200,
+		max: 2000,
+		step: 50,
+		value: 1100,
+		slide: function(event, ui) {
+			$("#amount").text(ui.value + ' руб.')}
+		});
+}
+
+// Floats
+function floats() {
+	var $dishes = $('#dishes');
+	$dishes.imagesLoaded(function(){
+	  $dishes.masonry({
+	    itemSelector : '.dish'
+	  });
+	});
+	var $restaurants = $('#restaurants');
+	$restaurants.imagesLoaded(function(){
+	  $restaurants.masonry({
+	    itemSelector : '.restaurant_obj'
+	  });
+	});
+	var $reviews = $('#reviews');
+	$reviews.imagesLoaded(function(){
+	  $reviews.masonry({
+	    itemSelector : '.feed_obj',
+			isResizable: true,
+	  });
+	});
+}
+
+//Rating for vote
+function stars() {
+	$(".stars").rating({showCancel: null});
 }

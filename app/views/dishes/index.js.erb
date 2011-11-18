@@ -1,1 +1,6 @@
-$("#wrapper").html("<%= escape_javascript(render "index") %>");
+var dishes = $("#dishes")
+if (dishes.length)
+	dishes.append("<%= escape_javascript(render(@dishes)) %>");
+else{
+	$("#wrapper").html("<%= escape_javascript(render :file => "dishes/index.html.haml") %>");
+}

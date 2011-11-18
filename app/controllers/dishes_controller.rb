@@ -1,7 +1,15 @@
 class DishesController < ApplicationController
   def index
+    per_page = 24
     @review = Review.new
-    @dishes = Dish.order('rating/votes DESC, photo DESC').limit('100')
+    @dishes = Dish.order('rating/votes DESC, photo DESC').page(params[:page]).per(per_page)
+    @k = params[:page] ? ((params[:page].to_i) -1) * per_page : 0
+    
+    @markers = Array.new
+    @dishes.first.network.restaurants.each do |restaurant|
+      @markers.push("['#{restaurant.name}', #{restaurant.lat}, #{restaurant.lon}, 1]")
+    end
+    @markers = '['+@markers.join(',')+']'
   end
   
   def show

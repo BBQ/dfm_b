@@ -29,18 +29,19 @@ class Restaurant < ActiveRecord::Base
   end
   
   def dish_images
+    num_images = 20
     photos = Array.new
     dishes = Network.find_by_id(network_id).dishes.order('photo DESC')
     
-    dishes.take(4).each do |dish|
+    dishes.take(num_images).each do |dish|
       if dish.photo && dish.photo.iphone.url != '/images/noimage.jpg'
         photos.push(dish.photo.iphone.url)
       end
     end
     
-    if photos.count < 4
+    if photos.count < num_images
       reviews = Review.where('network_id = ?', network.id).order('count_likes DESC')
-      reviews.take(4).each do |review|
+      reviews.take(num_images - photos.count).each do |review|
         photos.push(review.photo.iphone.url)
       end
     end

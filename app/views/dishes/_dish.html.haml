@@ -1,0 +1,25 @@
+.dish
+	.hd
+		.n_block
+			.number=@k+=1
+		= link_to '"' + truncate(dish.name, :length => 20) + '"', dish_path(dish.id), :class => 'show'
+		%br
+		- if dish.network
+			= link_to '@'+truncate(dish.network.name.capitalize_first_letter, :length => 20), network_path(dish.network.id), :class => 'show resto_name'
+		- else
+			= link_to '@'+truncate(dish.restourant.name.capitalize_first_letter, :length => 20), restaurant_path(dish.restourant.id), :class => 'show resto_name'
+	- if dish.photo.blank? && dish.reviews.first
+		= link_to (image_tag dish.reviews.order('count_likes DESC').first.photo.thumb.url), dish_path(dish.id), :class => 'show'
+	- else
+		= link_to (image_tag dish.photo.thumb.url), dish_path(dish.id), :class => 'show'
+	.rate
+		- rate = dish.votes.to_i != 0 ? (dish.rating/dish.votes).to_i : 0
+		%select.stars
+			- 10.times do |i|
+				-i += 1
+				%option{ :value => i, :selected => (rate != 0 && rate == i ? "selected" : nil)}=i
+		.mark
+			= dish.votes.to_i != 0 ? "%.1f" % (dish.rating/dish.votes.to_f) : 0
+		.voices
+			(#{dish.votes} голосов)
+	.clear

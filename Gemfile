@@ -18,10 +18,12 @@ gem 'carrierwave'
 gem "rmagick", '2.12.2'
 gem "mini_magick"
 
-gem 'sorcery'
+gem "sorcery"
 gem "koala"
 
 gem "geocoder"
+
+gem "kaminari"
 
 # Use unicorn as the web server
 # gem 'unicorn'
