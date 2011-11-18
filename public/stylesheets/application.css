@@ -826,6 +826,10 @@ img {
     display: block;
     z-index: 2;
     position: relative; }
+    .restaurant_obj .restaurant .infoblock {
+      height: 100px;
+      float: left;
+      clear: both; }
     .restaurant_obj .restaurant .hd {
       color: white;
       padding: 4px 0 2px 0; }
@@ -849,6 +853,7 @@ img {
       margin: 0 auto;
       margin-bottom: 1px;
       float: left;
+      height: 173px;
       width: 260px; }
     .restaurant_obj .restaurant .dishes {
       margin: 0;
@@ -858,7 +863,8 @@ img {
       .restaurant_obj .restaurant .dishes img {
         margin-right: 1px;
         float: left;
-        width: 51px; }
+        width: 51px;
+        height: 51px; }
     .restaurant_obj .restaurant .text {
       float: left;
       clear: both;

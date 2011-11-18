@@ -1,20 +1,9 @@
 class NetworksController < ApplicationController
   
   def index
-    per_page = 15
+    per_page = 50
     @networks = Network.order('rating/votes DESC, votes DESC').page(params[:page]).per(per_page)
     # @markers = 
-    @networks.each do |network|
-      if network.restaurants.first.restaurant_images.first
-        @image_url = network.restaurants.first.restaurant_images.first.photo_url
-      elsif !network.dishes.blank?
-        @image_url = network.dishes.order('photo DESC, rating/votes DESC').first.photo_url
-      elsif !network.reviews.blank?
-        @image_url = network.reviews.order('photo DESC, count_likes DESC').first.photo_url
-  		else
-  		  @image_url = network.restaurants.first.photo_url
-  	  end
-  	end
   end
   
   def show

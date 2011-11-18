@@ -5,15 +5,25 @@
 			.hd
 				.number=i+=1
 				= link_to network.name.capitalize_first_letter, network_path(network.id), :class => 'show'			
-			= link_to (image_tag @image_url, :class => 'thumb'), network_path(network.id), :class => 'show'				
-			.dishes
-				- network.dishes.take(5).each do |dish|
-					= link_to image_tag(dish.photo_url), dish_path(dish.id), :class => 'show'	
-			.text
-				Лучшие блюда: 	
-				- network.dishes.shuffle.take(3).each do |dish|
-					= link_to dish.name, dish_path(dish.id), :class => 'show'
-					,								
+			= link_to (image_tag image_url(network), :class => 'thumb'), network_path(network.id), :class => 'show'
+			= network.reviews.count	
+			- dishes = network.dishes
+			.infoblock	
+				- if !dishes.blank?
+					.dishes
+						- dishes.order('rating/votes DESC, votes DESC, photo DESC').take(5).each do |dish|						
+							- if dish.photo.blank? && dish.reviews.first
+								= link_to (image_tag dish.reviews.order('count_likes DESC').first.photo.thumb.url), dish_path(dish.id), :class => 'show'
+							- else
+								= link_to (image_tag dish.photo.thumb.url), dish_path(dish.id), :class => 'show'						
+					.text
+						Лучшие блюда: 	
+						- dishes.shuffle.take(3).each do |dish|
+							= link_to truncate(dish.name, :length => 30), dish_path(dish.id), :class => 'show'
+							,
+				- else
+					%h3
+						Информация отсутствует
 			.rate
 				- rate = network.votes.to_i != 0 ? (network.rating/network.votes).to_i : 0				
 				- if rate

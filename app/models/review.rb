@@ -14,16 +14,20 @@ class Review < ActiveRecord::Base
   def as_json(options={})
     self.restaurant.rating = self.network.rating
     self.restaurant.votes = self.network.votes
+    self.restaurant.photo = self.restaurant.photo.iphone.url
         
     super(:only => [:text], 
           :include => { 
-            :dish => {:only => [:name, :rating, :votes]},
-            :restaurant => {:only => [:name, :rating, :votes]},
+            :dish => {:only => [:name, :photo, :rating, :votes]},
+            :restaurant => {:only => [:name, :photo, :rating, :votes]},
             :likes => {:include => {:user => { :only => [:name]}}},
             :comments => {:only => [:text, :created_at], :include => {:user => { :only => [:name, :facebook_id]}}}
           })
   end
   
+  def photo_iphone
+    dish.photo.iphone.url
+  end
   
   def review_exist?(user_id, dish_id)
     if fb = Review.where('user_id = ? && dish_id = ? && web = 1', user_id, dish_id).first
