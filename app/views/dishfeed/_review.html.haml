@@ -2,9 +2,7 @@
 	- @reviews.each do |review|
 		- like_active = ''
 		- if logged_in?
-			%pre{:style => 'position:absolute; z-index:1000'}
-			- @i_like.each do |like|	
-				= "#{like.user_id} == #{current_user.id} && #{like.review_id} == #{review.id}"
+			- @i_like.each do |like| 
 				- if like.user_id == current_user.id && like.review_id == review.id
 					- like_active = 'active'
 		.feed_obj

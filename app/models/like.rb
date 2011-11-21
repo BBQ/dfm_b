@@ -4,7 +4,7 @@ class Like < ActiveRecord::Base
   belongs_to :user
   
   def unlike?(user_id, review_id)
-    unlike = Like.find_by_user_id_and_review_id(user_id, review_id)
+    Like.find_by_user_id_and_review_id(user_id, review_id)
   end
   
   def save_me(user_id, review_id)
