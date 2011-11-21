@@ -161,7 +161,7 @@ class ApiController < ApplicationController
     
       if !params[:review][:dish_id] && params[:dish][:name] # && params[:dish][:type_id] && params[:dish][:subtype_id]
         params[:dish][:network_id] = params[:review][:network_id]
-        params[:dish][:rating] = params[:review][:rating]
+        # params[:dish][:rating] = params[:review][:rating]
         params[:dish][:restaurant_id] = params[:review][:restaurant_id]
         params[:dish][:dish_type_id] = 9 #добавлено пользователем
         params[:dish][:dish_category_id] = 120 # прочее
