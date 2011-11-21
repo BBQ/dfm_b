@@ -1,6 +1,5 @@
 <% if @review %>
 	var success = 1
-	var cu = "<%= debug(@cu) %>"
 	$("#like<%= @review[:result].id %>").html("<%= @review[:result].count_likes %>")
 <% else %>
 	$("#wrapper").prepend("<%= escape_javascript(render "shared/fb_connect") %>")
