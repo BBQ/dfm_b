@@ -62,7 +62,7 @@ class Review < ActiveRecord::Base
       review.save
       status = 'updated'
     else
-      Reviews.create(user_review)  
+      Review.create(user_review)  
       if rating > 0
           dish.rating += rating
           dish.votes += 1
