@@ -251,7 +251,9 @@ function load_map() {
   var myOptions = {
 		mapTypeControl: false,
 		streetViewControl: false,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+		zoom : 10,
+		center: new google.maps.LatLng(0,0)
   }
   if ($("#map_canvas").length) {
 		var map = new google.maps.Map($("#map_canvas")[0], myOptions);
@@ -260,6 +262,7 @@ function load_map() {
 	}
 	if ($("#map_canvas_popup").length) {
 		var map = new google.maps.Map($("#map_canvas_popup")[0], myOptions);
+		setMarkers(map, markers);
 	}
 }
 
@@ -309,9 +312,9 @@ function setMarkers(map, locations) {
         title: beach[0],
         zIndex: beach[3]
     });
-	bounds.extend(myLatLng);
-	  map.fitBounds(bounds);
+		bounds.extend(myLatLng);
   }
+  map.fitBounds(bounds);
 }
 
 //Get bottom of page

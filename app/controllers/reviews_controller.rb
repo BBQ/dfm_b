@@ -4,6 +4,12 @@ class ReviewsController < ApplicationController
     @networks = Network.find_by_id(@review.network_id)
     @networks = Network.find_by_id(Restaurant.find_by_id(@review.restaurant_id)[:network_id]) unless @networks
     @restaurants = Restaurant.where("network_id = ?", @networks.id).count
+    
+    @markers = Array.new
+    @review.network.restaurants.take(2).each do |restaurant|
+      @markers.push("['#{restaurant.name}', #{restaurant.lat}, #{restaurant.lon}, 1]")
+    end
+    @markers = '['+@markers.join(',')+']'
   end
   
   def delete

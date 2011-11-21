@@ -2,7 +2,8 @@
 	.close_popup
 		= image_tag 'close_popup.png'
 	.side_div
-		%h2 Адрес ресторана
+		%h2
+			= "#{@review.restaurant.name}"
 		#map_canvas_popup
 		.number 1
 		= "#{@review.restaurant.address}, Тел: #{@review.restaurant.phone}"
