@@ -6,6 +6,7 @@ $(document).ready(function() {
 	floats()
 	stars()
 	infinit_scroll()
+	load_map();
 		
 	//Cities list
 	$('#location').click(function(){
@@ -32,10 +33,10 @@ $(document).ready(function() {
 			$('li a', $(this).children('ul.sub')).first().addClass('active').addClass('selected')
 			$.getScript($('li a', $(this).children('ul.sub')).first().attr('href'), function() {
 				floats();
-				load_map();
 				stars();
 				slider();
 				float_filters();
+				load_map();
 			});
 		}
 		return false
@@ -56,10 +57,10 @@ $(document).ready(function() {
 		$(this).addClass('active').addClass('selected')
 			$.getScript(this.href, function() {
 			floats();
-			load_map();
 			stars();
 			slider();
 			float_filters();
+			load_map();
 		});
 		return false
 	});
@@ -254,7 +255,8 @@ function load_map() {
   }
   if ($("#map_canvas").length) {
 		var map = new google.maps.Map($("#map_canvas")[0], myOptions);
-		setMarkers(map, markers);
+		if (markers.length)
+			setMarkers(map, markers);
 	}
 	if ($("#map_canvas_popup").length) {
 		var map = new google.maps.Map($("#map_canvas_popup")[0], myOptions);
@@ -308,7 +310,7 @@ function setMarkers(map, locations) {
         zIndex: beach[3]
     });
 	bounds.extend(myLatLng);
-  map.fitBounds(bounds);
+	  map.fitBounds(bounds);
   }
 }
 
@@ -321,19 +323,23 @@ function nearBottomOfPage() {
 function infinit_scroll() {
 	var loading = false,
 			page = 1;
+			
   $(window).scroll(function(){
-		if ($('#dishes').length) {
+		if ($('#dishes').length || $('#restaurants').length) {
+			obj = $('#dishes').length ? 'dishes' : 'networks'
    	 if (loading)
 	      return;
 			if(nearBottomOfPage()) {
 	      loading=true;
 	      page++;
-				$.getScript('/dishes?page=' + page, function() {
-					$dishes = $('#dishes')
-					$dishes.imagesLoaded(function(){
-					  $dishes.masonry('reload')
-					});
-					$(".stars").rating({showCancel: null});
+				$.getScript(obj + '/?page=' + page, function() {
+					if (obj == 'dishes'){
+						$dishes = $('#dishes')
+						$dishes.imagesLoaded(function(){
+						  $dishes.masonry('reload')
+						});
+						$(".stars").rating({showCancel: null});
+					}
 	        loading=false;
 				});
 			}
@@ -360,12 +366,6 @@ function floats() {
 	$dishes.imagesLoaded(function(){
 	  $dishes.masonry({
 	    itemSelector : '.dish'
-	  });
-	});
-	var $restaurants = $('#restaurants');
-	$restaurants.imagesLoaded(function(){
-	  $restaurants.masonry({
-	    itemSelector : '.restaurant_obj'
 	  });
 	});
 	var $reviews = $('#reviews');

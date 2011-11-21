@@ -6,7 +6,7 @@ class DishesController < ApplicationController
     @dishes = Dish.order('rating/votes DESC, photo DESC').page(params[:page]).per(per_page)
     
     @markers = Array.new
-    @dishes.first.network.restaurants.each do |restaurant|
+    @dishes.first.network.restaurants.take(10).each do |restaurant|
       @markers.push("['#{restaurant.name}', #{restaurant.lat}, #{restaurant.lon}, 1]")
     end
     @markers = '['+@markers.join(',')+']'

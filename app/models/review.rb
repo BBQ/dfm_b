@@ -16,7 +16,7 @@ class Review < ActiveRecord::Base
     self.restaurant.votes = self.network.votes
     self.restaurant.photo = self.restaurant.photo.iphone.url
         
-    super(:only => [:text], 
+    super(:only => [:text, :count_likes], 
           :include => { 
             :dish => {:only => [:name, :photo, :rating, :votes]},
             :restaurant => {:only => [:name, :photo, :rating, :votes]},
@@ -64,9 +64,9 @@ class Review < ActiveRecord::Base
     else
       dish.reviews.create(user_review)  
       if rating > 0
-          dish.rating += rating
-          dish.votes += 1
-          dish.save
+          # dish.rating += rating
+          # dish.votes += 1
+          # dish.save
           if restaurant
             restaurant.rating += rating
             restaurant.votes += 1

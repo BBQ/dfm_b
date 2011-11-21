@@ -5,5 +5,5 @@
 #dishes
 	= render @dishes
 %script
-	= "var markers = #{@markers}"
-	window.onload = function() {load_map()};
+	delete window.markers; 
+	= "var markers = #{@markers};"

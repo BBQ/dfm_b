@@ -1,9 +1,16 @@
 class NetworksController < ApplicationController
   
   def index
-    per_page = 50
+    
+    per_page = 18
     @networks = Network.order('rating/votes DESC, votes DESC').page(params[:page]).per(per_page)
-    # @markers = 
+    @j = params[:page].to_i == 0 ? 0 : (params[:page].to_i - 1) * per_page
+    
+    @markers = Array.new
+    @networks.first.restaurants.each do |restaurant|
+      @markers.push("['#{restaurant.name}', #{restaurant.lat}, #{restaurant.lon}, 1]")
+    end
+    @markers = '['+@markers.join(',')+']'
   end
   
   def show

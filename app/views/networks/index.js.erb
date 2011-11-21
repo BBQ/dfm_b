@@ -1,1 +1,7 @@
-$("#wrapper").html("<%= escape_javascript(render "index") %>");
+var restaurants = $("#restaurants")
+if (restaurants.length)
+	restaurants.append("<%= escape_javascript(render(@networks)) %>");
+else{
+	<% @j = 0 if params[:page].blank? %>
+	$("#wrapper").html("<%= escape_javascript(render :file => "networks/index.html.haml") %>");
+}

@@ -830,6 +830,14 @@ img {
       height: 100px;
       float: left;
       clear: both; }
+    .restaurant_obj .restaurant .no_info {
+      width: 240px;
+      text-align: center;
+      font-size: 1.4em;
+      background: white;
+      padding: 35px 10px;
+      box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.15);
+      color: #aaaaaa; }
     .restaurant_obj .restaurant .hd {
       color: white;
       padding: 4px 0 2px 0; }
@@ -841,14 +849,15 @@ img {
         .restaurant_obj .restaurant .hd a:hover {
           text-decoration: underline; }
       .restaurant_obj .restaurant .hd .number {
+        color: white;
         font-size: 0.9em;
         border-radius: 5px;
         background: #d09b77;
-        width: 22px;
         height: 17px;
         text-align: center;
         float: left;
-        margin-right: 5px; }
+        margin-right: 5px;
+        padding: 0 4px; }
     .restaurant_obj .restaurant .thumb {
       margin: 0 auto;
       margin-bottom: 1px;
