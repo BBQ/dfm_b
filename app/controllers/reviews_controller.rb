@@ -46,6 +46,9 @@ class ReviewsController < ApplicationController
         dish.votes = dish.votes - 1
         data[:dra] = dish.rating
         data[:dva] = dish.votes
+        
+        # likes = Like.find_all_by_dish_id(dish_id)
+        # comments = Comment.find_all_by_dish_id(dish_id)
               
         if review && dish && restaurant && network
           

@@ -6,6 +6,30 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def get_user_id
+    if params[:id] && params[:provider]
+      user = User.find_by_facebook_id(params[:id]).id if params[:provider] = 'facebook'
+    end
+    return render :json => {
+          :user_id => user, 
+          :error => $error
+    }
+  end
+  
+  def get_user_reviews
+    if params[:id]
+      if params[:likes]
+        reviews = Review.where('id IN (SELECT review_id FROM likes WHERE user_id = ?)',params[:id])
+      else
+        reviews = Review.find_all_by_user_id(params[:id])
+      end
+    end
+    return render :json => {
+          :reviews => reviews, 
+          :error => $error
+    }
+  end
+  
   def get_restaurants
     
     limit = params[:limit] ? params[:limit] : 25
