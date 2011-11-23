@@ -173,17 +173,15 @@ class ApiController < ApplicationController
   end
   
   def add_review
-    if params[:uuid] && params[:review][:restaurant_id] && params[:review][:rating] && params[:access_token]
+    if params[:review][:restaurant_id] && params[:review][:rating] && params[:access_token]
       params[:review][:network_id] = Restaurant.find_by_id(params[:review][:restaurant_id])[:network_id]
       
       return render :json => {:error => {:description => 'Ресторан не найден', :code => 1}} unless Restaurant.find_by_id(params[:review][:restaurant_id])
       return render :json => {:error => {:description => 'Не верный рейтинг', :code => 2}} if params[:review][:rating].to_i > 10 || params[:review][:rating].to_i < 1
 
-      if image = Image.find_by_uuid(params[:uuid])
+      if params[:uuid] && image = Image.find_by_uuid(params[:uuid])
         params[:review][:photo] = File.open(image.photo.file.file)  
         image.destroy
-      else
-        return render :json => {:error => {:description => 'Пожалуйста подождите, фото ещё не загрузилось. =)', :code => 3}}
       end
     
       if !params[:review][:dish_id] && params[:dish][:name] # && params[:dish][:type_id] && params[:dish][:subtype_id]
