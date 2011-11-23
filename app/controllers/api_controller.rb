@@ -68,7 +68,7 @@ class ApiController < ApplicationController
       if params[:likes] == 1
         reviews = Review.where('id IN (SELECT review_id FROM likes WHERE user_id = ?)',params[:id])
       else
-        reviews = Review.where('WHERE user_id = ?',params[:id])
+        reviews = Review.where('user_id = ?',params[:id])
       end
       
       review_count = reviews.count

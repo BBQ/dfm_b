@@ -403,7 +403,8 @@ img {
   padding-top: 2px;
   box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.5);
   text-shadow: 0px -1px 0 rgba(0, 0, 0, 0.3);
-  text-align: center; }
+  text-align: center;
+  clear: both; }
   .link_button:hover {
     box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.7);
     margin-top: 9px;
@@ -447,7 +448,7 @@ img {
       margin: 5px 1px 5px 0;
       float: left; }
     .center_div .rate .mark {
-      font-size: 1.9em;
+      font-size: 0.9em;
       float: left;
       font-weight: bold;
       color: #d85f16;
