@@ -19,10 +19,27 @@ class Review < ActiveRecord::Base
     super(:only => [:text, :count_likes, :created_at], 
           :include => { 
             :dish => {:only => [:name, :photo, :rating, :votes]},
-            :restaurant => {:only => [:name, :photo, :rating, :votes]},
+            :restaurant => {:only => [:name, :photo, :address, :rating, :votes]},
             :likes => {:include => {:user => { :only => [:name]}}},
             :comments => {:only => [:text, :created_at], :include => {:user => { :only => [:name, :facebook_id]}}}
           })
+  end
+  
+  def format_review_for_api(user_id = nil)
+    data = {
+      :review_id => self.id,
+      :created_at => self.created_at,
+      :dish_name => self.dish.name,
+      :restaurant_name => self.restaurant.name,
+      :user_name => self.user.name,
+      :user_facebook_id => self.user.facebook_id,
+      :likes => self.count_likes,
+      :comments => self.count_comments,
+      :rating => self.rating,
+      :image_sd => self.photo.iphone.url,
+      :image_hd => self.photo.iphone_retina.url,
+      :liked => user_id && Like.find_by_user_id_and_review_id(user_id, self.id) ? 1 : 0
+    }
   end
   
   def photo_iphone

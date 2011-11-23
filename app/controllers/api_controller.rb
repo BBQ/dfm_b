@@ -16,20 +16,6 @@ class ApiController < ApplicationController
     }
   end
   
-  def get_user_reviews
-    if params[:id]
-      if params[:likes]
-        reviews = Review.where('id IN (SELECT review_id FROM likes WHERE user_id = ?)',params[:id])
-      else
-        reviews = Review.find_all_by_user_id(params[:id])
-      end
-    end
-    return render :json => {
-          :reviews => reviews, 
-          :error => $error
-    }
-  end
-  
   def get_restaurants
     
     limit = params[:limit] ? params[:limit] : 25
@@ -73,6 +59,35 @@ class ApiController < ApplicationController
     }
   end
   
+  def get_user_reviews
+    if params[:id]
+      
+      limit = params[:limit] ? params[:limit] : 25
+      offset = params[:offset] ? params[:offset] : 0
+      
+      if params[:likes] == 1
+        reviews = Review.where('id IN (SELECT review_id FROM likes WHERE user_id = ?)',params[:id])
+      else
+        reviews = Review.where('WHERE user_id = ?',params[:id])
+      end
+      
+      review_count = reviews.count
+      reviews = reviews.limit("#{offset}, #{limit}")
+      
+      review_data = Array.new
+      reviews.each do |review|
+        review_data.push(review.format_review_for_api)
+      end
+      
+    end
+    
+    return render :json => {
+          :review_count => review_count,
+          :reviews => review_data, 
+          :error => $error
+    }
+  end
+  
   def get_reviews
   
     limit = params[:limit] ? params[:limit] : 25
@@ -85,36 +100,12 @@ class ApiController < ApplicationController
       restaurants = Restaurant.near(params[:lat], params[:lon], 100).map(&:reviews)
       restaurants.each do |reviews|
         reviews.each do |review|
-          data = Hash.new
-          data[:review_id] = review.id
-          data[:dish_name] = review.dish.name
-          data[:restaurant_name] = review.restaurant.name
-          data[:user_name] = review.user.name
-          data[:user_facebook_id] = review.user.facebook_id  
-          data[:likes] = review.count_likes
-          data[:comments] = review.count_comments
-          data[:rating] = review.rating
-          data[:image_sd] = review.photo.iphone.url
-          data[:image_hd] = review.photo.iphone_retina.url
-          data[:liked] = user_id && Like.find_by_user_id_and_review_id(user_id, review.id) ? 1 : 0
-          review_data.push(data)
+          review_data.push(review.format_review_for_api(user_id))
         end
       end
     else
       reviews.each do |review|
-        data = Hash.new
-        data[:review_id] = review.id
-        data[:dish_name] = review.dish.name
-        data[:restaurant_name] = review.restaurant.name
-        data[:user_name] = review.user.name
-        data[:user_facebook_id] = review.user.facebook_id  
-        data[:likes] = review.count_likes
-        data[:comments] = review.count_comments
-        data[:rating] = review.rating
-        data[:image_sd] = review.photo.iphone.url
-        data[:image_hd] = review.photo.iphone_retina.url
-        data[:liked] = user_id && Like.find_by_user_id_and_review_id(user_id, review.id) ? 1 : 0   
-        review_data.push(data)
+        review_data.push(review.format_review_for_api(user_id))
       end
     end
     
@@ -126,11 +117,23 @@ class ApiController < ApplicationController
   end
   
   def like_review
-    user_id = User.new.get_user_by_fb_token(params[:access_token]) if params[:access_token]    
-    data = Like.new.save_me(user_id, params[:review_id]) if params[:review_id] && user_id
-    code = data[:error] ? 11 : nil
+    if params[:review_id] && params[:access_token]
+      user_id = User.new.get_user_by_fb_token(params[:access_token])   
+      data = Like.new.save_me(user_id, params[:review_id])
+      code = data[:error] ? 11 : nil
+    end
     return render :json => {
       :error => {:description => data[:error], :code => code}
+    }
+  end
+  
+  def comment_on_review
+    if params[:comment] && params[:review_id] && params[:access_token]
+      user_id = User.new.get_user_by_fb_token(params[:access_token])
+      comment = Comment.create({:user_id => user_id, :review_id => params[:review_id], :text => params[:comment]})                
+    end
+    return render :json => {
+      :error => $error
     }
   end
   
