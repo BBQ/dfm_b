@@ -9,6 +9,12 @@ GIT
       rubyzip (>= 0.9.1)
       spreadsheet (>= 0.6.4)
 
+GIT
+  remote: git://github.com/tyler/trie.git
+  revision: 7452dd99df7319ad0ecd5061e7188441c3f37d09
+  specs:
+    fast_trie (0.5.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -143,6 +149,7 @@ PLATFORMS
 
 DEPENDENCIES
   carrierwave
+  fast_trie (= 0.5.0)!
   geocoder
   haml
   jquery-rails

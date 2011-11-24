@@ -392,22 +392,20 @@ img {
       font-family: bell_bold; }
 
 .link_button {
-  margin-top: 10px;
   display: block;
   height: 20px;
   width: 140px;
-  border-radius: 5px;
+  border-radius: 6px;
   background: url("/images/change_profile_button_bg.png");
   text-decoration: none;
   color: white;
   padding-top: 2px;
-  box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.5);
+  box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.7);
   text-shadow: 0px -1px 0 rgba(0, 0, 0, 0.3);
-  text-align: center;
-  clear: both; }
+  text-align: center; }
   .link_button:hover {
-    box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.7);
-    margin-top: 9px;
+    box-shadow: inset -1px -1px 0px 0px rgba(0, 0, 0, 0.5);
+    margin-top: 1px;
     height: 19px; }
 
 .place {
@@ -460,6 +458,7 @@ img {
   .center_div .info {
     margin-left: 15px;
     font-size: 0.9em;
+    line-height: 0.9em;
     width: 300px;
     float: left; }
   .center_div .link_button {
@@ -472,7 +471,7 @@ img {
     float: right;
     text-shadow: 1px 1px 0 white;
     line-height: 1em;
-    margin-right: 15px; }
+    margin: -20px 15px 0 0; }
     .center_div #your_rate div {
       float: left;
       margin: 2px; }

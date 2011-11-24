@@ -6,6 +6,14 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def trie
+    words = ['pizza', 'pizza plaza', 'potato', 'pomidor', 'pool', 'pets']
+    trie = Trie.new
+    words.each do |word|
+      trie.add word
+    end
+  end
+  
   def get_user_id
     if params[:id] && params[:provider]
       user = User.find_by_facebook_id(params[:id]).id if params[:provider] = 'facebook'
@@ -65,7 +73,7 @@ class ApiController < ApplicationController
       limit = params[:limit] ? params[:limit] : 25
       offset = params[:offset] ? params[:offset] : 0
       
-      if params[:likes] == 1
+      if params[:likes].to_s == 1
         reviews = Review.where('id IN (SELECT review_id FROM likes WHERE user_id = ?)',params[:id])
       else
         reviews = Review.where('user_id = ?',params[:id])

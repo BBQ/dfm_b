@@ -25,6 +25,8 @@ gem "geocoder"
 
 gem "kaminari"
 
+gem 'fast_trie', '0.5.0', :git => 'git://github.com/tyler/trie.git'
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
