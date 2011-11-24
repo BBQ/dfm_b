@@ -25,7 +25,7 @@ class Review < ActiveRecord::Base
           })
   end
   
-  def format_review_for_api(user_id = nil)
+  def format_review_for_api(user_id)
     data = {
       :review_id => self.id,
       :created_at => self.created_at,

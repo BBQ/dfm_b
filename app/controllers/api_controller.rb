@@ -73,7 +73,7 @@ class ApiController < ApplicationController
       limit = params[:limit] ? params[:limit] : 25
       offset = params[:offset] ? params[:offset] : 0
       
-      if params[:likes].to_s == 1
+      if params[:likes].to_i == 1
         reviews = Review.where('id IN (SELECT review_id FROM likes WHERE user_id = ?)',params[:id])
       else
         reviews = Review.where('user_id = ?',params[:id])
@@ -84,7 +84,7 @@ class ApiController < ApplicationController
       
       review_data = Array.new
       reviews.each do |review|
-        review_data.push(review.format_review_for_api)
+        review_data.push(review.format_review_for_api(params[:id]))
       end
       
     end
