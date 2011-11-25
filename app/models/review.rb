@@ -26,8 +26,8 @@ class Review < ActiveRecord::Base
   end
   
   def format_review_for_api(user_id)
-    self.photo.iphone.url = '' if photo.iphone.url  == '/images/noimage.jpg'
-    self.photo.iphone_retina.url = '' if photo.iphone_retina.url == '/images/noimage.jpg'
+    self.photo.iphone.url = '' if self.photo.iphone.url  == '/images/noimage.jpg'
+    self.photo.iphone_retina.url = '' if self.photo.iphone_retina.url == '/images/noimage.jpg'
     data = {
       :review_id => id,
       :created_at => created_at,
