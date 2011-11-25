@@ -1,4 +1,12 @@
 class ReviewsController < ApplicationController
+  
+  def search
+    if params[:type] && params[:search][:find]
+      @reviews = Review.where("dish_id IN (SELECT id FROM dishes WHERE LOWER(name) REGEXP '[[:<:]]#{params[:search][:find].downcase}')").order('rating DESC')
+      @i_like = Like.where("user_id = ?", current_user.id) if current_user
+    end
+  end
+  
   def show
     @review = Review.find_by_id(params[:id])
     @networks = Network.find_by_id(@review.network_id)
@@ -15,6 +23,7 @@ class ReviewsController < ApplicationController
   def delete
     result = "Something wrong with review #{params[:id]} ..."
     if params[:id] 
+      
       data = Hash.new
       if review = Review.find_by_id(params[:id])
         rating = review.rating
@@ -47,8 +56,15 @@ class ReviewsController < ApplicationController
         data[:dra] = dish.rating
         data[:dva] = dish.votes
         
-        # likes = Like.find_all_by_dish_id(dish_id)
-        # comments = Comment.find_all_by_dish_id(dish_id)
+        likes = Like.find_all_by_dish_id(dish_id)
+        likes.each do |like|
+          like.destroy
+        end
+        
+        comments = Comment.find_all_by_dish_id(dish_id)
+        comments.each do |comment|
+          comment.destroy
+        end
               
         if review && dish && restaurant && network
           
@@ -67,6 +83,7 @@ class ReviewsController < ApplicationController
         end
       end
     end
+    
     data[:result] = result
     return render :json => data
   end

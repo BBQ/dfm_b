@@ -7,6 +7,7 @@ $(document).ready(function() {
 	stars()
 	infinit_scroll()
 	load_map();
+	$('#search').attr('action', '/dishfeed/search/all')
 		
 	//Cities list
 	$('#location').click(function(){
@@ -54,6 +55,7 @@ $(document).ready(function() {
 	
 	$('.sub li a').click(function(){
 		$('.sub li a').removeClass('active').removeClass('selected')
+		link = '/' + $(this).attr('id').replace(/_/g, '/')
 		$(this).addClass('active').addClass('selected')
 			$.getScript(this.href, function() {
 			floats();
@@ -61,6 +63,8 @@ $(document).ready(function() {
 			slider();
 			float_filters();
 			load_map();
+			console.log(link)
+			$('#search').attr('action',link)
 		});
 		return false
 	});
@@ -222,12 +226,18 @@ $(document).ready(function() {
 	});
 	
 	//Submit comment on Enter
-	$('textarea.add_comment').live('keypress', function(e) {
+	$('textarea.add_comment, #search_find').live('keypress', function(e) {
     if (e.keyCode == 13) {
 			var form = $(this).parent('form')
 			$.get(form.attr("action"), form.serialize(), function(){$('#wrapper').masonry('reload')}, "script")
       return false;
     }
+	});
+	
+	 // Autocomplete
+	$(".auto_search_complete").autocomplete({
+	    source: "/autocomplete",
+	    minLength: 2
 	});
 		
 })
@@ -242,8 +252,6 @@ function float_filters(obj) {
 			obj.css(styles)
 	  });
 	}
-	// offset = $(document).scrollTop() > y ? $(document).scrollTop() - y +"px" : "0px"
-	// scroll_obj.animate({'margin-top':offset},{duration:0,queue:false});
 }
 
 //Google maps

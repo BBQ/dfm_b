@@ -1,5 +1,7 @@
 Dishfm::Application.routes.draw do
   
+  get "autocomplete_searches/Index"
+
   resource :oauths do
     get :callback
   end
@@ -15,18 +17,23 @@ Dishfm::Application.routes.draw do
   
   match 'networks/:id' => 'networks#show', :as => :network
   match 'networks' => 'networks#index', :as => :networks
-  match 'networks/:id/:action', :controller => 'networks', :as => :network_details
+  match 'networks/:id/:action', :controller => :networks, :as => :network_details
+  match 'networks/search' => 'networks#search', :as => :network_search
 
   match 'dishes/:id' => 'dishes#show', :as => :dish  
   match 'dishes' => 'dishes#index', :as => :dishes
+  match 'dishes/search' => 'dishes#search', :as => :dishes_search
   
   match 'dishfeed' => 'dishfeed#index', :as => :dishfeed
   match 'reviews/:id' => 'reviews#show', :as => :review
   match 'reviews/delete/:id' => 'reviews#delete', :as => :delete_review
+  match 'dishfeed/search/:type' => 'reviews#search', :as => :dishfeed_search
   
   match 'likes/add/:id' => 'likes#add', :as => :like
   match 'sessions/check/' => 'sessions#check', :as => :check_user_ajax
   
+  match 'autocomplete' => 'autocomplete_searches#index', :as => :autocomplete
+
   match 'profile' => 'profile#index', :as => :profile
   match ':controller(/:action(/:id(.:format)))'
       

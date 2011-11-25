@@ -42,7 +42,9 @@ class Restaurant < ActiveRecord::Base
     if photos.count < num_images
       reviews = Review.where('network_id = ?', network.id).order('count_likes DESC')
       reviews.take(num_images - photos.count).each do |review|
-        photos.push(review.photo.iphone.url)
+        if review.photo && review.photo.iphone.url != '/images/noimage.jpg'
+          photos.push(review.photo.iphone.url)
+        end
       end
     end
     photos
