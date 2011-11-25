@@ -26,19 +26,21 @@ class Review < ActiveRecord::Base
   end
   
   def format_review_for_api(user_id)
+    self.photo.iphone.url = '' if photo.iphone.url  == '/images/noimage.jpg'
+    self.photo.iphone_retina.url = '' if photo.iphone_retina.url == '/images/noimage.jpg'
     data = {
-      :review_id => self.id,
-      :created_at => self.created_at,
-      :dish_name => self.dish.name,
-      :restaurant_name => self.restaurant.name,
-      :user_name => self.user.name,
-      :user_facebook_id => self.user.facebook_id,
-      :likes => self.count_likes,
-      :comments => self.count_comments,
-      :rating => self.rating,
-      :image_sd => self.photo.iphone.url,
-      :image_hd => self.photo.iphone_retina.url,
-      :liked => user_id && Like.find_by_user_id_and_review_id(user_id, self.id) ? 1 : 0
+      :review_id => id,
+      :created_at => created_at,
+      :dish_name => dish.name,
+      :restaurant_name => restaurant.name,
+      :user_name => user.name,
+      :user_facebook_id => user.facebook_id,
+      :likes => count_likes,
+      :comments => count_comments,
+      :rating => rating,
+      :image_sd => photo.iphone.url,
+      :image_hd => photo.iphone_retina.url,
+      :liked => user_id && Like.find_by_user_id_and_review_id(user_id, id) ? 1 : 0
     }
   end
   
