@@ -28,7 +28,7 @@ class Review < ActiveRecord::Base
   def format_review_for_api(user_id)
     data = {
       :review_id => id,
-      :created_at => created_at,
+      :created_at => created_at.to_time.to_i,
       :dish_name => dish.name,
       :restaurant_name => restaurant.name,
       :user_name => user.name,
