@@ -38,6 +38,7 @@ $(document).ready(function() {
 				slider();
 				float_filters();
 				load_map();
+				infinit_scroll()
 			});
 		}
 		return false
@@ -55,7 +56,10 @@ $(document).ready(function() {
 	
 	$('.sub li a').click(function(){
 		$('.sub li a').removeClass('active').removeClass('selected')
-		link = '/' + $(this).attr('id').replace(/_/g, '/')
+		if ($(this).attr('id')) {
+			link = '/' + $(this).attr('id').replace(/_/g, '/')
+			$('#search').attr('action',link)
+		}
 		$(this).addClass('active').addClass('selected')
 			$.getScript(this.href, function() {
 			floats();
@@ -63,8 +67,7 @@ $(document).ready(function() {
 			slider();
 			float_filters();
 			load_map();
-			console.log(link)
-			$('#search').attr('action',link)
+			infinit_scroll()
 		});
 		return false
 	});
@@ -225,14 +228,27 @@ $(document).ready(function() {
 		$(this).val('')
 	});
 	
-	//Submit comment on Enter
+	//Submit comment or search on Enter
 	$('textarea.add_comment, #search_find').live('keypress', function(e) {
     if (e.keyCode == 13) {
 			var form = $(this).parent('form')
-			$.get(form.attr("action"), form.serialize(), function(){$('#wrapper').masonry('reload')}, "script")
+			$.get(form.attr("action"), form.serialize(), function(){
+				if (form.attr('id') == 'search') {
+					init_search()
+				} else {
+					$('#wrapper').masonry('reload')
+				}}, "script")
       return false;
     }
 	});
+	
+	//Ajax search on click
+	$('#search_submit_img').live('click', function(e) {
+			var form = $(this).parent('form')
+			$.get(form.attr("action"), form.serialize(), function(){init_search()}, "script")
+      return false;
+	});	
+	
 	
 	 // Autocomplete
 	$(".auto_search_complete").autocomplete({
@@ -331,10 +347,11 @@ function nearBottomOfPage() {
 }
 
 // Infinit scroll
-function infinit_scroll() {
+function infinit_scroll(search) {
 	var loading = false,
 			page = 1;
 			
+	$(window).unbind('scroll');		
   $(window).scroll(function(){
 		if ($('#dishes').length || $('#restaurants').length) {
 			obj = $('#dishes').length ? 'dishes' : 'networks'
@@ -343,7 +360,12 @@ function infinit_scroll() {
 			if(nearBottomOfPage()) {
 	      loading=true;
 	      page++;
-				$.getScript(obj + '/?page=' + page, function() {
+				if (search)
+					url = obj + '/?page=' + page + '&search[find]=' + search	
+				else
+					url = obj + '/?page=' + page
+					
+				$.getScript(url, function() {
 					if (obj == 'dishes'){
 						$dishes = $('#dishes')
 						$dishes.imagesLoaded(function(){
@@ -391,4 +413,14 @@ function floats() {
 //Rating for vote
 function stars() {
 	$(".stars").rating({showCancel: null});
+}
+
+//Search init
+function init_search() {
+	float_filters()
+	slider()
+	floats()
+	stars()
+	infinit_scroll($('#search_find').val())
+	load_map();
 }

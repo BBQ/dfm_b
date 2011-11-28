@@ -1,6 +1,6 @@
 / = render '/shared/tags'
 %h2
-	Лучшие рестораны в категории: Все
+	= "Лучшие рестораны в категории: #{@search.blank? ? 'Все' : @search}"
 = render '/shared/filters'
 #restaurants
 	= render @networks

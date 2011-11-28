@@ -1,0 +1,6 @@
+var restaurants = $("#restaurants")
+- if @page >= 1
+	restaurants.append("#{escape_javascript(render(@networks))}");
+- else
+	- @j = 0 if params[:page].blank?
+	$("#wrapper").html("#{escape_javascript(render :file => 'networks/index.html.haml')}");

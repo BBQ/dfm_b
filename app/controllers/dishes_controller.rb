@@ -1,15 +1,25 @@
 class DishesController < ApplicationController
   def index
     per_page = 24
+    @page = params[:page].to_i
     @review = Review.new
-    @k = params[:page].to_i == 0 ? 0 : (params[:page].to_i - 1) * per_page
-    @dishes = Dish.order('rating/votes DESC, photo DESC').page(params[:page]).per(per_page)
+    @k = @page == 0 ? 0 : (@page - 1) * per_page
     
-    @markers = Array.new
-    @dishes.first.network.restaurants.take(10).each do |restaurant|
-      @markers.push("['#{restaurant.name}', #{restaurant.lat}, #{restaurant.lon}, 1]")
+    if params[:search] && params[:search][:find]
+      @dishes = Dish.where("LOWER(name) REGEXP '[[:<:]]#{params[:search][:find].downcase}'").order('rating/votes DESC, votes DESC, photo DESC').page(@page).per(per_page)
+      @search = params[:search][:find]
+    else
+      @dishes = Dish.order('rating/votes DESC, photo DESC').page(@page).per(per_page)
     end
-    @markers = '['+@markers.join(',')+']'
+    
+    unless @dishes.blank?
+      @markers = Array.new
+      @dishes.first.network.restaurants.take(10).each do |restaurant|
+        @markers.push("['#{restaurant.name}', #{restaurant.lat}, #{restaurant.lon}, 1]")
+      end
+      @markers = '['+@markers.join(',')+']'
+    end
+    
   end
   
   def show

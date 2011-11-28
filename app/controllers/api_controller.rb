@@ -6,13 +6,13 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
-  def trie
-    words = ['pizza', 'pizza plaza', 'potato', 'pomidor', 'pool', 'pets']
-    trie = Trie.new
-    words.each do |word|
-      trie.add word
-    end
-  end
+  # def trie
+  #   words = ['pizza', 'pizza plaza', 'potato', 'pomidor', 'pool', 'pets']
+  #   trie = Trie.new
+  #   words.each do |word|
+  #     trie.add word
+  #   end
+  # end
   
   def get_user_id
     if params[:id] && params[:provider]
@@ -30,12 +30,17 @@ class ApiController < ApplicationController
     offset = params[:offset] ? params[:offset] : 0
             
     if params[:lat] && params[:lon]
-      restaurants = Restaurant.where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon])
+      if params[:sort] == 'rating'
+        restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).order('rating/votes DESC, votes DESC')
+      else
+        restaurants = Restaurant.where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon])
+      end    
     else
-      restaurants = Restaurant.order('rating/votes DESC')
+      restaurants = Restaurant.order('rating/votes DESC, votes DESC')
     end
     
-    restaurants = restaurants.where("name LIKE ?", "%#{params[:search]}%") unless params[:search].blank?
+    restaurants = restaurants.where("LOWER(name) REGEXP '[[:<:]]#{params[:search].downcase}'") unless params[:search].blank?
+    restaurants = restaurants.where("id IN (SELECT restaurant_id FROM dishes WHERE restaurant_id != 0 AND `name` LIKE '#{params[:keyword].downcase}%')") unless params[:keyword].blank?
     count = restaurants.count
     restaurants = restaurants.limit("#{offset}, #{limit}")
     
@@ -43,7 +48,7 @@ class ApiController < ApplicationController
           :restaurants => restaurants.as_json, 
           :count => count, 
           :error => $error
-        }
+    }
   end
   
   def upload_photo

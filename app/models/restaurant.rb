@@ -51,15 +51,17 @@ class Restaurant < ActiveRecord::Base
   end
   
   def self.near(lat, lon, rad = 1)
-    where("((ACOS(SIN(? * PI() / 180) * SIN(lat * PI() / 180) +
-        COS(? * PI() / 180) * COS(lat * PI() / 180) * COS((? - lon) * 
-        PI() / 180)) * 180 / PI()) * 60 * 1.1515 * 1.609344) <= ?", lat, lat, lon, rad)
+    where("((ACOS(
+    	SIN(lat * PI() / 180) * SIN(? * PI() / 180) + 
+    	COS(lat * PI() / 180) * COS(? * PI() / 180) * 
+    	COS((? - lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344 <= ?", lat, lat, lon, rad)
   end
   
   def self.by_distance(lat, lon)
-    order("(ACOS(SIN(#{lat} * PI() / 180) * SIN(lat * PI() / 180) +
-        COS(#{lat} * PI() / 180) * COS(lat * PI() / 180) * COS((#{lon} - lon) * 
-        PI() / 180)) * 180 / PI()) * 60 * 1.1515 * 1.609344")
+    order("((ACOS(
+      SIN(#{lat} * PI() / 180) * SIN(lat * PI() / 180) +
+      COS(#{lat} * PI() / 180) * COS(lat * PI() / 180) * 
+      COS((#{lon} - lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344, rating/votes DESC, votes DESC")
   end
   
 end

@@ -1,0 +1,6 @@
+var dishes = $("#dishes")
+- if @page >= 1
+	dishes.append("#{escape_javascript(render(@dishes))}");
+- else
+	- @k = 0 if params[:page].blank?
+	$("#wrapper").html("#{escape_javascript(render :file => 'dishes/index.html.haml')}");

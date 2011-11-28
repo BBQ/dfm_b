@@ -1,16 +1,24 @@
 class NetworksController < ApplicationController
   
   def index
-    
     per_page = 18
-    @networks = Network.order('rating/votes DESC, votes DESC').page(params[:page]).per(per_page)
-    @j = params[:page].to_i == 0 ? 0 : (params[:page].to_i - 1) * per_page
+    @page = params[:page].to_i
+    @j = @page == 0 ? 0 : (@page - 1) * per_page
     
-    @markers = Array.new
-    @networks.first.restaurants.each do |restaurant|
-      @markers.push("['#{restaurant.name}', #{restaurant.lat}, #{restaurant.lon}, 1]")
+    if params[:search] && params[:search][:find]
+      @networks = Network.where("LOWER(name) REGEXP '[[:<:]]#{params[:search][:find].downcase}'").order('rating/votes DESC, votes DESC').page(@page).per(per_page)
+      @search = params[:search][:find]
+    else
+      @networks = Network.order('rating/votes DESC, votes DESC').page(@page).per(per_page)
     end
-    @markers = '['+@markers.join(',')+']'
+    
+    unless @networks.blank?
+      @markers = Array.new
+      @networks.first.restaurants.each do |restaurant|
+        @markers.push("['#{restaurant.name}', #{restaurant.lat}, #{restaurant.lon}, 1]")
+      end
+      @markers = '['+@markers.join(',')+']'
+    end
   end
   
   def show

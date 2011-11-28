@@ -14,15 +14,15 @@ Dishfm::Application.routes.draw do
   
   match 'restaurants/:id' => 'restaurants#show', :as => :restaurant
   match 'restaurants' => 'restaurants#index', :as => :restaurants
-  
+
+  match 'networks/search' => 'networks#index', :as => :network_search  
   match 'networks/:id' => 'networks#show', :as => :network
   match 'networks' => 'networks#index', :as => :networks
   match 'networks/:id/:action', :controller => :networks, :as => :network_details
-  match 'networks/search' => 'networks#search', :as => :network_search
 
+  match 'dishes/search' => 'dishes#index', :as => :dishes_search
   match 'dishes/:id' => 'dishes#show', :as => :dish  
   match 'dishes' => 'dishes#index', :as => :dishes
-  match 'dishes/search' => 'dishes#search', :as => :dishes_search
   
   match 'dishfeed' => 'dishfeed#index', :as => :dishfeed
   match 'reviews/:id' => 'reviews#show', :as => :review
