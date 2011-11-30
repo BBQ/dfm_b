@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111107162113) do
+ActiveRecord::Schema.define(:version => 20111130165031) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -86,10 +86,12 @@ ActiveRecord::Schema.define(:version => 20111107162113) do
     t.integer  "network_id",       :default => 0
     t.integer  "dish_category_id",                :null => false
     t.integer  "dish_type_id",                    :null => false
-    t.integer  "dish_subtype_id",                 :null => false
+    t.integer  "dish_subtype_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "dishes", ["name"], :name => "name"
 
   create_table "friends", :id => false, :force => true do |t|
     t.integer  "user_id",     :limit => 8, :null => false
@@ -147,7 +149,7 @@ ActiveRecord::Schema.define(:version => 20111107162113) do
   add_index "restaurant_cuisines", ["cuisine_id", "restaurant_id"], :name => "index_restaurant_cuisines_on_cuisine_id_and_restaurant_id"
   add_index "restaurant_cuisines", ["restaurant_id", "cuisine_id"], :name => "index_restaurant_cuisines_on_restaurant_id_and_cuisine_id"
 
-  create_table "restaurant_images", :id => false, :force => true do |t|
+  create_table "restaurant_images", :force => true do |t|
     t.integer  "restaurant_id", :null => false
     t.string   "photo"
     t.datetime "created_at"
@@ -171,6 +173,7 @@ ActiveRecord::Schema.define(:version => 20111107162113) do
 
   create_table "restaurants", :force => true do |t|
     t.string   "name"
+    t.integer  "network_id",                       :null => false
     t.string   "city"
     t.string   "address"
     t.string   "time"
@@ -182,7 +185,6 @@ ActiveRecord::Schema.define(:version => 20111107162113) do
     t.string   "photo"
     t.float    "lon"
     t.float    "lat"
-    t.integer  "network_id",                       :null => false
     t.integer  "votes",         :default => 0
     t.integer  "rating",        :default => 0
     t.string   "wifi",          :default => "0"
@@ -198,13 +200,22 @@ ActiveRecord::Schema.define(:version => 20111107162113) do
     t.string   "delivery"
     t.string   "takeaway"
     t.string   "service"
-    t.string   "dinner"
+    t.string   "good_for"
     t.string   "alcohol"
     t.string   "noise"
     t.string   "tv"
     t.string   "disabled"
     t.string   "music"
+    t.string   "parking"
     t.string   "menu_url"
+    t.string   "bill"
+    t.string   "sun"
+    t.string   "mon"
+    t.string   "tue"
+    t.string   "wed"
+    t.string   "thu"
+    t.string   "fri"
+    t.string   "sat"
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"

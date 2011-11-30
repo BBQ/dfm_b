@@ -39,9 +39,39 @@ class ApiController < ApplicationController
     limit = params[:limit] ? params[:limit] : 25
     offset = params[:offset] ? params[:offset] : 0
     
-    price = params[:price].split('-')
+    filters = []
+    if params[:bill] && params[:bill].length == 5
+      bill = []
+      bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
+      bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
+      bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
+      bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
+      bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
+      filters.push(bill.join(' OR ')) if bill.count > 0
+    end
     
-            
+    etc = []
+    etc.push('wifi = 1') if params[:wifi] == '1'
+    etc.push('terrace = 1') if params[:terrace] == '1'
+    etc.push('cc = 1') if params[:accept_bank_cards] == '1'
+    filters.push(etc.join(' AND ')) if etc.count > 0
+    all_filters = filters.join(' AND ')
+    
+    if params[:open_now]
+
+      today = Date.today
+      wday = Date.today.strftime("%a").downcase
+      now = Time.now.strftime("%H%M")
+      open_now = "#{now} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+      
+      if now.to_i < 1000
+        now24 = now.to_i + 2400
+        open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+      end    
+      all_filters = all_filters ? all_filters + ' AND ' + open_now : open_now
+
+    end
+    
     if params[:lat] && params[:lon] && params[:radius].to_i.to_s == params[:radius].to_s
       if params[:sort] == 'rating'
         restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).order('rating/votes DESC, votes DESC')
@@ -54,6 +84,7 @@ class ApiController < ApplicationController
     
     restaurants = restaurants.where("LOWER(name) REGEXP '[[:<:]]#{params[:search].downcase}'") unless params[:search].blank?
     restaurants = restaurants.where("id IN (SELECT restaurant_id FROM dishes WHERE restaurant_id != 0 AND `name` LIKE '#{params[:keyword].downcase}%')") unless params[:keyword].blank?
+    restaurants = restaurants.where(all_filters) unless all_filters.blank?
     count = restaurants.count
     restaurants = restaurants.limit("#{offset}, #{limit}")
     
@@ -61,7 +92,7 @@ class ApiController < ApplicationController
           :restaurants => restaurants.as_json, 
           :count => count, 
           :radius => params[:radius].to_i.to_s, 
-          :error => $error
+          :error => all_filters
     }
   end
   

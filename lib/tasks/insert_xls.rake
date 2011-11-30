@@ -1,7 +1,7 @@
 # encoding: utf-8
 task :xls => :environment do  
-  current_path = File.dirname(__FILE__).sub('/lib/tasks', '')+ '/import/Data1'
-  path = current_path + "/20111126_1_base.xlsx"
+  current_path = File.dirname(__FILE__).sub('/lib/tasks', '')+ '/import/Data2'
+  path = current_path + "/20111124_2_base.xlsx"
   parser = Excelx.new(path, false, :ignore)
    
   # Parse Restaurants
@@ -28,7 +28,14 @@ task :xls => :environment do
         :chillum => parser.cell(line,'M') || 0,
         :terrace => parser.cell(line,'N') || 0,
         :cc => parser.cell(line,'Q') || 0,
-        :source => 'xlst'
+        :source => 'xlst',
+        :sun => parser.cell(line,'Y'),
+        :mon => parser.cell(line,'S'),
+        :tue => parser.cell(line,'T'),
+        :wed => parser.cell(line,'U'),
+        :thu => parser.cell(line,'V'),
+        :fri => parser.cell(line,'X'),
+        :sat => parser.cell(line,'Y'),
         ]
     
       restaurants = Restaurant.create(restaurant_data)
