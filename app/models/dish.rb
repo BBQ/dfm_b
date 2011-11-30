@@ -18,10 +18,10 @@ class Dish < ActiveRecord::Base
     
   end
   
-  def api_get_dish(user_id, dish_id)
+  def self.api_get_dish(user_id, dish_id)
     
     dish = Dish.find_by_id(dish_id)
-    user_review = Review.find_by_dish_id_and_user_id(dish.id,user_id)
+    user_review = Review.find_by_dish_id_and_user_id(dish.id,user_id) if user_id
     position_in_network = Dish.where("rating/votes >= ? AND network_id = ?", "#{dish.rating/dish.votes}", dish.network_id).order("rating/votes DESC, votes DESC").count
     position_in_type = Dish.where("rating/votes >= ? AND dish_type_id = ?", "#{dish.rating/dish.votes}", dish.dish_type_id).order("rating/votes DESC, votes DESC").count
     subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
@@ -37,7 +37,7 @@ class Dish < ActiveRecord::Base
         :user_name => review.user.name,
         :user_avatar => "http://graph.facebook.com/#{review.user.facebook_id}/picture?type=square",
         :text => review.text,
-        :rating => rating
+        :rating => review.rating
       })
     end
     
