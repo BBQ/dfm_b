@@ -19,7 +19,7 @@ class Review < ActiveRecord::Base
     super(:only => [:user_id, :text, :count_likes, :created_at], 
           :include => { 
             :dish => {:only => [:id, :name, :photo, :rating, :votes]},
-            :restaurant => {:only => [:name, :photo, :address, :rating, :votes]},
+            :restaurant => {:only => [:id, :name, :photo, :address, :rating, :votes]},
             :likes => {:include => {:user => { :only => [:name]}}},
             :comments => {:only => [:text, :created_at], :include => {:user => { :only => [:name, :facebook_id]}}}
           })
