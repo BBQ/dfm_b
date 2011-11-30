@@ -27,7 +27,7 @@ class ApiController < ApplicationController
   def get_dish
     if params[:dish_id]
       user_id = User.find_by_id(User.new.get_user_by_fb_token(params[:access_token])).id if params[:access_token]      
-      return render :json =>Dish.api_get_dish(user_id,params[:dish_id])
+      return render :json => Dish.api_get_dish(user_id,params[:dish_id])
     end
     return render :json => {
           :error => $error
@@ -38,8 +38,11 @@ class ApiController < ApplicationController
     
     limit = params[:limit] ? params[:limit] : 25
     offset = params[:offset] ? params[:offset] : 0
+    
+    price = params[:price].split('-')
+    
             
-    if params[:lat] && params[:lon]
+    if params[:lat] && params[:lon] && params[:radius].to_i.to_s == params[:radius].to_s
       if params[:sort] == 'rating'
         restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).order('rating/votes DESC, votes DESC')
       else
@@ -57,6 +60,7 @@ class ApiController < ApplicationController
     return render :json => {
           :restaurants => restaurants.as_json, 
           :count => count, 
+          :radius => params[:radius].to_i.to_s, 
           :error => $error
     }
   end

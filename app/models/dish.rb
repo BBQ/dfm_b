@@ -69,7 +69,8 @@ class Dish < ActiveRecord::Base
         :user_avatar => "http://graph.facebook.com/#{top_expert.facebook_id}/picture?type=square",
         :user_id => top_expert.id
       },
-      :restaurants => restaurants
+      :restaurants => restaurants,
+      :error => {:description => nil, :code => nil}
       
     }
     data.as_json
