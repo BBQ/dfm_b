@@ -10,9 +10,8 @@
 				- 7.times do
 					= image_tag 'star_empty.png', :class => 'star'
 			.text
-				=@dish.text
-		= link_to  image_tag('twit.png', :id => 'tw'), dish_path('1')
+				/= @dish.text
+		/= link_to  image_tag('twit.png', :id => 'tw'), dish_path('1')
 		= link_to  image_tag('fblike.png', :id => 'fbl'), dish_path('1')
 		.clear
 	.comments
-		=render 'dishfeed/comment' , :review => @dish, :show_all => 1

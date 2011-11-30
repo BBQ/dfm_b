@@ -11,7 +11,7 @@
 	- if dish.photo.blank? && dish.reviews.first
 		= link_to (image_tag dish.reviews.order('count_likes DESC').first.photo.thumb.url), dish_path(dish.id), :class => 'show'
 	- else
-		= link_to (image_tag dish.photo.thumb.url), dish_path(dish.id), :class => 'show'
+		= link_to (image_tag dish.photo.square.url), dish_path(dish.id), :class => 'show'
 	.rate
 		- rate = dish.votes.to_i != 0 ? (dish.rating/dish.votes).to_i : 0
 		%select.stars

@@ -361,9 +361,9 @@ function infinit_scroll(search) {
 	      loading=true;
 	      page++;
 				if (search)
-					url = obj + '/?page=' + page + '&search[find]=' + search	
+					url = '/' + obj + '/?page=' + page + '&search[find]=' + search	
 				else
-					url = obj + '/?page=' + page
+					url = '/' + obj + '/?page=' + page
 					
 				$.getScript(url, function() {
 					if (obj == 'dishes'){

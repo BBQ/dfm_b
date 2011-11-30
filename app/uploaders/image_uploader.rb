@@ -54,6 +54,12 @@ class ImageUploader < CarrierWave::Uploader::Base
       # process :watermark =>'watermark.png'
   end
   
+  version :square do    
+      process :resize_and_pad => [188, 188, '#F2EFE9', 'Center']
+      # process :watermark =>'watermark.png'
+  end
+  
+  
   # def watermark(file)
   #   manipulate! do |img| 
   #     img = img.composite(MiniMagick::Image.open("/users/mac/rails_projects/santinihouse/public/uploads/"+file, "jpg")) do |c|

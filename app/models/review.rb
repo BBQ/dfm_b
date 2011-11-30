@@ -16,7 +16,7 @@ class Review < ActiveRecord::Base
     self.restaurant.votes = self.network.votes
     self.restaurant.photo = self.restaurant.photo.iphone.url
         
-    super(:only => [:text, :count_likes, :created_at], 
+    super(:only => [:user_id, :text, :count_likes, :created_at], 
           :include => { 
             :dish => {:only => [:name, :photo, :rating, :votes]},
             :restaurant => {:only => [:name, :photo, :address, :rating, :votes]},

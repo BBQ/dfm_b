@@ -24,6 +24,16 @@ class ApiController < ApplicationController
     }
   end
   
+  def get_dish
+    if params[:dish_id] && params[:access_token]
+      user_id = User.find_by_id(User.new.get_user_by_fb_token(params[:access_token])).id      
+      return render :json =>Dish.new.api_get_dish(user_id,params[:dish_id])
+    end
+    return render :json => {
+          :error => $error
+    }
+  end
+  
   def get_restaurants
     
     limit = params[:limit] ? params[:limit] : 25
