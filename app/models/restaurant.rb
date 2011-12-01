@@ -100,7 +100,7 @@ class Restaurant < ActiveRecord::Base
       
       data = {
         :network_ratings => "%.1f" % (restaurant.rating/restaurant.votes.to_f),
-        :network_reviews_count => restaurant.reviews.count,
+        :network_reviews_count => restaurant.network.reviews.count,
         :reviews => reviews,
         :best_dishes => best_dishes,
         :top_expert => {
