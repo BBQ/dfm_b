@@ -56,12 +56,12 @@ class ReviewsController < ApplicationController
         data[:dra] = dish.rating
         data[:dva] = dish.votes
         
-        likes = Like.find_all_by_dish_id(dish_id)
+        likes = Like.find_all_by_review_id(params[:id])
         likes.each do |like|
           like.destroy
         end
         
-        comments = Comment.find_all_by_dish_id(dish_id)
+        comments = Comment.find_all_by_review_id(params[:id])
         comments.each do |comment|
           comment.destroy
         end
