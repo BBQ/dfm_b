@@ -9,13 +9,11 @@ class Dish < ActiveRecord::Base
   mount_uploader :photo, ImageUploader
   
   def find_image
-    
     if photo.blank?
       review = Review.where("dish_id = ?", id).order('count_likes DESC').first.photo
     else
       photo
     end
-    
   end
   
   def self.api_get_dish(user_id, dish_id)
@@ -32,8 +30,8 @@ class Dish < ActiveRecord::Base
     reviews = []
     dish.reviews.each do |review|
       reviews.push({
-        :image_sd => review.photo.iphone.url != '/images/noimage.jpg' ? review.photo.iphone.url : nil ,
-        :image_hd => review.photo.iphone_retina.url != '/images/noimage.jpg' ? review.photo.iphone_retina.url : nil,
+        :image_sd => review.photo.iphone.url != '/images/noimage.jpg' ? review.photo.iphone.url : '' ,
+        :image_hd => review.photo.iphone_retina.url != '/images/noimage.jpg' ? review.photo.iphone_retina.url : '',
         :user_name => review.user.name,
         :user_avatar => "http://graph.facebook.com/#{review.user.facebook_id}/picture?type=square",
         :text => review.text,
@@ -45,25 +43,25 @@ class Dish < ActiveRecord::Base
     dish.network.restaurants.each do |restaurant|
       restaurants.push({
         :address => restaurant.address,
-        :phone => restaurant.phone,
+        :phone => restaurant.phone.to_s,
         :working_hours => restaurant.time,
         :lat => restaurant.lat,
         :lon => restaurant.lon,
-        :description => restaurant.description
+        :description => restaurant.description.to_s
       })
     end
     
     data = {
-      :current_user_rating => user_review ? user_review.rating : nil,
-      :photo => dish.find_image.square.url != '/images/noimage.jpg' ? dish.find_image.square.url : nil ,
+      :current_user_rating => user_review ? user_review.rating : '',
+      :photo => dish.find_image.square.url != '/images/noimage.jpg' ? dish.find_image.square.url : '' ,
       :rating => dish.rating,
       :votes => dish.votes,
       :position_in_network => position_in_network,
       :position_in_type => position_in_type,
       :type_name => dish.dish_type.name,
-      :subtype_name => dish.dish_subtype ? dish.dish_subtype.name : nil,
+      :subtype_name => dish.dish_subtype ? dish.dish_subtype.name : '',
       :restaurant_name => dish.network.name, 
-      :description => dish.description,
+      :description => dish.description.to_s,
       :reviews => reviews,
       :top_expert => {
         :user_name => top_expert.name,

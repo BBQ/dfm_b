@@ -28,10 +28,17 @@ class ApiController < ApplicationController
     if params[:dish_id]
       user_id = User.find_by_id(User.new.get_user_by_fb_token(params[:access_token])).id if params[:access_token]      
       return render :json => Dish.api_get_dish(user_id,params[:dish_id])
+    else
+      return render :json => {:error => $error}
     end
-    return render :json => {
-          :error => $error
-    }
+  end
+  
+  def get_restaurant
+    if params[:restaurant_id]
+      return render :json => Restaurant.api_get_restaurant(params[:restaurant_id])
+    else
+      return render :json => {:error => $error}
+    end
   end
   
   def get_restaurants

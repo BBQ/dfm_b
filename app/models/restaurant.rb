@@ -28,6 +28,14 @@ class Restaurant < ActiveRecord::Base
     super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon], :methods => :dish_images )
   end
   
+  def find_image
+    if photo.blank?
+      dish = Dish.where("network_id = ?", network_id).order('rating/votes DESC, votes DESC').first.find_image
+    else
+      photo
+    end
+  end
+  
   def dish_images
     num_images = 20
     photos = Array.new
@@ -48,6 +56,73 @@ class Restaurant < ActiveRecord::Base
       end
     end
     photos
+  end
+  
+  def self.api_get_restaurant(id)
+    if restaurant = Restaurant.find_by_id(id)
+            
+      reviews = []
+      restaurant.network.reviews.each do |review|
+        reviews.push({
+          :image_sd => review.photo.iphone.url != '/images/noimage.jpg' ? review.photo.iphone.url : '' ,
+          :image_hd => review.photo.iphone_retina.url != '/images/noimage.jpg' ? review.photo.iphone_retina.url : '',
+          :user_name => review.user.name,
+          :user_avatar => "http://graph.facebook.com/#{review.user.facebook_id}/picture?type=square",
+          :text => review.text,
+          :rating => review.rating
+        })
+      end
+      
+      restaurants = []
+      restaurant.network.restaurants.each do |restaurant|
+        restaurants.push({
+          :address => restaurant.address,
+          :phone => restaurant.phone.to_s,
+          :working_hours => restaurant.time,
+          :lat => restaurant.lat,
+          :lon => restaurant.lon,
+          :description => restaurant.description.to_s
+        })
+      end
+      
+      best_dishes = []
+      restaurant.network.dishes.order("rating/votes DESC, votes DESC").take(2).each do |dish|
+        best_dishes.push({
+          :name => dish.name,
+          :photo => dish.find_image.square.url != '/images/noimage.jpg' ? dish.find_image.square.url : '',
+          :rating => dish.rating,
+          :votes => dish.votes
+        })
+      end
+      
+      top_expert_id = (Review.where('network_id = ?', restaurant.network.id).group('user_id').count).max[0]
+      top_expert = User.find_by_id(top_expert_id)
+      
+      data = {
+        :network_ratings => "%.1f" % (restaurant.rating/restaurant.votes.to_f),
+        :network_reviews_count => restaurant.reviews.count,
+        :reviews => reviews,
+        :best_dishes => best_dishes,
+        :top_expert => {
+          :user_name => top_expert.name,
+          :user_avatar => "http://graph.facebook.com/#{top_expert.facebook_id}/picture?type=square",
+          :user_id => top_expert.id
+        },
+        :restaurant => {
+          :image_sd => restaurant.find_image.iphone.url != '/images/noimage.jpg' ? restaurant.find_image.iphone.url : '' ,
+          :image_hd => restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
+          :description => restaurant.description.to_s
+        },
+        :restaurants => restaurants,
+        :error => {:description => '', :code => ''}
+      
+      }
+    else
+       data = {
+         :error => {:description => nil, :code => nil}
+       } 
+    end
+    data.as_json
   end
   
   def self.near(lat, lon, rad = 1)
