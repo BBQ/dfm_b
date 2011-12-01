@@ -78,7 +78,7 @@ class ApiController < ApplicationController
 
     end
     
-    if params[:lat] && params[:lon] && params[:radius].to_i.to_s == params[:radius].to_s
+    if params[:lat] && params[:lon] && params[:radius].to_f.to_s == params[:radius].to_s
       if params[:sort] == 'rating'
         restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).order('rating/votes DESC, votes DESC')
       else
@@ -96,8 +96,7 @@ class ApiController < ApplicationController
     
     return render :json => {
           :restaurants => restaurants.as_json, 
-          :count => count, 
-          :radius => params[:radius].to_i.to_s, 
+          :count => count,
           :error => $error
     }
   end
