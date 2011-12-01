@@ -32,6 +32,7 @@ class Dish < ActiveRecord::Base
       reviews.push({
         :image_sd => review.photo.iphone.url != '/images/noimage.jpg' ? review.photo.iphone.url : '' ,
         :image_hd => review.photo.iphone_retina.url != '/images/noimage.jpg' ? review.photo.iphone_retina.url : '',
+        :user_id => review.user_id,
         :user_name => review.user.name,
         :user_avatar => "http://graph.facebook.com/#{review.user.facebook_id}/picture?type=square",
         :text => review.text,
@@ -57,7 +58,9 @@ class Dish < ActiveRecord::Base
       :rating => dish.rating,
       :votes => dish.votes,
       :position_in_network => position_in_network,
+      :dishes_in_network => dish.network.dishes.count,
       :position_in_type => position_in_type,
+      :dishes_in_type => dish.dish_type.dishes.count,
       :type_name => dish.dish_type.name,
       :subtype_name => dish.dish_subtype ? dish.dish_subtype.name : '',
       :restaurant_name => dish.network.name, 
