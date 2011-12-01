@@ -44,7 +44,6 @@ class Dish < ActiveRecord::Base
     restaurants = []
     dish.network.restaurants.each do |restaurant|
       restaurants.push({
-        :name => restaurant.name,
         :address => restaurant.address,
         :phone => restaurant.phone,
         :working_hours => restaurant.time,
@@ -63,6 +62,8 @@ class Dish < ActiveRecord::Base
       :position_in_type => position_in_type,
       :type_name => dish.dish_type.name,
       :subtype_name => dish.dish_subtype ? dish.dish_subtype.name : nil,
+      :restaurant_name => dish.network.name, 
+      :description => dish.description,
       :reviews => reviews,
       :top_expert => {
         :user_name => top_expert.name,
