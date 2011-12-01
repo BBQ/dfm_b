@@ -59,7 +59,6 @@ class ApiController < ApplicationController
     
     if params[:open_now]
 
-      today = Date.today
       wday = Date.today.strftime("%a").downcase
       now = Time.now.strftime("%H%M")
       open_now = "#{now} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
@@ -92,7 +91,7 @@ class ApiController < ApplicationController
           :restaurants => restaurants.as_json, 
           :count => count, 
           :radius => params[:radius].to_i.to_s, 
-          :error => all_filters
+          :error => $error
     }
   end
   
