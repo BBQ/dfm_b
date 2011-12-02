@@ -18,6 +18,22 @@ class Restaurant < ActiveRecord::Base
   after_validation :geocode, :if => :address_changed?
   
   def self.find_by_keyword(keyword)
+    keywords = {:salad => 'салат',
+      :soup => 'суп',
+      :pasta => 'паста',
+      :pizza => 'пицца',
+      :burger => 'бургер',
+      :noodles => 'лапша',
+      :risotto => 'ризотто',
+      :rice => 'рис',
+      :stake => 'стэйк',
+      :sushi => 'суши и роллы',
+      :desserts => 'десерты',
+      :drinks => 'напитки',
+      :meat => 'мясо',
+      :fish => 'рыба',
+      :vegetables => 'овощи'}
+    
     where("restaurants.network_id IN ( SELECT network_id FROM dishes WHERE 
               dish_category_id IN (
                 SELECT id FROM dish_categories WHERE name  = ?)
@@ -25,7 +41,7 @@ class Restaurant < ActiveRecord::Base
               dishes.dish_type_id IN (
                 SELECT id FROM dish_types WHERE name  = ?)
             )", 
-    keyword, keyword) unless keyword.blank?
+    keywords[:"#{keyword}"], keywords[:"#{keyword}"]) unless keyword.blank?
   end
   
   def geo_address
