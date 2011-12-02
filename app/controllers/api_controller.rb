@@ -41,6 +41,33 @@ class ApiController < ApplicationController
     end
   end
   
+  def get_dishes
+    limit = params[:limit] ? params[:limit] : 25
+    offset = params[:offset] ? params[:offset] : 0
+    
+    if params[:lat] && params[:lon] # && params[:radius].to_f.to_s == params[:radius].to_s
+      networks = []
+      Restaurant.near(params[:lat], params[:lon], params[:radius] ||= 2).each do |restaurant|
+       networks.push(restaurant.network.id) 
+      end
+      dishes = Dish.where("network_id IN (#{networks.join(',')})")  
+    else
+      dishes = Dish.order('rating/votes DESC, votes DESC')
+    end
+    
+    dishes = dishes.where("LOWER(name) REGEXP '[[:<:]]#{params[:search].downcase}'") unless params[:search].blank?
+    dishes = dishes.where("id IN (SELECT restaurant_id FROM dishes WHERE restaurant_id != 0 AND `name` LIKE '#{params[:keyword].downcase}%')") unless params[:keyword].blank?
+    
+    count = dishes.count
+    dishes = dishes.limit("#{offset}, #{limit}")
+    
+    return render :json => {
+          :dishes => dishes, 
+          :count => count,
+          :error => $error
+    }
+  end
+  
   def get_restaurants
     
     limit = params[:limit] ? params[:limit] : 25
@@ -80,7 +107,7 @@ class ApiController < ApplicationController
     
     if params[:lat] && params[:lon] && params[:radius].to_f.to_s == params[:radius].to_s
       if params[:sort] == 'rating'
-        restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).order('rating/votes DESC, votes DESC')
+        restaurants = Restaurant.order('rating/votes DESC, votes DESC').near(params[:lat], params[:lon], params[:radius])
       else
         restaurants = Restaurant.where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon])
       end    

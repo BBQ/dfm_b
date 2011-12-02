@@ -99,7 +99,7 @@ class Restaurant < ActiveRecord::Base
       top_expert = User.find_by_id(top_expert_id)
       
       data = {
-        :network_ratings => "%.1f" % (restaurant.rating/restaurant.votes.to_f),
+        :network_ratings => restaurant.network.rating,
         :network_reviews_count => restaurant.network.reviews.count,
         :reviews => reviews,
         :best_dishes => best_dishes,
