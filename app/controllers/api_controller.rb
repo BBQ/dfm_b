@@ -118,7 +118,7 @@ class ApiController < ApplicationController
     end
     
     restaurants = restaurants.where("LOWER(name) REGEXP '[[:<:]]#{params[:search].downcase}'") unless params[:search].blank?
-    restaurants = restaurants.where("restaurant.id IN (SELECT restaurant_id FROM dishes WHERE restaurant_id != 0 AND `name` LIKE '#{params[:keyword].downcase}%')") unless params[:keyword].blank?
+    restaurants = restaurants.where("restaurants.id IN (SELECT restaurant_id FROM dishes WHERE restaurant_id != 0 AND `name` LIKE '#{params[:keyword].downcase}%')") unless params[:keyword].blank?
     restaurants = restaurants.where(all_filters) unless all_filters.blank?
     count ||= restaurants.count
     restaurants = restaurants.limit("#{offset}, #{limit}")
