@@ -76,6 +76,7 @@ class Restaurant < ActiveRecord::Base
       restaurants = []
       restaurant.network.restaurants.each do |restaurant|
         restaurants.push({
+          :name => restaurant.name,
           :address => restaurant.address,
           :phone => restaurant.phone.to_s,
           :working_hours => restaurant.time,
