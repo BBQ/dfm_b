@@ -118,7 +118,7 @@ class ApiController < ApplicationController
     end
     
     restaurants = restaurants.where("LOWER(name) REGEXP '[[:<:]]#{params[:search].downcase}'") unless params[:search].blank?
-    restaurants = restaurants.find_by_keyword(params[:keyword]) if !params[:keyword].blank? || params[:keyword] != 'all'
+    restaurants = restaurants.find_by_keyword(params[:keyword]) if !params[:keyword].blank? || (params[:keyword] && params[:keyword] != 'all')
     restaurants = restaurants.where(all_filters) unless all_filters.blank?
     count = restaurants.count.kind_of?(Array) ? count : restaurants.count
     restaurants = restaurants.limit("#{offset}, #{limit}")
