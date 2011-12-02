@@ -107,7 +107,7 @@ class ApiController < ApplicationController
     
     if params[:lat] && params[:lon] && params[:radius].to_f.to_s == params[:radius].to_s
       if params[:sort] == 'rating'
-        restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).order('rating/votes DESC, votes DESC')
+        restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).order('ROUND(rating/votes,1) DESC, votes DESC')
       else
         restaurants = Restaurant.where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon])
       end    
