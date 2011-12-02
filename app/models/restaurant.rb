@@ -34,12 +34,10 @@ class Restaurant < ActiveRecord::Base
       :fish => 'рыба',
       :vegetables => 'овощи'}
     
-    where("restaurants.network_id IN ( SELECT network_id FROM dishes WHERE 
-              dish_category_id IN (
-                SELECT id FROM dish_categories WHERE name  = ?)
+    where("restaurants.network_id IN ( SELECT DISTINCT network_id FROM dishes WHERE 
+              dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name`  = ?)
               OR 
-              dishes.dish_type_id IN (
-                SELECT id FROM dish_types WHERE name  = ?)
+              dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name`  = ?)
             )", 
     keywords[:"#{keyword}"], keywords[:"#{keyword}"]) unless keyword.blank?
   end
