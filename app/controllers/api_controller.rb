@@ -106,20 +106,18 @@ class ApiController < ApplicationController
     if params[:lat] && params[:lon] # && params[:radius].to_f.to_s == params[:radius].to_s
       if params[:sort] == 'rating'
         restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).includes(:network).order("networks.rating/networks.votes DESC, networks.votes DESC").by_distance(params[:lat], params[:lon])
-        count = restaurants.count
-        restaurants = restaurants.group('restaurants.name')
       else
         restaurants = Restaurant.where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon])
-        count = restaurants.count
       end    
     else
       restaurants = Restaurant.order('rating/votes DESC, votes DESC')
-      count = restaurants.count
     end
     
     restaurants = restaurants.where("LOWER(name) REGEXP '[[:<:]]#{params[:search].downcase}'") unless params[:search].blank?
     restaurants = restaurants.find_by_keyword(params[:keyword]) if params[:keyword] && params[:keyword].length > 0 && params[:keyword] != 'all'
     restaurants = restaurants.where(all_filters) unless all_filters.blank?
+    count = restaurants.count
+    restaurants = restaurants.group('restaurants.name') if params[:sort] == 'rating'
     restaurants = restaurants.limit("#{offset}, #{limit}")
     
     return render :json => {
