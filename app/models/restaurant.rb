@@ -76,7 +76,6 @@ class Restaurant < ActiveRecord::Base
       restaurants = []
       restaurant.network.restaurants.each do |restaurant|
         restaurants.push({
-          :name => restaurant.name,
           :address => restaurant.address,
           :phone => restaurant.phone.to_s,
           :working_hours => restaurant.time,
@@ -102,6 +101,8 @@ class Restaurant < ActiveRecord::Base
       data = {
         :network_ratings => restaurant.network.rating,
         :network_reviews_count => restaurant.network.reviews.count,
+        :all_reviews_count => Review.all.count,
+        :restaurant_name => restaurant.name,
         :reviews => reviews,
         :best_dishes => best_dishes,
         :top_expert => {
