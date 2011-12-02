@@ -138,7 +138,7 @@ class Restaurant < ActiveRecord::Base
     order("((ACOS(
       SIN(#{lat} * PI() / 180) * SIN(lat * PI() / 180) +
       COS(#{lat} * PI() / 180) * COS(lat * PI() / 180) * 
-      COS((#{lon} - lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344, rating/votes DESC, votes DESC")
+      COS((#{lon} - lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344, restaurants.rating/restaurants.votes DESC, restaurants.votes DESC")
   end
   
 end

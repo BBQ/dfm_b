@@ -107,7 +107,7 @@ class ApiController < ApplicationController
     
     if params[:lat] && params[:lon] # && params[:radius].to_f.to_s == params[:radius].to_s
       if params[:sort] == 'rating'
-        restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).includes(:network).order("networks.rating/networks.votes DESC, networks.votes DESC")
+        restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).includes(:network).order("networks.rating/networks.votes DESC, networks.votes DESC").by_distance(params[:lat], params[:lon])
         count = restaurants.count
         restaurants = restaurants.group('restaurants.name')
       else
