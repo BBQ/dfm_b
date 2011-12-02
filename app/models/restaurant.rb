@@ -18,7 +18,14 @@ class Restaurant < ActiveRecord::Base
   after_validation :geocode, :if => :address_changed?
   
   def self.find_by_keyword(keyword)
-    where("restaurants.network_id IN (SELECT network_id FROM dishes WHERE category = ? OR type = ?)", keyword, keyword) unless keyword.blank?
+    where("restaurants.network_id IN ( SELECT network_id FROM dishes WHERE 
+              dish_category_id IN (
+                SELECT id FROM dish_categories WHERE name  = ?)
+              OR 
+              dishes.dish_type_id IN (
+                SELECT id FROM dish_types WHERE name  = ?)
+            )", 
+    keyword, keyword) unless keyword.blank?
   end
   
   def geo_address
