@@ -42,15 +42,16 @@ class ApiController < ApplicationController
   end
   
   def get_dishes
-    limit = params[:limit] ? params[:limit] : 25
-    offset = params[:offset] ? params[:offset] : 0
+    limit = params[:limit] ||= 25
+    offset = params[:offset] ||= 0
+    radius = params[:radius] == 'city' || params[:radius] == 'global' ? 9999 : params[:radius]
     
-    if params[:lat] && params[:lon] # && params[:radius].to_f.to_s == params[:radius].to_s
+    if params[:lat] && params[:lon]
       networks = []
-      Restaurant.near(params[:lat], params[:lon], params[:radius] ||= 2).each do |restaurant|
+      Restaurant.near(params[:lat], params[:lon], radius).each do |restaurant|
        networks.push(restaurant.network.id) 
       end
-      dishes = Dish.where("network_id IN (#{networks.join(',')})")  
+      dishes = Dish.where("network_id IN (#{networks.join(',')})").order('rating/votes DESC, votes DESC')
     else
       dishes = Dish.order('rating/votes DESC, votes DESC')
     end
@@ -62,7 +63,15 @@ class ApiController < ApplicationController
     dishes = dishes.limit("#{offset}, #{limit}")
     
     return render :json => {
-          :dishes => dishes, 
+          :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
+                                    :include => 
+                                      {:network => {
+                                        :only => [:id, :name],
+                                        :include => 
+                                          {:restaurants => {
+                                          :only => [:id, :name, :address, :lat, :lon]
+                                        }}}}
+                                    ), 
           :count => count,
           :error => $error
     }
