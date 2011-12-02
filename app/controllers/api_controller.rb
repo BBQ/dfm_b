@@ -108,7 +108,7 @@ class ApiController < ApplicationController
     if params[:lat] && params[:lon] # && params[:radius].to_f.to_s == params[:radius].to_s
       if params[:sort] == 'rating'
         restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).includes(:network).order("networks.rating/networks.votes DESC, networks.votes DESC").by_distance(params[:lat], params[:lon])
-        count = restaurants.count
+        count = restaurants.count || 0
         restaurants = restaurants.group('restaurants.name')
       else
         restaurants = Restaurant.where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon])
@@ -118,7 +118,7 @@ class ApiController < ApplicationController
     end
     
     restaurants = restaurants.where("LOWER(name) REGEXP '[[:<:]]#{params[:search].downcase}'") unless params[:search].blank?
-    restaurants = restaurants.where("restaurants.id IN (SELECT restaurant_id FROM dishes WHERE restaurant_id != 0 AND `name` LIKE '#{params[:keyword].downcase}%')") unless params[:keyword].blank?
+    restaurants = restaurants.find_by_keyword(params[:keyword]) unless params[:keyword].blank?
     restaurants = restaurants.where(all_filters) unless all_filters.blank?
     count ||= restaurants.count
     restaurants = restaurants.limit("#{offset}, #{limit}")

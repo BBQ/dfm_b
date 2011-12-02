@@ -17,6 +17,10 @@ class Restaurant < ActiveRecord::Base
   geocoded_by :geo_address, :latitude  => :lat, :longitude => :lon
   after_validation :geocode, :if => :address_changed?
   
+  def self.find_by_keyword(keyword)
+    where("restaurants.network_id IN (SELECT network_id FROM dishes WHERE category = ? OR type = ?)", keyword, keyword) unless keyword.blank?
+  end
+  
   def geo_address
     [city, address].compact.join(', ').gsub(/ТРЦ.*|ТЦ.*|ТК.*|ТДК.*|\(.*|Бизнес.*|к\/т.*|СКК.*|МО,|гостиница.*/, '')
   end
@@ -97,11 +101,13 @@ class Restaurant < ActiveRecord::Base
       
       top_expert_id = (Review.where('network_id = ?', restaurant.network.id).group('user_id').count).max[0]
       top_expert = User.find_by_id(top_expert_id)
+      better_networks = Network.where('votes >= ?', restaurant.network.votes).count.to_f
+      popularity = (100 * better_networks / Network.all.count.to_f).round(0)
       
       data = {
         :network_ratings => restaurant.network.rating,
         :network_reviews_count => restaurant.network.reviews.count,
-        :all_reviews_count => Review.all.count,
+        :popularity => popularity,
         :restaurant_name => restaurant.name,
         :reviews => reviews,
         :best_dishes => best_dishes,

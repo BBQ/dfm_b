@@ -16,6 +16,10 @@ class Dish < ActiveRecord::Base
     end
   end
   
+  def find_by_keyword(keyword)
+    dish = Dish.where('type = ? OR category = ?', keyword, keyword) if keyword
+  end
+  
   def self.api_get_dish(user_id, dish_id)
     
     dish = Dish.find_by_id(dish_id)
