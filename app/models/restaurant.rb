@@ -35,11 +35,10 @@ class Restaurant < ActiveRecord::Base
       :vegetables => 'овощи'}
     
     where("restaurants.network_id IN ( SELECT DISTINCT network_id FROM dishes WHERE 
-              dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name`  = ?)
+              dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name` LIKE ?)
               OR 
-              dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name`  = ?)
-            )", 
-    keywords[:"#{keyword}"], keywords[:"#{keyword}"]) unless keyword.blank?
+              dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name` LIKE ?)
+            )", keywords[:"#{keyword}"], keywords[:"#{keyword}"]) unless keywords[:"#{keyword}"].blank?
   end
   
   def geo_address
@@ -125,7 +124,7 @@ class Restaurant < ActiveRecord::Base
       
       top_expert_id = Review.where('network_id = ?', restaurant.network_id).group('user_id').count.max_by{|k,v| v}[0]
       top_expert = User.find_by_id(top_expert_id)
-      
+            
       better_networks = Network.where('votes >= ?', restaurant.network.votes).count.to_f
       popularity = (100 * better_networks / Network.where('votes > 0').count.to_f).round(0)
       
@@ -172,10 +171,10 @@ class Restaurant < ActiveRecord::Base
   end
   
   def self.by_distance(lat, lon)
-    order("((ACOS(
+    where('lat IS NOT NULL AND lon IS NOT NULL').order("((ACOS(
       SIN(#{lat} * PI() / 180) * SIN(lat * PI() / 180) +
       COS(#{lat} * PI() / 180) * COS(lat * PI() / 180) * 
-      COS((#{lon} - lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344, restaurants.rating/restaurants.votes DESC, restaurants.votes DESC")
+      COS((#{lon} - lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344")
   end
   
 end

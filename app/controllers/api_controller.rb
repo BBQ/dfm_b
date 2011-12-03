@@ -63,7 +63,7 @@ class ApiController < ApplicationController
     dishes = dishes.limit("#{offset}, #{limit}")
     
     return render :json => {
-          :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
+          :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes, :photo],
                                     :include => 
                                       {:network => {
                                         :only => [:id, :name],
@@ -82,54 +82,64 @@ class ApiController < ApplicationController
     limit = params[:limit] ||= 25
     offset = params[:offset] ||= 0
     
-    filters = []
-    if params[:bill] && params[:bill].length == 5
-      bill = []
-      bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
-      bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
-      bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
-      bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
-      bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
-      filters.push(bill.join(' OR ')) if bill.count > 0
-    end
+    # filters = []
+    # if params[:bill] && params[:bill].length == 5
+    #   bill = []
+    #   bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
+    #   bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
+    #   bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
+    #   bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
+    #   bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
+    #   filters.push(bill.join(' OR ')) if bill.count > 0
+    # end
+    # 
+    # etc = []
+    # etc.insert(0,'wifi = 1') if params[:wifi] == '1'
+    # etc.push(0,'terrace = 1') if params[:terrace] == '1'
+    # etc.push(0,'cc = 1') if params[:accept_bank_cards] == '1'
+    # filters.push(etc.join(' AND ')) if etc.count > 0
+    # all_filters = filters.join(' AND ')
     
-    etc = []
-    etc.insert(0,'wifi = 1') if params[:wifi] == '1'
-    etc.push(0,'terrace = 1') if params[:terrace] == '1'
-    etc.push(0,'cc = 1') if params[:accept_bank_cards] == '1'
-    filters.push(etc.join(' AND ')) if etc.count > 0
-    all_filters = filters.join(' AND ')
+    # if params[:open_now]
+    #   wday = Date.today.strftime("%a").downcase
+    #   now = Time.now.strftime("%H%M")
+    #   open_now = "#{now} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+    #   
+    #   if now.to_i < 1000
+    #     now24 = now.to_i + 2400
+    #     open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+    #   end    
+    #   all_filters = all_filters ? all_filters + ' AND ' + open_now : open_now
+    # end
     
-    if params[:open_now]
-      wday = Date.today.strftime("%a").downcase
-      now = Time.now.strftime("%H%M")
-      open_now = "#{now} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
-      
-      if now.to_i < 1000
-        now24 = now.to_i + 2400
-        open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
-      end    
-      all_filters = all_filters ? all_filters + ' AND ' + open_now : open_now
-    end
-    
-    if params[:lat] && params[:lon] # && params[:radius].to_f.to_s == params[:radius].to_s
-      if params[:sort] == 'rating'
-        restaurants = Restaurant.near(params[:lat], params[:lon], params[:radius]).includes(:network).order("networks.rating/networks.votes DESC, networks.votes DESC").by_distance(params[:lat], params[:lon])
+    lat = params[:lat] ||= '55.753548'
+    lon = params[:lon] ||= '37.609239'
+    radius = params[:radius].to_f != 0 ? params[:radius].to_f: nil
+            
+    if params[:sort] == 'distance'
+      if radius
+        restaurants = Restaurant.near(params[:lat], params[:lon], radius).by_distance(params[:lat], params[:lon])
       else
-        restaurants = Restaurant.where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon])
-      end    
+        restaurants = Restaurant.by_distance(params[:lat], params[:lon])
+      end     
+      restaurants = restaurants.includes(:network).order("networks.rating/networks.votes DESC, networks.votes DESC")
     else
-      restaurants = Restaurant.order('rating/votes DESC, votes DESC')
-    end
+      if radius
+        restaurants = Restaurant.near(params[:lat], params[:lon], radius).includes(:network)
+      else
+        restaurants = Restaurant.includes(:network)
+      end
+      restaurants = restaurants.order("networks.rating/networks.votes DESC, networks.votes DESC").by_distance(params[:lat], params[:lon]).group('restaurants.name')
+    end    
     
-    restaurants = restaurants.where("LOWER(name) REGEXP '[[:<:]]#{params[:search].downcase}'") unless params[:search].blank?
-    restaurants = restaurants.find_by_keyword(params[:keyword]) if params[:keyword] && params[:keyword].length > 0 && params[:keyword] != 'all'
-    restaurants = restaurants.where(all_filters) unless all_filters.blank?
-    count = restaurants.count
-    restaurants = restaurants.group('restaurants.name') if params[:sort] == 'rating'
+    restaurants = restaurants.where("LOWER(restaurants.name) REGEXP '[[:<:]]#{params[:search].downcase}'") unless params[:search].blank?
+    restaurants = restaurants.find_by_keyword(params[:keyword]) if !params[:search].blank? && params[:keyword] != 'all'
+    # restaurants = restaurants.where(all_filters) unless all_filters.blank?
+    count = params[:sort] != 'distance' ? restaurants.count.count : restaurants.count
     restaurants = restaurants.limit("#{offset}, #{limit}")
     
     return render :json => {
+          :sql => restaurants.to_sql,
           :restaurants => restaurants.as_json, 
           :count => count,
           :error => $error
