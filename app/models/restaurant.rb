@@ -123,7 +123,7 @@ class Restaurant < ActiveRecord::Base
           })
       end
       
-      top_expert_id = Review.where('restaurant_id = ?', id).group('user_id').count.max_by{|k,v| v}[0]
+      top_expert_id = Review.where('network_id = ?', restaurant.network_id).group('user_id').count.max_by{|k,v| v}[0]
       top_expert = User.find_by_id(top_expert_id)
       
       better_networks = Network.where('votes >= ?', restaurant.network.votes).count.to_f
