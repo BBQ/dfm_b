@@ -84,71 +84,81 @@ class Restaurant < ActiveRecord::Base
   end
   
   def self.api_get_restaurant(id)
-    if restaurant = Restaurant.find_by_id(id)
-            
+    if restaurant = Restaurant.find_by_id(id)         
+      
       reviews = []
+      
       restaurant.network.reviews.each do |review|
-        reviews.push({
-          :image_sd => review.photo.iphone.url != '/images/noimage.jpg' ? review.photo.iphone.url : '' ,
-          :image_hd => review.photo.iphone_retina.url != '/images/noimage.jpg' ? review.photo.iphone_retina.url : '',
-          :user_name => review.user.name,
-          :user_avatar => "http://graph.facebook.com/#{review.user.facebook_id}/picture?type=square",
-          :text => review.text,
-          :rating => review.rating
-        })
+          reviews.push({
+            :image_sd => review.photo.iphone.url != '/images/noimage.jpg' ? review.photo.iphone.url : '' ,
+            :image_hd => review.photo.iphone_retina.url != '/images/noimage.jpg' ? review.photo.iphone_retina.url : '',
+            :user_name => review.user.name,
+            :user_avatar => "http://graph.facebook.com/#{review.user.facebook_id}/picture?type=square",
+            :text => review.text,
+            :rating => review.rating
+          })
       end
       
       restaurants = []
+      
       restaurant.network.restaurants.each do |restaurant|
-        restaurants.push({
-          :address => restaurant.address,
-          :phone => restaurant.phone.to_s,
-          :working_hours => restaurant.time,
-          :lat => restaurant.lat,
-          :lon => restaurant.lon,
-          :description => restaurant.description.to_s
-        })
+          restaurants.push({
+            :address => restaurant.address,
+            :phone => restaurant.phone.to_s,
+            :working_hours => restaurant.time,
+            :lat => restaurant.lat,
+            :lon => restaurant.lon,
+            :description => restaurant.description.to_s
+          })
       end
       
       best_dishes = []
+      
       restaurant.network.dishes.order("rating/votes DESC, votes DESC").take(2).each do |dish|
-        best_dishes.push({
-          :name => dish.name,
-          :photo => dish.find_image.square.url != '/images/noimage.jpg' ? dish.find_image.square.url : '',
-          :rating => dish.rating,
-          :votes => dish.votes
-        })
+          best_dishes.push({
+            :name => dish.name,
+            :photo => dish.find_image.square.url != '/images/noimage.jpg' ? dish.find_image.square.url : '',
+            :rating => dish.rating,
+            :votes => dish.votes
+          })
       end
       
-      top_expert_id = (Review.where('network_id = ?', restaurant.network.id).group('user_id').count).max[0]
+      top_expert_id = Review.where('restaurant_id = ?', id).group('user_id').count.max_by{|k,v| v}[0]
       top_expert = User.find_by_id(top_expert_id)
+      
       better_networks = Network.where('votes >= ?', restaurant.network.votes).count.to_f
-      popularity = (100 * better_networks / Network.all.count.to_f).round(0)
+      popularity = (100 * better_networks / Network.where('votes > 0').count.to_f).round(0)
+      
+      popularity = case popularity
+        when 0..33 then "Above average"
+        when 34..66 then "Average"
+        when 67..100 then "Below average"
+        else ''
+      end
       
       data = {
-        :network_ratings => restaurant.network.rating,
-        :network_reviews_count => restaurant.network.reviews.count,
-        :popularity => popularity,
-        :restaurant_name => restaurant.name,
-        :reviews => reviews,
-        :best_dishes => best_dishes,
-        :top_expert => {
-          :user_name => top_expert.name,
-          :user_avatar => "http://graph.facebook.com/#{top_expert.facebook_id}/picture?type=square",
-          :user_id => top_expert.id
-        },
-        :restaurant => {
-          :image_sd => restaurant.find_image.iphone.url != '/images/noimage.jpg' ? restaurant.find_image.iphone.url : '' ,
-          :image_hd => restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
-          :description => restaurant.description.to_s
-        },
-        :restaurants => restaurants,
-        :error => {:description => '', :code => ''}
-      
+          :network_ratings => restaurant.network.rating,
+          :network_reviews_count => restaurant.network.reviews.count,
+          :popularity => popularity,
+          :restaurant_name => restaurant.name,
+          :reviews => reviews,
+          :best_dishes => best_dishes,
+          :top_expert => {
+              :user_name => top_expert.name,
+              :user_avatar => "http://graph.facebook.com/#{top_expert.facebook_id}/picture?type=square",
+              :user_id => top_expert.id
+          },
+          :restaurant => {
+              :image_sd => restaurant.find_image.iphone.url != '/images/noimage.jpg' ? restaurant.find_image.iphone.url : '' ,
+              :image_hd => restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
+              :description => restaurant.description.to_s
+          },
+          :restaurants => restaurants,
+          :error => {:description => '', :code => ''}
       }
     else
        data = {
-         :error => {:description => nil, :code => nil}
+           :error => {:description => nil, :code => nil}
        } 
     end
     data.as_json

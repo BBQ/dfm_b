@@ -64,6 +64,7 @@ class Dish < ActiveRecord::Base
       :type_name => dish.dish_type.name,
       :subtype_name => dish.dish_subtype ? dish.dish_subtype.name : '',
       :restaurant_name => dish.network.name, 
+      :network_id => dish.network.id, 
       :description => dish.description.to_s,
       :reviews => reviews,
       :top_expert => {
