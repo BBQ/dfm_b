@@ -137,8 +137,10 @@ class ApiController < ApplicationController
     restaurants = restaurants.find_by_keyword(params[:keyword]) if !params[:keyword].blank? && params[:keyword] != 'all'
    
     # restaurants = restaurants.where(all_filters) unless all_filters.blank?
-    count = params[:sort] != 'distance' ? restaurants.count.count : restaurants.count
-    restaurants = restaurants.limit("#{offset}, #{limit}") 
+    if restaurants
+      count = params[:sort] != 'distance' ? restaurants.count.count : restaurants.count
+      restaurants = restaurants.limit("#{offset}, #{limit}") 
+    end
 
     return render :json => {
           :restaurants => restaurants.as_json, 
