@@ -26,8 +26,8 @@ class Restaurant < ActiveRecord::Base
       :noodles => 'лапша',
       :risotto => 'ризотто',
       :rice => 'рис',
-      :stake => 'стэйк',
-      :sushi => 'суши и роллы',
+      :stake => 'стейк',
+      :sushi => 'суши',
       :desserts => 'десерты',
       :drinks => 'напитки',
       :meat => 'мясо',
@@ -38,6 +38,8 @@ class Restaurant < ActiveRecord::Base
               dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name` LIKE ?)
               OR 
               dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name` LIKE ?)
+              OR
+              LOWER(dishes.name) REGEXP '[[:<:]]#{keywords[:"#{keyword}"]}'
             )", keywords[:"#{keyword}"], keywords[:"#{keyword}"]) unless keywords[:"#{keyword}"].blank?
   end
   
@@ -171,7 +173,7 @@ class Restaurant < ActiveRecord::Base
   end
   
   def self.by_distance(lat, lon)
-    where('lat IS NOT NULL AND lon IS NOT NULL').order("((ACOS(
+    order("((ACOS(
       SIN(#{lat} * PI() / 180) * SIN(lat * PI() / 180) +
       COS(#{lat} * PI() / 180) * COS(lat * PI() / 180) * 
       COS((#{lon} - lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344")

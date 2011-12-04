@@ -1,4 +1,7 @@
 class Dish < ActiveRecord::Base
+  attr_accessible :image_sd, :image_hd
+  
+  
   belongs_to :restaurant
   belongs_to :dish_category
   belongs_to :dish_type
@@ -14,6 +17,37 @@ class Dish < ActiveRecord::Base
     else
       photo
     end
+  end
+  
+  def image_sd
+    find_image.iphone.url
+  end
+  
+  def image_hd
+    find_image.iphone_retina.url
+  end
+  
+  def self.find_by_keyword(keyword)
+    keywords = {:salad => 'салат',
+      :soup => 'суп',
+      :pasta => 'паста',
+      :pizza => 'пицца',
+      :burger => 'бургер',
+      :noodles => 'лапша',
+      :risotto => 'ризотто',
+      :rice => 'рис',
+      :stake => 'стэйк',
+      :sushi => 'суши и роллы',
+      :desserts => 'десерты',
+      :drinks => 'напитки',
+      :meat => 'мясо',
+      :fish => 'рыба',
+      :vegetables => 'овощи'}
+    
+    where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name` LIKE ?) 
+          OR 
+          dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name` LIKE ?)
+          ", keywords[:"#{keyword}"], keywords[:"#{keyword}"]) unless keywords[:"#{keyword}"].blank?
   end
   
   def self.api_get_dish(user_id, dish_id)
