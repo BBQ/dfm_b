@@ -80,7 +80,8 @@ class ApiController < ApplicationController
           :name => r.name,
           :lat => r.lat,
           :lon => r.lon,
-          :address => r.address
+          :address => r.address,
+          :dish_id => dish.id,
         })
       end
     end

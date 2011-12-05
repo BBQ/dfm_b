@@ -57,7 +57,7 @@ class Dish < ActiveRecord::Base
     where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name` LIKE ?) 
           OR 
           dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name` LIKE ?)
-          OR LOWER(name) REGEXP '[[:<:]]#{keyword.downcase}'", keyword, keyword)
+          OR LOWER(dishes.name) REGEXP '[[:<:]]#{keyword.downcase}'", keyword, keyword)
   end
   
   def self.api_get_dish(user_id, dish_id)
