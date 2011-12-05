@@ -55,7 +55,7 @@ class ApiController < ApplicationController
     lat = params[:lat] ||= '55.753548'
     lon = params[:lon] ||= '37.609239'
     radius = params[:radius].to_f != 0 ? params[:radius].to_f: nil
-    search = params[:search] ||= params[:keyword]
+    search = params[:search].blank? ? params[:keyword] : params[:search]
     
     if radius
       networks = []
@@ -66,7 +66,7 @@ class ApiController < ApplicationController
     end
     
     dishes ||= Dish    
-    dishes = dishes.search_for_keyword(search) if search
+    dishes = dishes.search_for_keyword(search) unless search.blank?
     dishes = dishes.order('dishes.rating/dishes.votes DESC, dishes.votes DESC')
   
     count = dishes.count
@@ -136,7 +136,7 @@ class ApiController < ApplicationController
     lat = params[:lat] ||= '55.753548'
     lon = params[:lon] ||= '37.609239'
     radius = params[:radius].to_f != 0 ? params[:radius].to_f: nil
-    search = params[:search] ||= params[:keyword]
+    search = params[:search].blank? ? params[:keyword] : params[:search]
             
     if params[:sort] == 'distance'
       if radius
@@ -154,7 +154,7 @@ class ApiController < ApplicationController
       restaurants = restaurants.order("networks.rating/networks.votes DESC, networks.votes DESC").by_distance(params[:lat], params[:lon]).group('restaurants.name')
     end    
        
-    restaurants = restaurants.search_for_keyword(search) if search
+    restaurants = restaurants.search_for_keyword(search) unless search.blank?
     # restaurants = restaurants.where(all_filters) unless all_filters.blank?
     
     if restaurants
