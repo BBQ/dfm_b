@@ -54,7 +54,7 @@ class ApiController < ApplicationController
       Restaurant.near(params[:lat], params[:lon], radius).each do |restaurant|
        networks.push(restaurant.network.id) 
       end
-      dishes = Dish.where("network_id IN (#{networks.join(',')})").order('rating/votes DESC, votes DESC')
+      dishes = Dish.where("dishes.network_id IN (#{networks.join(',')})").includes(:restaurant).near(params[:lat], params[:lon], radius).order('dishes.rating/dishes.votes DESC, dishes.votes DESC')
 
     else
       dishes = Dish.order('rating/votes DESC, votes DESC')

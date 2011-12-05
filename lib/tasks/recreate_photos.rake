@@ -1,10 +1,23 @@
 # encoding: utf-8
 task :photo_rc => :environment do
 
-  # For dishes
   Dish.all.each do |dish|
-    dish.photo.recreate_versions! if dish.photo?
-    puts dish.photo
+    if dish.photo?
+      
+      path = File.dirname(File.expand_path(File.basename(dish.photo.to_s))) + "/public/uploads/dish/photo/#{dish.id}/"
+      file_db = path + 'square_' + File.basename(dish.photo.to_s)
+    
+      unless File.exist?(file_db)      
+        dish.photo.square.cache!(dish.photo.file) 
+        dish.photo.square.store!
+      
+        file_generated = path + File.basename(dish.photo.square.to_s)
+        File.rename(file_generated, file_db)
+        puts File.basename(file_db)
+      end
+      
+    end
+    # dish.photo.recreate_versions! 
   end
 
 end

@@ -1,3 +1,4 @@
+# encoding: utf-8
 class Dish < ActiveRecord::Base
   attr_accessible :image_sd, :image_hd
   
@@ -8,6 +9,9 @@ class Dish < ActiveRecord::Base
   belongs_to :dish_subtype
   belongs_to :network
   has_many :reviews
+  
+  belongs_to :restaurant_cc, :class_name => 'Restaurant', 
+               :conditions => ['cc = ?', 1]
   
   mount_uploader :photo, ImageUploader
   
@@ -25,6 +29,13 @@ class Dish < ActiveRecord::Base
   
   def image_hd
     find_image.iphone_retina.url
+  end
+  
+  def self.near(lat, lon, rad = 1)
+    where("((ACOS(
+      SIN(restaurants.lat * PI() / 180) * SIN(? * PI() / 180) + 
+      COS(restaurants.lat * PI() / 180) * COS(? * PI() / 180) * 
+      COS((? - restaurants.lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344 <= ?", lat, lat, lon, rad)
   end
   
   def self.find_by_keyword(keyword)
