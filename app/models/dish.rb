@@ -35,7 +35,7 @@ class Dish < ActiveRecord::Base
       COS((? - restaurants.lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344 <= ?", lat, lat, lon, rad)
   end
   
-  def self.find_by_keyword(keyword)
+  def self.search_for_keyword(keyword)
     keywords = {:salad => 'салат',
       :soup => 'суп',
       :pasta => 'паста',
@@ -51,11 +51,13 @@ class Dish < ActiveRecord::Base
       :meat => 'мясо',
       :fish => 'рыба',
       :vegetables => 'овощи'}
+      
+    keyword = keywords[:"#{keyword}"].blank? ? keyword : keywords[:"#{keyword}"]
     
     where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name` LIKE ?) 
           OR 
           dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name` LIKE ?)
-          ", keywords[:"#{keyword}"], keywords[:"#{keyword}"]) unless keywords[:"#{keyword}"].blank?
+          OR LOWER(name) REGEXP '[[:<:]]#{keyword.downcase}'", keyword, keyword)
   end
   
   def self.api_get_dish(user_id, dish_id)

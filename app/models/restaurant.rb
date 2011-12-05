@@ -17,7 +17,7 @@ class Restaurant < ActiveRecord::Base
   geocoded_by :geo_address, :latitude  => :lat, :longitude => :lon
   after_validation :geocode, :if => :address_changed?
   
-  def self.find_by_keyword(keyword)
+  def self.search_for_keyword(keyword)
     keywords = {:salad => 'салат',
       :soup => 'суп',
       :pasta => 'паста',
@@ -33,14 +33,18 @@ class Restaurant < ActiveRecord::Base
       :meat => 'мясо',
       :fish => 'рыба',
       :vegetables => 'овощи'}
+      
+    keyword = keywords[:"#{keyword}"].blank? ? keyword : keywords[:"#{keyword}"]
     
     where("restaurants.network_id IN ( SELECT DISTINCT network_id FROM dishes WHERE 
               dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name` LIKE ?)
               OR 
               dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name` LIKE ?)
               OR
-              LOWER(dishes.name) REGEXP '[[:<:]]#{keywords[:"#{keyword}"]}'
-            )", keywords[:"#{keyword}"], keywords[:"#{keyword}"]) unless keywords[:"#{keyword}"].blank?
+              LOWER(dishes.name) REGEXP '[[:<:]]#{keyword.downcase}'
+              OR
+              LOWER(restaurants.name) REGEXP '[[:<:]]#{keyword.downcase}'
+            )", keyword, keyword)
   end
   
   def geo_address
