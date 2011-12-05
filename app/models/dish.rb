@@ -99,7 +99,7 @@ class Dish < ActiveRecord::Base
     
     data = {
       :current_user_rating => user_review ? user_review.rating : '',
-      :photo => dish.find_image.square.url != '/images/noimage.jpg' ? dish.find_image.square.url : '' ,
+      :photo => dish.find_image.iphone.url != '/images/noimage.jpg' ? dish.find_image.iphone.url : '' ,
       :rating => dish.rating,
       :votes => dish.votes,
       :position_in_network => position_in_network,
