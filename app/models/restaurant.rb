@@ -118,7 +118,7 @@ class Restaurant < ActiveRecord::Base
       restaurant.network.dishes.order("rating/votes DESC, votes DESC").take(2).each do |dish|
           best_dishes.push({
             :name => dish.name,
-            :photo => dish.find_image.square.url != '/images/noimage.jpg' ? dish.find_image.square.url : '',
+            :photo => dish.find_image.iphone.url != '/images/noimage.jpg' ? dish.find_image.iphone.url : '',
             :rating => dish.rating,
             :votes => dish.votes
           })
