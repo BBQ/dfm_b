@@ -34,8 +34,15 @@ class ApiController < ApplicationController
   end
   
   def get_restaurant
-    if params[:restaurant_id]
-      return render :json => Restaurant.api_get_restaurant(params[:restaurant_id])
+    if params[:restaurant_id] || params[:network_id]
+      if params[:restaurant_id]
+        id = params[:restaurant_id]
+        type = 'restaurant'
+      else
+        id = params[:network_id]
+        type = 'network'
+      end      
+      return render :json => Restaurant.api_get_restaurant(id, type)
     else
       return render :json => {:error => $error}
     end
@@ -52,29 +59,45 @@ class ApiController < ApplicationController
     if radius
       networks = []
       Restaurant.near(params[:lat], params[:lon], radius).each do |restaurant|
-       networks.push(restaurant.network.id) 
+       networks.push(restaurant.network.id) if networks.index(restaurant.network.id).blank?
       end
-      dishes = Dish.where("dishes.network_id IN (#{networks.join(',')})").includes(:restaurant).near(params[:lat], params[:lon], radius).order('dishes.rating/dishes.votes DESC, dishes.votes DESC')
-
+      dishes = Dish.where("dishes.network_id IN (#{networks.join(',')})").order('dishes.rating/dishes.votes DESC, dishes.votes DESC') if networks.count > 0
+      
     else
       dishes = Dish.order('rating/votes DESC, votes DESC')
     end
     
-    dishes = dishes.where("LOWER(name) REGEXP '[[:<:]]#{params[:search].downcase}'") unless params[:search].blank?
-    dishes = dishes.find_by_keyword(params[:keyword]) unless params[:keyword].blank?
+    if dishes
+      dishes = dishes.where("LOWER(name) REGEXP '[[:<:]]#{params[:search].downcase}'") unless params[:search].blank?
+      dishes = dishes.find_by_keyword(params[:keyword]) unless params[:keyword].blank?
     
-    count = dishes.count
-    dishes = dishes.limit("#{offset}, #{limit}")
+      count = dishes.count
+      dishes = dishes.limit("#{offset}, #{limit}")
+      
+      restaurants = []
+      dishes.each do |dish|
+        dish.network.restaurants.near(params[:lat], params[:lon], radius).take(3).each do |r|
+          restaurants.push({
+            :id => r.id,
+            :name => r.name,
+            :lat => r.lat,
+            :lon => r.lon,
+            :address => r.address
+          })
+        end
+      end
+      
+    end
         
     return render :json => {
-          :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
-                :methods => [:image_sd, :image_hd], 
-                :include => {
-                  :network => {:only => [:id, :name], :include => {:restaurants => { :only => [:id, :name, :address, :lat, :lon]}}}
-                  
-                }),
-          :count => count,
-          :error => $error
+            :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
+                  :methods => [:image_sd, :image_hd], 
+                  :include => {
+                    :network => {:only => [:id, :name]}
+                  }),
+            :restaurants => restaurants,
+            :count => count,
+            :error => $error
     }
   end
   

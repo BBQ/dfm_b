@@ -56,7 +56,7 @@ class Restaurant < ActiveRecord::Base
   
   def find_image
     if photo.blank?
-      dish = Dish.where("network_id = ?", network_id).order('rating/votes DESC, votes DESC').first.find_image
+      dish = Dish.where("network_id = ?", network_id).order('rating/votes DESC, votes DESC').first.find_image if Dish.find_by_network_id(network_id)
     else
       photo
     end
@@ -84,11 +84,11 @@ class Restaurant < ActiveRecord::Base
     photos
   end
   
-  def self.api_get_restaurant(id)
-    if restaurant = Restaurant.find_by_id(id)         
+  def self.api_get_restaurant(id, type)
+    restaurant = type == 'restaurant' ? Restaurant.find_by_id(id) : Restaurant.find_by_network_id(id)   
+    if restaurant        
       
       reviews = []
-      
       restaurant.network.reviews.each do |review|
           reviews.push({
             :image_sd => review.photo.iphone.url != '/images/noimage.jpg' ? review.photo.iphone.url : '' ,
@@ -124,8 +124,14 @@ class Restaurant < ActiveRecord::Base
           })
       end
       
-      top_expert_id = Review.where('network_id = ?', restaurant.network_id).group('user_id').count.max_by{|k,v| v}[0]
-      top_expert = User.find_by_id(top_expert_id)
+      top_expert_id = Review.where('network_id = ?', restaurant.network_id).group('user_id').count.max_by{|k,v| v}[0] if restaurant.network.reviews.count > 0
+      if user = User.find_by_id(top_expert_id)
+        top_expert = {
+          :user_name => user.name,
+          :user_avatar => "http://graph.facebook.com/#{user.facebook_id}/picture?type=square",
+          :user_id => user.id
+        }
+      end
             
       better_networks = Network.where('votes >= ?', restaurant.network.votes).count.to_f
       popularity = (100 * better_networks / Network.where('votes > 0').count.to_f).round(0)
@@ -144,14 +150,10 @@ class Restaurant < ActiveRecord::Base
           :restaurant_name => restaurant.name,
           :reviews => reviews,
           :best_dishes => best_dishes,
-          :top_expert => {
-              :user_name => top_expert.name,
-              :user_avatar => "http://graph.facebook.com/#{top_expert.facebook_id}/picture?type=square",
-              :user_id => top_expert.id
-          },
+          :top_expert => top_expert,
           :restaurant => {
-              :image_sd => restaurant.find_image.iphone.url != '/images/noimage.jpg' ? restaurant.find_image.iphone.url : '' ,
-              :image_hd => restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
+              :image_sd => restaurant.find_image && restaurant.find_image.iphone.url != '/images/noimage.jpg' ? restaurant.find_image.iphone.url : '',
+              :image_hd => restaurant.find_image && restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
               :description => restaurant.description.to_s
           },
           :restaurants => restaurants,

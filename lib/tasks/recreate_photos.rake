@@ -1,10 +1,10 @@
 # encoding: utf-8
 task :photo_rc => :environment do
 
-  Dish.all.each do |dish|
+  Review.all.each do |dish|
     if dish.photo?
       
-      path = File.dirname(File.expand_path(File.basename(dish.photo.to_s))) + "/public/uploads/dish/photo/#{dish.id}/"
+      path = File.dirname(File.expand_path(File.basename(dish.photo.to_s))) + "/public/uploads/review/photo/#{dish.id}/"
       file_db = path + 'square_' + File.basename(dish.photo.to_s)
     
       unless File.exist?(file_db)      

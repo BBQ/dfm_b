@@ -10,25 +10,22 @@ class Dish < ActiveRecord::Base
   belongs_to :network
   has_many :reviews
   
-  belongs_to :restaurant_cc, :class_name => 'Restaurant', 
-               :conditions => ['cc = ?', 1]
-  
   mount_uploader :photo, ImageUploader
   
   def find_image
     if photo.blank?
-      review = Review.where("dish_id = ?", id).order('count_likes DESC').first.photo
+      review = Review.where("dish_id = ?", id).order('count_likes DESC').first.photo if Review.find_by_dish_id(id)
     else
       photo
     end
   end
   
   def image_sd
-    find_image.iphone.url
+    find_image.iphone.url if find_image
   end
   
   def image_hd
-    find_image.iphone_retina.url
+    find_image.iphone_retina.url if find_image
   end
   
   def self.near(lat, lon, rad = 1)
