@@ -224,10 +224,10 @@ class ApiController < ApplicationController
   
     limit = params[:limit] ? params[:limit] : 25
     offset = params[:offset] ? params[:offset] : 0
-    reviews = Review.limit("#{offset}, #{limit}").order('id').includes(:dish)
+    reviews = Review.limit("#{offset}, #{limit}").order('id').includes(:dish).where('photo IS NOT NULL')
     user_id = User.new.get_user_by_fb_token(params[:access_token]) if params[:access_token]
         
-    review_data = Array.new
+    review_data = []
     if params[:lat] && params[:lon]
       restaurants = Restaurant.near(params[:lat], params[:lon], 100).map(&:reviews)
       restaurants.each do |reviews|
