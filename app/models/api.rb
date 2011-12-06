@@ -45,7 +45,7 @@ class API < ActiveRecord::Base
       data = {
         :name => dish.name,
         :current_user_rating => user_review ? user_review.rating : '',
-        :photo => dish.find_image.iphone.url != '/images/noimage.jpg' ? dish.find_image.iphone.url : '' ,
+        :photo => dish.find_image && dish.find_image.iphone.url != '/images/noimage.jpg' ? dish.find_image.iphone.url : '',
         :rating => dish.rating,
         :votes => dish.votes,
         :position_in_network => position_in_network,

@@ -85,8 +85,7 @@ class ApiController < ApplicationController
         })
       end
     end
-      
-        
+         
     return render :json => {
             :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
                   :methods => [:image_sd, :image_hd], 
@@ -308,13 +307,13 @@ class ApiController < ApplicationController
     if params[:review] && params[:review][:restaurant_id] && params[:review][:rating] && params[:access_token]
       params[:review][:user_id] = User.new.get_user_by_fb_token(params[:access_token])
       
-      chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at > ?",params[:review][:user_id], params[:review][:dish_id], 1.day.ago)
-        # return render :json => {:error => {:description => 'Ревью для блюда можно оставлять 1 раз в 24 часа', :code => 666}}
-      return render :json => chk24
-      params[:review][:network_id] = Restaurant.find_by_id(params[:review][:restaurant_id])[:network_id]
+      chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1 ",params[:review][:user_id], params[:review][:dish_id])
+      return render :json => {:error => {:description => 'Ревью для блюда можно оставлять 1 раз в 24 часа', :code => 666}} unless chk24.blank?
       
       return render :json => {:error => {:description => 'Ресторан не найден', :code => 1}} unless Restaurant.find_by_id(params[:review][:restaurant_id])
       return render :json => {:error => {:description => 'Не верный рейтинг', :code => 2}} if params[:review][:rating].to_i > 10 || params[:review][:rating].to_i < 1
+      
+      params[:review][:network_id] = Restaurant.find_by_id(params[:review][:restaurant_id])[:network_id]
 
       if params[:uuid] && image = Image.find_by_uuid(params[:uuid])
         params[:review][:photo] = File.open(image.photo.file.file)  

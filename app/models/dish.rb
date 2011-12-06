@@ -21,11 +21,11 @@ class Dish < ActiveRecord::Base
   end
   
   def image_sd
-    find_image.iphone.url if find_image
+    find_image && find_image.iphone.url != '/images/noimage.jpg' ? find_image.iphone.url  : ''
   end
   
   def image_hd
-    find_image.iphone_retina.url if find_image
+    find_image && find_image.iphone_retina.url != '/images/noimage.jpg' ? find_image.iphone_retina.url  : ''
   end
   
   def self.near(lat, lon, rad = 1)
