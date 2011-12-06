@@ -12,9 +12,9 @@ class Review < ActiveRecord::Base
   mount_uploader :photo, ImageUploader 
   
   def as_json(options={})
-    self.restaurant.rating = self.network.rating
-    self.restaurant.votes = self.network.votes
-    self.restaurant.photo = self.restaurant.photo.iphone.url
+    self.restaurant.rating = self.network.rating if restaurant && network
+    self.restaurant.votes = self.network.votes if restaurant && network
+    self.restaurant.photo = self.restaurant.photo.iphone.url if restaurant && restaurant.photo
         
     super(:only => [:user_id, :text, :count_likes, :created_at], 
           :include => { 

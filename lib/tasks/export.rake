@@ -2,14 +2,21 @@
 task :export => :environment do
   
   require 'csv'
+  file_name = "dish_reviews_new.csv"
   
   i = 0
-  CSV.open("dish_reviews.csv", "w") do |csv|
-    csv << ["ID Dish; Restaurant; Category (resto); Dishes; Description; Price; Our Category; Фото блюда; Группа; Тег;"]
-    Dish.where("dish_category_id = 120").each do |dish|
+  CSV.open(file_name, "w") do |csv|
+    csv << ["Review id; Restaurant id; Restaurant; Dish id; Dish"]
+    Review.all.each do |r|
       puts i += 1
-     csv << ["#{dish.id};#{dish.restaurant ? dish.restaurant.name.gsub(';', '') : ''};;#{dish.name.gsub(';', '')};;#{dish.price};#{dish.dish_category ? dish.dish_category.name : ''};;;;"]
-     # puts"0;#{dish.restaurant ? dish.restaurant.name : ''};;#{dish.name};#{dish.description};#{dish.price};#{dish.category ? dish.category.name : ''};;;;"
+      csv << ["#{r.id};#{r.restaurant.id};#{r.restaurant.name};#{r.dish.id};#{r.dish.name}"]
     end
   end
+  
+  text = File.read(file_name)
+  replace = text.gsub('"', '')
+  File.open(file_name, "w") {|file| file.puts replace}
+  
+  %x{iconv -t cp1251 #{file_name}  > #{'c_'+file_name}}
+  
 end
