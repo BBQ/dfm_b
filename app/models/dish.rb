@@ -68,7 +68,7 @@ class Dish < ActiveRecord::Base
       position_in_type = Dish.where("rating/votes >= ? AND dish_type_id = ?", "#{dish.rating/dish.votes}", dish.dish_type_id).order("rating/votes DESC, votes DESC").count if dish.votes != 0
       subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
     
-      top_expert_id = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0]
+      top_expert_id = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0] if Review.find_by_dish_id(dish.id)
       top_expert = User.find_by_id(top_expert_id)
     
       reviews = []
