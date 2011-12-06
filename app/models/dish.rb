@@ -69,7 +69,13 @@ class Dish < ActiveRecord::Base
       subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
     
       top_expert_id = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0] if Review.find_by_dish_id(dish.id)
-      top_expert = User.find_by_id(top_expert_id)
+      if user = User.find_by_id(top_expert_id)
+        top_expert = {
+          :user_name => user.name,
+          :user_avatar => "http://graph.facebook.com/#{user.facebook_id}/picture?type=square",
+          :user_id => user.id
+        }
+      end
     
       reviews = []
       dish.reviews.each do |review|
@@ -111,11 +117,7 @@ class Dish < ActiveRecord::Base
         :restaurant_id => dish.network.restaurants.first.id, 
         :description => dish.description.to_s,
         :reviews => reviews,
-        :top_expert => {
-          :user_name => top_expert.name,
-          :user_avatar => "http://graph.facebook.com/#{top_expert.facebook_id}/picture?type=square",
-          :user_id => top_expert.id
-        },
+        :top_expert => top_expert,
         :restaurants => restaurants,
         :error => {:description => nil, :code => nil}
       
