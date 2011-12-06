@@ -55,7 +55,7 @@ class Restaurant < ActiveRecord::Base
     self[:rating] = self.network.rating
     self[:votes] = self.network.votes
     
-    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon], :methods => :dish_images )
+    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon], :methods => :dishes )
   end
   
   def find_image
@@ -66,14 +66,17 @@ class Restaurant < ActiveRecord::Base
     end
   end
   
-  def dish_images
+  def dishes
     num_images = 20
-    photos = Array.new
+    photos = []
     dishes = Network.find_by_id(network_id).dishes.order('photo DESC')
     
     dishes.take(num_images).each do |dish|
       if dish.photo && dish.photo.iphone.url != '/images/noimage.jpg'
-        photos.push(dish.photo.iphone.url)
+        photos.push({
+          :id => dish.id,
+          :photo => dish.photo.iphone.url
+        })
       end
     end
     
@@ -81,7 +84,10 @@ class Restaurant < ActiveRecord::Base
       reviews = Review.where('network_id = ?', network.id).order('count_likes DESC')
       reviews.take(num_images - photos.count).each do |review|
         if review.photo && review.photo.iphone.url != '/images/noimage.jpg'
-          photos.push(review.photo.iphone.url)
+          photos.push({
+            :id => review.dish_id,
+            :photo => review.photo.iphone.url
+          })
         end
       end
     end
