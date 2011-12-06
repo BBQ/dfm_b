@@ -159,8 +159,8 @@ class Restaurant < ActiveRecord::Base
           :popularity => popularity,
           :restaurant_name => restaurant.name,
           :reviews => reviews,
-          :best_dishes => best_dishes,
-          :top_expert => top_expert,
+          :best_dishes => best_dishes ||= '',
+          :top_expert => top_expert ||= '',
           :restaurant => {
               :image_sd => restaurant.find_image && restaurant.find_image.iphone.url != '/images/noimage.jpg' ? restaurant.find_image.iphone.url : '',
               :image_hd => restaurant.find_image && restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
