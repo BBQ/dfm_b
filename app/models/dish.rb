@@ -1,13 +1,10 @@
 # encoding: utf-8
 class Dish < ActiveRecord::Base
-  attr_accessible :image_sd, :image_hd
-  
-  
+    
   belongs_to :restaurant
   belongs_to :dish_category
   belongs_to :dish_type
   belongs_to :dish_subtype
-  belongs_to :dish_extratype
   belongs_to :network
   has_many :reviews
   
