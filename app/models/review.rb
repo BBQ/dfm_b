@@ -29,7 +29,9 @@ class Review < ActiveRecord::Base
     data = {
       :review_id => id,
       :created_at => created_at.to_time.to_i,
+      :dish_id => dish.id,
       :dish_name => dish.name,
+      :restaurant_id => restaurant.id,    
       :restaurant_name => restaurant.name,
       :user_name => user.name,
       :user_facebook_id => user.facebook_id,
@@ -52,7 +54,7 @@ class Review < ActiveRecord::Base
     end
   end  
   
-  def self.save_review(user_review)
+  def save_review(user_review)
    
     rating = user_review[:rating].to_i
     dish = Dish.find(user_review[:dish_id])

@@ -332,7 +332,7 @@ class ApiController < ApplicationController
       return render :json => {:error => {:description => 'Блюдо не найдено', :code => 7}} unless Dish.find_by_id(params[:review][:dish_id])
       
       if params[:review][:user_id]
-        Review.save_review(params[:review])
+        Review.new.save_review(params[:review])
       else
         return render :json => {:error => {:description => 'Пользователь не найден', :code => 69}}
       end
