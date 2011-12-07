@@ -6,29 +6,19 @@ task :snc_up => :environment do
       # Удаляем все Блюда, Рестораны, Сети без ревью
       n.dishes.each {|d| d.destroy}
       n.restaurants.each {|r| r.destroy}
-      n.destroy
       puts n.name
-    
+      n.destroy
+          
     else # Сети с ревью
       
       # Удаляем блюда без ревью 
-      n.dishes.each do |d|
-        if d.reviews.count < 1 
-          puts d.name
-          d.destroy
-        end
-      end
-      
+      n.dishes.each {|d| d.destroy if d.reviews.count < 1}
+
       # Удаляем рестораны без ревью 
       n.restaurants.each do |r|
         d = 1
-        n.reviews.each do |rw|
-          d = 0 if rw.restaurant_id == r.id
-        end
-        if d == 1
-          puts r.name
-          r.destroy 
-        end
+        n.reviews.each {|w| d = 0 if w.restaurant_id == r.id}
+        r.destroy if d == 1
       end
       
     end       

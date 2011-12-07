@@ -6,10 +6,10 @@ task :export => :environment do
   
   i = 0
   CSV.open(file_name, "w") do |csv|
-    csv << ["Review id; Restaurant id; Restaurant; Dish id; Dish"]
+    csv << ["Review id; Restaurant id; Restaurant; Restaurant address; Dish id; Dish"]
     Review.all.each do |r|
       puts i += 1
-      csv << ["#{r.id};#{r.restaurant.id};#{r.restaurant.name};#{r.dish.id};#{r.dish.name}"]
+      csv << ["#{r.id};#{r.restaurant.id};#{r.restaurant.name};#{r.restaurant.address};#{r.dish.id};#{r.dish.name}"]
     end
   end
   

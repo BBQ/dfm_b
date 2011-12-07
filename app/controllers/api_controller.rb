@@ -153,8 +153,8 @@ class ApiController < ApplicationController
       end
       restaurants = restaurants.order("networks.rating/networks.votes DESC, networks.votes DESC").by_distance(params[:lat], params[:lon]).group('restaurants.name')
     end    
-       
-    restaurants = restaurants.search_for_keyword(search) unless search.blank?
+    
+    restaurants = params[:search_name_only].to_i == 1 ? restaurants.where("restaurants.`name` LIKE '%#{search}%'") : restaurants.search_for_keyword(search) unless search.blank?
     # restaurants = restaurants.where(all_filters) unless all_filters.blank?
     
     if restaurants
