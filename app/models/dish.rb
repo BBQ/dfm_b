@@ -7,6 +7,7 @@ class Dish < ActiveRecord::Base
   belongs_to :dish_category
   belongs_to :dish_type
   belongs_to :dish_subtype
+  belongs_to :dish_extratype
   belongs_to :network
   has_many :reviews
   

@@ -14,7 +14,7 @@ class UserMailer < ActionMailer::Base
     if type == 'comment'    
       @review = data
       subject = @user.name + ' commented on your review on Dish.fm'
-      @comment = Comment.find_by_user_id_and_review_id(data.user.id, data.id)
+      @comment = Comment.find_by_user_id_and_review_id(data.user.id, data.id).last
     end
     
     if type == 'follow'
