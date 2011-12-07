@@ -253,9 +253,12 @@ class ApiController < ApplicationController
       user_id = User.new.get_user_by_fb_token(params[:access_token])   
       data = Like.new.save_me(user_id, params[:review_id])
       code = data[:error] ? 11 : nil
+    else
+      data[:error] = 'Parameters missing'
+      code = 666
     end
     return render :json => {
-      :error => {:description =>  data ? data[:error] : 'Parameters missing' , :code => code ||= '666'}
+      :error => {:description => data[:error], :code => code}
     }
   end
   

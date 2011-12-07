@@ -6,7 +6,7 @@
   <body>
     <p>Hi <%= @review.user.name.split.first %>,</p>
     <p>
-			<%= "#{@user.name} likes your review of #{link_to @review.dish.name, review_path(review.id)} (@ #{@review.network.name})." unless @review.blank? %>
+			<%= "#{@user.name} likes your review of #{link_to @review.dish.name, @review_path(review.id)} (@ #{@review.network.name})." unless @review.blank? %>
 			<%= "#{@user.name} commented on your review of #{link_to @review.dish.name, review_path(review.id)} (@ #{@review.network.name}): '#{@comment}'." unless @comment.blank? %>
 			<%= "#{@user.name} started following you on Dish.fm." unless @follow.blank? %>
     </p>
