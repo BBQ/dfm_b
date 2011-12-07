@@ -17,6 +17,7 @@ class Like < ActiveRecord::Base
         review.count_likes += 1 
         review.save
         like_id = review.likes.create({:user_id => user_id, :review_id => review_id}).id
+        # if chk24 = 
         UserMailer.notification_email(user_id, review, 'review').deliver
         Notification.create({:user_id =>review.user.id, :like_id => like_id})
       end

@@ -52,6 +52,7 @@ class API < ActiveRecord::Base
         :dishes_in_network => dish.network.dishes.count,
         :position_in_type => position_in_type,
         :dishes_in_type => dish.dish_type.dishes.count,
+        :subtype_name => dish.dish_type.id,
         :type_name => dish.dish_type.name,
         :subtype_name => dish.dish_subtype ? dish.dish_subtype.name : '',
         :restaurant_name => dish.network.name, 

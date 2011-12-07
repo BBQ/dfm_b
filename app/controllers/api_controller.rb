@@ -67,6 +67,7 @@ class ApiController < ApplicationController
     
     dishes ||= Dish    
     dishes = dishes.search_for_keyword(search) unless search.blank?
+    dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
     dishes = dishes.order('dishes.rating/dishes.votes DESC, dishes.votes DESC')
   
     count = dishes.count
