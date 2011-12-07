@@ -58,7 +58,7 @@ class API < ActiveRecord::Base
         :restaurant_id => dish.network.restaurants.first.id, 
         :description => dish.description.to_s,
         :reviews => reviews,
-        :top_expert => top_expert ||= '',
+        :top_expert => top_expert ||= nil,
         :restaurants => restaurants,
         :error => {:description => nil, :code => nil}
       

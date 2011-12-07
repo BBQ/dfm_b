@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111206195840) do
+ActiveRecord::Schema.define(:version => 20111207095914) do
 
   create_table "___restaurants", :force => true do |t|
     t.string   "name"
@@ -254,6 +254,19 @@ ActiveRecord::Schema.define(:version => 20111206195840) do
     t.integer  "votes",      :default => 0
     t.string   "photo"
   end
+
+  create_table "notifications", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "comment_id"
+    t.integer  "like_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "notifications", ["comment_id"], :name => "index_notifications_on_comment_id"
+  add_index "notifications", ["id"], :name => "index_notifications_on_id"
+  add_index "notifications", ["like_id"], :name => "index_notifications_on_like_id"
+  add_index "notifications", ["user_id"], :name => "index_notifications_on_user_id"
 
   create_table "rails_admin_histories", :force => true do |t|
     t.string   "message"

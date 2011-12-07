@@ -16,7 +16,9 @@ class Like < ActiveRecord::Base
       else
         review.count_likes += 1 
         review.save
-        review.likes.create({:user_id => user_id, :review_id => review_id})
+        like_id = review.likes.create({:user_id => user_id, :review_id => review_id}).id
+        UserMailer.notification_email(user_id, review, 'review').deliver
+        Notification.create({:user_id =>review.user.id, :like_id => like_id})
       end
     else
       error = 'review not found'
