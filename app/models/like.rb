@@ -17,9 +17,12 @@ class Like < ActiveRecord::Base
         review.count_likes += 1 
         review.save
         like_id = review.likes.create({:user_id => user_id, :review_id => review_id}).id
-        # if chk24 = 
-        UserMailer.notification_email(user_id, review, 'review').deliver
-        Notification.create({:user_id =>review.user.id, :like_id => like_id})
+        hours_3 = Notification.where('user_id =? AND like_id = ? AND created_at >= current_time()-3', review.user.id, like_id)          
+        if hours_3.blank?
+          if UserMailer.notification_email(user_id, review, 'review').deliver
+            Notification.create({:user_id =>review.user.id, :like_id => like_id})
+          end
+        end
       end
     else
       error = 'review not found'

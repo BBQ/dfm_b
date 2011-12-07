@@ -174,7 +174,7 @@ class ApiController < ApplicationController
     if params[:uuid] && params[:photo]     
       $error = {:description => 'Не удается загрузить изображание', :code => 9} unless Image.create({:photo => params[:photo], :uuid => params[:uuid]})           
     else
-      $error = {:description => 'Отсутствуют основные параметры', :code => 8}
+      $error = {:description => 'Parameters missing', :code => 8}
     end
     
     return render :json => {
@@ -300,7 +300,7 @@ class ApiController < ApplicationController
         :error => $error
       }
     else
-      $error = {:description => 'Отсутствуют основные параметры', :code => 8}  
+      $error = {:description => 'Parameters missing', :code => 8}  
     end
     return render :json => {
       :error => $error
@@ -311,11 +311,11 @@ class ApiController < ApplicationController
     if params[:review] && params[:review][:restaurant_id] && params[:review][:rating] && params[:access_token]
       params[:review][:user_id] = User.new.get_user_by_fb_token(params[:access_token])
       
-      chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1 ",params[:review][:user_id], params[:review][:dish_id])
-      return render :json => {:error => {:description => 'Ревью для блюда можно оставлять 1 раз в 24 часа', :code => 666}} unless chk24.blank?
+      chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
+      return render :json => {:error => {:description => 'You can post review one once at 24 hours', :code => 666}} unless chk24.blank?
       
-      return render :json => {:error => {:description => 'Ресторан не найден', :code => 1}} unless Restaurant.find_by_id(params[:review][:restaurant_id])
-      return render :json => {:error => {:description => 'Не верный рейтинг', :code => 2}} if params[:review][:rating].to_i > 10 || params[:review][:rating].to_i < 1
+      return render :json => {:error => {:description => 'Restaurant not found', :code => 1}} unless Restaurant.find_by_id(params[:review][:restaurant_id])
+      return render :json => {:error => {:description => 'Rating not in range', :code => 2}} if params[:review][:rating].to_i > 10 || params[:review][:rating].to_i < 1
       
       params[:review][:network_id] = Restaurant.find_by_id(params[:review][:restaurant_id])[:network_id]
 
@@ -331,17 +331,17 @@ class ApiController < ApplicationController
         params[:dish][:dish_category_id] = 120 # прочее
         # return render :json => {:error => {:description => 'Тип блюда не найден', :code => 4}} unless Type.find_by_id(params[:dish][:type_id])
         # return render :json => {:error => {:description => 'Подтип блюда не найден', :code => 5}} unless Subtype.find_by_id(params[:dish][:subtype_id])
-        return render :json => {:error => {:description => 'Ошибка при создании блюда', :code => 6}} unless params[:review][:dish_id] = Dish.create(params[:dish]).id
+        return render :json => {:error => {:description => 'Dish create error', :code => 6}} unless params[:review][:dish_id] = Dish.create(params[:dish]).id
       end
-      return render :json => {:error => {:description => 'Блюдо не найдено', :code => 7}} unless Dish.find_by_id(params[:review][:dish_id])
+      return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless Dish.find_by_id(params[:review][:dish_id])
       
       if params[:review][:user_id]
         Review.new.save_review(params[:review])
       else
-        return render :json => {:error => {:description => 'Пользователь не найден', :code => 69}}
+        return render :json => {:error => {:description => 'User not found', :code => 69}}
       end
     else
-      $error = {:description => 'Отсутствуют основные параметры', :code => 8}
+      $error = {:description => 'Parameters missing', :code => 8}
   end
   return render :json => {
     :error => $error
