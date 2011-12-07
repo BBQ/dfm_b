@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  </head>
+  <body>
+    <p>Hi <%= @review.user.name.split.first %>,</p>
+    <p>
+			<%= "#{@user.name} likes your review of #{link_to @review.dish.name, review_path(review.id)} (@ #{@review.network.name})." unless @review.blank? %>
+			<%= "#{@user.name} commented on your review of #{link_to @review.dish.name, review_path(review.id)} (@ #{@review.network.name}): '#{@comment}'." unless @comment.blank? %>
+			<%= "#{@user.name} started following you on Dish.fm." unless @follow.blank? %>
+    </p>
+    <p>See you around,</p>
+		<p>The Dish.fm Team</p>
+		<p>As always, if you have ideas or feedback get in touch hello@dish.fm!</p>
+		</p>
+  </body>
+</html>

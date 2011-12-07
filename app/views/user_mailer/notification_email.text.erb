@@ -1,0 +1,10 @@
+Hi <%= @review.user.name.split.first %>,
+
+<%= "#{@user.name} likes your review of #{@review.dish.name} @ #{@review.network.name}" unless @review.blank? %>
+<%= "#{@user.name} commented on your review of #{@review.dish.name} @ #{@review.network.name}" unless @comment.blank? %>
+<%= "#{@user.name} likes your review of #{@review.dish.name} @ #{@review.network.name}" unless @follow.blank? %>
+
+See you around,
+The Dish.fm Team
+As always, if you have ideas or feedback get in touch hello@dish.fm!
+ 
