@@ -4,7 +4,7 @@ class UserMailer < ActionMailer::Base
   def notification_email(who, data, type)
     
     @user = User.find_by_id(who)
-    @url  = "http://dish.fm"
+    @url  = "http://test.dish.fm"
     
     if type == 'review'
       @review = data
