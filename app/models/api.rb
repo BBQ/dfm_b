@@ -4,8 +4,8 @@ class API < ActiveRecord::Base
     
     if dish = Dish.find_by_id(dish_id)
       user_review = Review.find_by_dish_id_and_user_id(dish.id,user_id) if user_id
-      position_in_network = Dish.where("rating/votes >= ? AND network_id = ?", "#{dish.rating/dish.votes}", dish.network_id).order("rating/votes DESC, votes DESC").count if dish.votes != 0
-      position_in_type = Dish.where("rating/votes >= ? AND dish_type_id = ?", "#{dish.rating/dish.votes}", dish.dish_type_id).order("rating/votes DESC, votes DESC").count if dish.votes != 0
+      position_in_network = Dish.where("rating/votes >= ? AND network_id = ?", "#{dish.rating/dish.votes}", dish.network_id).order("rating DESC, votes DESC").count if dish.votes != 0
+      position_in_type = Dish.where("rating/votes >= ? AND dish_type_id = ?", "#{dish.rating/dish.votes}", dish.dish_type_id).order("rating DESC, votes DESC").count if dish.votes != 0
       subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
     
       top_expert_id = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0] if Review.find_by_dish_id(dish.id)

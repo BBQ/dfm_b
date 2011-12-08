@@ -6,10 +6,10 @@ class DishesController < ApplicationController
     @k = @page == 0 ? 0 : (@page - 1) * per_page
     
     if params[:search] && params[:search][:find]
-      @dishes = Dish.where("LOWER(name) REGEXP '[[:<:]]#{params[:search][:find].downcase}'").order('rating/votes DESC, votes DESC, photo DESC').page(@page).per(per_page)
+      @dishes = Dish.where("LOWER(name) REGEXP '[[:<:]]#{params[:search][:find].downcase}'").order('rating DESC, votes DESC, photo DESC').page(@page).per(per_page)
       @search = params[:search][:find]
     else
-      @dishes = Dish.order('rating/votes DESC, photo DESC').page(@page).per(per_page)
+      @dishes = Dish.order('rating DESC, photo DESC').page(@page).per(per_page)
     end
     
     unless @dishes.blank?

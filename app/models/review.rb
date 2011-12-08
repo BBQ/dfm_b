@@ -29,6 +29,7 @@ class Review < ActiveRecord::Base
     data = {
       :review_id => id,
       :created_at => created_at.to_time.to_i,
+      :text => text,
       :dish_id => dish.id,
       :dish_name => dish.name,
       :restaurant_id => restaurant.id,    
@@ -37,7 +38,8 @@ class Review < ActiveRecord::Base
       :user_facebook_id => user.facebook_id,
       :likes => count_likes,
       :comments => count_comments,
-      :rating => rating,
+      :review_rating => rating,
+      :dish_rating => dish.rating,
       :image_sd => photo.iphone.url != '/images/noimage.jpg' ? photo.iphone.url : '' ,
       :image_hd => photo.iphone_retina.url != '/images/noimage.jpg' ? photo.iphone_retina.url : '',
       :liked => user_id && Like.find_by_user_id_and_review_id(user_id, id) ? 1 : 0
@@ -63,16 +65,16 @@ class Review < ActiveRecord::Base
   
     if fb = review_exist?(user_review[:user_id], user_review[:dish_id])
       if rating > 0
-        dish.rating -= fb.rating
-        dish.rating += rating
+        dish.rating = (dish.rating * dish.votes - fb.rating) / (dish.votes - 1)
+        dish.rating = (dish.rating * (dish.votes - 1) + rating) / dish.votes
         dish.save
         if restaurant
-          restaurant.rating -= fb.rating
-          restaurant.rating += rating
+          restaurant.rating = (restaurant.rating * restaurant.votes - fb.rating) / (restaurant.votes - 1)
+          restaurant.rating = (restaurant.rating * (restaurant.votes - 1) + rating) / restaurant.votes
           restaurant.save
         end
-        network.rating -= fb.rating
-        network.rating += rating
+        network.rating = (network.rating * network.votes - fb.rating) / (network.votes - 1)
+        network.rating = (network.rating * (network.votes - 1) + rating) / network.votes
         network.save
       end
       review = Review.find(fb.id)
@@ -83,15 +85,15 @@ class Review < ActiveRecord::Base
     else
       Review.create(user_review)  
       if rating > 0
-          dish.rating += rating
+          dish.rating = (dish.rating * dish.votes + rating) / (dish.votes + 1)
           dish.votes += 1
           dish.save
           if restaurant
-            restaurant.rating += rating
+            restaurant.rating = (restaurant.rating * restaurant.votes + rating) / (restaurant.votes + 1)
             restaurant.votes += 1
             restaurant.save
           end
-          network.rating += rating
+          network.rating = (network.rating * network.votes + rating) / (network.votes + 1)
           network.votes += 1
           network.save
       end

@@ -60,7 +60,7 @@ class Restaurant < ActiveRecord::Base
   
   def find_image
     if photo.blank?
-      dish = Dish.where("network_id = ?", network_id).order('rating/votes DESC, votes DESC').first.find_image if Dish.find_by_network_id(network_id)
+      dish = Dish.where("network_id = ?", network_id).order('rating DESC, votes DESC').first.find_image if Dish.find_by_network_id(network_id)
     else
       photo
     end
@@ -125,7 +125,7 @@ class Restaurant < ActiveRecord::Base
       
       best_dishes = []
       
-      restaurant.network.dishes.order("rating/votes DESC, votes DESC").take(2).each do |dish|
+      restaurant.network.dishes.order("rating DESC, votes DESC").take(2).each do |dish|
           best_dishes.push({
             :id => dish.id,
             :name => dish.name,

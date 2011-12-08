@@ -318,6 +318,8 @@ ActiveRecord::Schema.define(:version => 20111208140326) do
     t.string   "address"
     t.integer  "network_id",                       :null => false
     t.string   "city"
+    t.integer  "votes",         :default => 0
+    t.float    "rating",        :default => 0.0
     t.string   "time"
     t.string   "phone"
     t.string   "web"
@@ -325,8 +327,6 @@ ActiveRecord::Schema.define(:version => 20111208140326) do
     t.string   "breakfast"
     t.string   "businesslunch"
     t.string   "photo"
-    t.integer  "votes",         :default => 0
-    t.float    "rating",        :default => 0.0
     t.string   "wifi",          :default => "0"
     t.boolean  "chillum",       :default => false
     t.boolean  "terrace",       :default => false

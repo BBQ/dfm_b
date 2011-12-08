@@ -8,7 +8,7 @@
 		.infoblock	
 			- if !dishes.blank?
 				.dishes
-					- dishes.order('rating/votes DESC, votes DESC, photo DESC').take(5).each do |dish|						
+					- dishes.order('rating DESC, votes DESC, photo DESC').take(5).each do |dish|						
 						- if dish.photo.blank? && dish.reviews.first
 							= link_to (image_tag dish.reviews.order('count_likes DESC').first.photo.thumb.url), dish_path(dish.id), :class => 'show'
 						- else

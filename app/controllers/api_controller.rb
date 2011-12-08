@@ -60,7 +60,7 @@ class ApiController < ApplicationController
     dishes ||= Dish    
     dishes = dishes.search_for_keyword(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
-    dishes = dishes.order('dishes.rating/dishes.votes DESC, dishes.votes DESC')
+    dishes = dishes.order('dishes.rating DESC, dishes.votes DESC')
   
     count = dishes.count
     dishes = dishes.limit("#{offset}, #{limit}")
@@ -137,14 +137,14 @@ class ApiController < ApplicationController
       else
         restaurants = Restaurant.by_distance(params[:lat], params[:lon])
       end     
-      restaurants = restaurants.includes(:network).where('lat IS NOT NULL AND lon IS NOT NULL').order("networks.rating/networks.votes DESC, networks.votes DESC")
+      restaurants = restaurants.includes(:network).where('lat IS NOT NULL AND lon IS NOT NULL').order("networks.rating DESC, networks.votes DESC")
     else
       if radius
         restaurants = Restaurant.near(params[:lat], params[:lon], radius).includes(:network)
       else
         restaurants = Restaurant.includes(:network)
       end
-      restaurants = restaurants.order("networks.rating/networks.votes DESC, networks.votes DESC").by_distance(params[:lat], params[:lon]).group('restaurants.name')
+      restaurants = restaurants.order("networks.rating DESC, networks.votes DESC").by_distance(params[:lat], params[:lon]).group('restaurants.name')
     end    
     
     restaurants = params[:search_name_only].to_i == 1 ? restaurants.where("restaurants.`name` LIKE '%#{search}%'") : restaurants.search_for_keyword(search) unless search.blank?
@@ -304,10 +304,10 @@ class ApiController < ApplicationController
       params[:review][:user_id] = User.get_user_by_fb_token(params[:access_token])
       
       chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
-      return render :json => {:error => {:description => 'You can post review one once at 24 hours', :code => 666}} unless chk24.blank?
+      # return render :json => {:error => {:description => 'You can post review one once at 24 hours', :code => 666}} unless chk24.blank?
       
       return render :json => {:error => {:description => 'Restaurant not found', :code => 1}} unless Restaurant.find_by_id(params[:review][:restaurant_id])
-      return render :json => {:error => {:description => "Rating '#{params[:review][:rating]}' is not in range", :code => 2}} if params[:review][:rating].to_i > 10 || params[:review][:rating].to_i < 1
+      return render :json => {:error => {:description => "Rating '#{params[:review][:rating]}' is not in range", :code => 2}} if params[:review][:rating].to_i > 5 || params[:review][:rating].to_i < 1
       
       params[:review][:network_id] = Restaurant.find_by_id(params[:review][:restaurant_id])[:network_id]
 

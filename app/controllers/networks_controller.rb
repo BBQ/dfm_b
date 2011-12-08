@@ -6,10 +6,10 @@ class NetworksController < ApplicationController
     @j = @page == 0 ? 0 : (@page - 1) * per_page
     
     if params[:search] && params[:search][:find]
-      @networks = Network.where("LOWER(name) REGEXP '[[:<:]]#{params[:search][:find].downcase}'").order('rating/votes DESC, votes DESC').page(@page).per(per_page)
+      @networks = Network.where("LOWER(name) REGEXP '[[:<:]]#{params[:search][:find].downcase}'").order('rating DESC, votes DESC').page(@page).per(per_page)
       @search = params[:search][:find]
     else
-      @networks = Network.order('rating/votes DESC, votes DESC').page(@page).per(per_page)
+      @networks = Network.order('rating DESC, votes DESC').page(@page).per(per_page)
     end
     
     unless @networks.blank?
