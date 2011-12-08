@@ -3,15 +3,15 @@ class ChangeDataTypeForRating < ActiveRecord::Migration
   # UPDATE restaurants SET rating = rating / votes;
   # UPDATE dishes SET rating = rating / votes;
   # UPDATE networks SET rating = rating / votes;
-  
+  # 
   # UPDATE restaurants SET rating = 0 WHERE rating IS NULL;
   # UPDATE dishes SET rating = 0 WHERE rating IS NULL;
   # UPDATE networks SET rating = 0 WHERE rating IS NULL;
-
+  # 
   # alter table restaurants change rating rating float(21,20);
   # alter table dishes change rating rating float(21,20);
   # alter table networks change rating rating float(21,20);
-  
+  # 
   # UPDATE reviews SET rating = rating / 2;
   # UPDATE restaurants SET rating = rating / 2;
   # UPDATE dishes SET rating = rating / 2;

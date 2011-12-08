@@ -21,9 +21,9 @@
 					.data
 						.rate			
 							- if review.rating
-								- review.rating.times do
+								- review.rating.to_i.times do
 									= image_tag 'star_filled.png', :class => 'star'
-								- (10-review.rating).times do
+								- (10-review.rating.to_i).times do
 									= image_tag 'star_empty.png', :class => 'star'
 							- else
 								- 10.times do
