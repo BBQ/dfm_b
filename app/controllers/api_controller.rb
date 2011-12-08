@@ -67,15 +67,28 @@ class ApiController < ApplicationController
     
     restaurants = []
     dishes.each do |dish|
-      dish.network.restaurants.near(params[:lat], params[:lon], radius).take(3).each do |r|
-        restaurants.push({
-          :id => r.id,
-          :name => r.name,
-          :lat => r.lat,
-          :lon => r.lon,
-          :address => r.address,
-          :dish_id => dish.id,
-        })
+      if radius
+        dish.network.restaurants.near(params[:lat], params[:lon], radius).take(3).each do |r|
+          restaurants.push({
+            :id => r.id,
+            :name => r.name,
+            :lat => r.lat,
+            :lon => r.lon,
+            :address => r.address,
+            :dish_id => dish.id,
+          })
+        end
+      else
+        dish.network.restaurants.by_distance(params[:lat], params[:lon]).take(3).each do |r|
+          restaurants.push({
+            :id => r.id,
+            :name => r.name,
+            :lat => r.lat,
+            :lon => r.lon,
+            :address => r.address,
+            :dish_id => dish.id,
+          })
+        end
       end
     end
          
@@ -303,7 +316,7 @@ class ApiController < ApplicationController
     if params[:review] && params[:review][:restaurant_id] && params[:review][:rating] && params[:access_token]
       params[:review][:user_id] = User.get_user_by_fb_token(params[:access_token])
       
-      chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
+      # chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
       # return render :json => {:error => {:description => 'You can post review one once at 24 hours', :code => 666}} unless chk24.blank?
       
       return render :json => {:error => {:description => 'Restaurant not found', :code => 1}} unless Restaurant.find_by_id(params[:review][:restaurant_id])
