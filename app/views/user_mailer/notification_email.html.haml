@@ -1,0 +1,29 @@
+!!!
+%html
+	%head
+		%meta{"http-equiv"=>"Content-Type", :content=>"text/html; charset=utf-8"}
+	%body
+	-if @likes_review.count > 0 || @comments_review.count > 0
+		%p
+			="Hi #{@likes_review.count > 0 ? @likes_review.first.user.name.split.first : @comments_review.first.user.name.split.first}"
+		%ul
+		-@likes_review.each do |r|
+			-r.likes.each do |l|
+				%li{:style => "list-style: none"}
+					= raw "#{l.user.name} likes your review of #{link_to r.dish.name, @url + review_path(r.id)} (@ #{r.network.name})."
+		%br
+		-@comments_review.each do |r|
+			-r.comments.each do |c|
+				%li{:style => "list-style: none"}
+					= raw "#{c.user.name} commented on your review of #{link_to r.dish.name, @url + review_path(r.id)} (@ #{r.network.name}):"
+					%ul{:style => "margin-top: 0"}
+						%li{:style => "list-style: none;"}
+							=c.text
+		%br
+	
+%p{:style => "line-height: 1em"}
+	See you around,
+%p	
+	The Dish.fm Team
+%p{:style => "font-size: 0.8em"}
+	As always, if you have ideas or feedback get in touch hello@dish.fm!</p>

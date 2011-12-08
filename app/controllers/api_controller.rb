@@ -265,7 +265,7 @@ class ApiController < ApplicationController
   def comment_on_review
     if params[:comment] && params[:review_id] && params[:access_token]
       user_id = User.new.get_user_by_fb_token(params[:access_token])
-      comment = Comment.create({:user_id => user_id, :review_id => params[:review_id], :text => params[:comment]})                
+      comment = Comment.new.add({:user_id => user_id, :review_id => params[:review_id], :text => params[:comment]})                
     end
     return render :json => {
       :error => $error

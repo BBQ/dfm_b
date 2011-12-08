@@ -1,0 +1,16 @@
+-if @likes_review.count > 0 || @comments_review.count > 0
+	="Hi #{@likes_review.count > 0 ? @likes_review.first.user.name.split.first : @comments_review.first.user.name.split.first}"
+	
+	-@likes_review.each do |r|
+		-r.likes.each do |l|
+			= raw "#{l.user.name} likes your review of #{r.dish.name} (@ #{r.network.name})."
+
+	-@comments_review.each do |r|
+		-r.comments.each do |c|
+			= raw "#{c.user.name} commented on your review of #{r.dish.name} (@ #{r.network.name}):"
+			=c.text
+				
+See you around,
+The Dish.fm Team
+As always, if you have ideas or feedback get in touch hello@dish.fm!
+ 
