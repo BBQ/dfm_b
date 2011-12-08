@@ -10,8 +10,8 @@ class UserMailer < ActionMailer::Base
       last_like_id = Notification.find_last_by_user_id(review.user_id, :conditions => "like_id IS NOT NULL") ? Notification.find_last_by_user_id(review.user_id, :conditions => "like_id IS NOT NULL").like_id : 0
       last_comment_id = Notification.find_last_by_user_id(review.user_id, :conditions => "comment_id IS NOT NULL") ? Notification.find_last_by_user_id(review.user_id, :conditions => "comment_id IS NOT NULL").comment_id : 0
       
-      @likes_review = Review.where("reviews.user_id = ?", review.user_id).includes(:likes).where("likes.id > ?", last_like_id)
-      @comments_review = Review.where("reviews.user_id = ?", review.user_id).includes(:comments).where("comments.id > ?", last_comment_id)
+      @likes_review = Review.where("reviews.user_id = ?", review.user_id).includes(:likes).where("likes.id > ? AND likes.user_id != ?", last_like_id, review.user_id)
+      @comments_review = Review.where("reviews.user_id = ?", review.user_id).includes(:comments).where("comments.id > ? AND comments.user_id != ?", last_comment_id, review.user_id)
 
       count_l = 0
       count_c = 0

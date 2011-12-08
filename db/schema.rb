@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111207095914) do
+ActiveRecord::Schema.define(:version => 20111208140326) do
 
   create_table "___restaurants", :force => true do |t|
     t.string   "name"
@@ -201,13 +201,13 @@ ActiveRecord::Schema.define(:version => 20111207095914) do
     t.string   "photo"
     t.integer  "price",             :default => 0
     t.string   "currency"
-    t.integer  "rating",            :default => 0
+    t.float    "rating",            :default => 0.0
     t.integer  "votes",             :default => 0
     t.text     "description"
     t.integer  "restaurant_id",     :default => 0
     t.integer  "network_id",        :default => 0
-    t.integer  "dish_category_id",                 :null => false
-    t.integer  "dish_type_id",                     :null => false
+    t.integer  "dish_category_id",                   :null => false
+    t.integer  "dish_type_id",                       :null => false
     t.integer  "dish_subtype_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -250,7 +250,7 @@ ActiveRecord::Schema.define(:version => 20111207095914) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "rating",     :default => 0
+    t.float    "rating",     :default => 0.0
     t.integer  "votes",      :default => 0
     t.string   "photo"
   end
@@ -326,7 +326,7 @@ ActiveRecord::Schema.define(:version => 20111207095914) do
     t.string   "businesslunch"
     t.string   "photo"
     t.integer  "votes",         :default => 0
-    t.integer  "rating",        :default => 0
+    t.float    "rating",        :default => 0.0
     t.string   "wifi",          :default => "0"
     t.boolean  "chillum",       :default => false
     t.boolean  "terrace",       :default => false
@@ -369,7 +369,7 @@ ActiveRecord::Schema.define(:version => 20111207095914) do
 
   create_table "reviews", :force => true do |t|
     t.string   "photo"
-    t.integer  "rating",         :default => 0
+    t.float    "rating",         :default => 0.0
     t.text     "text"
     t.integer  "dish_id",                           :null => false
     t.integer  "user_id",                           :null => false

@@ -191,5 +191,5 @@ class Restaurant < ActiveRecord::Base
       COS(#{lat} * PI() / 180) * COS(lat * PI() / 180) * 
       COS((#{lon} - lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344")
   end
-  
+
 end

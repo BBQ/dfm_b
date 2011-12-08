@@ -6,14 +6,6 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
-  # def trie
-  #   words = ['pizza', 'pizza plaza', 'potato', 'pomidor', 'pool', 'pets']
-  #   trie = Trie.new
-  #   words.each do |word|
-  #     trie.add word
-  #   end
-  # end
-  
   def get_user_id
     if params[:id] && params[:provider]
       user = User.find_by_facebook_id(params[:id]).id if params[:provider] = 'facebook'
@@ -26,7 +18,7 @@ class ApiController < ApplicationController
   
   def get_dish
     if params[:dish_id]
-      user_id = User.find_by_id(User.new.get_user_by_fb_token(params[:access_token])).id if params[:access_token]      
+      user_id = User.find_by_id(User.get_user_by_fb_token(params[:access_token])).id if params[:access_token]      
       return render :json => API.get_dish(user_id,params[:dish_id])
     else
       return render :json => {:error => $error}
@@ -225,7 +217,7 @@ class ApiController < ApplicationController
     limit = params[:limit] ? params[:limit] : 25
     offset = params[:offset] ? params[:offset] : 0
     reviews = Review.limit("#{offset}, #{limit}").order('id').includes(:dish).where('photo IS NOT NULL')
-    user_id = User.new.get_user_by_fb_token(params[:access_token]) if params[:access_token]
+    user_id = User.get_user_by_fb_token(params[:access_token]) if params[:access_token]
         
     review_data = []
     if params[:lat] && params[:lon]
@@ -250,7 +242,7 @@ class ApiController < ApplicationController
   
   def like_review
     if params[:review_id] && params[:access_token]
-      user_id = User.new.get_user_by_fb_token(params[:access_token])   
+      user_id = User.get_user_by_fb_token(params[:access_token])   
       data = Like.new.save_me(user_id, params[:review_id])
       code = data[:error] ? 11 : nil
     else
@@ -264,7 +256,7 @@ class ApiController < ApplicationController
   
   def comment_on_review
     if params[:comment] && params[:review_id] && params[:access_token]
-      user_id = User.new.get_user_by_fb_token(params[:access_token])
+      user_id = User.get_user_by_fb_token(params[:access_token])
       comment = Comment.new.add({:user_id => user_id, :review_id => params[:review_id], :text => params[:comment]})                
     end
     return render :json => {
@@ -309,13 +301,13 @@ class ApiController < ApplicationController
   
   def add_review
     if params[:review] && params[:review][:restaurant_id] && params[:review][:rating] && params[:access_token]
-      params[:review][:user_id] = User.new.get_user_by_fb_token(params[:access_token])
+      params[:review][:user_id] = User.get_user_by_fb_token(params[:access_token])
       
       chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
       return render :json => {:error => {:description => 'You can post review one once at 24 hours', :code => 666}} unless chk24.blank?
       
       return render :json => {:error => {:description => 'Restaurant not found', :code => 1}} unless Restaurant.find_by_id(params[:review][:restaurant_id])
-      return render :json => {:error => {:description => 'Rating not in range', :code => 2}} if params[:review][:rating].to_i > 10 || params[:review][:rating].to_i < 1
+      return render :json => {:error => {:description => "Rating '#{params[:review][:rating]}' is not in range", :code => 2}} if params[:review][:rating].to_i > 10 || params[:review][:rating].to_i < 1
       
       params[:review][:network_id] = Restaurant.find_by_id(params[:review][:restaurant_id])[:network_id]
 

@@ -8,7 +8,7 @@ class Dish < ActiveRecord::Base
   belongs_to :dish_extratype
   belongs_to :network
   has_many :reviews
-  
+    
   mount_uploader :photo, ImageUploader
   
   def find_image
@@ -58,5 +58,4 @@ class Dish < ActiveRecord::Base
           dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name` LIKE ?)
           OR LOWER(dishes.name) REGEXP '[[:<:]]#{keyword.downcase}'", keyword, keyword)
   end
-  
 end

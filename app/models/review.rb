@@ -99,4 +99,5 @@ class Review < ActiveRecord::Base
     end
     {:status => 'updated', :dish => dish}
   end 
+
 end

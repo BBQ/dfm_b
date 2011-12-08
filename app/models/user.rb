@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
 
   end
   
-  def get_user_by_fb_token(access_token)
+  def self.get_user_by_fb_token(access_token)
     begin
       rest = Koala::Facebook::GraphAndRestAPI.new(access_token) # pre-1.2beta
       result = rest.get_object("me")
