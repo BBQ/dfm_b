@@ -79,7 +79,7 @@ class ApiController < ApplicationController
           })
         end
       else
-        dish.network.restaurants.by_distance(params[:lat], params[:lon]).take(3).each do |r|
+        dish.network.restaurants.where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon]).take(3).each do |r|
           restaurants.push({
             :id => r.id,
             :name => r.name,
