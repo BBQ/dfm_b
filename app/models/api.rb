@@ -81,8 +81,8 @@ class API < ActiveRecord::Base
       reviews = []
       restaurant.network.reviews.each do |review|
           reviews.push({
-            :image_sd => review.photo && review.photo.iphone.url != '/images/noimage.jpg' ? review.photo.iphone.url : '' ,
-            :image_hd => review.photo && review.photo.iphone_retina.url != '/images/noimage.jpg' ? review.photo.iphone_retina.url : '',
+            :image_sd => !review.photo.blank? && review.photo.iphone.url != '/images/noimage.jpg' ? review.photo.iphone.url : '' ,
+            :image_hd => !review.photo.blank? && review.photo.iphone_retina.url != '/images/noimage.jpg' ? review.photo.iphone_retina.url : '',
             :user_name => review.user.name,
             :user_avatar => "http://graph.facebook.com/#{review.user.facebook_id}/picture?type=square",
             :text => review.text,
