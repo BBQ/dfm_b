@@ -39,6 +39,7 @@ class Review < ActiveRecord::Base
       :likes => count_likes,
       :comments => count_comments,
       :review_rating => rating,
+      :review_votes => votes,
       :dish_rating => dish.rating,
       :image_sd => photo.iphone.url != '/images/noimage.jpg' ? photo.iphone.url : '' ,
       :image_hd => photo.iphone_retina.url != '/images/noimage.jpg' ? photo.iphone_retina.url : '',
