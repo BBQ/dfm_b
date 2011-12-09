@@ -66,15 +66,15 @@ class Review < ActiveRecord::Base
   
     if fb = review_exist?(user_review[:user_id], user_review[:dish_id])
       if rating > 0
-        dish.rating = (dish.rating * dish.votes - fb.rating) / (dish.votes - 1)
+        dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - fb.rating) / (dish.votes - 1)
         dish.rating = (dish.rating * (dish.votes - 1) + rating) / dish.votes
         dish.save
         if restaurant
-          restaurant.rating = (restaurant.rating * restaurant.votes - fb.rating) / (restaurant.votes - 1)
+          restaurant.rating = restaurant.votes == 1?0 : (restaurant.rating * restaurant.votes - fb.rating) / (restaurant.votes - 1)
           restaurant.rating = (restaurant.rating * (restaurant.votes - 1) + rating) / restaurant.votes
           restaurant.save
         end
-        network.rating = (network.rating * network.votes - fb.rating) / (network.votes - 1)
+        network.rating = network.votes == 1?0 : (network.rating * network.votes - fb.rating) / (network.votes - 1)
         network.rating = (network.rating * (network.votes - 1) + rating) / network.votes
         network.save
       end

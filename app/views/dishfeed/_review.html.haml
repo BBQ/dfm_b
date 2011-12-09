@@ -23,10 +23,10 @@
 							- if review.rating
 								- review.rating.to_i.times do
 									= image_tag 'star_filled.png', :class => 'star'
-								- (10-review.rating.to_i).times do
+								- (5-review.rating.to_i).times do
 									= image_tag 'star_empty.png', :class => 'star'
 							- else
-								- 10.times do
+								- 5.times do
 									= image_tag 'star_empty.png', :class => 'star'
 						.text
 							= link_to review.user.name.split.first + ' ' + review.user.name.split.second[0] + '. ', review_path(review.id), :class => 'show'

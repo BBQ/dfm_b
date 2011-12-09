@@ -3,14 +3,14 @@ class API < ActiveRecord::Base
   def self.get_dish(user_id, dish_id)
     
     if dish = Dish.find_by_id(dish_id)
+      
       user_review = Review.find_by_dish_id_and_user_id(dish.id,user_id) if user_id
+      subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
+      
       position_in_network = Dish.where("rating >= ? AND network_id = ?", dish.rating, dish.network_id).order("rating DESC, votes DESC").count if dish.votes != 0
       position_in_type = Dish.where("rating >= ? AND dish_type_id = ?", dish.rating, dish.dish_type_id).order("rating DESC, votes DESC").count if dish.votes != 0
-      
       position_in_all = Dish.where("rating >= ?", dish.rating).order("rating DESC, votes DESC").count if dish.votes != 0
-      
-      subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
-    
+
       top_expert_id = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0] if Review.find_by_dish_id(dish.id)
       if user = User.find_by_id(top_expert_id)
         top_expert = {
