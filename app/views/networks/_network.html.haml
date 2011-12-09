@@ -26,10 +26,10 @@
 			- if rate
 				- rate.times do
 					= image_tag 'star_filled.png', :class => 'star'
-				- (10-rate).times do
+				- (5-rate).times do
 					= image_tag 'star_empty.png', :class => 'star'
 			- else
-				- 10.times do
+				- 5.times do
 					= image_tag 'star_empty.png', :class => 'star'
 			.mark
 				= network.votes.to_i != 0 ? "%.1f" % (network.rating/network.votes.to_f) : 0
