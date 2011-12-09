@@ -34,7 +34,7 @@ class ApiController < ApplicationController
         id = params[:network_id]
         type = 'network'
       end      
-      return render :json => Restaurant.api_get_restaurant(id, type)
+      return render :json => API.api_get_restaurant(id, type)
     else
       return render :json => {:error => $error}
     end
