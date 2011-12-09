@@ -60,8 +60,8 @@ class ApiController < ApplicationController
     dishes ||= Dish    
     dishes = dishes.search_for_keyword(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
+    dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC').by_distance(params[:lat], params[:lon])  
     count = dishes.count
-    dishes = dishes.joins(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC').by_distance(params[:lat], params[:lon])  
     dishes = dishes.limit("#{offset}, #{limit}")
     
     restaurants = []
