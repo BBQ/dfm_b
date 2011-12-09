@@ -66,18 +66,18 @@ class ReviewsController < ApplicationController
           comment.destroy
         end
               
-        if review && dish && restaurant && network
+        if review && dish && restaurant && network && params[:now] == 1 
                
-               # if dish.dish_type_id == 9 && dish.votes == 0 
-               #             dish.delete
-               #             data[:deleted] = 'yes'
-               #           else
-               #             dish.save
-               #           end
+               if dish.dish_type_id == 9 && dish.votes == 0 
+                           dish.delete
+                           data[:deleted] = 'yes'
+                         else
+                           dish.save
+                         end
                
-               # restaurant.save
-               #            network.save
-               #            review.destroy
+               restaurant.save
+                          network.save
+                          review.destroy
                
                result = "review with id #{params[:id]} gone forever!"
              end
