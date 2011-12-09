@@ -109,7 +109,7 @@ class API < ActiveRecord::Base
           best_dishes.push({
             :id => dish.id,
             :name => dish.name,
-            :photo => dish.find_image.iphone.url != '/images/noimage.jpg' ? dish.find_image.iphone.url : '',
+            :photo => !dish.find_image.blank? && dish.find_image.iphone.url != '/images/noimage.jpg' ? dish.find_image.iphone.url : '',
             :rating => dish.rating,
             :votes => dish.votes
           })
