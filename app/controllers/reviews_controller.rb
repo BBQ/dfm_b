@@ -35,7 +35,7 @@ class ReviewsController < ApplicationController
         restaurant = Restaurant.find_by_id(restaurant_id)
         data[:rrb] = restaurant.rating
         data[:rvb] = restaurant.votes
-        restaurant.rating = restaurant.rating - rating
+        restaurant.rating = (restaurant.rating * restaurant.votes - rating) / (restaurant.votes - 1)
         restaurant.votes = restaurant.votes - 1
         data[:rra] = restaurant.rating
         data[:rva] = restaurant.votes
@@ -43,7 +43,7 @@ class ReviewsController < ApplicationController
         network = Network.find_by_id(restaurant.network_id)
         data[:nrb] = network.rating
         data[:nvb] = network.votes
-        network.rating = network.rating - rating
+        network.rating = (network.rating * network.votes - rating) / (network.votes - 1)
         network.votes = network.votes - 1
         data[:nra] = network.rating
         data[:nva] = network.votes
@@ -51,7 +51,7 @@ class ReviewsController < ApplicationController
         dish = Dish.find_by_id(dish_id)
         data[:drb] = dish.rating
         data[:dvb] = dish.votes      
-        dish.rating = dish.rating - rating
+        dish.rating = (dish.rating * dish.votes - rating) / (dish.votes - 1)
         dish.votes = dish.votes - 1
         data[:dra] = dish.rating
         data[:dva] = dish.votes
