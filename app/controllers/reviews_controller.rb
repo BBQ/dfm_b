@@ -68,16 +68,16 @@ class ReviewsController < ApplicationController
               
         if review && dish && restaurant && network
                
-               # if dish.dish_type_id == 9 && dish.votes == 0 
-               #               dish.delete
-               #               data[:deleted] = 'yes'
-               #             else
-               #               dish.save
-               #             end
-               #   
-               #    restaurant.save
-               #    network.save
-               #    review.destroy
+               if dish.dish_type_id == 9 && dish.votes == 0 
+                             dish.delete
+                             data[:deleted] = 'yes'
+                           else
+                             dish.save
+                           end
+                 
+                  restaurant.save
+                  network.save
+                  review.destroy
                
                result = "review with id #{params[:id]} gone forever!"
              end
