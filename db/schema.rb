@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111208140326) do
+ActiveRecord::Schema.define(:version => 20111212134234) do
 
   create_table "___restaurants", :force => true do |t|
     t.string   "name"
@@ -68,6 +68,62 @@ ActiveRecord::Schema.define(:version => 20111208140326) do
   add_index "___restaurants", ["name"], :name => "index_restaurants_on_name"
   add_index "___restaurants", ["terrace"], :name => "index_restaurants_on_terrace"
   add_index "___restaurants", ["wifi"], :name => "index_restaurants_on_wifi"
+
+  create_table "__restaurants", :force => true do |t|
+    t.string   "name"
+    t.integer  "network_id",                       :null => false
+    t.string   "city"
+    t.string   "address"
+    t.string   "time"
+    t.string   "phone"
+    t.string   "web"
+    t.text     "description"
+    t.string   "breakfast"
+    t.string   "businesslunch"
+    t.string   "photo"
+    t.float    "lon"
+    t.float    "lat"
+    t.integer  "votes",         :default => 0
+    t.integer  "rating",        :default => 0
+    t.string   "wifi",          :default => "0"
+    t.boolean  "chillum",       :default => false
+    t.boolean  "terrace",       :default => false
+    t.boolean  "cc",            :default => false
+    t.string   "source"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "children"
+    t.string   "banquet"
+    t.string   "reservation"
+    t.string   "delivery"
+    t.string   "takeaway"
+    t.string   "service"
+    t.string   "good_for"
+    t.string   "alcohol"
+    t.string   "noise"
+    t.string   "tv"
+    t.string   "disabled"
+    t.string   "music"
+    t.string   "parking"
+    t.string   "menu_url"
+    t.string   "bill"
+    t.string   "sun"
+    t.string   "mon"
+    t.string   "tue"
+    t.string   "wed"
+    t.string   "thu"
+    t.string   "fri"
+    t.string   "sat"
+  end
+
+  add_index "__restaurants", ["address"], :name => "index_restaurants_on_address"
+  add_index "__restaurants", ["cc"], :name => "index_restaurants_on_cc"
+  add_index "__restaurants", ["chillum"], :name => "index_restaurants_on_chillum"
+  add_index "__restaurants", ["city"], :name => "index_restaurants_on_city"
+  add_index "__restaurants", ["id"], :name => "index_restaurants_on_id"
+  add_index "__restaurants", ["name"], :name => "index_restaurants_on_name"
+  add_index "__restaurants", ["terrace"], :name => "index_restaurants_on_terrace"
+  add_index "__restaurants", ["wifi"], :name => "index_restaurants_on_wifi"
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -182,6 +238,9 @@ ActiveRecord::Schema.define(:version => 20111208140326) do
     t.datetime "updated_at"
   end
 
+  add_index "dish_extratypes", ["id"], :name => "index_dish_extratypes_on_id"
+  add_index "dish_extratypes", ["name"], :name => "index_dish_extratypes_on_name"
+
   create_table "dish_subtypes", :force => true do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -199,26 +258,29 @@ ActiveRecord::Schema.define(:version => 20111208140326) do
   create_table "dishes", :force => true do |t|
     t.string   "name"
     t.string   "photo"
-    t.integer  "price",             :default => 0
+    t.integer  "price",                           :default => 0
     t.string   "currency"
-    t.float    "rating",            :default => 0.0
-    t.integer  "votes",             :default => 0
+    t.float    "rating",            :limit => 21, :default => 0.0
+    t.integer  "votes",                           :default => 0
     t.text     "description"
-    t.integer  "restaurant_id",     :default => 0
-    t.integer  "network_id",        :default => 0
-    t.integer  "dish_category_id",                   :null => false
-    t.integer  "dish_type_id",                       :null => false
+    t.integer  "restaurant_id",                   :default => 0
+    t.integer  "network_id",                      :default => 0
+    t.integer  "dish_category_id",                                 :null => false
+    t.integer  "dish_type_id",                                     :null => false
     t.integer  "dish_subtype_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "dish_extratype_id"
+    t.integer  "dish_extratype_id"
   end
 
   add_index "dishes", ["dish_category_id"], :name => "dish_category_id"
   add_index "dishes", ["dish_type_id"], :name => "dish_type_id"
   add_index "dishes", ["id"], :name => "id"
   add_index "dishes", ["network_id"], :name => "network_id"
+  add_index "dishes", ["photo"], :name => "index_dishes_on_photo"
+  add_index "dishes", ["rating"], :name => "index_dishes_on_rating"
   add_index "dishes", ["restaurant_id"], :name => "restaurant_id"
+  add_index "dishes", ["votes"], :name => "index_dishes_on_votes"
 
   create_table "friends", :id => false, :force => true do |t|
     t.integer  "user_id",     :limit => 8, :null => false
@@ -250,10 +312,13 @@ ActiveRecord::Schema.define(:version => 20111208140326) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "rating",     :default => 0.0
-    t.integer  "votes",      :default => 0
+    t.float    "rating",     :limit => 21
+    t.integer  "votes",                    :default => 0
     t.string   "photo"
   end
+
+  add_index "networks", ["rating"], :name => "index_networks_on_rating"
+  add_index "networks", ["votes"], :name => "index_networks_on_votes"
 
   create_table "notifications", :force => true do |t|
     t.integer  "user_id"
@@ -316,10 +381,8 @@ ActiveRecord::Schema.define(:version => 20111208140326) do
     t.float    "lon"
     t.float    "lat"
     t.string   "address"
-    t.integer  "network_id",                       :null => false
+    t.integer  "network_id",                                     :null => false
     t.string   "city"
-    t.integer  "votes",         :default => 0
-    t.float    "rating",        :default => 0.0
     t.string   "time"
     t.string   "phone"
     t.string   "web"
@@ -327,10 +390,12 @@ ActiveRecord::Schema.define(:version => 20111208140326) do
     t.string   "breakfast"
     t.string   "businesslunch"
     t.string   "photo"
-    t.string   "wifi",          :default => "0"
-    t.boolean  "chillum",       :default => false
-    t.boolean  "terrace",       :default => false
-    t.boolean  "cc",            :default => false
+    t.integer  "votes",                       :default => 0
+    t.float    "rating",        :limit => 21
+    t.string   "wifi",                        :default => "0"
+    t.boolean  "chillum",                     :default => false
+    t.boolean  "terrace",                     :default => false
+    t.boolean  "cc",                          :default => false
     t.string   "source"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -363,7 +428,10 @@ ActiveRecord::Schema.define(:version => 20111208140326) do
   add_index "restaurants", ["chillum"], :name => "index_restaurants_on_chillum"
   add_index "restaurants", ["city"], :name => "index_restaurants_on_city"
   add_index "restaurants", ["id"], :name => "index_restaurants_on_id"
+  add_index "restaurants", ["lat"], :name => "index_restaurants_on_lat"
+  add_index "restaurants", ["lon"], :name => "index_restaurants_on_lon"
   add_index "restaurants", ["name"], :name => "index_restaurants_on_name"
+  add_index "restaurants", ["network_id"], :name => "index_restaurants_on_network_id"
   add_index "restaurants", ["terrace"], :name => "index_restaurants_on_terrace"
   add_index "restaurants", ["wifi"], :name => "index_restaurants_on_wifi"
 
@@ -381,6 +449,11 @@ ActiveRecord::Schema.define(:version => 20111208140326) do
     t.datetime "updated_at"
     t.integer  "network_id",     :default => 0
   end
+
+  add_index "reviews", ["count_likes"], :name => "index_reviews_on_count_likes"
+  add_index "reviews", ["dish_id"], :name => "index_reviews_on_dish_id"
+  add_index "reviews", ["id"], :name => "index_reviews_on_id"
+  add_index "reviews", ["user_id"], :name => "index_reviews_on_user_id"
 
   create_table "stations", :force => true do |t|
     t.string   "name"
