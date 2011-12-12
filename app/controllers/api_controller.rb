@@ -172,7 +172,7 @@ class ApiController < ApplicationController
     return render :json => {
           :restaurants => restaurants.as_json, 
           :count => count,
-          :error => params[:sort]
+          :error => $error
     }
   end
   
