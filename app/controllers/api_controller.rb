@@ -152,11 +152,13 @@ class ApiController < ApplicationController
       restaurants = restaurants.includes(:network).where('lat IS NOT NULL AND lon IS NOT NULL').order("networks.rating DESC, networks.votes DESC")
     else
       if radius
-        restaurants = Restaurant.near(params[:lat], params[:lon], radius).includes(:network).group('restaurants.name')
+        restaurants = Restaurant.near(params[:lat], params[:lon], radius).includes(:network)
       else
         restaurants = Restaurant.includes(:network)
       end
-      restaurants = restaurants.order("networks.rating DESC, networks.votes DESC").by_distance(params[:lat], params[:lon])
+      restaurants = restaurants.joins("JOIN (
+      #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').by_distance(params[:lat], params[:lon]).to_sql}) r1
+      ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("networks.rating DESC, networks.votes DESC").by_distance(params[:lat], params[:lon]).group('restaurants.name')
     end    
     
     restaurants = params[:search_name_only].to_i == 1 ? restaurants.where("restaurants.`name` LIKE '%#{search}%'") : restaurants.search_for_keyword(search) unless search.blank?
@@ -170,7 +172,7 @@ class ApiController < ApplicationController
     return render :json => {
           :restaurants => restaurants.as_json, 
           :count => count,
-          :error => $error
+          :error => params[:sort]
     }
   end
   
