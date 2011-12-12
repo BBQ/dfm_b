@@ -156,14 +156,14 @@ class ApiController < ApplicationController
       else
         restaurants = Restaurant.includes(:network)
       end
-      restaurants = restaurants.order("networks.rating DESC, networks.votes DESC").by_distance(params[:lat], params[:lon]).group('restaurants.name')
+      restaurants = restaurants.order("networks.rating DESC, networks.votes DESC").by_distance(params[:lat], params[:lon])
     end    
     
     restaurants = params[:search_name_only].to_i == 1 ? restaurants.where("restaurants.`name` LIKE '%#{search}%'") : restaurants.search_for_keyword(search) unless search.blank?
     # restaurants = restaurants.where(all_filters) unless all_filters.blank?
     
     if restaurants
-      count = params[:sort] != 'distance' ? restaurants.count.count : restaurants.count
+      count = restaurants.count
       restaurants = restaurants.limit("#{offset}, #{limit}") 
     end
 
