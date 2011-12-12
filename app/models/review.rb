@@ -15,6 +15,7 @@ class Review < ActiveRecord::Base
     self.restaurant.rating = self.network.rating if restaurant && network
     self.restaurant.votes = self.network.votes if restaurant && network
     self.restaurant.photo = self.restaurant.photo.iphone.url if restaurant && restaurant.photo
+    self.comments.each {|c| c.created_at = c.created_at.to_i}
         
     super(:only => [:user_id, :text, :count_likes, :created_at], 
           :include => { 
