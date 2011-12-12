@@ -15,7 +15,6 @@ class AddSomeNewIndexes < ActiveRecord::Migration
     
     add_index :networks, :rating
     add_index :networks, :votes
-    
   end
 
   def self.down

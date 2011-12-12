@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111212134234) do
+ActiveRecord::Schema.define(:version => 20111212140616) do
 
   create_table "___restaurants", :force => true do |t|
     t.string   "name"
@@ -308,6 +308,8 @@ ActiveRecord::Schema.define(:version => 20111212134234) do
     t.datetime "updated_at"
   end
 
+  add_index "likes", ["user_id", "review_id"], :name => "index_likes_on_user_id_and_review_id"
+
   create_table "networks", :force => true do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -317,6 +319,7 @@ ActiveRecord::Schema.define(:version => 20111212134234) do
     t.string   "photo"
   end
 
+  add_index "networks", ["id"], :name => "index_networks_on_id"
   add_index "networks", ["rating"], :name => "index_networks_on_rating"
   add_index "networks", ["votes"], :name => "index_networks_on_votes"
 
@@ -486,6 +489,7 @@ ActiveRecord::Schema.define(:version => 20111212134234) do
     t.integer  "facebook_id",                  :limit => 8
   end
 
+  add_index "users", ["facebook_id"], :name => "index_users_on_facebook_id"
   add_index "users", ["remember_me_token"], :name => "index_users_on_remember_me_token"
 
 end
