@@ -298,7 +298,7 @@ class ApiController < ApplicationController
       end
       
       return render :json => {
-        :dishes => dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes, :price, :photo]), 
+        :dishes => dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes, :price], :methods => [:image_sd, :image_hd]), 
         :categories => categories.as_json(),
         :types => types.as_json(),
         :error => $error
