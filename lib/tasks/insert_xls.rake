@@ -1,21 +1,21 @@
 # encoding: utf-8
-task :xls, [:filename] => :environment do |t, args|
+task :xls, [:dirname, :filename] => :environment do |t, args|
   
-  directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/'
+  directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:dirname] + '/'
   file = directory + args[:filename]
   parser = Excelx.new(file, false, :ignore)  
   restaurant = String
-      
+        
   # Restaurants
-  3.upto(parser.last_row) do |line|
-   
-    # Delete Existed
-    if parser.cell(line,'B') != restaurant
-     network = Network.find_by_name(parser.cell(line,'B'))
-     network.restaurants.each {|r| r.destroy && r.restaurant_images.each {|i| i.destroy}}
-     network.dishes.each {|d| d.destroy}
-     restaurant = parser.cell(line,'B')
-    end
+  # 3.upto(parser.last_row) do |line|
+  #  
+  #   # Delete Existed
+  #   if parser.cell(line,'B') != restaurant
+  #    network = Network.find_by_name(parser.cell(line,'B'))
+  #    network.restaurants.each {|r| r.destroy && r.restaurant_images.each {|i| i.destroy}}
+  #    network.dishes.each {|d| d.destroy}
+  #    restaurant = parser.cell(line,'B')
+  #   end
   #     
   #   # Prepare data
   #   network = parser.cell(line,'B').capitalize_first_letter.gsub(/^\p{Space}+|\p{Space}+$/, "")
@@ -66,7 +66,7 @@ task :xls, [:filename] => :environment do |t, args|
   #     end
   #   end
   #   
-  end
+  # end
          
   # Dishes   
   dish_sheet = parser.sheets[1]
@@ -86,9 +86,9 @@ task :xls, [:filename] => :environment do |t, args|
     dish_extratype = parser.cell(line,'J', dish_sheet).downcase.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'J', dish_sheet)
     dish_extratype_id = DishExtratype.find_by_name(dish_extratype) ? DishExtratype.find_by_name(dish_extratype).id : DishExtratype.create(:name => dish_extratype).id
 
-    photo_file = parser.cell(line,'H',dish_sheet) ? directory + parser.cell(line,'H',dish_sheet) : ''
+    photo_file =parser.cell(line,'H',dish_sheet) ? directory + parser.cell(line,'B', dish_sheet) + '/' + parser.cell(line,'H',dish_sheet) : ''
     photo = File.open(photo_file) if File.file?(photo_file)
-
+    
     description = parser.cell(line,'E', dish_sheet).gsub(/'\s|\s'|[“”‛’»«`]/, '"').strip if parser.cell(line,'E', dish_sheet)
 
     # dish = Dish.new
@@ -102,7 +102,8 @@ task :xls, [:filename] => :environment do |t, args|
     #   dish.dish_subtype_id = 0
     #   dish.dish_extratype_id = dish_extratype_id
     # dish.save
-
+    # puts dish_data if dish_data[:name].blank?
+    
     dish_data = {:name => name,
      :photo => photo,
      :price => parser.cell(line,'F', dish_sheet),
@@ -113,7 +114,7 @@ task :xls, [:filename] => :environment do |t, args|
      :dish_subtype_id => 0,
      :dish_extratype_id => dish_extratype_id
     }
-    # puts dish_data if dish_data[:name].blank?
-    Dish.create(dish_data) unless dish_data[:name].blank?
+
+    # Dish.create(dish_data) unless dish_data[:name].blank?
   end
 end

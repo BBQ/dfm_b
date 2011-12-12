@@ -152,7 +152,7 @@ class ApiController < ApplicationController
       restaurants = restaurants.includes(:network).where('lat IS NOT NULL AND lon IS NOT NULL').order("networks.rating DESC, networks.votes DESC")
     else
       if radius
-        restaurants = Restaurant.near(params[:lat], params[:lon], radius).includes(:network)
+        restaurants = Restaurant.near(params[:lat], params[:lon], radius).includes(:network).group('restaurants.name')
       else
         restaurants = Restaurant.includes(:network)
       end
@@ -163,7 +163,7 @@ class ApiController < ApplicationController
     # restaurants = restaurants.where(all_filters) unless all_filters.blank?
     
     if restaurants
-      count = restaurants.count
+      count = params[:sort] != 'distance' ? restaurants.count.count : restaurants.count
       restaurants = restaurants.limit("#{offset}, #{limit}") 
     end
 

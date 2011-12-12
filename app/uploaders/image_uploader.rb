@@ -59,6 +59,16 @@ class ImageUploader < CarrierWave::Uploader::Base
       # process :watermark =>'watermark.png'
   end
   
+  version :p120 do    
+      process :resize_and_pad => [120, 120, '#F2EFE9', 'Center']
+      # process :watermark =>'watermark.png'
+  end
+  
+  version :p60 do    
+      process :resize_and_pad => [60, 60, '#F2EFE9', 'Center']
+      # process :watermark =>'watermark.png'
+  end
+  
   
   # def watermark(file)
   #   manipulate! do |img| 
