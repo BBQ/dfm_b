@@ -60,8 +60,7 @@ class ApiController < ApplicationController
     dishes ||= Dish    
     dishes = dishes.search_for_keyword(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
-    dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC').by_distance(params[:lat], params[:lon])  
-    count = dishes.count
+    dishes = dishes.includes(:network).order('/dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC').by_distance(params[:lat], params[:lon])  
     dishes = dishes.limit("#{offset}, #{limit}")
     
     restaurants = []
@@ -90,6 +89,7 @@ class ApiController < ApplicationController
         end
       end
     end
+    count = dishes.count
          
     return render :json => {
             :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
@@ -332,7 +332,7 @@ class ApiController < ApplicationController
     
       if !params[:review][:dish_id] && params[:dish][:name] # && params[:dish][:type_id] && params[:dish][:subtype_id]
         params[:dish][:network_id] = params[:review][:network_id]
-        params[:dish][:restaurant_id] = params[:review][:restaurant_id]
+        # params[:dish][:restaurant_id] = params[:review][:restaurant_id]
         params[:dish][:dish_type_id] = 9 #добавлено пользователем
         params[:dish][:dish_category_id] = 120 # прочее
         # return render :json => {:error => {:description => 'Тип блюда не найден', :code => 4}} unless Type.find_by_id(params[:dish][:type_id])
