@@ -36,7 +36,7 @@ class API < ActiveRecord::Base
       restaurants = []
       dish.network.restaurants.each do |restaurant|
         restaurants.push({
-          :id => restaurant.id
+          :id => restaurant.id,
           :address => restaurant.address,
           :phone => restaurant.phone.to_s,
           :working_hours => restaurant.time,
@@ -95,7 +95,7 @@ class API < ActiveRecord::Base
       
       restaurant.network.restaurants.each do |restaurant|
           restaurants.push({
-            :id => restaurant.id
+            :id => restaurant.id,
             :address => restaurant.address,
             :phone => restaurant.phone.to_s,
             :working_hours => restaurant.time,
