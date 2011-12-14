@@ -4,7 +4,7 @@ task :xls, [:dirname, :filename] => :environment do |t, args|
   require 'csv'
   
   directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:dirname] + '/'
-  log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + '/log/excel_export_log.csv'
+  log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + '/log/excel_export.log'
   file = directory + args[:filename]
   parser = Excelx.new(file, false, :ignore)  
   restaurant_chk = String
@@ -44,15 +44,15 @@ task :xls, [:dirname, :filename] => :environment do |t, args|
     
     if File.file?(photo_file)
       photo = File.open(photo_file) 
-    else
+    elsif (!photo_file.blank?)
       CSV.open(log_file_path, "a") do |csv|
-        csv << ["#{Time.now};file #{photo_file} not found for #{parser.cell(line,'B')}"]
+        csv << ["#{Time.now};file #{photo_file} not found for #{parser.cell(line,'B')} at #{parser.cell(line,'B')}"]
       end
     end
   
     restaurant_data = {
       :name => parser.cell(line,'B').capitalize_first_letter,
-      :city => parser.cell(line,'C').strip.gsub(/г\./, ''),
+      :city => parser.cell(line,'C').blank? ? '' : parser.cell(line,'C').strip.gsub(/г\./, ''),
       :address => parser.cell(line,'E'),
       :time => parser.cell(line,'G'),
       :phone => parser.cell(line,'F'),
@@ -130,9 +130,9 @@ task :xls, [:dirname, :filename] => :environment do |t, args|
     
     if File.file?(photo_file)
       photo = File.open(photo_file) 
-    else
+    elsif (!photo_file.blank?)
       CSV.open(log_file_path, "a") do |csv|
-        csv << ["#{Time.now};file #{photo_file} not found for #{parser.cell(line,'D', dish_sheet)}"]
+        csv << ["#{Time.now};file #{photo_file} not found for #{parser.cell(line,'D', dish_sheet)} at #{parser.cell(line,'B', dish_sheet)}"]
       end
     end
     
@@ -167,4 +167,5 @@ task :xls, [:dirname, :filename] => :environment do |t, args|
     p dish_id.to_s + ' : ' + dish_data[:name] unless dish_id.blank?
 
   end
+  %x{iconv -t cp1251 #{log_file_path}  > #{log_file_path}.csv}
 end
