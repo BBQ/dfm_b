@@ -25,6 +25,16 @@ class ApiController < ApplicationController
     end
   end
   
+  def get_types
+    
+    subtypes = DishSubtype.all
+    
+    return render :json => {
+          :sybtypes => subtypes, 
+          :error => $error
+    }
+  end
+  
   def get_restaurant
     if params[:restaurant_id] || params[:network_id]
       if params[:restaurant_id]

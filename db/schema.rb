@@ -11,119 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111212140616) do
-
-  create_table "___restaurants", :force => true do |t|
-    t.string   "name"
-    t.integer  "network_id",                       :null => false
-    t.string   "city"
-    t.string   "address"
-    t.string   "time"
-    t.string   "phone"
-    t.string   "web"
-    t.text     "description"
-    t.string   "breakfast"
-    t.string   "businesslunch"
-    t.string   "photo"
-    t.float    "lon"
-    t.float    "lat"
-    t.integer  "votes",         :default => 0
-    t.integer  "rating",        :default => 0
-    t.string   "wifi",          :default => "0"
-    t.boolean  "chillum",       :default => false
-    t.boolean  "terrace",       :default => false
-    t.boolean  "cc",            :default => false
-    t.string   "source"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "children"
-    t.string   "banquet"
-    t.string   "reservation"
-    t.string   "delivery"
-    t.string   "takeaway"
-    t.string   "service"
-    t.string   "good_for"
-    t.string   "alcohol"
-    t.string   "noise"
-    t.string   "tv"
-    t.string   "disabled"
-    t.string   "music"
-    t.string   "parking"
-    t.string   "menu_url"
-    t.string   "bill"
-    t.string   "sun"
-    t.string   "mon"
-    t.string   "tue"
-    t.string   "wed"
-    t.string   "thu"
-    t.string   "fri"
-    t.string   "sat"
-  end
-
-  add_index "___restaurants", ["address"], :name => "index_restaurants_on_address"
-  add_index "___restaurants", ["cc"], :name => "index_restaurants_on_cc"
-  add_index "___restaurants", ["chillum"], :name => "index_restaurants_on_chillum"
-  add_index "___restaurants", ["city"], :name => "index_restaurants_on_city"
-  add_index "___restaurants", ["id"], :name => "index_restaurants_on_id"
-  add_index "___restaurants", ["name"], :name => "index_restaurants_on_name"
-  add_index "___restaurants", ["terrace"], :name => "index_restaurants_on_terrace"
-  add_index "___restaurants", ["wifi"], :name => "index_restaurants_on_wifi"
-
-  create_table "__restaurants", :force => true do |t|
-    t.string   "name"
-    t.integer  "network_id",                       :null => false
-    t.string   "city"
-    t.string   "address"
-    t.string   "time"
-    t.string   "phone"
-    t.string   "web"
-    t.text     "description"
-    t.string   "breakfast"
-    t.string   "businesslunch"
-    t.string   "photo"
-    t.float    "lon"
-    t.float    "lat"
-    t.integer  "votes",         :default => 0
-    t.integer  "rating",        :default => 0
-    t.string   "wifi",          :default => "0"
-    t.boolean  "chillum",       :default => false
-    t.boolean  "terrace",       :default => false
-    t.boolean  "cc",            :default => false
-    t.string   "source"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "children"
-    t.string   "banquet"
-    t.string   "reservation"
-    t.string   "delivery"
-    t.string   "takeaway"
-    t.string   "service"
-    t.string   "good_for"
-    t.string   "alcohol"
-    t.string   "noise"
-    t.string   "tv"
-    t.string   "disabled"
-    t.string   "music"
-    t.string   "parking"
-    t.string   "menu_url"
-    t.string   "bill"
-    t.string   "sun"
-    t.string   "mon"
-    t.string   "tue"
-    t.string   "wed"
-    t.string   "thu"
-    t.string   "fri"
-    t.string   "sat"
-  end
-
-  add_index "__restaurants", ["address"], :name => "index_restaurants_on_address"
-  add_index "__restaurants", ["cc"], :name => "index_restaurants_on_cc"
-  add_index "__restaurants", ["chillum"], :name => "index_restaurants_on_chillum"
-  add_index "__restaurants", ["city"], :name => "index_restaurants_on_city"
-  add_index "__restaurants", ["id"], :name => "index_restaurants_on_id"
-  add_index "__restaurants", ["name"], :name => "index_restaurants_on_name"
-  add_index "__restaurants", ["terrace"], :name => "index_restaurants_on_terrace"
-  add_index "__restaurants", ["wifi"], :name => "index_restaurants_on_wifi"
+ActiveRecord::Schema.define(:version => 20111214160814) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -150,62 +38,6 @@ ActiveRecord::Schema.define(:version => 20111212140616) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  create_table "backup__restaurants", :force => true do |t|
-    t.string   "name"
-    t.float    "lon"
-    t.float    "lat"
-    t.string   "address"
-    t.integer  "network_id",                       :null => false
-    t.string   "city"
-    t.string   "time"
-    t.string   "phone"
-    t.string   "web"
-    t.text     "description"
-    t.string   "breakfast"
-    t.string   "businesslunch"
-    t.string   "photo"
-    t.integer  "votes",         :default => 0
-    t.integer  "rating",        :default => 0
-    t.string   "wifi",          :default => "0"
-    t.boolean  "chillum",       :default => false
-    t.boolean  "terrace",       :default => false
-    t.boolean  "cc",            :default => false
-    t.string   "source"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "children"
-    t.string   "banquet"
-    t.string   "reservation"
-    t.string   "delivery"
-    t.string   "takeaway"
-    t.string   "service"
-    t.string   "good_for"
-    t.string   "alcohol"
-    t.string   "noise"
-    t.string   "tv"
-    t.string   "disabled"
-    t.string   "music"
-    t.string   "parking"
-    t.string   "menu_url"
-    t.string   "bill"
-    t.string   "sun"
-    t.string   "mon"
-    t.string   "tue"
-    t.string   "wed"
-    t.string   "thu"
-    t.string   "fri"
-    t.string   "sat"
-  end
-
-  add_index "backup__restaurants", ["address"], :name => "index_restaurants_on_address"
-  add_index "backup__restaurants", ["cc"], :name => "index_restaurants_on_cc"
-  add_index "backup__restaurants", ["chillum"], :name => "index_restaurants_on_chillum"
-  add_index "backup__restaurants", ["city"], :name => "index_restaurants_on_city"
-  add_index "backup__restaurants", ["id"], :name => "index_restaurants_on_id"
-  add_index "backup__restaurants", ["name"], :name => "index_restaurants_on_name"
-  add_index "backup__restaurants", ["terrace"], :name => "index_restaurants_on_terrace"
-  add_index "backup__restaurants", ["wifi"], :name => "index_restaurants_on_wifi"
 
   create_table "comments", :force => true do |t|
     t.integer  "user_id"
@@ -245,6 +77,7 @@ ActiveRecord::Schema.define(:version => 20111212140616) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "type_id",    :null => false
   end
 
   create_table "dish_types", :force => true do |t|
@@ -381,6 +214,7 @@ ActiveRecord::Schema.define(:version => 20111212140616) do
 
   create_table "restaurants", :force => true do |t|
     t.string   "name"
+    t.string   "name_eng"
     t.float    "lon"
     t.float    "lat"
     t.string   "address"
@@ -434,6 +268,7 @@ ActiveRecord::Schema.define(:version => 20111212140616) do
   add_index "restaurants", ["lat"], :name => "index_restaurants_on_lat"
   add_index "restaurants", ["lon"], :name => "index_restaurants_on_lon"
   add_index "restaurants", ["name"], :name => "index_restaurants_on_name"
+  add_index "restaurants", ["name_eng"], :name => "index_restaurants_on_name_eng"
   add_index "restaurants", ["network_id"], :name => "index_restaurants_on_network_id"
   add_index "restaurants", ["terrace"], :name => "index_restaurants_on_terrace"
   add_index "restaurants", ["wifi"], :name => "index_restaurants_on_wifi"
