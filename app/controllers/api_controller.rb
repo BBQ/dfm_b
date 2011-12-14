@@ -61,6 +61,7 @@ class ApiController < ApplicationController
     dishes = dishes.search_for_keyword(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
     dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC').by_distance(params[:lat], params[:lon])  
+    count = dishes.count
     dishes = dishes.limit("#{offset}, #{limit}")
     
     restaurants = []
@@ -89,7 +90,6 @@ class ApiController < ApplicationController
         end
       end
     end
-    count = dishes.count
          
     return render :json => {
             :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],

@@ -49,7 +49,7 @@ namespace :import do
     require 'csv'
   
     directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:dirname] + '/'
-    log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + '/log/excel_export.log'
+    log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/import/#{Time.new.strftime("%F-%H_%M_%S")}_excel_export.log"
     file = directory + args[:filename]
     parser = Excelx.new(file, false, :ignore)  
     restaurant_chk = String
@@ -212,6 +212,16 @@ namespace :import do
       p dish_id.to_s + ' : ' + dish_data[:name] unless dish_id.blank?
 
     end
-    %x{iconv -t cp1251 #{log_file_path}  > #{log_file_path}.csv}
+    
+    sep = '==========================================================='
+    p sep
+    if File.file?(log_file_path)
+      %x{iconv -t cp1251 #{log_file_path}  > #{log_file_path}.csv}
+      p "Done. There are some errors, log file is here: #{log_file_path}.csv"
+      %x{open #{log_file_path}.csv}
+    else
+      p "Done. Congrats, no errors!"
+    end
+    p sep
   end
 end
