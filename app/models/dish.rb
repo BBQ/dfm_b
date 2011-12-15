@@ -46,7 +46,7 @@ class Dish < ActiveRecord::Base
       :rice => '(rice|рис)',
       :stake => '(stake|стейк|стэйк)',
       :sushi => '(sushi & rolls|суши и роллы|суши|ролл|сашими)',
-      :desserts => '(desserts|десерты|торт|пирожные|пирожное|выпечка|мороженое|пирог|сладости|сорбет)',
+      :desserts => '(desserts|десерт|торт|пирожные|пирожное|выпечка|мороженое|пирог|сладости|сорбет)',
       :drinks => '(drinks|напитки|напиток)',
       :meat => '(meat|мясо|мясное)',
       :fish => '(fish|рыба|морепродукты|креветки|мидии|форель|треска|карп|моллюски|устрицы|сибас|лосось|судак)',
@@ -54,10 +54,10 @@ class Dish < ActiveRecord::Base
     }
     keyword = keywords[:"#{keyword}"].blank? ? keyword : keywords[:"#{keyword}"]
     
-    where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name` LIKE ?) 
+    where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name` REGEXP '[[:<:]]#{keyword.downcase}') 
           OR 
-          dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name` LIKE ?)
-          OR LOWER(dishes.name) REGEXP '[[:<:]]#{keyword.downcase}'", keyword, keyword)
+          dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name` REGEXP '[[:<:]]#{keyword.downcase}')
+          OR LOWER(dishes.name) REGEXP '[[:<:]]#{keyword.downcase}'")
   end
   
   def self.by_distance(lat, lon)
