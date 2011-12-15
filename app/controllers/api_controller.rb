@@ -338,10 +338,10 @@ class ApiController < ApplicationController
         image.destroy
       end
     
-      if !params[:review][:dish_id] && params[:dish][:name] && params[:dish][:type_id] && params[:dish][:subtype_id]
+      if !params[:review][:dish_id] && params[:dish][:name] && params[:dish][:dish_type_id] && params[:dish][:dish_subtype_id]
         params[:dish][:network_id] = params[:review][:network_id]
-        return render :json => {:error => {:description => 'Тип блюда не найден', :code => 4}} unless Type.find_by_id(params[:dish][:type_id])
-        return render :json => {:error => {:description => 'Подтип блюда не найден', :code => 5}} unless Subtype.find_by_id(params[:dish][:subtype_id])
+        return render :json => {:error => {:description => 'Dish type not found', :code => 4}} unless DishType.find_by_id(params[:dish][:dish_type_id])
+        return render :json => {:error => {:description => 'Dish subtype not found', :code => 5}} unless DishSubtype.find_by_id(params[:dish][:dish_subtype_id])
         return render :json => {:error => {:description => 'Dish create error', :code => 6}} unless params[:review][:dish_id] = Dish.create(params[:dish]).id
       end
       return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless Dish.find_by_id(params[:review][:dish_id])
