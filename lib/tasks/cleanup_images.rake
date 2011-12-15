@@ -31,7 +31,9 @@ task :cup_images => :environment do
         p '1'+restaurant_image
         # r.destroy
       else # if r.restaurant.photo.url != "/images/noimage.jpg"
-        p r.id.to_s+r.restaurant.photo.url
+        r.restaurant.restaurant_images.each do |i|
+          p i.photo.url
+        end
       end
     else
       p '3'+restaurant_image

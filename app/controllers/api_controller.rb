@@ -326,7 +326,7 @@ class ApiController < ApplicationController
       params[:review][:user_id] = User.get_user_by_fb_token(params[:access_token])
       
       chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
-      return render :json => {:error => {:description => 'You can post review one once at 24 hours', :code => 666}} unless chk24.blank?
+      return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 666}} unless chk24.blank?
       
       return render :json => {:error => {:description => 'Restaurant not found', :code => 1}} unless Restaurant.find_by_id(params[:review][:restaurant_id])
       return render :json => {:error => {:description => "Rating '#{params[:review][:rating]}' is not in range", :code => 2}} if params[:review][:rating].to_i > 5 || params[:review][:rating].to_i < 1
@@ -338,7 +338,7 @@ class ApiController < ApplicationController
         image.destroy
       end
     
-      if !params[:review][:dish_id] && params[:dish][:name] && params[:dish][:dish_type_id] && params[:dish][:dish_subtype_id]
+      if !params[:review][:dish_id] && params[:dish][:name] && params[:dish][:dish_type_id]
         params[:dish][:network_id] = params[:review][:network_id]
         return render :json => {:error => {:description => 'Dish type not found', :code => 4}} unless DishType.find_by_id(params[:dish][:dish_type_id])
         return render :json => {:error => {:description => 'Dish subtype not found', :code => 5}} unless DishSubtype.find_by_id(params[:dish][:dish_subtype_id])
