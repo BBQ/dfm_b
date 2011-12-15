@@ -21,7 +21,7 @@ class Restaurant < ActiveRecord::Base
     keywords = {
       :salad => '(salad|салат|сататик|)',
       :soup => '(soup|суп|супы|супчик|супчики|супец)',
-      :pasta => '(pasta|паста|пасты)',
+      :pasta => '(pasta|паста|пасты|спагетти)',
       :pizza => '(pizza|пицца|пиццы)',
       :burger => '(burger|бургер)',
       :noodles => '(noodles|лапша)',

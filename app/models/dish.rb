@@ -35,22 +35,23 @@ class Dish < ActiveRecord::Base
   end
   
   def self.search_for_keyword(keyword)
-    keywords = {:salad => 'салат',
-      :soup => 'суп',
-      :pasta => 'паста',
-      :pizza => 'пицца',
-      :burger => 'бургер',
-      :noodles => 'лапша',
-      :risotto => 'ризотто',
-      :rice => 'рис',
-      :stake => 'стэйк',
-      :sushi => 'суши и роллы',
-      :desserts => 'десерты',
-      :drinks => 'напитки',
-      :meat => 'мясо',
-      :fish => 'рыба',
-      :vegetables => 'овощи'}
-      
+    keywords = {
+      :salad => '(salad|салат|сататик|)',
+      :soup => '(soup|суп|супы|супчик|супчики|супец)',
+      :pasta => '(pasta|паста|пасты|спагетти)',
+      :pizza => '(pizza|пицца|пиццы)',
+      :burger => '(burger|бургер)',
+      :noodles => '(noodles|лапша)',
+      :risotto => '(risotto|ризотто)',
+      :rice => '(rice|рис)',
+      :stake => '(stake|стейк|стэйк)',
+      :sushi => '(sushi & rolls|суши и роллы|суши|ролл|сашими)',
+      :desserts => '(desserts|десерты|торт|пирожные|пирожное|выпечка|мороженое|пирог|сладости|сорбет)',
+      :drinks => '(drinks|напитки|напиток)',
+      :meat => '(meat|мясо|мясное)',
+      :fish => '(fish|рыба|морепродукты|креветки|мидии|форель|треска|карп|моллюски|устрицы|сибас|лосось|судак)',
+      :vegetables => '(vegetables|овощи|овощь)'
+    }
     keyword = keywords[:"#{keyword}"].blank? ? keyword : keywords[:"#{keyword}"]
     
     where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name` LIKE ?) 
