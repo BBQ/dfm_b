@@ -18,22 +18,23 @@ class Restaurant < ActiveRecord::Base
   after_validation :geocode, :if => :address_changed?
   
   def self.search_for_keyword(keyword)
-    keywords = {:salad => 'салат',
-      :soup => 'суп',
-      :pasta => 'паста',
-      :pizza => 'пицца',
-      :burger => 'бургер',
-      :noodles => 'лапша',
-      :risotto => 'ризотто',
-      :rice => 'рис',
-      :stake => 'стейк',
-      :sushi => 'суши',
-      :desserts => 'десерты',
-      :drinks => 'напитки',
-      :meat => 'мясо',
-      :fish => 'рыба',
-      :vegetables => 'овощи'}
-      
+    keywords = {
+      :salad => '(salad|салат|сататик|)',
+      :soup => '(soup|суп|супы|супчик|супчики|супец)',
+      :pasta => '(pasta|паста|пасты)',
+      :pizza => '(pizza|пицца|пиццы)',
+      :burger => '(burger|бургер)',
+      :noodles => '(noodles|лапша)',
+      :risotto => '(risotto|ризотто)',
+      :rice => '(rice|рис)',
+      :stake => '(stake|стейк|стэйк)',
+      :sushi => '(sushi & rolls|суши и роллы|суши|ролл|сашими)',
+      :desserts => '(desserts|десерты|торт|пирожные|пирожное|выпечка|мороженое|пирог|сладости|сорбет)',
+      :drinks => '(drinks|напитки|напиток)',
+      :meat => '(meat|мясо|мясное)',
+      :fish => '(fish|рыба|морепродукты|креветки|мидии|форель|треска|карп|моллюски|устрицы|сибас|лосось|судак)',
+      :vegetables => '(vegetables|овощи|овощь)'
+    }  
     keyword = keywords[:"#{keyword}"].blank? ? keyword : keywords[:"#{keyword}"]
     
     where("restaurants.network_id IN ( SELECT DISTINCT network_id FROM dishes WHERE 

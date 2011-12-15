@@ -58,28 +58,29 @@ namespace :import do
    
       # Delete Existed
       if parser.cell(line,'B') != restaurant_chk
-       network = Network.find_by_name(parser.cell(line,'B'))
-       network.restaurants.each do |r|
-         if r.reviews.count < 1
-          r.restaurant_images.each do |i| 
-            p i.id.to_s + ' image exist'
-            p i.id.to_s + ' image deleted' if i.destroy
-          end
-          p "try to delete #{r.id} : #{r.name}"
-          p "succ. deleted #{r.id} : #{r.name}" if r.destroy
-        else
-          p "#{r.id} : #{r.name} #{r.address} has 1 or more reviews"
-        end
-      end
-       network.dishes.each do |d| 
-         if d.reviews.count < 1
-           p "try to delete #{d.id} : #{d.name}"
-           p "succ. deleted #{d.id} : #{d.name}" if d.destroy
-         else
-           p "#{d.id} : #{d.name} has 1 or more reviews"
+       if network = Network.find_by_name(parser.cell(line,'B'))
+         network.restaurants.each do |r|
+            if r.reviews.count < 1
+              r.restaurant_images.each do |i| 
+                p i.id.to_s + ' image exist'
+                p i.id.to_s + ' image deleted' if i.destroy
+              end
+              p "try to delete #{r.id} : #{r.name}"
+              p "succ. deleted #{r.id} : #{r.name}" if r.destroy
+            else
+              p "#{r.id} : #{r.name} #{r.address} has 1 or more reviews"
+            end
          end
+         network.dishes.each do |d| 
+           if d.reviews.count < 1
+             p "try to delete #{d.id} : #{d.name}"
+             p "succ. deleted #{d.id} : #{d.name}" if d.destroy
+           else
+             p "#{d.id} : #{d.name} has 1 or more reviews"
+           end
+         end
+         restaurant_chk = parser.cell(line,'B')
        end
-       restaurant_chk = parser.cell(line,'B')
       end
       
       # Prepare data
@@ -181,7 +182,7 @@ namespace :import do
         end
       end
     
-      description = parser.cell(line,'E', dish_sheet).gsub(/'\s|\s'|[“”‛’»«`]/, '"').strip if parser.cell(line,'E', dish_sheet)
+      description = parser.cell(line,'E', dish_sheet).to_s.gsub(/'\s|\s'|[“”‛’»«`]/, '"').strip if parser.cell(line,'E', dish_sheet)
     
       dish_data = {
         :name => name,
