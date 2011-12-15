@@ -36,7 +36,7 @@ class Dish < ActiveRecord::Base
   
   def self.search_for_keyword(keyword)
     keywords = {
-      :salad => '(salad|салат|сататик|)',
+      :salad => '(салат|salad|салатик)',
       :soup => '(soup|суп|супы|супчик|супчики|супец)',
       :pasta => '(pasta|паста|пасты|спагетти)',
       :pizza => '(pizza|пицца|пиццы)',
