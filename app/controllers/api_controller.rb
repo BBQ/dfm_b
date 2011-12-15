@@ -342,6 +342,10 @@ class ApiController < ApplicationController
         params[:dish][:network_id] = params[:review][:network_id]
         return render :json => {:error => {:description => 'Dish type not found', :code => 4}} unless DishType.find_by_id(params[:dish][:dish_type_id])
         return render :json => {:error => {:description => 'Dish subtype not found', :code => 5}} unless DishSubtype.find_by_id(params[:dish][:dish_subtype_id])
+        
+        dish_category = DishType.find_by_id(params[:dish][:dish_type_id]).name
+        params[:dish][:dish_category_id] = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
+        
         return render :json => {:error => {:description => 'Dish create error', :code => 6}} unless params[:review][:dish_id] = Dish.create(params[:dish]).id
       end
       return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless Dish.find_by_id(params[:review][:dish_id])
