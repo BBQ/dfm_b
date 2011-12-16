@@ -27,7 +27,7 @@ class ApiController < ApplicationController
   
   def get_types
     return render :json => {
-          :sybtypes => DishType.where('id IN (2,4,6,14,15,16,17,18,19,22)').order('`order`'), 
+          :types => DishType.where('id IN (2,4,6,14,15,16,17,18,19,22)').order('`order`'), 
           :error => $error
     }
   end
@@ -294,21 +294,23 @@ class ApiController < ApplicationController
         network_id = restaurant.network.id
         dishes = Dish.where('network_id = ?', network_id)
       
-        categories = Array.new(0,Hash.new)
-        types = Array.new(0,Hash.new)
+        categories = []
+        types = []
       
         dishes.group(:dish_category_id).each do |dish|
           categories.push({:id => dish.dish_category.id, :name => dish.dish_category.name})
         end
       
         dishes.group(:dish_type_id).each do |dish|
-          types.push({:id => dish.dish_type.id, :name => dish.dish_type.name}) if dish.dish_type
+          types.push({:id => dish.dish_type.id, :name => dish.dish_type.name, :order => dish.dish_type.order}) if dish.dish_type
         end
+        
+        types.sort_by!{|k| k[:order] && k.delete(:order) }
       
         return render :json => {
           :dishes => dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes, :price], :methods => [:image_sd, :image_hd]), 
           :categories => categories.as_json(),
-          :types => types.as_json(),
+          :types => types.as_json,
           :error => $error
         }
       else
