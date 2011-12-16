@@ -44,7 +44,7 @@ class Dish < ActiveRecord::Base
       :noodles => '(noodles|лапша)',
       :risotto => '(risotto|ризотто)',
       :rice => '(rice|рис)',
-      :stake => '(stake|стейк|стэйк)',
+      :steak => '(steak|стейк|стэйк)',
       :sushi => '(sushi & rolls|суши и роллы|суши|ролл|сашими)',
       :desserts => '(desserts|десерт|торт|пирожные|пирожное|выпечка|мороженое|пирог|сладости|сорбет)',
       :drinks => '(drinks|напитки|напиток)',
