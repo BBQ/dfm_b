@@ -27,7 +27,7 @@ class ApiController < ApplicationController
   
   def get_types
     return render :json => {
-          :sybtypes => DishType.where('id IN (2,4,6,14,15,16,17,18,19,22)'), 
+          :sybtypes => DishType.where('id IN (2,4,6,14,15,16,17,18,19,22)').order('`order`'), 
           :error => $error
     }
   end
@@ -303,7 +303,7 @@ class ApiController < ApplicationController
         categories.push({:id => dish.dish_category.id, :name => dish.dish_category.name})
       end
       
-      dishes.group(:dish_type_id).each do |dish|
+      dishes.group(:dish_type_id).order('`order`').each do |dish|
         types.push({:id => dish.dish_type.id, :name => dish.dish_type.name}) if dish.dish_type
       end
       
