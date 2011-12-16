@@ -289,30 +289,31 @@ class ApiController < ApplicationController
   def get_restaurant_menu
     if params[:restaurant_id]
       
-      # dishes = Dish.where('restaurant_id = ?', params[:restaurant_id])
+      if restaurant = Restaurant.find_by_id(params[:restaurant_id])
       
-      # if dishes.count == 0
-        network_id = Restaurant.find_by_id(params[:restaurant_id]).network.id
+        network_id = restaurant.network.id
         dishes = Dish.where('network_id = ?', network_id)
-      # end
       
-      categories = Array.new(0,Hash.new)
-      types = Array.new(0,Hash.new)
+        categories = Array.new(0,Hash.new)
+        types = Array.new(0,Hash.new)
       
-      dishes.group(:dish_category_id).each do |dish|
-        categories.push({:id => dish.dish_category.id, :name => dish.dish_category.name})
+        dishes.group(:dish_category_id).each do |dish|
+          categories.push({:id => dish.dish_category.id, :name => dish.dish_category.name})
+        end
+      
+        dishes.group(:dish_type_id).each do |dish|
+          types.push({:id => dish.dish_type.id, :name => dish.dish_type.name}) if dish.dish_type
+        end
+      
+        return render :json => {
+          :dishes => dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes, :price], :methods => [:image_sd, :image_hd]), 
+          :categories => categories.as_json(),
+          :types => types.as_json(),
+          :error => $error
+        }
+      else
+        $error = {:description => 'Restaurant not found', :code => 666}
       end
-      
-      dishes.group(:dish_type_id).order('`order`').each do |dish|
-        types.push({:id => dish.dish_type.id, :name => dish.dish_type.name}) if dish.dish_type
-      end
-      
-      return render :json => {
-        :dishes => dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes, :price], :methods => [:image_sd, :image_hd]), 
-        :categories => categories.as_json(),
-        :types => types.as_json(),
-        :error => $error
-      }
     else
       $error = {:description => 'Parameters missing', :code => 8}  
     end
