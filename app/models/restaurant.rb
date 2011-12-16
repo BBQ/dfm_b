@@ -67,10 +67,12 @@ class Restaurant < ActiveRecord::Base
     end
   end
   
-  def dishes
+  def dishes(keyword = nil)
     num_images = 20
     photos = []
-    dishes = Network.find_by_id(network_id).dishes.order('photo DESC')
+    
+    dishes = Network.find_by_id(network_id).dishes.order('rating DESC, votes DESC, photo DESC')
+    dishes = dishes.search_for_keyword(keyword) unless keyword.nil?
     
     dishes.take(num_images).each do |dish|
       if dish.photo && dish.photo.iphone.url != '/images/noimage.jpg'

@@ -178,7 +178,7 @@ class ApiController < ApplicationController
     end
 
     return render :json => {
-          :restaurants => restaurants.as_json, 
+          :restaurants => restaurants.as_json({:keyword => params[:keyword] ||= nil}), 
           :count => count,
           :error => $error
     }
