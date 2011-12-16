@@ -251,9 +251,32 @@ namespace :import do
           dish_id = Dish.create(dish_data).id unless Dish.find_by_name(dish_data[:name])
         end
       end
-    
       p dish_id.to_s + ' : ' + dish_data[:name] unless dish_id.blank?
-
+    end
+    
+    # Set Category Order
+    network_name = parser.cell(line,'B', dish_sheet).capitalize_first_letter.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'B', dish_sheet)
+    dc_name = parser.cell(line,'C', dish_sheet).downcase.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'C', dish_sheet)
+    if parser.cell(line,'C', dish_sheet) != dc_chk
+        i += 1
+        if dc = DishCategory.find_by_name(dc_name)
+            if dish_network =  Network.find_by_name(network_name)
+                  dish_network.restaurants.each do |r|
+                      unless DishCategoryOrder.find_by_dish_category_id_and_restaurant_id(dc.id, r.id)
+                          p dc.name + " : " + r.name.to_s + " " + r.address.to_s
+                          DishCategoryOrder.create({
+                            :dish_category_id => dc.id,
+                            :network_id => dish_network.id,
+                            :restaurant_id => r.id,
+                            :order => i
+                          })
+                        end
+                  end
+                  i += 0 if parser.cell(line,'B', dish_sheet) != network_chk
+                  network_chk = parser.cell(line,'B', dish_sheet)
+            end
+        end
+        dc_chk = parser.cell(line,'C', dish_sheet)
     end
     
     sep = '==========================================================='
