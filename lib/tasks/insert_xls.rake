@@ -1,6 +1,48 @@
 # encoding: utf-8
 namespace :import do
   
+  desc "Set categories for Dishes" 
+  task :set_categoies, [:dirname, :filename] => :environment do |t, args|
+    require 'csv'
+    
+    t = Time.new
+    i = 0
+    directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:dirname] + '/'
+    log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/import/#{t.strftime("%F-%H_%M_%S")}_excel_export.log"
+    file = directory + args[:filename]
+    parser = Excelx.new(file, false, :ignore)  
+    dish_sheet = parser.sheets[1]
+    network_chk = String
+    dish_category_chk = String
+    
+    3.upto(parser.last_row(dish_sheet)) do |line|         
+        network_name = parser.cell(line,'B', dish_sheet).capitalize_first_letter.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'B', dish_sheet)
+        dish_category_name = parser.cell(line,'C', dish_sheet).downcase.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'C', dish_sheet)
+        if parser.cell(line,'C', dish_sheet) != dish_category_chk
+            i += 1
+            if dish_category = DishCategory.find_by_name(dish_category_name)
+                if dish_network =  Network.find_by_name(network_name)
+                      dish_network.restaurants.each do |r|
+                          unless DishCategoryOrder.find_by_dish_category_id_and_restaurant_id(dish_category.id, r.id)
+                              p dish_category.name + " : " + r.name.to_s + " " + r.address.to_s
+                              DishCategoryOrder.create({
+                                :dish_category_id => dish_category.id,
+                                :network_id => dish_network.id,
+                                :restaurant_id => r.id,
+                                :order => i
+                              })
+                            end
+                      end
+                      i += 0 if parser.cell(line,'B', dish_sheet) != network_chk
+                      network_chk = parser.cell(line,'B', dish_sheet)
+                end
+            end
+            dish_category_chk = parser.cell(line,'C', dish_sheet)
+        end
+    end
+  
+  end
+  
   desc "Check if all images in a place" 
   task :check_images, [:dirname, :filename] => :environment do |t, args|
     

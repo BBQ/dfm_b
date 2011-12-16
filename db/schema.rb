@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111216093614) do
+ActiveRecord::Schema.define(:version => 20111216133548) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -63,6 +63,20 @@ ActiveRecord::Schema.define(:version => 20111216093614) do
   end
 
   add_index "dish_categories", ["name"], :name => "name"
+
+  create_table "dish_category_orders", :force => true do |t|
+    t.integer  "restaurant_id",                   :null => false
+    t.integer  "network_id",                      :null => false
+    t.integer  "dish_category_id",                :null => false
+    t.integer  "order",            :default => 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "dish_category_orders", ["dish_category_id"], :name => "index_dish_category_orders_on_dish_category_id"
+  add_index "dish_category_orders", ["id"], :name => "index_dish_category_orders_on_id"
+  add_index "dish_category_orders", ["network_id"], :name => "index_dish_category_orders_on_network_id"
+  add_index "dish_category_orders", ["restaurant_id"], :name => "index_dish_category_orders_on_restaurant_id"
 
   create_table "dish_extratypes", :force => true do |t|
     t.string   "name"

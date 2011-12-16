@@ -298,14 +298,19 @@ class ApiController < ApplicationController
         types = []
       
         dishes.group(:dish_category_id).each do |dish|
-          categories.push({:id => dish.dish_category.id, :name => dish.dish_category.name})
+          sort = DishCategoryOrder.find_by_restaurant_id_and_dish_category_id(restaurant.id, dish.dish_category.id)
+          categories.push({
+            :id => dish.dish_category.id, 
+            :name => dish.dish_category.name, 
+            :order => sort ? sort.order : 9999
+          })
         end
+        categories.sort_by!{|k| k[:order] && k.delete(:order) }
       
         dishes.group(:dish_type_id).each do |dish|
           types.push({:id => dish.dish_type.id, :name => dish.dish_type.name, :order => dish.dish_type.order}) if dish.dish_type
         end
-        
-        types.sort_by!{|k| k[:order] && k.delete(:order) }
+        types.sort_by!{|k| k[:order] }
       
         return render :json => {
           :dishes => dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes, :price], :methods => [:image_sd, :image_hd]), 
