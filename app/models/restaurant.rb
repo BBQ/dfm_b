@@ -45,7 +45,7 @@ class Restaurant < ActiveRecord::Base
               LOWER(dishes.name) REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]'
               OR
               LOWER(restaurants.name) REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]'
-            )", keyword, keyword)
+            )")
   end
   
   def geo_address
