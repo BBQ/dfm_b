@@ -54,10 +54,10 @@ class Dish < ActiveRecord::Base
     }
     keyword = keywords[:"#{keyword}"].blank? ? keyword : keywords[:"#{keyword}"]
     
-    where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.name) REGEXP '[[:<:]]#{keyword.downcase}') 
+    where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.name) REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]') 
           OR 
-          dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.name) REGEXP '[[:<:]]#{keyword.downcase}')
-          OR LOWER(dishes.name) REGEXP '[[:<:]]#{keyword.downcase}'")
+          dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.name) REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]')
+          OR LOWER(dishes.name) REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]'")
   end
   
   def self.by_distance(lat, lon)

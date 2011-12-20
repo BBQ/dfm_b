@@ -27,7 +27,7 @@ class ApiController < ApplicationController
   
   def get_types
     return render :json => {
-          :types => DishType.where('id IN (2,4,6,14,15,16,17,18,19,22)').order('`order`'), 
+          :types => DishType.where('id != 10').order('`order`'), 
           :error => $error
     }
   end

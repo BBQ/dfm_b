@@ -38,13 +38,13 @@ class Restaurant < ActiveRecord::Base
     keyword = keywords[:"#{keyword}"].blank? ? keyword : keywords[:"#{keyword}"]
     
     where("restaurants.network_id IN ( SELECT DISTINCT network_id FROM dishes WHERE 
-              dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name` REGEXP '[[:<:]]#{keyword.downcase}')
+              dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE `name` REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]')
               OR 
-              dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name` REGEXP '[[:<:]]#{keyword.downcase}')
+              dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE `name` REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]')
               OR
-              LOWER(dishes.name) REGEXP '[[:<:]]#{keyword.downcase}'
+              LOWER(dishes.name) REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]'
               OR
-              LOWER(restaurants.name) REGEXP '[[:<:]]#{keyword.downcase}'
+              LOWER(restaurants.name) REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]'
             )", keyword, keyword)
   end
   
