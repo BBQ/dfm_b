@@ -57,7 +57,10 @@ class Dish < ActiveRecord::Base
     where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]') 
           OR 
           dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
-          OR LOWER(dishes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]'")
+          OR
+          dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtype WHERE LOWER(dish_subtype.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
+          OR 
+          LOWER(dishes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]'")
   end
   
   def self.by_distance(lat, lon)
