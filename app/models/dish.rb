@@ -52,12 +52,12 @@ class Dish < ActiveRecord::Base
       :fish => '(fish|рыба|морепродукты|креветки|мидии|форель|треска|карп|моллюски|устрицы|сибас|лосось|судак)',
       :vegetables => '(vegetables|овощи|овощь)'
     }
-    keyword = keywords[:"#{keyword}"].blank? ? keyword : keywords[:"#{keyword}"]
+    keyword = keywords[:"#{keyword}"].blank? ? keyword.downcase : keywords[:"#{keyword}"]
     
-    where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.name) REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]') 
+    where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]') 
           OR 
-          dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.name) REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]')
-          OR LOWER(dishes.name) REGEXP '[[:<:]]#{keyword.downcase}[[:>:]]'")
+          dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
+          OR LOWER(dishes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]'")
   end
   
   def self.by_distance(lat, lon)
