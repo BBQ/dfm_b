@@ -42,7 +42,7 @@ class Restaurant < ActiveRecord::Base
               OR 
               dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
               OR
-              dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtype WHERE LOWER(dish_subtype.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
+              dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
               OR
               LOWER(dishes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]'
               OR
