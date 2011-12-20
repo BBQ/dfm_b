@@ -60,7 +60,7 @@ class Review < ActiveRecord::Base
   
   def save_review(user_review)
    
-    rating = user_review[:rating].to_i
+    rating = user_review[:rating].to_f
     dish = Dish.find(user_review[:dish_id])
     restaurant = Restaurant.find_by_id(user_review[:restaurant_id])
     network = Network.find_by_id(restaurant.network_id)
