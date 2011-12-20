@@ -55,8 +55,8 @@ class Restaurant < ActiveRecord::Base
   def as_json(options={})
     self[:rating] = self.network.rating
     self[:votes] = self.network.votes
-    
-    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon], :methods => :dishes )
+        
+    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon, :network_id])
   end
   
   def find_image
@@ -67,34 +67,33 @@ class Restaurant < ActiveRecord::Base
     end
   end
   
-  def dishes(keyword = nil)
-    num_images = 20
-    photos = []
-    
-    dishes = Network.find_by_id(network_id).dishes.order('rating DESC, votes DESC, photo DESC')
-    dishes = dishes.search_for_keyword(keyword) unless keyword.nil?
-    
-    dishes.take(num_images).each do |dish|
-      if dish.photo && dish.photo.iphone.url != '/images/noimage.jpg'
-        photos.push({
-          :id => dish.id,
-          :photo => dish.photo.iphone.url
-        })
-      end
-    end
-    
-    if photos.count < num_images
-      reviews = Review.where('network_id = ?', network.id).order('count_likes DESC')
-      reviews.take(num_images - photos.count).each do |review|
-        if review.photo && review.photo.iphone.url != '/images/noimage.jpg'
-          photos.push({
-            :id => review.dish_id,
-            :photo => review.photo.iphone.url
-          })
-        end
-      end
-    end
-    photos
+  def dishes
+    # num_images = 20
+    #    photos = []
+    #    
+    #    dishes = Network.find_by_id(network_id).dishes.order('rating DESC, votes DESC, photo DESC')
+    #    
+    #    dishes.take(num_images).each do |dish|
+    #      if dish.photo && dish.photo.iphone.url != '/images/noimage.jpg'
+    #        photos.push({
+    #          :id => dish.id,
+    #          :photo => dish.photo.iphone.url
+    #        })
+    #      end
+    #    end
+    #    
+    #    if photos.count < num_images
+    #      reviews = Review.where('network_id = ?', network.id).order('count_likes DESC')
+    #      reviews.take(num_images - photos.count).each do |review|
+    #        if review.photo && review.photo.iphone.url != '/images/noimage.jpg'
+    #          photos.push({
+    #            :id => review.dish_id,
+    #            :photo => review.photo.iphone.url
+    #          })
+    #        end
+    #      end
+    #    end
+    #    photos
   end
   
   def self.near(lat, lon, rad = 1)

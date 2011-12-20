@@ -176,12 +176,34 @@ class ApiController < ApplicationController
       count = params[:sort] != 'distance' ? restaurants.count.count : restaurants.count
       restaurants = restaurants.limit("#{offset}, #{limit}") 
     end
+    
+    num_images =20
+    networks = []
+    restaurants.each do |r|
+      dont_add = 0
+      networks.each do |n|
+        dont_add = 1 && break if r.network_id == n[:network_id]
+      end
+      if dont_add == 0
+        dishes = []
+        if r.network.dishes
+          unless params[:keyword].blank?
+            r.network.dishes.search_for_keyword(params[:keyword]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
+          else
+            r.network.dishes.order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?} 
+          end
+        end
+        networks.push({:network_id => r.network_id, :dishes => dishes}) 
+      end
+    end
 
     return render :json => {
-          :restaurants => restaurants.as_json({:keyword => params[:keyword] ||= nil}), 
+          :restaurants => restaurants.as_json({:keyword => params[:keyword] ||= nil}),
+          :networks => networks,
           :count => count,
           :error => $error
     }
+    
   end
   
   def upload_photo
@@ -337,7 +359,7 @@ class ApiController < ApplicationController
       return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 666}} unless chk24.blank?
       
       return render :json => {:error => {:description => 'Restaurant not found', :code => 1}} unless Restaurant.find_by_id(params[:review][:restaurant_id])
-      return render :json => {:error => {:description => "Rating '#{params[:review][:rating]}' is not in range", :code => 2}} if params[:review][:rating].to_i > 5 || params[:review][:rating].to_i < 1
+      return render :json => {:error => {:description => "Rating '#{params[:review][:rating]}' is not in range", :code => 2}} if params[:review][:rating].to_i > 5 || params[:review][:rating].to_i < 0
       
       params[:review][:network_id] = Restaurant.find_by_id(params[:review][:restaurant_id])[:network_id]
 

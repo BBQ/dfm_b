@@ -1,6 +1,45 @@
 # encoding: utf-8
 namespace :import do
   
+  desc "Check was all dishes imported" 
+  task :check_import, [:dirname, :filename] => :environment do |t, args|
+    
+    require 'csv'
+  
+    directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:dirname] + '/'
+    log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/import/#{Time.new.strftime("%F-%H_%M_%S")}_excel_export.log"
+    file = directory + args[:filename]
+    parser = Excelx.new(file, false, :ignore)  
+    restaurant_chk = String
+        
+    dish_sheet = parser.sheets[1]
+    3.upto(parser.last_row(dish_sheet)) do |line|
+      name = parser.cell(line,'D', dish_sheet).strip.gsub(/'\s|\s'|[“”‛’»«`]/, '"') if parser.cell(line,'D', dish_sheet)
+      
+      network = parser.cell(line,'B', dish_sheet).capitalize_first_letter.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'B', dish_sheet)
+      network_id = Network.find_by_name(network)
+      
+      unless parser.cell(line,'A', dish_sheet).blank?
+        if dish = Dish.find_by_id(parser.cell(line,'A', dish_sheet).to_i)
+          p "Found by id, Update #{line}: #{name}"
+        else
+          unless Dish.find_by_name_and_network_id(name, network_id)
+            p "Not found by id, not found by name, Create #{line}: #{name}"
+          else
+            # p "Not found by id, found by name, DO NOTHING!!! #{line}: #{name}"
+          end
+        end
+      else
+        unless Dish.find_by_name_and_network_id(name, network_id)
+          p "Not found by id, not found by name, Create #{line}: #{name}"
+        else
+          # p "Not found by id, found by name, DO NOTHING!!! #{line}: #{name}"
+        end
+      end
+    end
+    
+  end
+  
   desc "Set categories for Dishes" 
   task :set_categoies, [:dirname, :filename] => :environment do |t, args|
     require 'csv'
@@ -245,10 +284,10 @@ namespace :import do
             dish.update_attributes(dish_data)
             dish_id = dish.id
           else
-            dish_id = Dish.create(dish_data).id unless Dish.find_by_name(dish_data[:name])
+            dish_id = Dish.create(dish_data).id unless Dish.find_by_name_and_network_id(dish_data[:name],dish_data[:network_id])
           end
         else
-          dish_id = Dish.create(dish_data).id unless Dish.find_by_name(dish_data[:name])
+          dish_id = Dish.create(dish_data).id unless Dish.find_by_name_and_network_id(dish_data[:name],dish_data[:network_id])
         end
       end
       p dish_id.to_s + ' : ' + dish_data[:name] unless dish_id.blank?

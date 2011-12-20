@@ -8,7 +8,7 @@ class Dish < ActiveRecord::Base
   belongs_to :dish_extratype
   belongs_to :network
   has_many :reviews
-    
+      
   mount_uploader :photo, ImageUploader
   
   def find_image
