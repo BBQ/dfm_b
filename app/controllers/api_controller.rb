@@ -303,10 +303,11 @@ class ApiController < ApplicationController
     if params[:comment] && params[:review_id] && !params[:access_token].blank?
       user_id = User.get_user_by_fb_token(params[:access_token])
       comment = Comment.new.add({:user_id => user_id, :review_id => params[:review_id], :text => params[:comment]})                
+    else
+      return render :json => {
+        :error => {:description => 'Restaurant not found', :code => 666}
+      }
     end
-    return render :json => {
-      :error => $error
-    }
   end
   
   def get_restaurant_menu
