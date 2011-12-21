@@ -34,7 +34,7 @@ class User < ActiveRecord::Base
           :email => result["email"] , 
           :name => result["name"], 
           :facebook_id => result["id"]
-        })
+        }).id
         
         Authentication.create({
           :user_id => id,
