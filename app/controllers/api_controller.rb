@@ -8,10 +8,11 @@ class ApiController < ApplicationController
   
   def get_user_id
     if params[:id] && params[:provider]
-      user = User.find_by_facebook_id(params[:id]).id if params[:provider] = 'facebook'
+      user = User.find_by_facebook_id(params[:id]) if params[:provider] == 'facebook'
+      user_id = user.id if user
     end
     return render :json => {
-          :user_id => user, 
+          :user_id => user_id, 
           :error => $error
     }
   end
