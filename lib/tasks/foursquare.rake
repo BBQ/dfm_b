@@ -10,7 +10,7 @@ task :get_info => :environment do
     if fsq_hash && fsq_hash.groups[0].items.count > 0
       r.fsq_name = fsq_hash.groups[0].items.first.name
       r.fsq_address = fsq_hash.groups[0].items.first.location.address
-      r.fsq_address = fsq_hash.groups[0].items.first.location.lat
+      r.fsq_lat = fsq_hash.groups[0].items.first.location.lat
       r.fsq_lng = fsq_hash.groups[0].items.first.location.lng
       r.fsq_checkins_count = fsq_hash.groups[0].items.first.stats.checkinsCount
       r.fsq_users_count = fsq_hash.groups[0].items.first.stats.usersCount

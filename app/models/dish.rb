@@ -13,7 +13,7 @@ class Dish < ActiveRecord::Base
   
   def find_image
     if photo.blank?
-      review = Review.where("dish_id = ?", id).order('count_likes DESC').first.photo if Review.find_by_dish_id(id)
+      review = Review.where("dish_id = ? AND photo NOT NULL", id).order('count_likes DESC').first.photo if Review.find_by_dish_id(id)
     else
       photo
     end
