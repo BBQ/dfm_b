@@ -52,10 +52,20 @@ Rails.application.config.sorcery.configure do |config|
   # if Rails.env.production?
   require 'socket'
   if Socket.gethostname == 'MacBook-Pro-Mac.local'
+    # foursquare
+    @client_id = 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV'
+    @client_secret = '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX'
+    
+    # facebook
     app_id_or_api_key = '133629496729663'
     app_secret = '32d9a614607a08c39d51f2f80647c072'
     url = "http://dishfm.local/oauths/callback?provider=facebook"
   else
+    # foursquare
+    @client_id = '0JWDGVS0JRP4TTDORCLGXDTEHHIM5ENWZSNJMA11EYNCLR2C'
+    @client_secret = 'MB2DWZR0VLPM4M1M4XY5SJGGY3IJBCP0MRLNGHIVDBXLNZOD'
+    
+    # facebook
     app_id_or_api_key = '304688586223462'
     app_secret = 'f65df2374b64e5a2902278655ba98c30'
     url = "http://test.dish.fm/oauths/callback?provider=facebook"
@@ -66,7 +76,7 @@ Rails.application.config.sorcery.configure do |config|
   config.facebook.callback_url = url
   config.facebook.user_info_mapping = {:facebook_id => 'id', :email => "email", :name => "name"}
   config.facebook.scope = "email, offline_access, publish_stream, user_checkins, publish_checkins"
-
+  
   # config.github.key = ""
   # config.github.secret = ""
   # config.github.callback_url = "http://0.0.0.0:3000/oauth/callback?provider=github"

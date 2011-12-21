@@ -19,8 +19,9 @@ gem "rmagick", '2.12.2'
 gem "mini_magick"
 
 gem "sorcery"
-gem "koala"
 
+gem "koala"
+gem "foursquare2"
 gem "geocoder"
 
 gem "kaminari"

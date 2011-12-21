@@ -287,7 +287,7 @@ class ApiController < ApplicationController
   def like_review
     if params[:review_id] && params[:access_token]
       user_id = User.get_user_by_fb_token(params[:access_token])   
-      data = Like.new.save_me(user_id, params[:review_id])
+      data = Like.new.save_me(user_id, params[:review_id]) if user_id
       code = data[:error] ? 11 : nil
     else
       data[:error] = 'Parameters missing'

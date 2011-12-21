@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111220130242) do
+ActiveRecord::Schema.define(:version => 20111221093728) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -235,7 +235,7 @@ ActiveRecord::Schema.define(:version => 20111220130242) do
     t.float    "lon"
     t.float    "lat"
     t.string   "address"
-    t.integer  "network_id",                                     :null => false
+    t.integer  "network_id",                                          :null => false
     t.string   "city"
     t.string   "time"
     t.string   "phone"
@@ -244,12 +244,12 @@ ActiveRecord::Schema.define(:version => 20111220130242) do
     t.string   "breakfast"
     t.string   "businesslunch"
     t.string   "photo"
-    t.integer  "votes",                       :default => 0
-    t.float    "rating",        :limit => 21
-    t.string   "wifi",                        :default => "0"
-    t.boolean  "chillum",                     :default => false
-    t.boolean  "terrace",                     :default => false
-    t.boolean  "cc",                          :default => false
+    t.integer  "votes",                            :default => 0
+    t.float    "rating",             :limit => 21
+    t.string   "wifi",                             :default => "0"
+    t.boolean  "chillum",                          :default => false
+    t.boolean  "terrace",                          :default => false
+    t.boolean  "cc",                               :default => false
     t.string   "source"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -275,6 +275,13 @@ ActiveRecord::Schema.define(:version => 20111220130242) do
     t.string   "thu"
     t.string   "fri"
     t.string   "sat"
+    t.string   "fsq_checkins_count"
+    t.string   "fsq_tip_count"
+    t.string   "fsq_users_count"
+    t.string   "fsq_name"
+    t.string   "fsq_address"
+    t.string   "fsq_lat"
+    t.string   "fsq_lng"
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"

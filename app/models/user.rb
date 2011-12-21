@@ -25,12 +25,25 @@ class User < ActiveRecord::Base
     begin
       rest = Koala::Facebook::GraphAndRestAPI.new(access_token) # pre-1.2beta
       result = rest.get_object("me")
+
       if user = User.find_by_facebook_id(result["id"])
         id = user.id
       elsif result["email"] 
-        data = {:email => result["email"] , :name => result["name"], :facebook_id => result["id"]}
-        id = User.create(data)
+        
+        id = User.create({
+          :email => result["email"] , 
+          :name => result["name"], 
+          :facebook_id => result["id"]
+        })
+        
+        Authentication.create({
+          :user_id => id,
+          :provider => result["facebook"] , 
+          :uid => result["id"] 
+        })
+        
         User.new.get_user_fb_friends(access_token)
+        
       end
     rescue
       nil

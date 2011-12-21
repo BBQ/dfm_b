@@ -136,26 +136,23 @@ namespace :import do
     restaurant_chk = String
         
     3.upto(parser.last_row) do |line|
-   
+       
       # Delete Existed
       if parser.cell(line,'B') != restaurant_chk
        if network = Network.find_by_name(parser.cell(line,'B'))
          network.restaurants.each do |r|
             if r.reviews.count < 1
               r.restaurant_images.each do |i| 
-                p i.id.to_s + ' image exist'
-                p i.id.to_s + ' image deleted' if i.destroy
+                p "can't deleted image #{i.id.to_s}" unless i.destroy
               end
-              p "try to delete #{r.id} : #{r.name}"
-              p "succ. deleted #{r.id} : #{r.name}" if r.destroy
+              p "can't deleted #{r.id} : #{r.name}" unless r.destroy
             else
               p "#{r.id} : #{r.name} #{r.address} has 1 or more reviews"
             end
          end
          network.dishes.each do |d| 
            if d.reviews.count < 1
-             p "try to delete #{d.id} : #{d.name}"
-             p "succ. deleted #{d.id} : #{d.name}" if d.destroy
+             p "can't deleted #{d.id} : #{d.name}" unless d.destroy
            else
              p "#{d.id} : #{d.name} has 1 or more reviews"
            end
@@ -176,7 +173,7 @@ namespace :import do
           csv << ["#{Time.now};file #{photo_file} not found for #{parser.cell(line,'B')} at #{parser.cell(line,'B')}"]
         end
       end
-  
+      
       restaurant_data = {
         :name => parser.cell(line,'B').capitalize_first_letter,
         :city => parser.cell(line,'C').blank? ? '' : parser.cell(line,'C').strip.gsub(/г\./, ''),
@@ -203,7 +200,7 @@ namespace :import do
     
       # Create
       unless restaurant_data[:name].blank?
-  
+      
         unless parser.cell(line,'A').blank?
           if restaurant = Restaurant.find_by_id(parser.cell(line,'A').to_i)
             restaurant.update_attributes(restaurant_data)
@@ -214,16 +211,16 @@ namespace :import do
         else
           restaurant_id = Restaurant.create(restaurant_data).id
         end
-  
+      
         unless restaurant_id.blank?
           RestaurantImage.create(:photo => photo, :restaurant_id => restaurant_id)
-
+    
           parser.cell(line,'I').split(',').each do |cuisine|
              cuisine.downcase!.gsub!(/^\p{Space}+|\p{Space}+$/, "")
              cuisine_id = Cuisine.find_by_name(cuisine) ? Cuisine.find_by_name(cuisine).id : Cuisine.create(:name => cuisine).id
              RestaurantCuisine.create(:cuisine_id => cuisine_id, :restaurant_id => restaurant_id)
           end
-
+    
           parser.cell(line,'H').split(',').each do |type|
              type.downcase!.gsub!(/^\p{Space}+|\p{Space}+$/, "")
              type_id = Type.find_by_name(type) ? Type.find_by_name(type).id : Type.create(:name => type).id
@@ -243,18 +240,18 @@ namespace :import do
       network = parser.cell(line,'B', dish_sheet).capitalize_first_letter.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'B', dish_sheet)
       dish_network_id = Network.find_by_name(network) ? Network.find_by_name(network).id : 0
       name = parser.cell(line,'D', dish_sheet).strip.gsub(/'\s|\s'|[“”‛’»«`]/, '"') if parser.cell(line,'D', dish_sheet)
-    
+          
       dish_category = parser.cell(line,'C', dish_sheet).downcase.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'C', dish_sheet)
       dish_category_id = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
-  
+        
       dish_type = parser.cell(line,'G', dish_sheet).downcase.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'G', dish_sheet)
       dish_type_id = DishType.find_by_name(dish_type) ? DishType.find_by_name(dish_type).id : DishType.create(:name => dish_type).id
-  
+        
       dish_extratype = parser.cell(line,'J', dish_sheet).downcase.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'J', dish_sheet)
       dish_extratype_id = DishExtratype.find_by_name(dish_extratype) ? DishExtratype.find_by_name(dish_extratype).id : DishExtratype.create(:name => dish_extratype).id
-  
+        
       photo_file = parser.cell(line,'H',dish_sheet) ? directory + parser.cell(line,'B', dish_sheet) + '/' + parser.cell(line,'H',dish_sheet) : ''
-    
+          
       if File.file?(photo_file)
         photo = File.open(photo_file) 
       elsif (!photo_file.blank?)
@@ -262,9 +259,9 @@ namespace :import do
           csv << ["#{Time.now};file #{photo_file} not found for #{parser.cell(line,'D', dish_sheet)} at #{parser.cell(line,'B', dish_sheet)}"]
         end
       end
-    
+          
       description = parser.cell(line,'E', dish_sheet).to_s.gsub(/'\s|\s'|[“”‛’»«`]/, '"').strip if parser.cell(line,'E', dish_sheet)
-    
+          
       dish_data = {
         :name => name,
         :photo => photo,
@@ -276,7 +273,7 @@ namespace :import do
         :dish_subtype_id => 0,
         :dish_extratype_id => dish_extratype_id
       }
-    
+          
       # Create
       unless dish_data[:name].blank?
         unless parser.cell(line,'A', dish_sheet).blank?
@@ -291,31 +288,33 @@ namespace :import do
         end
       end
       p dish_id.to_s + ' : ' + dish_data[:name] unless dish_id.blank?
-    end
     
-    # Set Category Order
-    network_name = parser.cell(line,'B', dish_sheet).capitalize_first_letter.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'B', dish_sheet)
-    dc_name = parser.cell(line,'C', dish_sheet).downcase.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'C', dish_sheet)
-    if parser.cell(line,'C', dish_sheet) != dc_chk
-        i += 1
-        if dc = DishCategory.find_by_name(dc_name)
-            if dish_network =  Network.find_by_name(network_name)
-                  dish_network.restaurants.each do |r|
-                      unless DishCategoryOrder.find_by_dish_category_id_and_restaurant_id(dc.id, r.id)
-                          p dc.name + " : " + r.name.to_s + " " + r.address.to_s
-                          DishCategoryOrder.create({
-                            :dish_category_id => dc.id,
-                            :network_id => dish_network.id,
-                            :restaurant_id => r.id,
-                            :order => i
-                          })
-                        end
-                  end
-                  i += 0 if parser.cell(line,'B', dish_sheet) != network_chk
-                  network_chk = parser.cell(line,'B', dish_sheet)
-            end
-        end
-        dc_chk = parser.cell(line,'C', dish_sheet)
+      # Set Category Order
+      dc_chk = String
+      network_chk = String
+      i = 0
+      network_name = parser.cell(line,'B', dish_sheet).capitalize_first_letter.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'B', dish_sheet)
+      dc_name = parser.cell(line,'C', dish_sheet).downcase.gsub(/^\p{Space}+|\p{Space}+$/, "") if parser.cell(line,'C', dish_sheet)
+      if parser.cell(line,'C', dish_sheet) != dc_chk
+          i += 1
+          if dc = DishCategory.find_by_name(dc_name)
+              if dish_network =  Network.find_by_name(network_name)
+                    dish_network.restaurants.each do |r|
+                        unless DishCategoryOrder.find_by_dish_category_id_and_restaurant_id(dc.id, r.id)
+                            DishCategoryOrder.create({
+                              :dish_category_id => dc.id,
+                              :network_id => dish_network.id,
+                              :restaurant_id => r.id,
+                              :order => i
+                            })
+                          end
+                    end
+                    i += 0 if parser.cell(line,'B', dish_sheet) != network_chk
+                    network_chk = parser.cell(line,'B', dish_sheet)
+              end
+          end
+          dc_chk = parser.cell(line,'C', dish_sheet)
+      end
     end
     
     sep = '==========================================================='
