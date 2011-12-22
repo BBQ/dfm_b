@@ -35,7 +35,7 @@ class Restaurant < ActiveRecord::Base
       :fish => '(fish|рыба|морепродукты|креветки|мидии|форель|треска|карп|моллюски|устрицы|сибас|лосось|судак)',
       :vegetables => '(vegetables|овощи|овощь)'
     }  
-    keyword = keywords[:"#{keyword}"].blank? ? keyword.downcase : keywords[:"#{keyword}"]
+    keyword = keywords[:"#{keyword}"].blank? ? keyword.downcase.gsub(/[']/) { |x| '\\' + x } : keywords[:"#{keyword}"]
     
     where("restaurants.network_id IN ( SELECT DISTINCT network_id FROM dishes WHERE 
               dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
