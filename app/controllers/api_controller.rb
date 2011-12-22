@@ -301,12 +301,19 @@ class ApiController < ApplicationController
   def comment_on_review
     if params[:comment] && params[:review_id] && !params[:access_token].blank?
       user_id = User.get_user_by_fb_token(params[:access_token])
-      comment = Comment.new.add({:user_id => user_id, :review_id => params[:review_id], :text => params[:comment]})                
+      if 
+        comment = Comment.new.add({:user_id => user_id, :review_id => params[:review_id], :text => params[:comment]})
+      else
+        $error = {:description => 'User not found', :code => 555}
+      end
     else
       return render :json => {
         :error => {:description => 'Parameters missing', :code => 666}
       }
     end
+    return render :json => {
+      :error => $error
+    }
   end
   
   def get_restaurant_menu
