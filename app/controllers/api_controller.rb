@@ -149,7 +149,6 @@ class ApiController < ApplicationController
     lat = params[:lat] ||= '55.753548'
     lon = params[:lon] ||= '37.609239'
     radius = params[:radius].to_f != 0 ? params[:radius].to_f: nil
-    search = params[:search].blank? ? params[:keyword] : params[:search]
             
     if params[:sort] == 'distance'
       if radius
@@ -169,7 +168,7 @@ class ApiController < ApplicationController
       ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("networks.rating DESC, networks.votes DESC").by_distance(params[:lat], params[:lon]).group('restaurants.name')
     end
     
-    restaurants = restaurants.where("restaurants.`name` LIKE '%#{params[:search]}%'") unless params[:search].blank?
+    restaurants = restaurants.where("restaurants.`name` LIKE ? ESCAPE '!'", "%#{params[:search].gsub(/[']/) { |x| '!' + x }}%") unless params[:search].blank?
     restaurants = restaurants.search_for_keyword(params[:keyword]) unless params[:keyword].blank?
     # restaurants = restaurants.where(all_filters) unless all_filters.blank?
     
