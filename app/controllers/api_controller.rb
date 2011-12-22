@@ -304,7 +304,7 @@ class ApiController < ApplicationController
       comment = Comment.new.add({:user_id => user_id, :review_id => params[:review_id], :text => params[:comment]})                
     else
       return render :json => {
-        :error => {:description => 'Restaurant not found', :code => 666}
+        :error => {:description => 'Parameters missing', :code => 666}
       }
     end
   end
