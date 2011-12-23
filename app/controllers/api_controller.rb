@@ -152,11 +152,11 @@ class ApiController < ApplicationController
             
     if params[:sort] == 'distance'
       if radius
-        restaurants = Restaurant.near(params[:lat], params[:lon], radius).by_distance(params[:lat], params[:lon])
+        restaurants = Restaurant.near(params[:lat], params[:lon], radius).by_distance(params[:lat], params[:lon]).order('fsq_checkins_count DESC')
       else
-        restaurants = Restaurant.by_distance(params[:lat], params[:lon])
+        restaurants = Restaurant.by_distance(params[:lat], params[:lon]).order('fsq_checkins_count DESC')
       end     
-      restaurants = restaurants.includes(:network).where('lat IS NOT NULL AND lon IS NOT NULL').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
+      restaurants = restaurants.includes(:network).where('lat IS NOT NULL AND lon IS NOT NULL').order("networks.rating DESC, networks.votes DESC")
     else
       if radius
         restaurants = Restaurant.near(params[:lat], params[:lon], radius).includes(:network)
@@ -164,8 +164,8 @@ class ApiController < ApplicationController
         restaurants = Restaurant.includes(:network)
       end
       restaurants = restaurants.joins("JOIN (
-      #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').by_distance(params[:lat], params[:lon]).to_sql}) r1
-      ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(params[:lat], params[:lon]).group('restaurants.name')
+      #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').by_distance(params[:lat], params[:lon]).order('fsq_checkins_count DESC').to_sql}) r1
+      ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("networks.rating DESC, networks.votes DESC").by_distance(params[:lat], params[:lon]).group('restaurants.name')
     end
     
     restaurants = restaurants.where("restaurants.`name` LIKE ?", "%#{params[:search].gsub(/[']/) { |x| '\\' + x }}%") unless params[:search].blank?
