@@ -166,7 +166,12 @@ class ApiController < ApplicationController
     
     lat = !params[:lat].blank? ? params[:lat] : '55.753548'
     lon = !params[:lon].blank? ? params[:lon] : '37.609239'
-    radius = params[:radius].to_f != 0 ? params[:radius].to_f: nil
+    
+    if params[:radius] == 'city'
+      radius = 30
+    else
+      radius = params[:radius].to_f != 0 ? params[:radius].to_f : nil
+    end
     
     # return render :json => lon
 
