@@ -11,6 +11,7 @@ gem 'sass'
 gem 'haml'
 gem 'jquery-rails'
 
+gem 'nokogiri'
 gem 'roo', :git => 'git://github.com/hmcgowan/roo.git'
 gem 'unicode'
 

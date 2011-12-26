@@ -6,6 +6,14 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def fsq
+    lat = params[:lat] ||= '55.753548'
+    lon = params[:lon] ||= '37.609239'
+    client = Foursquare2::Client.new(:client_id => 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV', :client_secret => '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX')
+    fsq_hash = client.explore_venues(:ll => "#{lat},#{lon}", :radius => "5000", :section => 'food, drinks')
+    return render :json => fsq_hash
+  end
+  
   def get_user_id
     if params[:id] && params[:provider]
       user = User.find_by_facebook_id(params[:id]) if params[:provider] == 'facebook'
@@ -144,28 +152,41 @@ class ApiController < ApplicationController
     #     open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
     #   end    
     #   all_filters = all_filters ? all_filters + ' AND ' + open_now : open_now
-    # end
+    # end      
     
-    lat = params[:lat] ||= '55.753548'
-    lon = params[:lon] ||= '37.609239'
+    city_radius = 30
+    city_lat = 55.753548
+    city_lon = 37.609239
+    pi = Math::PI
+    
+    load_additional = 1 if !params[:lat].blank? && params[:lon] && ((Math.acos(
+    	Math.sin(city_lat * pi / 180) * Math.sin(params[:lat].to_f * pi / 180) + 
+    	Math.cos(city_lat * pi / 180) * Math.cos(params[:lat].to_f * pi / 180) * 
+    	Math.cos((params[:lon].to_f - city_lon) * pi / 180)) * 180 / pi) * 60 * 1.1515) * 1.609344 >= city_radius
+    
+    lat = !params[:lat].blank? ? params[:lat] : '55.753548'
+    lon = !params[:lon].blank? ? params[:lon] : '37.609239'
     radius = params[:radius].to_f != 0 ? params[:radius].to_f: nil
+    
+    # return render :json => lon
+
             
     if params[:sort] == 'distance'
       if radius
-        restaurants = Restaurant.near(params[:lat], params[:lon], radius).by_distance(params[:lat], params[:lon])
+        restaurants = Restaurant.near(lat, lon, radius).by_distance(lat, lon)
       else
-        restaurants = Restaurant.by_distance(params[:lat], params[:lon])
+        restaurants = Restaurant.by_distance(lat, lon)
       end     
       restaurants = restaurants.includes(:network).where('lat IS NOT NULL AND lon IS NOT NULL').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
     else
       if radius
-        restaurants = Restaurant.near(params[:lat], params[:lon], radius).includes(:network)
+        restaurants = Restaurant.near(lat, lon, radius).includes(:network)
       else
         restaurants = Restaurant.includes(:network)
       end
       restaurants = restaurants.joins("JOIN (
-      #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').by_distance(params[:lat], params[:lon]).to_sql}) r1
-      ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(params[:lat], params[:lon]).group('restaurants.name')
+      #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').by_distance(lat, lon).to_sql}) r1
+      ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
     end
     
     restaurants = restaurants.where("restaurants.`name` LIKE ?", "%#{params[:search].gsub(/[']/) { |x| '\\' + x }}%") unless params[:search].blank?
@@ -198,6 +219,7 @@ class ApiController < ApplicationController
     end
 
     return render :json => {
+          :load_additional => load_additional ||= 0,
           :restaurants => restaurants.as_json({:keyword => params[:keyword] ||= nil}),
           :networks => networks,
           :count => count,
@@ -208,7 +230,7 @@ class ApiController < ApplicationController
   
   def upload_photo
     if params[:uuid] && params[:photo]     
-      $error = {:description => 'Не удается загрузить изображание', :code => 9} unless Image.create({:photo => params[:photo], :uuid => params[:uuid]})           
+      $error = {:description => 'Fails to load image', :code => 9} unless Image.create({:photo => params[:photo], :uuid => params[:uuid]})           
     else
       $error = {:description => 'Parameters missing', :code => 8}
     end
