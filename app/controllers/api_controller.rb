@@ -10,7 +10,7 @@ class ApiController < ApplicationController
     lat = params[:lat] ||= '55.753548'
     lon = params[:lon] ||= '37.609239'
     client = Foursquare2::Client.new(:client_id => 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV', :client_secret => '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX')
-    fsq_hash = client.explore_venues(:ll => "#{lat},#{lon}", :radius => "5000", :section => 'food, drinks')
+    fsq_hash = client.venue('4bcd87ceb6c49c74ae739591')
     return render :json => fsq_hash
   end
   
@@ -382,16 +382,60 @@ class ApiController < ApplicationController
   end
   
   def add_review
-    if params[:review] && params[:review][:restaurant_id] && params[:review][:rating] && params[:access_token]
+    if params[:review] && params[:review][:rating] && params[:access_token]
       params[:review][:user_id] = User.get_user_by_fb_token(params[:access_token])
       
       chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
       return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 666}} unless chk24.blank?
       
-      return render :json => {:error => {:description => 'Restaurant not found', :code => 1}} unless Restaurant.find_by_id(params[:review][:restaurant_id])
-      return render :json => {:error => {:description => "Rating '#{params[:review][:rating]}' is not in range", :code => 2}} if params[:review][:rating].to_i > 5 || params[:review][:rating].to_i < 0
+      if params[:review][:restaurant_id].blank?
+        
+        unless params[:foursquare_venue_id].blank?
+          client = Foursquare2::Client.new(:client_id => 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV', :client_secret => '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX')
+          venue = client.venue(params[:foursquare_venue_id])
+
+          if r = Restaurant.find_by_fsq_id(params[:foursquare_venue_id])
+            params[:review][:restaurant_id] = r.id
+            params[:review][:network_id] = r.network_id
+          else
+
+            data = {
+              :name => venue.name,
+              :address => venue.location.address,
+              :city => venue.location.city,
+              :lat => venue.location.lat.to_f,
+              :lon => venue.location.lng.to_f,
+              :fsq_id => venue.id,
+              :fsq_lng => venue.location.lng,
+              :fsq_lat => venue.location.lat,
+              :fsq_checkins_count => venue.stats.checkinsCount,
+              :fsq_tip_count => venue.stats.tipCount,
+              :fsq_users_count => venue.stats.usersCount,
+              :fsq_name => venue.name,
+              :fsq_address => venue.location.address,
+              :source => 'foursquare',
+              :name => venue.name,
+              :network_id => Network.find_by_name(venue.name) ? Network.find_by_name(venue.name).id : Network.create(:name => venue.name).id
+            }
+            if r = Restaurant.create(data)
+              params[:review][:restaurant_id] = r.id
+              params[:review][:network_id] = r.network_id
+            else
+              return render :json => {:error => {:description => 'Error on creat restaurant', :code => 1}}
+            end
+          end
+        else
+          return render :json => {:error => {:description => 'Restaurant not found', :code => 1}}
+        end
+      else
+        if r = Restaurant.find_by_id(params[:review][:restaurant_id])
+          params[:review][:network_id] = r.network_id
+        else
+          return render :json => {:error => {:description => 'Restaurant not found', :code => 1}} 
+        end
+      end
       
-      params[:review][:network_id] = Restaurant.find_by_id(params[:review][:restaurant_id])[:network_id]
+      return render :json => {:error => {:description => "Rating '#{params[:review][:rating]}' is not in range", :code => 2}} if params[:review][:rating].to_i > 5 || params[:review][:rating].to_i < 0
 
       if params[:uuid] && image = Image.find_by_uuid(params[:uuid])
         params[:review][:photo] = File.open(image.photo.file.file)  

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111221093728) do
+ActiveRecord::Schema.define(:version => 20111226115853) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -234,6 +234,8 @@ ActiveRecord::Schema.define(:version => 20111221093728) do
     t.string   "name_eng"
     t.float    "lon"
     t.float    "lat"
+    t.string   "fsq_lng"
+    t.string   "fsq_lat"
     t.string   "address"
     t.integer  "network_id",                                          :null => false
     t.string   "city"
@@ -275,13 +277,12 @@ ActiveRecord::Schema.define(:version => 20111221093728) do
     t.string   "thu"
     t.string   "fri"
     t.string   "sat"
-    t.string   "fsq_checkins_count"
+    t.integer  "fsq_checkins_count"
     t.string   "fsq_tip_count"
     t.string   "fsq_users_count"
     t.string   "fsq_name"
     t.string   "fsq_address"
-    t.string   "fsq_lat"
-    t.string   "fsq_lng"
+    t.string   "fsq_id"
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"
