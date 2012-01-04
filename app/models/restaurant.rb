@@ -57,8 +57,9 @@ class Restaurant < ActiveRecord::Base
   def as_json(options={})
     self[:rating] = self.network.rating
     self[:votes] = self.network.votes
+    self[:fsq_id] = self.fsq_id || ''
         
-    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon, :network_id])
+    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon, :network_id, :fsq_id])
   end
   
   def find_image
