@@ -6,14 +6,6 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
-  def fsq
-    lat = params[:lat] ||= '55.753548'
-    lon = params[:lon] ||= '37.609239'
-    client = Foursquare2::Client.new(:client_id => 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV', :client_secret => '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX')
-    fsq_hash = client.venue('4bcd87ceb6c49c74ae739591')
-    return render :json => fsq_hash
-  end
-  
   def get_user_id
     if params[:id] && params[:provider]
       user = User.find_by_facebook_id(params[:id]) if params[:provider] == 'facebook'
@@ -62,6 +54,7 @@ class ApiController < ApplicationController
     
     lat = params[:lat] ||= '55.753548'
     lon = params[:lon] ||= '37.609239'
+    
     radius = params[:radius].to_f != 0 ? params[:radius].to_f: nil
     search = params[:search].blank? ? params[:keyword] : params[:search]
     
@@ -73,12 +66,12 @@ class ApiController < ApplicationController
       dishes = Dish.where("dishes.network_id IN (#{networks.join(',')})") if networks.count > 0
     end
     
-    dishes ||= Dish    
+    dishes ||= Dish
     dishes = dishes.search_for_keyword(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
     dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
     count = dishes.count
-    dishes = dishes.limit("#{offset}, #{limit}")
+    dishes = dishes.limit("#{offset}, #{limit}").select([:id, :name, :photo, :rating, :votes, :restaurant_id, :network_id])
     
     restaurants = []
     dishes.each do |dish|
@@ -182,12 +175,12 @@ class ApiController < ApplicationController
       else
         restaurants = Restaurant.by_distance(lat, lon)
       end     
-      restaurants = restaurants.includes(:network).where('lat IS NOT NULL AND lon IS NOT NULL').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
+      restaurants = restaurants.joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').where('lat IS NOT NULL AND lon IS NOT NULL').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
     else
       if radius
-        restaurants = Restaurant.near(lat, lon, radius).includes(:network)
+        restaurants = Restaurant.near(lat, lon, radius).joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`')
       else
-        restaurants = Restaurant.includes(:network)
+        restaurants = Restaurant.joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`')
       end
       restaurants = restaurants.joins("JOIN (
       #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').by_distance(lat, lon).to_sql}) r1
@@ -200,7 +193,7 @@ class ApiController < ApplicationController
     
     if restaurants
       count = params[:sort] != 'distance' ? restaurants.count.count : restaurants.count
-      restaurants = restaurants.limit("#{offset}, #{limit}") 
+      restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.lat, restaurants.lon, restaurants.network_id, restaurants.rating, restaurants.votes').limit("#{offset}, #{limit}") 
     end
     
     num_images =20
