@@ -35,7 +35,7 @@ class Dish < ActiveRecord::Base
       COS((? - restaurants.lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344 <= ?", lat, lat, lon, rad)
   end
   
-  def self.search_for_keyword(keyword)
+  def self.search_by_keyword(keyword)
     keywords = {
       :salad => '(салат|salad|салатик)',
       :soup => '(soup|суп|супы|супчик|супчики|супец)',
@@ -62,6 +62,12 @@ class Dish < ActiveRecord::Base
           dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
           OR 
           LOWER(dishes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]'")
+  end
+  
+  def self.search_by_tag(tag)
+    if tag = Tag.find_by_name(tag)
+      where('id IN (SELECT dish_id FROM dish_tags WHERE tag_id = ?)', tag.id)
+    end
   end
   
   def self.by_distance(lat, lon)

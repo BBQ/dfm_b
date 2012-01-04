@@ -67,7 +67,7 @@ class ApiController < ApplicationController
     end
     
     dishes ||= Dish
-    dishes = dishes.search_by_tag(search) unless search.blank?
+    dishes = dishes.search_by_keyword(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
     dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
     count = dishes.count('dishes.id')
@@ -207,7 +207,7 @@ class ApiController < ApplicationController
         dishes = []
         if r.network.dishes
           unless params[:keyword].blank?
-            r.network.dishes.search_for_keyword(params[:keyword]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
+            r.network.dishes.search_by_keyword(params[:keyword]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
           else
             r.network.dishes.order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?} 
           end
