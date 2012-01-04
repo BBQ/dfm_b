@@ -193,7 +193,7 @@ class ApiController < ApplicationController
     
     if restaurants
       count = params[:sort] != 'distance' ? restaurants.count.count : restaurants.count
-      restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.lat, restaurants.lon, restaurants.network_id, restaurants.rating, restaurants.votes').limit("#{offset}, #{limit}") 
+      restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.lat, restaurants.lon, restaurants.network_id, restaurants.rating, restaurants.votes, restaurants.fsq_id').limit("#{offset}, #{limit}") 
     end
     
     num_images =20
