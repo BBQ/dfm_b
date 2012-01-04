@@ -67,11 +67,11 @@ class ApiController < ApplicationController
     end
     
     dishes ||= Dish
-    dishes = dishes.search_for_keyword(search) unless search.blank?
+    dishes = dishes.search_by_tag(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
     dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
-    count = dishes.count
-    dishes = dishes.limit("#{offset}, #{limit}").select([:id, :name, :photo, :rating, :votes, :restaurant_id, :network_id])
+    count = dishes.count('dishes.id')
+    dishes = dishes.limit("#{offset}, #{limit}")
     
     restaurants = []
     dishes.each do |dish|
@@ -188,7 +188,7 @@ class ApiController < ApplicationController
     end
     
     restaurants = restaurants.where("restaurants.`name` LIKE ?", "%#{params[:search].gsub(/[']/) { |x| '\\' + x }}%") unless params[:search].blank?
-    restaurants = restaurants.search_for_keyword(params[:keyword]) unless params[:keyword].blank?
+    restaurants = restaurants.search_by_tag(params[:keyword]) unless params[:keyword].blank?
     # restaurants = restaurants.where(all_filters) unless all_filters.blank?
     
     if restaurants
