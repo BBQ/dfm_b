@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111226115853) do
+ActiveRecord::Schema.define(:version => 20120104145940) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -94,6 +94,16 @@ ActiveRecord::Schema.define(:version => 20111226115853) do
     t.integer  "dish_type_id", :null => false
     t.string   "name_eng"
   end
+
+  create_table "dish_tags", :id => false, :force => true do |t|
+    t.integer  "tag_id",     :null => false
+    t.integer  "dish_id",    :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "dish_tags", ["dish_id"], :name => "index_dish_tags_on_dish_id"
+  add_index "dish_tags", ["tag_id"], :name => "index_dish_tags_on_tag_id"
 
   create_table "dish_types", :force => true do |t|
     t.string   "name"
@@ -221,6 +231,16 @@ ActiveRecord::Schema.define(:version => 20111226115853) do
     t.datetime "updated_at"
   end
 
+  create_table "restaurant_tags", :id => false, :force => true do |t|
+    t.integer  "tag_id",        :null => false
+    t.integer  "restaurant_id", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "restaurant_tags", ["restaurant_id"], :name => "index_restaurant_tags_on_restaurant_id"
+  add_index "restaurant_tags", ["tag_id"], :name => "index_restaurant_tags_on_tag_id"
+
   create_table "restaurant_types", :id => false, :force => true do |t|
     t.integer "restaurant_id"
     t.integer "type_id"
@@ -232,8 +252,8 @@ ActiveRecord::Schema.define(:version => 20111226115853) do
   create_table "restaurants", :force => true do |t|
     t.string   "name"
     t.string   "name_eng"
-    t.float    "lon"
-    t.float    "lat"
+    t.float    "lon",                :limit => 24
+    t.float    "lat",                :limit => 24
     t.string   "fsq_lng"
     t.string   "fsq_lat"
     t.string   "address"
@@ -326,6 +346,15 @@ ActiveRecord::Schema.define(:version => 20111226115853) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "tags", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "tags", ["id"], :name => "index_tags_on_id"
+  add_index "tags", ["name"], :name => "index_tags_on_name"
 
   create_table "types", :force => true do |t|
     t.string   "name"

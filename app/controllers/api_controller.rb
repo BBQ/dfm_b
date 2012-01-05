@@ -67,7 +67,7 @@ class ApiController < ApplicationController
     end
     
     dishes ||= Dish
-    dishes = dishes.search_by_keyword(search) unless search.blank?
+    dishes = dishes.search_by_word(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
     dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
     count = dishes.count('dishes.id')
@@ -76,7 +76,7 @@ class ApiController < ApplicationController
     restaurants = []
     dishes.each do |dish|
       if radius
-        dish.network.restaurants.near(params[:lat], params[:lon], radius).take(3).each do |r|
+        dish.network.restaurants.select([:id, :name, :lat, :lon, :address]).near(params[:lat], params[:lon], radius).take(3).each do |r|
           restaurants.push({
             :id => r.id,
             :name => r.name,
@@ -87,7 +87,7 @@ class ApiController < ApplicationController
           })
         end
       else
-        dish.network.restaurants.where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon]).take(3).each do |r|
+        dish.network.restaurants.select([:id, :name, :lat, :lon, :address]).where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon]).take(3).each do |r|
           restaurants.push({
             :id => r.id,
             :name => r.name,
@@ -178,17 +178,17 @@ class ApiController < ApplicationController
       restaurants = restaurants.joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').where('lat IS NOT NULL AND lon IS NOT NULL').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
     else
       if radius
-        restaurants = Restaurant.near(lat, lon, radius).joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`')
+        restaurants = Restaurant.near(lat, lon, radius)
       else
-        restaurants = Restaurant.joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`')
+        restaurants = Restaurant
       end
-      restaurants = restaurants.joins("JOIN (
+      restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
       #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').by_distance(lat, lon).to_sql}) r1
       ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
     end
     
     restaurants = restaurants.where("restaurants.`name` LIKE ?", "%#{params[:search].gsub(/[']/) { |x| '\\' + x }}%") unless params[:search].blank?
-    restaurants = restaurants.search_by_tag(params[:keyword]) unless params[:keyword].blank?
+    restaurants = restaurants.search_by_word(params[:keyword]) unless params[:keyword].blank?
     # restaurants = restaurants.where(all_filters) unless all_filters.blank?
     
     if restaurants
@@ -207,7 +207,7 @@ class ApiController < ApplicationController
         dishes = []
         if r.network.dishes
           unless params[:keyword].blank?
-            r.network.dishes.search_by_keyword(params[:keyword]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
+            r.network.dishes.select([:id, :photo]).search_by_word(params[:keyword]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
           else
             r.network.dishes.order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?} 
           end
@@ -280,22 +280,11 @@ class ApiController < ApplicationController
   
     limit = params[:limit] ? params[:limit] : 25
     offset = params[:offset] ? params[:offset] : 0
-    reviews = Review.limit("#{offset}, #{limit}").order('id').includes(:dish).where('photo IS NOT NULL')
+    reviews = Review.limit("#{offset}, #{limit}").order('id DESC').includes(:dish).where('photo IS NOT NULL')
     user_id = User.get_user_by_fb_token(params[:access_token]) if params[:access_token]
-        
+    count = Review.where('photo IS NOT NULL').count(:id)
     review_data = []
-    if params[:lat] && params[:lon]
-      restaurants = Restaurant.near(params[:lat], params[:lon], 100).map(&:reviews)
-      restaurants.each do |reviews|
-        reviews.each do |review|
-          review_data.push(review.format_review_for_api(user_id))
-        end
-      end
-    else
-      reviews.each do |review|
-        review_data.push(review.format_review_for_api(user_id))
-      end
-    end
+    reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}    
     
     return render :json => {
       :reviews => review_data,
@@ -449,6 +438,9 @@ class ApiController < ApplicationController
         params[:dish][:dish_category_id] = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
         
         return render :json => {:error => {:description => 'Dish create error', :code => 6}} unless params[:review][:dish_id] = Dish.create(params[:dish]).id
+        
+        Tag.get_all_tags.each {|t| DishTag.create(:tag_id => t.id, :dish_id => params[:review][:dish_id]) if params[:dish][:name].split.include?(t.name)} 
+
       end
       return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless Dish.find_by_id(params[:review][:dish_id])
       

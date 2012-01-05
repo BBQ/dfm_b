@@ -7,8 +7,6 @@ class Review < ActiveRecord::Base
   has_many :comments
   has_many :likes
   
-  default_scope order('reviews.id DESC')
-  
   mount_uploader :photo, ImageUploader 
   
   def as_json(options={})

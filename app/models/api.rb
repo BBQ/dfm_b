@@ -1,4 +1,8 @@
 class API < ActiveRecord::Base
+
+  def self.get_reviews(user_id, dish_id)
+    # Coming soon
+  end
   
   def self.get_dish(user_id, dish_id)
     
