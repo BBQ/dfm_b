@@ -26,7 +26,7 @@ class ApiController < ApplicationController
     end
   end
   
-  def get_types
+  def get_common_data
     return render :json => {
           :types => DishType.where('id != 10').order('`order`'),
           :tags => Tag.get_all,

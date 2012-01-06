@@ -1,5 +1,8 @@
 class Tag < ActiveRecord::Base
   
+  has_many :dish_tags
+  has_many :dishes, :through => :dish_tags
+  
   def self.get_all
   
     ids = {
@@ -22,14 +25,15 @@ class Tag < ActiveRecord::Base
   
     all_tags = [] 
     Tag.select([:id, :name]).each do |t|
+      added = 0
       ids.each do |k,v|
         if t.id == k
           v.each {|name| all_tags.push({:id => k, :name => name})}
           ids.delete(k)
-        else
-          all_tags.push({:id => t.id, :name => t.name})
+          added = 1          
         end
       end
+      all_tags.push({:id => t.id, :name => t.name}) if added != 1
     end
     all_tags
   end
