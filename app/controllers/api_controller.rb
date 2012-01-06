@@ -440,7 +440,7 @@ class ApiController < ApplicationController
         
         return render :json => {:error => {:description => 'Dish create error', :code => 6}} unless params[:review][:dish_id] = Dish.create(params[:dish]).id
         
-        Tag.get_all.each {|t| DishTag.create(:tag_id => t[:id], :dish_id => params[:review][:dish_id]) if params[:dish][:name].split.include?(t[:name])} 
+        Tag.get_all.each {|t| DishTag.create(:tag_id => t[:id], :dish_id => params[:review][:dish_id]) if params[:dish][:name].split.map(&:downcase).include?(t[:name])} 
 
       end
       return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless Dish.find_by_id(params[:review][:dish_id])
