@@ -1,6 +1,6 @@
 class Tag < ActiveRecord::Base
   
-  def self.get_all_tags
+  def self.get_all
   
     ids = {
       1 => ['салат','salad','салатик'],
@@ -21,7 +21,7 @@ class Tag < ActiveRecord::Base
     }
   
     all_tags = [] 
-    Tag.select(:id, :name).each do |t|
+    Tag.select([:id, :name]).each do |t|
       ids.each do |k,v|
         if t.id == k
           v.each {|name| all_tags.push({:id => k, :name => name})}
