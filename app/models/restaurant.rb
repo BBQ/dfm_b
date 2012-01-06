@@ -6,8 +6,8 @@ class Restaurant < ActiveRecord::Base
   belongs_to :network  
   
   has_many :restaurant_types
-  has_many :restaurant_images
   has_many :types, :through => :restaurant_types
+  has_many :restaurant_images
   
   has_many :restaurant_cuisines
   has_many :cuisines, :through => :restaurant_cuisines
@@ -37,7 +37,9 @@ class Restaurant < ActiveRecord::Base
     }
     
     id = 0
-    ids.each {|k,v| id = k if v.include?(keyword.downcase!)}            
+    keyword.downcase!
+    
+    ids.each {|k,v| id = k if v.include?(keyword)}            
     if id.blank? && tag = Tag.find_by_name(keyword)
       id = tag.id
     end

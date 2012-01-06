@@ -7,7 +7,11 @@ class Dish < ActiveRecord::Base
   belongs_to :dish_subtype
   belongs_to :dish_extratype
   belongs_to :network
-  has_many :reviews
+  
+  has_many :reviews, :dependent => :destroy
+  
+  has_many :dish_tags, :dependent => :destroy
+  has_many :tags, :through => :dish_tags
       
   mount_uploader :photo, ImageUploader
   
@@ -35,7 +39,7 @@ class Dish < ActiveRecord::Base
       COS((? - restaurants.lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344 <= ?", lat, lat, lon, rad)
   end
   
-  def self.search_by_word(keyword)
+  def self.custom_search(keyword_or_id)
     ids = {
       1 => ['салат','salad','салатик'],
       2 => ['soup','суп','супы','супчик','супчики','супец'],
@@ -54,22 +58,40 @@ class Dish < ActiveRecord::Base
       15 => ['vegetables','овощи','овощь']
     }
     
-    id = 0
-    ids.each {|k,v| id = k if v.include?(keyword)}            
-    if id.blank? && tag = Tag.find_by_name(keyword)
-      id = tag.id
-    end
+    condition = 'dishes.id IN (SELECT dish_id FROM dish_tags WHERE tag_id = ?)'
     
-    if id > 0
-      where('dishes.id IN (SELECT dish_id FROM dish_tags WHERE tag_id = ?)', id)
+    if keyword_or_id.to_i != 0
+      id = keyword_or_id
+      where(condition, id)
     else
-      where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]') 
-            OR 
-            dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
-            OR
-            dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
-            OR 
-            LOWER(dishes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]'")
+      keyword = keyword_or_id.downcase
+      id = 0
+      
+      ids.each {|k,v| id = k if v.include?(keyword)}        
+
+      if id == 0 && tag = Tag.find_by_name(keyword)
+        id = tag.id
+      end
+      
+      if id != 0
+        where(condition, id)
+      else
+        if word = SearchWord.find_by_name(keyword)
+          word.count += 1
+          word.save
+        else
+          SearchWord.create(:name => keyword, :count => 1)
+        end
+
+        where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]') 
+              OR 
+              dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
+              OR
+              dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
+              OR 
+              LOWER(dishes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]'")    
+      end
+      
     end
   end
   

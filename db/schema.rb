@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120104145940) do
+ActiveRecord::Schema.define(:version => 20120106113108) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -100,6 +100,7 @@ ActiveRecord::Schema.define(:version => 20120104145940) do
     t.integer  "dish_id",    :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "id",         :null => false
   end
 
   add_index "dish_tags", ["dish_id"], :name => "index_dish_tags_on_dish_id"
@@ -236,6 +237,7 @@ ActiveRecord::Schema.define(:version => 20120104145940) do
     t.integer  "restaurant_id", :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "id",            :null => false
   end
 
   add_index "restaurant_tags", ["restaurant_id"], :name => "index_restaurant_tags_on_restaurant_id"
@@ -337,6 +339,13 @@ ActiveRecord::Schema.define(:version => 20120104145940) do
   add_index "reviews", ["dish_id"], :name => "index_reviews_on_dish_id"
   add_index "reviews", ["id"], :name => "index_reviews_on_id"
   add_index "reviews", ["user_id"], :name => "index_reviews_on_user_id"
+
+  create_table "search_words", :force => true do |t|
+    t.string   "name"
+    t.integer  "count",      :default => 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "stations", :force => true do |t|
     t.string   "name"

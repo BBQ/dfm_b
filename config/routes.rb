@@ -23,6 +23,7 @@ Dishfm::Application.routes.draw do
   match 'dishes/search' => 'dishes#index', :as => :dishes_search
   match 'dishes/:id' => 'dishes#show', :as => :dish  
   match 'dishes' => 'dishes#index', :as => :dishes
+  match 'dishes/delete/:id' => 'dishes#delete', :as => :delete_dish
   
   match 'dishfeed' => 'dishfeed#index', :as => :dishfeed
   match 'reviews/:id' => 'reviews#show', :as => :review

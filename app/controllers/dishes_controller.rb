@@ -25,5 +25,15 @@ class DishesController < ApplicationController
   def show
     @dish = Dish.find_by_id(params[:id])
   end
+  
+  def delete
+    if dish = Dish.find_by_id(params[:id])
+      
+      status = 'Cleared' if dish.destroy
+      return render :json => status ||= 'SWR :`('
+    else
+      return render :json => 'Dish not found or already deleted.'
+    end
+  end
     
 end
