@@ -4,10 +4,66 @@ class Review < ActiveRecord::Base
   belongs_to :network
   belongs_to :user
   
-  has_many :comments
-  has_many :likes
+  has_many :comments, :dependent => :destroy
+  has_many :likes, :dependent => :destroy
   
   mount_uploader :photo, ImageUploader 
+  
+  def delete
+      result = "Something wrong with review #{id} ..."
+      data = Hash.new
+      
+      if review = Review.find_by_id(id)
+        
+        rating = review.rating
+      
+        restaurant_id = review.restaurant_id
+        dish_id = review.dish_id
+        data[:rating] = rating
+                  
+        restaurant = Restaurant.find_by_id(restaurant_id)
+        data[:rrb] = restaurant.rating
+        data[:rvb] = restaurant.votes
+        restaurant.rating = restaurant.votes == 1?0 : (restaurant.rating * restaurant.votes - rating) / (restaurant.votes - 1)
+        restaurant.votes = restaurant.votes == 1?0 : restaurant.votes - 1
+        data[:rra] = restaurant.rating
+        data[:rva] = restaurant.votes
+      
+        network = Network.find_by_id(restaurant.network_id)
+        data[:nrb] = network.rating
+        data[:nvb] = network.votes
+        network.rating = network.votes == 1?0 : (network.rating * network.votes - rating) / (network.votes - 1)
+        network.votes = network.votes == 1?0 : network.votes - 1
+        data[:nra] = network.rating
+        data[:nva] = network.votes
+      
+        dish = Dish.find_by_id(dish_id)
+        data[:drb] = dish.rating
+        data[:dvb] = dish.votes      
+        dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - rating) / (dish.votes - 1)
+        dish.votes = dish.votes == 1?0 : dish.votes - 1
+        data[:dra] = dish.rating
+        data[:dva] = dish.votes
+              
+        if review && dish && restaurant && network
+               
+        if dish.created_by_user != 0 && dish.votes == 0 
+           dish.delete
+           data[:deleted] = 'yes'
+        else
+           dish.save
+        end
+
+        restaurant.save
+        network.save
+        review.destroy
+
+        result = "review with id #{id} gone forever!"
+        end
+      end
+      data[:result] = result
+      data
+  end
   
   def as_json(options={})
     self.restaurant.rating = self.network.rating if restaurant && network

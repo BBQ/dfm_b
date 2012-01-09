@@ -21,70 +21,9 @@ class ReviewsController < ApplicationController
   end
   
   def delete
-    result = "Something wrong with review #{params[:id]} ..."
-    if params[:id] 
-      
-      data = Hash.new
-      if review = Review.find_by_id(params[:id])
-        rating = review.rating
-      
-        restaurant_id = review.restaurant_id
-        dish_id = review.dish_id
-        data[:rating] = rating
-                  
-        restaurant = Restaurant.find_by_id(restaurant_id)
-        data[:rrb] = restaurant.rating
-        data[:rvb] = restaurant.votes
-        restaurant.rating = restaurant.votes == 1?0 : (restaurant.rating * restaurant.votes - rating) / (restaurant.votes - 1)
-        restaurant.votes = restaurant.votes == 1?0 : restaurant.votes - 1
-        data[:rra] = restaurant.rating
-        data[:rva] = restaurant.votes
-      
-        network = Network.find_by_id(restaurant.network_id)
-        data[:nrb] = network.rating
-        data[:nvb] = network.votes
-        network.rating = network.votes == 1?0 : (network.rating * network.votes - rating) / (network.votes - 1)
-        network.votes = network.votes == 1?0 : network.votes - 1
-        data[:nra] = network.rating
-        data[:nva] = network.votes
-      
-        dish = Dish.find_by_id(dish_id)
-        data[:drb] = dish.rating
-        data[:dvb] = dish.votes      
-        dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - rating) / (dish.votes - 1)
-        dish.votes = dish.votes == 1?0 : dish.votes - 1
-        data[:dra] = dish.rating
-        data[:dva] = dish.votes
-        
-        likes = Like.find_all_by_review_id(params[:id])
-        likes.each do |like|
-          like.destroy
-        end
-        
-        comments = Comment.find_all_by_review_id(params[:id])
-        comments.each do |comment|
-          comment.destroy
-        end
-              
-        if review && dish && restaurant && network
-               
-               if dish.dish_type_id == 9 && dish.votes == 0 
-                             dish.delete
-                             data[:deleted] = 'yes'
-                           else
-                             dish.save
-                           end
-                 
-                  restaurant.save
-                  network.save
-                  review.destroy
-               
-               result = "review with id #{params[:id]} gone forever!"
-             end
-      end
+    if review = Review.find_by_id(params[:id])
+      data = review.delete
     end
-    
-    data[:result] = result
     return render :json => data
   end
   
