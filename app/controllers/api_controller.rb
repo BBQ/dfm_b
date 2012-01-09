@@ -445,7 +445,7 @@ class ApiController < ApplicationController
         
         dish_category = DishType.find_by_id(params[:dish][:dish_type_id]).name
         params[:dish][:dish_category_id] = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
-        params[:dish][:created_by_user] = 1
+        params[:dish][:created_by_user] = params[:review][:user_id]
         return render :json => {:error => {:description => 'Dish create error', :code => 6}} unless params[:review][:dish_id] = Dish.create(params[:dish]).id
         
         Tag.get_all.each {|t| DishTag.create(:tag_id => t[:id], :dish_id => params[:review][:dish_id]) if params[:dish][:name].split.map(&:downcase).include?(t[:name])} 
