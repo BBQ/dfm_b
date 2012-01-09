@@ -10,11 +10,4 @@ class CommentsController < ApplicationController
       end
     end
   
-  def delete
-    if user_signed_in? && params[:comment_id]
-      comment = Comment.new                
-      @result = comment.delete(current_user.id, params[:comment_id])
-    end
-  end
-  
 end

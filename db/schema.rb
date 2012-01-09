@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120106113108) do
+ActiveRecord::Schema.define(:version => 20120109100807) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -100,7 +100,6 @@ ActiveRecord::Schema.define(:version => 20120106113108) do
     t.integer  "dish_id",    :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "id",         :null => false
   end
 
   add_index "dish_tags", ["dish_id"], :name => "index_dish_tags_on_dish_id"
@@ -132,6 +131,7 @@ ActiveRecord::Schema.define(:version => 20120106113108) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "dish_extratype_id"
+    t.integer  "created_by_user",   :limit => 1,  :default => 0
   end
 
   add_index "dishes", ["dish_category_id"], :name => "dish_category_id"
@@ -175,7 +175,7 @@ ActiveRecord::Schema.define(:version => 20120106113108) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "rating",     :limit => 21
+    t.float    "rating",     :limit => 21, :default => 0.0
     t.integer  "votes",                    :default => 0
     t.string   "photo"
   end
@@ -254,8 +254,8 @@ ActiveRecord::Schema.define(:version => 20120106113108) do
   create_table "restaurants", :force => true do |t|
     t.string   "name"
     t.string   "name_eng"
-    t.float    "lon",                :limit => 24
-    t.float    "lat",                :limit => 24
+    t.float    "lon"
+    t.float    "lat"
     t.string   "fsq_lng"
     t.string   "fsq_lat"
     t.string   "address"
@@ -269,7 +269,7 @@ ActiveRecord::Schema.define(:version => 20120106113108) do
     t.string   "businesslunch"
     t.string   "photo"
     t.integer  "votes",                            :default => 0
-    t.float    "rating",             :limit => 21
+    t.float    "rating",             :limit => 21, :default => 0.0
     t.string   "wifi",                             :default => "0"
     t.boolean  "chillum",                          :default => false
     t.boolean  "terrace",                          :default => false
@@ -292,16 +292,16 @@ ActiveRecord::Schema.define(:version => 20120106113108) do
     t.string   "parking"
     t.string   "menu_url"
     t.string   "bill"
-    t.string   "sun"
-    t.string   "mon"
-    t.string   "tue"
-    t.string   "wed"
-    t.string   "thu"
-    t.string   "fri"
-    t.string   "sat"
+    t.string   "sun",                              :default => ""
+    t.string   "mon",                              :default => ""
+    t.string   "tue",                              :default => ""
+    t.string   "wed",                              :default => ""
+    t.string   "thu",                              :default => ""
+    t.string   "fri",                              :default => ""
+    t.string   "sat",                              :default => ""
     t.integer  "fsq_checkins_count"
-    t.string   "fsq_tip_count"
-    t.string   "fsq_users_count"
+    t.integer  "fsq_tip_count"
+    t.integer  "fsq_users_count"
     t.string   "fsq_name"
     t.string   "fsq_address"
     t.string   "fsq_id"

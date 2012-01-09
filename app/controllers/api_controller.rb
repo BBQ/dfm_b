@@ -6,12 +6,36 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
-  def del_review
-    if params[:id] && params[:user_id]
-      if review = Review.find_by_id_and_user_id(:id => params[:id], :user_id => params[:user_id])
-        
+  def del_comment
+    if params[:comment_id] && params[:access_token]
+      user_id = User.get_user_by_fb_token(params[:access_token])     
+      if comment = Comment.find_by_id_and_user_id(params[:comment_id], user_id)
+        comment.delete
+      else
+        $error = {:description => 'Comment not found', :code => 357}
       end
+    else
+        $error = {:description => 'Params missing', :code => 357}
     end
+    return render :json => {
+          :error => $error
+    }
+  end
+  
+  def del_review
+    if params[:review_id] && params[:access_token]      
+        user_id = User.get_user_by_fb_token(params[:access_token]) 
+        if review = Review.find_by_id_and_user_id(params[:review_id], user_id)
+          review.delete
+        else
+          $error = {:description => 'Review not found', :code => 357}  
+        end
+    else
+        $error = {:description => 'Params missing', :code => 357}
+    end
+    return render :json => {
+          :error => $error
+    }
   end
   
   def get_user_id
@@ -309,7 +333,7 @@ class ApiController < ApplicationController
       code = data[:error] ? 11 : nil
     else
       data[:error] = 'Parameters missing'
-      code = 666
+      code = 357
     end
     return render :json => {
       :error => {:description => data[:error], :code => code}
@@ -326,7 +350,7 @@ class ApiController < ApplicationController
       end
     else
       return render :json => {
-        :error => {:description => 'Parameters missing', :code => 666}
+        :error => {:description => 'Parameters missing', :code => 357}
       }
     end
     return render :json => {
@@ -367,7 +391,7 @@ class ApiController < ApplicationController
           :error => $error
         }
       else
-        $error = {:description => 'Restaurant not found', :code => 666}
+        $error = {:description => 'Restaurant not found', :code => 357}
       end
     else
       $error = {:description => 'Parameters missing', :code => 8}  
@@ -382,7 +406,7 @@ class ApiController < ApplicationController
       params[:review][:user_id] = User.get_user_by_fb_token(params[:access_token])
       
       chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
-      return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 666}} unless chk24.blank?
+      return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 357}} unless chk24.blank?
       
       if params[:review][:restaurant_id].blank?
         

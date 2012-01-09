@@ -1,5 +1,5 @@
 class Comment < ActiveRecord::Base
-  belongs_to :feedback
+  belongs_to :review
   belongs_to :user
   
   default_scope order('id DESC')
@@ -18,12 +18,14 @@ class Comment < ActiveRecord::Base
     
   end
 
-  def delete(user_id, comment_id)
-    comment = Comment.find(comment_id)
-    feedback_id = comment.feedback.id
-    if comment.user.id = user_id
+  def delete
+    if comment = Comment.find_by_id(id)
+      comment.review.count_comments -= 1 
+      comment.review.save
       comment.destroy
-      Feedback.find(feedback_id)
+      1
+    else
+      0
     end
   end
 end

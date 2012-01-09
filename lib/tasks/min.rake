@@ -1,5 +1,5 @@
 # encoding: utf-8
-task :parse_min do
+task :parse_mi do
   
   require 'rubygems'
   require 'net/http'
@@ -64,7 +64,8 @@ task :parse_min do
   response = http.request_post(uri.path, req_body, req_headers)
   doc = Nokogiri::XML::Reader(response.body.force_encoding("UTF-8"))
   # data = Zlib::Inflate.inflate(response.body.to_s)
-  %x{echo "#{response.body}"  > log.xml}
+  p response.body
+  %x{echo '#{response.body}' > log.xml}
   # p response.body
   # doc.each do |node|
   # 
