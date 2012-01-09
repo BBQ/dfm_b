@@ -6,6 +6,14 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def del_review
+    if params[:id] && params[:user_id]
+      if review = Review.find_by_id_and_user_id(:id => params[:id], :user_id => params[:user_id])
+        
+      end
+    end
+  end
+  
   def get_user_id
     if params[:id] && params[:provider]
       user = User.find_by_facebook_id(params[:id]) if params[:provider] == 'facebook'
@@ -437,7 +445,7 @@ class ApiController < ApplicationController
         
         dish_category = DishType.find_by_id(params[:dish][:dish_type_id]).name
         params[:dish][:dish_category_id] = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
-        
+        params[:dish][:created_by_user] = 1
         return render :json => {:error => {:description => 'Dish create error', :code => 6}} unless params[:review][:dish_id] = Dish.create(params[:dish]).id
         
         Tag.get_all.each {|t| DishTag.create(:tag_id => t[:id], :dish_id => params[:review][:dish_id]) if params[:dish][:name].split.map(&:downcase).include?(t[:name])} 
