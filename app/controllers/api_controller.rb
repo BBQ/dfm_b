@@ -99,10 +99,28 @@ class ApiController < ApplicationController
       dishes = Dish.where("dishes.network_id IN (#{networks.join(',')})") if networks.count > 0
     end
     
+    filters = []
+    if params[:bill] && params[:bill].length == 5
+      bill = []
+      bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
+      bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
+      bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
+      bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
+      bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
+      filters.push(bill.join(' OR ')) if bill.count > 0
+    end
+    
     dishes ||= Dish
     dishes = dishes.custom_search(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
-    dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
+    dishes = dishes.where(filters) unless filters.blank?
+    
+    if params[:sort] == 'distance'
+      dishes = dishes.includes(:network).by_distance(params[:lat], params[:lon]).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC')  
+    else
+      dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
+    end
+    
     count = dishes.count('dishes.id')
     dishes = dishes.limit("#{offset}, #{limit}")
     
@@ -150,37 +168,38 @@ class ApiController < ApplicationController
     limit = params[:limit] ||= 25
     offset = params[:offset] ||= 0
     
-    # filters = []
-    # if params[:bill] && params[:bill].length == 5
-    #   bill = []
-    #   bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
-    #   bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
-    #   bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
-    #   bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
-    #   bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
-    #   filters.push(bill.join(' OR ')) if bill.count > 0
-    # end
-    # 
-    # etc = []
-    # etc.insert(0,'wifi = 1') if params[:wifi] == '1'
-    # etc.push(0,'terrace = 1') if params[:terrace] == '1'
-    # etc.push(0,'cc = 1') if params[:accept_bank_cards] == '1'
-    # filters.push(etc.join(' AND ')) if etc.count > 0
-    # all_filters = filters.join(' AND ')
+    filters = []
+    if params[:bill] && params[:bill].length == 5
+      bill = []
+      bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
+      bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
+      bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
+      bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
+      bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
+      filters.push(bill.join(' OR ')) if bill.count > 0
+    end
     
-    # if params[:open_now]
-    #   wday = Date.today.strftime("%a").downcase
-    #   now = Time.now.strftime("%H%M")
-    #   open_now = "#{now} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
-    #   
-    #   if now.to_i < 1000
-    #     now24 = now.to_i + 2400
-    #     open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
-    #   end    
-    #   all_filters = all_filters ? all_filters + ' AND ' + open_now : open_now
-    # end      
+    etc = []
+    etc.insert(0,'wifi = 1') if params[:wifi] == '1'
+    etc.push(0,'terrace = 1') if params[:terrace] == '1'
+    etc.push(0,'cc = 1') if params[:accept_bank_cards] == '1'
+    filters.push(etc.join(' AND ')) if etc.count > 0
+    all_filters = filters.join(' AND ')
+    
+    if params[:open_now]
+      wday = Date.today.strftime("%a").downcase
+      now = Time.now.strftime("%H%M")
+      open_now = "#{now} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+      
+      if now.to_i < 1000
+        now24 = now.to_i + 2400
+        open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+      end    
+      all_filters = all_filters ? all_filters + ' AND ' + open_now : open_now
+    end      
     
     city_radius = 30
+
     city_lat = 55.753548
     city_lon = 37.609239
     pi = Math::PI
@@ -222,7 +241,7 @@ class ApiController < ApplicationController
     
     restaurants = restaurants.where("restaurants.`name` LIKE ?", "%#{params[:search].gsub(/[']/) { |x| '\\' + x }}%") unless params[:search].blank?
     restaurants = restaurants.search_by_word(params[:keyword]) unless params[:keyword].blank?
-    # restaurants = restaurants.where(all_filters) unless all_filters.blank?
+    restaurants = restaurants.where(all_filters) unless all_filters.blank?
     
     if restaurants
       count = params[:sort] != 'distance' ? restaurants.count.count : restaurants.count
@@ -293,7 +312,7 @@ class ApiController < ApplicationController
       end
       
       review_count = reviews.count
-      reviews = reviews.limit("#{offset}, #{limit}")
+      reviews = reviews.limit("#{offset}, #{limit}").order("id DESC")
       
       review_data = Array.new
       reviews.each do |review|
