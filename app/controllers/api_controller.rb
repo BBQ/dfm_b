@@ -114,8 +114,7 @@ class ApiController < ApplicationController
     dishes = dishes.custom_search(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
     dishes = dishes.where(filters) unless filters.blank?
-    # dishes = dishes.select('`dishes`.`id` AS t0_r0, `dishes`.`name` AS t0_r1, `dishes`.`photo`, `dishes`.`rating` AS t0_r5, `dishes`.`votes` AS t0_r6, `dishes`.`network_id`, `networks`.`id` AS t1_r0, `networks`.`name` AS t1_r1').joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `dishes`.`network_id`')
-    dishes = dishes.includes(:network)
+    dishes = dishes.select('`dishes`.`id`, `dishes`.`name`, `dishes`.`photo`, `dishes`.`rating`, `dishes`.`votes`, `dishes`.`network_id`, `networks`.`id`, `networks`.`name` AS t1_r1').joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `dishes`.`network_id`')
     if params[:sort] == 'distance'
       dishes = dishes.by_distance(params[:lat], params[:lon]).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC')  
     else

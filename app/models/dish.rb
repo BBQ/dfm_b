@@ -16,7 +16,7 @@ class Dish < ActiveRecord::Base
   mount_uploader :photo, ImageUploader
   
   def find_image
-    if photo.blank?
+    if photo.nil?
       review = Review.where("dish_id = ? AND photo IS NOT NULL", id).order('count_likes DESC').first
       review.photo if review
     else
