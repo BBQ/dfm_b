@@ -100,7 +100,7 @@ class ApiController < ApplicationController
     end
     
     filters = []
-    if params[:bill] && params[:bill].length == 5
+    if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000'
       bill = []
       bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
       bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
@@ -170,7 +170,7 @@ class ApiController < ApplicationController
     offset = params[:offset] ||= 0
     
     filters = []
-    if params[:bill] && params[:bill].length == 5
+    if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000'
       bill = []
       bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
       bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
