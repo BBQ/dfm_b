@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120109100807) do
+ActiveRecord::Schema.define(:version => 20120111133238) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -131,7 +131,7 @@ ActiveRecord::Schema.define(:version => 20120109100807) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "dish_extratype_id"
-    t.integer  "created_by_user",   :limit => 1,  :default => 0
+    t.integer  "created_by_user",   :limit => 1,  :default => 0,   :null => false
   end
 
   add_index "dishes", ["dish_category_id"], :name => "dish_category_id"
@@ -170,6 +170,55 @@ ActiveRecord::Schema.define(:version => 20120109100807) do
   end
 
   add_index "likes", ["user_id", "review_id"], :name => "index_likes_on_user_id_and_review_id"
+
+  create_table "mi_dishes", :id => false, :force => true do |t|
+    t.integer  "id",               :null => false
+    t.string   "category_id"
+    t.string   "category_name"
+    t.string   "category_picture"
+    t.string   "description"
+    t.integer  "mi_id",            :null => false
+    t.string   "kilo_calories"
+    t.string   "cousine"
+    t.string   "latitude"
+    t.string   "longitude"
+    t.string   "likes"
+    t.string   "name"
+    t.string   "pictures"
+    t.string   "price"
+    t.string   "restaurant_id"
+    t.string   "restaurant_name",  :null => false
+    t.string   "composition"
+    t.string   "vegetarian"
+    t.string   "weight"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "mi_dishes", ["mi_id"], :name => "mi_id"
+  add_index "mi_dishes", ["name"], :name => "name"
+  add_index "mi_dishes", ["restaurant_name"], :name => "restaurant_name"
+
+  create_table "mi_restaurants", :force => true do |t|
+    t.string   "address"
+    t.string   "description"
+    t.string   "dishes"
+    t.string   "latitude"
+    t.string   "longitude"
+    t.string   "metro"
+    t.string   "mi_id"
+    t.string   "name"
+    t.string   "picture"
+    t.string   "site"
+    t.string   "telephone"
+    t.string   "wifi"
+    t.string   "worktime"
+    t.string   "city",        :null => false
+    t.datetime "created_at"
+    t.string   "step",        :null => false
+    t.datetime "updated_at"
+    t.integer  "network_id"
+  end
 
   create_table "networks", :force => true do |t|
     t.string   "name"
@@ -305,6 +354,7 @@ ActiveRecord::Schema.define(:version => 20120109100807) do
     t.string   "fsq_name"
     t.string   "fsq_address"
     t.string   "fsq_id"
+    t.integer  "has_menu",           :limit => 1
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"

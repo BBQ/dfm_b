@@ -26,6 +26,7 @@ gem "foursquare2"
 gem "geocoder"
 
 gem "kaminari"
+gem "xml-simple"
 
 # gem 'fast_trie', '0.5.0', :git => 'git://github.com/tyler/trie.git'
 

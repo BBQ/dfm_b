@@ -145,6 +145,7 @@ GEM
       polyglot (>= 0.3.1)
     tzinfo (0.3.30)
     unicode (0.4.0)
+    xml-simple (1.1.1)
 
 PLATFORMS
   ruby
@@ -166,3 +167,4 @@ DEPENDENCIES
   sass
   sorcery
   unicode
+  xml-simple
