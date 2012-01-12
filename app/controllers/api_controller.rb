@@ -202,7 +202,7 @@ class ApiController < ApplicationController
         now24 = now.to_i + 2400
         open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
       end    
-      all_filters = all_filters ? all_filters + ' AND ' + open_now : open_now
+      all_filters = all_filters ? all_filters + open_now : open_now
     end      
     
     city_radius = 30
