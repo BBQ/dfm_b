@@ -39,6 +39,13 @@ class Dish < ActiveRecord::Base
       COS((? - restaurants.lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344 <= ?", lat, lat, lon, rad)
   end
   
+  def self.by_distance(lat, lon)
+    order("((ACOS(
+      SIN(#{lat} * PI() / 180) * SIN(restaurants.lat * PI() / 180) +
+      COS(#{lat} * PI() / 180) * COS(restaurants.lat * PI() / 180) * 
+      COS((#{lon} - restaurants.lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344")
+  end
+  
   def self.custom_search(keyword_or_id)
     ids = {
       1 => ['салат','salad','салатик'],
@@ -93,13 +100,6 @@ class Dish < ActiveRecord::Base
       end
       
     end
-  end
-  
-  def self.by_distance(lat, lon)
-    order("((ACOS(
-      SIN(#{lat} * PI() / 180) * SIN(restaurants.lat * PI() / 180) +
-      COS(#{lat} * PI() / 180) * COS(restaurants.lat * PI() / 180) * 
-      COS((#{lon} - restaurants.lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344")
   end
   
 end

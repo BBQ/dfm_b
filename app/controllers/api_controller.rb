@@ -96,14 +96,6 @@ class ApiController < ApplicationController
 
     search = params[:search].blank? ? params[:keyword] : params[:search]
     
-    if radius
-      networks = []
-      Restaurant.near(params[:lat], params[:lon], radius).each do |restaurant|
-       networks.push(restaurant.network.id) if networks.index(restaurant.network.id).blank?
-      end
-      dishes = Dish.where("dishes.network_id IN (#{networks.join(',')})") if networks.count > 0
-    end
-    
     filters = []
     if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000'
       bill = []
@@ -114,20 +106,24 @@ class ApiController < ApplicationController
       bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
       filters.push(bill.join(' OR ')) if bill.count > 0
     end
+
     
-    dishes ||= Dish
+
+    dishes = Dish.select("DISTINCT `dishes`.id, dishes.`name`, dishes.`rating`, dishes.`votes`, dishes.`photo`, dishes.`network_id`")
+    dishes = dishes.joins("LEFT OUTER JOIN `networks` ON `dishes`.`network_id` = `networks`.`id` LEFT OUTER JOIN `restaurants` ON `restaurants`.`network_id` = `networks`.`id`")
+    dishes = dishes.near(lat, lon, radius) if radius
+
+    if params[:sort] == 'distance'
+     dishes = dishes.by_distance(params[:lat], params[:lon]).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC')  
+    else
+     dishes = dishes.order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
+    end 
+    
     dishes = dishes.custom_search(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
     dishes = dishes.where(filters) unless filters.blank?
-    dishes = dishes.includes(:network, :restaurants)
-
-    if params[:sort] == 'distance'
-      dishes = dishes.by_distance(params[:lat], params[:lon]).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC')  
-    else
-      dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
-    end
     
-    count = dishes.count('dishes.id')
+    count = dishes.count # REMOVE ALL COUNTS !!!!!
     dishes = dishes.limit("#{offset}, #{limit}")
     
     restaurants = []
