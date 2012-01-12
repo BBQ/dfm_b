@@ -91,13 +91,28 @@ class ApiController < ApplicationController
     radius = params[:radius].to_f != 0 ? params[:radius].to_f: nil
     search = params[:search].blank? ? params[:keyword] : params[:search]
     
-    if radius
+    if params[:sort] == 'distance'
       networks = []
-      Restaurant.near(params[:lat], params[:lon], radius).each do |restaurant|
+      Restaurant.by_distance.each do |restaurant|
        networks.push(restaurant.network.id) if networks.index(restaurant.network.id).blank?
       end
       dishes = Dish.where("dishes.network_id IN (#{networks.join(',')})") if networks.count > 0
     end
+    
+    if radius
+      networks = []
+      if params[:sort] == 'distance'
+        Restaurant.near(params[:lat], params[:lon], radius).by_distance.each do |restaurant|
+         networks.push(restaurant.network.id) if networks.index(restaurant.network.id).blank?
+        end
+       else
+         Restaurant.near(params[:lat], params[:lon], radius).each do |restaurant|
+          networks.push(restaurant.network.id) if networks.index(restaurant.network.id).blank?
+         end
+       end 
+       dishes = Dish.where("dishes.network_id IN (#{networks.join(',')})") if networks.count > 0
+    end
+    
     
     filters = []
     if params[:bill] && params[:bill].length == 5
@@ -113,13 +128,8 @@ class ApiController < ApplicationController
     dishes ||= Dish
     dishes = dishes.custom_search(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
-    dishes = dishes.where(filters) unless filters.blank?
-    
-    if params[:sort] == 'distance'
-      dishes = dishes.includes(:network).by_distance(params[:lat], params[:lon]).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC')  
-    else
-      dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
-    end
+    dishes = dishes.where(filters) unless filters.blank?    
+    dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])
     
     count = dishes.count('dishes.id')
     dishes = dishes.limit("#{offset}, #{limit}")
