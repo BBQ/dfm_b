@@ -3,7 +3,8 @@ class Restaurant < ActiveRecord::Base
   
   has_many :dishes
   has_many :reviews
-  belongs_to :network  
+  belongs_to :network 
+  has_many :dishes, :through => :network 
   
   has_many :restaurant_types
   has_many :types, :through => :restaurant_types

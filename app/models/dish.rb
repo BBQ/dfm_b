@@ -1,12 +1,12 @@
 # encoding: utf-8
 class Dish < ActiveRecord::Base
     
-  belongs_to :restaurant
   belongs_to :dish_category
   belongs_to :dish_type
   belongs_to :dish_subtype
   belongs_to :dish_extratype
   belongs_to :network
+  has_many :restaurants, :through => :network
   
   has_many :reviews, :dependent => :destroy
   
@@ -96,7 +96,7 @@ class Dish < ActiveRecord::Base
   end
   
   def self.by_distance(lat, lon)
-    select('restaurants.id').joins('LEFT OUTER JOIN `restaurants` ON `restaurants`.`network_id` = `dishes`.`network_id`').order("((ACOS(
+    order("((ACOS(
       SIN(#{lat} * PI() / 180) * SIN(restaurants.lat * PI() / 180) +
       COS(#{lat} * PI() / 180) * COS(restaurants.lat * PI() / 180) * 
       COS((#{lon} - restaurants.lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344")

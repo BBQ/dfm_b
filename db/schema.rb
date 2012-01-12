@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120111133238) do
+ActiveRecord::Schema.define(:version => 20120112134313) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -123,7 +123,6 @@ ActiveRecord::Schema.define(:version => 20120111133238) do
     t.float    "rating",            :limit => 21, :default => 0.0
     t.integer  "votes",                           :default => 0
     t.text     "description"
-    t.integer  "restaurant_id",                   :default => 0
     t.integer  "network_id",                      :default => 0
     t.integer  "dish_category_id",                                 :null => false
     t.integer  "dish_type_id",                                     :null => false
@@ -140,7 +139,6 @@ ActiveRecord::Schema.define(:version => 20120111133238) do
   add_index "dishes", ["network_id"], :name => "network_id"
   add_index "dishes", ["photo"], :name => "index_dishes_on_photo"
   add_index "dishes", ["rating"], :name => "index_dishes_on_rating"
-  add_index "dishes", ["restaurant_id"], :name => "restaurant_id"
   add_index "dishes", ["votes"], :name => "index_dishes_on_votes"
 
   create_table "friends", :id => false, :force => true do |t|
@@ -200,14 +198,16 @@ ActiveRecord::Schema.define(:version => 20120111133238) do
   add_index "mi_dishes", ["restaurant_name"], :name => "restaurant_name"
 
   create_table "mi_restaurants", :force => true do |t|
+    t.string   "mi_id"
+    t.string   "name"
+    t.integer  "network_id"
+    t.string   "step",        :null => false
     t.string   "address"
     t.string   "description"
     t.string   "dishes"
     t.string   "latitude"
     t.string   "longitude"
     t.string   "metro"
-    t.string   "mi_id"
-    t.string   "name"
     t.string   "picture"
     t.string   "site"
     t.string   "telephone"
@@ -215,9 +215,7 @@ ActiveRecord::Schema.define(:version => 20120111133238) do
     t.string   "worktime"
     t.string   "city",        :null => false
     t.datetime "created_at"
-    t.string   "step",        :null => false
     t.datetime "updated_at"
-    t.integer  "network_id"
   end
 
   create_table "networks", :force => true do |t|
