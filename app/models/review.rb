@@ -75,7 +75,7 @@ class Review < ActiveRecord::Base
           :include => { 
             :dish => {:only => [:id, :name, :photo, :rating, :votes]},
             :restaurant => {:only => [:id, :name, :photo, :address, :rating, :votes]},
-            :likes => {:include => {:user => { :only => [:name]}}},
+            :likes => {:include => {:user => { :only => [:name, :facebook_id]}}},
             :comments => {:only => [:id, :text, :created_at], :include => {:user => { :only => [:name, :facebook_id]}}}
           })
   end
