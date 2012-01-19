@@ -90,6 +90,7 @@ class Review < ActiveRecord::Base
       :dish_votes => dish.votes,
       :restaurant_id => restaurant.id,    
       :restaurant_name => restaurant.name,
+      :user_id => user.id,
       :user_name => user.name,
       :user_facebook_id => user.facebook_id,
       :likes => count_likes,
