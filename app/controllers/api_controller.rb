@@ -1,3 +1,4 @@
+# encoding: utf-8
 class ApiController < ApplicationController
   
   before_filter :init_error
@@ -299,7 +300,7 @@ class ApiController < ApplicationController
     }
   end
   
-  def get_user_reviews
+  def get_user_profile
     if params[:id]
       
       limit = params[:limit] ? params[:limit] : 25
