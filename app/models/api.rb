@@ -44,9 +44,6 @@ class API < ActiveRecord::Base
           :address => restaurant.address,
           :phone => restaurant.phone.to_s,
           :working_hours => restaurant.time,
-          :wifi => restaurant.wifi.to_i,
-          :cc => restaurant.cc.to_i,
-          :terrace => restaurant.terrace.to_i,
           :lat => restaurant.lat,
           :lon => restaurant.lon,
           :description => restaurant.description.to_s
@@ -106,6 +103,9 @@ class API < ActiveRecord::Base
             :address => restaurant.address,
             :phone => restaurant.phone.to_s,
             :working_hours => restaurant.time,
+            :wifi => restaurant.wifi.to_i,
+            :cc => restaurant.cc.to_i,
+            :terrace => restaurant.terrace.to_i,
             :lat => restaurant.lat,
             :lon => restaurant.lon,
             :description => restaurant.description.to_s
@@ -114,7 +114,7 @@ class API < ActiveRecord::Base
       
       best_dishes = []
       
-      restaurant.network.dishes.order("rating DESC, votes DESC").where("rating > 0").each do |dish|
+      restaurant.network.dishes.order("rating DESC, votes DESC").where("rating > 0").order(:rating).each do |dish|
           best_dishes.push({
             :id => dish.id,
             :name => dish.name,
