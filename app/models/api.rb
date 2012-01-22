@@ -103,9 +103,9 @@ class API < ActiveRecord::Base
             :address => restaurant.address,
             :phone => restaurant.phone.to_s,
             :working_hours => restaurant.time,
-            :wifi => restaurant.wifi,
-            :cc => restaurant.cc,
-            :terrace => restaurant.terrace,
+            :wifi => restaurant.wifi.to_i,
+            :cc => restaurant.cc == false ? 0 : 1,
+            :terrace => restaurant.terrace == false ? 0 : 1,
             :lat => restaurant.lat,
             :lon => restaurant.lon,
             :description => restaurant.description.to_s
