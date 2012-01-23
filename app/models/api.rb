@@ -4,9 +4,9 @@ class API < ActiveRecord::Base
     # Coming soon
   end
   
-  def   self.get_dish(user_id, dish_id)
+  def self.get_dish(user_id, dish_id)
     
-    if dish = Dish.find_by_id(dish_id)
+    if dish = Dish.select([:id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description]).find_by_id(dish_id)
       
       user_review = Review.find_by_dish_id_and_user_id(dish.id,user_id) if user_id
       subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
@@ -14,7 +14,7 @@ class API < ActiveRecord::Base
       position_in_network = Dish.where("rating >= ? AND network_id = ?", dish.rating, dish.network_id).order("rating DESC, votes DESC").count if dish.votes != 0
       position_in_type = Dish.where("rating >= ? AND dish_type_id = ?", dish.rating, dish.dish_type_id).order("rating DESC, votes DESC").count if dish.votes != 0
       position_in_all = Dish.where("rating >= ?", dish.rating).order("rating DESC, votes DESC").count if dish.votes != 0
-
+          
       top_expert_id = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0] if Review.find_by_dish_id(dish.id)
       if user = User.find_by_id(top_expert_id)
         top_expert = {
@@ -36,7 +36,7 @@ class API < ActiveRecord::Base
           :rating => review.rating
         })
       end
-    
+          
       restaurants = []
       dish.network.restaurants.each do |restaurant|
         restaurants.push({
@@ -57,7 +57,7 @@ class API < ActiveRecord::Base
         :rating => dish.rating,
         :votes => dish.votes,
         :position_in_all => position_in_all,
-        :dishes_count => Dish.all.count,
+        :dishes_count => Dish.select(:id).count(:id),
         :position_in_network => position_in_network,
         :dishes_in_network => dish.network.dishes.count,
         :position_in_type => position_in_type,
@@ -75,7 +75,7 @@ class API < ActiveRecord::Base
       }
       data.as_json
     else
-      {:error => {:description => 'Dish not found', :code => 666}}.as_json
+      {:error => {:description => 'Dish not found', :code => 108}}.as_json
     end
   end
   
