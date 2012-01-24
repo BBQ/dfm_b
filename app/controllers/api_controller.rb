@@ -75,8 +75,9 @@ class ApiController < ApplicationController
       else
         id = params[:network_id]
         type = 'network'
-      end      
-      return render :json => API.api_get_restaurant(id, type)
+      end
+      user_id = User.find_by_id(User.get_user_by_fb_token(params[:access_token])).id if params[:access_token]         
+      return render :json => API.api_get_restaurant(id, type, user_id)
     else
       return render :json => {:error => $error}
     end
