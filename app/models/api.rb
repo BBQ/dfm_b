@@ -20,18 +20,9 @@ class API < ActiveRecord::Base
         }
       end
     
-      reviews = []
-      dish.reviews.each do |review|
-        reviews.push({
-          :image_sd => review.photo.iphone.url != '/images/noimage.jpg' ? review.photo.iphone.url : '' ,
-          :image_hd => review.photo.iphone_retina.url != '/images/noimage.jpg' ? review.photo.iphone_retina.url : '',
-          :user_id => review.user_id,
-          :user_name => review.user.name,
-          :user_avatar => "http://graph.facebook.com/#{review.user.facebook_id}/picture?type=square",
-          :text => review.text,
-          :rating => review.rating
-        })
-      end
+    
+      review_data = []
+      dish.reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}  
           
       restaurants = []
       dish.network.restaurants.each do |restaurant|
@@ -59,7 +50,7 @@ class API < ActiveRecord::Base
         :restaurant_id => dish.network.restaurants.first.id, 
         :description => dish.description.to_s,
         :price => dish.price,
-        :reviews => reviews,
+        :reviews => review_data,
         :top_expert => top_expert ||= nil,
         :restaurants => restaurants,
         :error => {:description => nil, :code => nil}
@@ -70,21 +61,12 @@ class API < ActiveRecord::Base
     end
   end
   
-  def self.api_get_restaurant(id, type)
+  def self.api_get_restaurant(id, type, user_id)
     restaurant = type == 'restaurant' ? Restaurant.find_by_id(id) : Restaurant.find_by_network_id(id)   
     if restaurant        
       
-      reviews = []
-      restaurant.network.reviews.each do |review|
-          reviews.push({
-            :image_sd => !review.photo.blank? && review.photo.iphone.url != '/images/noimage.jpg' ? review.photo.iphone.url : '' ,
-            :image_hd => !review.photo.blank? && review.photo.iphone_retina.url != '/images/noimage.jpg' ? review.photo.iphone_retina.url : '',
-            :user_name => review.user.name,
-            :user_avatar => "http://graph.facebook.com/#{review.user.facebook_id}/picture?type=square",
-            :text => review.text,
-            :rating => review.rating
-          })
-      end
+      review_data = []
+      restaurant.network.reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}  
       
       restaurants = []
       
@@ -139,7 +121,7 @@ class API < ActiveRecord::Base
           :network_reviews_count => restaurant.network.reviews.count,
           :popularity => popularity,
           :restaurant_name => restaurant.name,
-          :reviews => reviews,
+          :reviews => review_data,
           :best_dishes => best_dishes ||= '',
           :top_expert => top_expert ||= nil,
           :restaurant => {
