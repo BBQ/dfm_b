@@ -3,7 +3,7 @@ namespace :fix do
 
   desc "Update Dishes with information from networks"
   task :upd_dishes => :environment do
-    Network.all.each do |n|
+    Network.where('`fsq_users_count` IS NOT NULL OR `votes` > 0 OR `rating` > 0').each do |n|
       n.dishes.each do |d|
         d.network_fsq_users_count = n.fsq_users_count
         d.network_votes = n.votes
