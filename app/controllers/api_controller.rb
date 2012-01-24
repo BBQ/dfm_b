@@ -112,7 +112,7 @@ class ApiController < ApplicationController
       end
       
     else
-      dishes = Dish.order('rating DESC, votes DESC, network_rating DESC, network_votes DESC, photo DESC, network_fsq_users_count DESC')
+      dishes = Dish.select('DISTINCT id, name, rating, votes, photo, network_id').order('rating DESC, votes DESC, network_rating DESC, network_votes DESC, photo DESC, network_fsq_users_count DESC')
     end
     
     filters = []
