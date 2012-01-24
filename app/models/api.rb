@@ -11,10 +11,6 @@ class API < ActiveRecord::Base
       user_review = Review.find_by_dish_id_and_user_id(dish.id,user_id) if user_id
       subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
       
-      position_in_network = Dish.where("rating >= ? AND network_id = ?", dish.rating, dish.network_id).order("rating DESC, votes DESC").count if dish.votes != 0
-      position_in_type = Dish.where("rating >= ? AND dish_type_id = ?", dish.rating, dish.dish_type_id).order("rating DESC, votes DESC").count if dish.votes != 0
-      position_in_all = Dish.where("rating >= ?", dish.rating).order("rating DESC, votes DESC").count if dish.votes != 0
-          
       top_expert_id = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0] if Review.find_by_dish_id(dish.id)
       if user = User.find_by_id(top_expert_id)
         top_expert = {
@@ -56,12 +52,6 @@ class API < ActiveRecord::Base
         :photo => dish.find_image && dish.find_image.iphone.url != '/images/noimage.jpg' ? dish.find_image.iphone.url : '',
         :rating => dish.rating,
         :votes => dish.votes,
-        :position_in_all => position_in_all,
-        :dishes_count => Dish.select(:id).count(:id),
-        :position_in_network => position_in_network,
-        :dishes_in_network => dish.network.dishes.count,
-        :position_in_type => position_in_type,
-        :dishes_in_type => dish.dish_type.dishes.count,
         :subtype_name => dish.dish_type.id,
         :type_name => dish.dish_type.name,
         :subtype_name => dish.dish_subtype ? dish.dish_subtype.name : '',
