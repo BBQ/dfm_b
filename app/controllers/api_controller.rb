@@ -129,7 +129,7 @@ class ApiController < ApplicationController
 
     dishes = dishes.custom_search(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
-    dishes = dishes.where(filters) unless filters.blank?
+    dishes = dishes.where(filters).joins(:restaurants) unless filters.blank?
 
     # dishes = Dish.select("DISTINCT `dishes`.id, dishes.`name`, dishes.`rating`, dishes.`votes`, dishes.`photo`, dishes.`network_id`")
     # dishes = dishes.joins("LEFT OUTER JOIN `networks` ON `dishes`.`network_id` = `networks`.`id` LEFT OUTER JOIN `restaurants` ON `restaurants`.`network_id` = `networks`.`id`")
@@ -145,7 +145,6 @@ class ApiController < ApplicationController
     # dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
     # dishes = dishes.where(filters) unless filters.blank?
     
-    # count = dishes.count # REMOVE ALL COUNTS !!!!!
     dishes = dishes.limit("#{offset}, #{limit}")
     
     restaurants = []
