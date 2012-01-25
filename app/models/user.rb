@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
   
-  attr_accessible :facebook_id, :name, :email, :password, :password_confirmation, :authentications_attributes
+  # attr_accessible :facebook_id, :name, :email, :password, :password_confirmation, :authentications_attributes
   authenticates_with_sorcery! do |config|
     config.authentications_class = Authentication
   end
@@ -16,6 +16,8 @@ class User < ActiveRecord::Base
   has_many :reviews
   has_many :comments
   has_many :likes
+  
+  mount_uploader :photo, ImageUploader
   
   def self.get_user_by_fb_token(access_token) # Под снос! 
     begin
