@@ -20,7 +20,6 @@ class API < ActiveRecord::Base
         }
       end
     
-    
       review_data = []
       dish.reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}  
           

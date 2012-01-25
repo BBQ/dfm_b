@@ -8,15 +8,15 @@ class Restaurant < ActiveRecord::Base
   
   has_many :restaurant_types
   has_many :types, :through => :restaurant_types
-  has_many :restaurant_images
+  has_many :restaurant_images, :dependent => :destroy
   
   has_many :restaurant_cuisines
   has_many :cuisines, :through => :restaurant_cuisines
   
   mount_uploader :photo, ImageUploader 
   
-  geocoded_by :geo_address, :latitude  => :lat, :longitude => :lon
-  after_validation :geocode, :if => :address_changed?
+  # geocoded_by :geo_address, :latitude  => :lat, :longitude => :lon
+  # after_validation :geocode, :if => :address_changed?
   
   def self.search_by_word(keyword)
     ids = {

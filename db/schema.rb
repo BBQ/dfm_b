@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120112134313) do
+ActiveRecord::Schema.define(:version => 20120125092823) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -116,30 +116,44 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
   add_index "dish_types", ["name"], :name => "name"
 
   create_table "dishes", :force => true do |t|
+    t.integer  "network_id",                            :default => 0
     t.string   "name"
     t.string   "photo"
-    t.integer  "price",                           :default => 0
+    t.integer  "price",                                 :default => 0
     t.string   "currency"
-    t.float    "rating",            :limit => 21, :default => 0.0
-    t.integer  "votes",                           :default => 0
+    t.float    "rating",                  :limit => 21, :default => 0.0
+    t.integer  "votes",                                 :default => 0
     t.text     "description"
-    t.integer  "network_id",                      :default => 0
-    t.integer  "dish_category_id",                                 :null => false
-    t.integer  "dish_type_id",                                     :null => false
+    t.integer  "dish_category_id",                                       :null => false
+    t.integer  "dish_type_id",                                           :null => false
     t.integer  "dish_subtype_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "dish_extratype_id"
-    t.integer  "created_by_user",   :limit => 1,  :default => 0,   :null => false
+    t.integer  "created_by_user",         :limit => 1,  :default => 0,   :null => false
+    t.integer  "network_rating"
+    t.integer  "network_votes"
+    t.integer  "network_fsq_users_count"
   end
 
   add_index "dishes", ["dish_category_id"], :name => "dish_category_id"
   add_index "dishes", ["dish_type_id"], :name => "dish_type_id"
   add_index "dishes", ["id"], :name => "id"
+  add_index "dishes", ["name"], :name => "name"
+  add_index "dishes", ["network_fsq_users_count"], :name => "index_dishes_on_network_fsq_users_count"
   add_index "dishes", ["network_id"], :name => "network_id"
+  add_index "dishes", ["network_rating"], :name => "index_dishes_on_network_rating"
+  add_index "dishes", ["network_votes"], :name => "index_dishes_on_network_votes"
   add_index "dishes", ["photo"], :name => "index_dishes_on_photo"
   add_index "dishes", ["rating"], :name => "index_dishes_on_rating"
   add_index "dishes", ["votes"], :name => "index_dishes_on_votes"
+
+  create_table "followers", :force => true do |t|
+    t.integer  "user_id",        :null => false
+    t.integer  "follow_user_id", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "friends", :id => false, :force => true do |t|
     t.integer  "user_id",     :limit => 8, :null => false
@@ -173,6 +187,7 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
     t.integer  "id",               :null => false
     t.string   "category_id"
     t.string   "category_name"
+    t.string   "restaurant_id"
     t.string   "category_picture"
     t.string   "description"
     t.integer  "mi_id",            :null => false
@@ -184,7 +199,6 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
     t.string   "name"
     t.string   "pictures"
     t.string   "price"
-    t.string   "restaurant_id"
     t.string   "restaurant_name",  :null => false
     t.string   "composition"
     t.string   "vegetarian"
@@ -200,8 +214,9 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
   create_table "mi_restaurants", :force => true do |t|
     t.string   "mi_id"
     t.string   "name"
+    t.integer  "our_network_id"
     t.integer  "network_id"
-    t.string   "step",        :null => false
+    t.string   "step",           :null => false
     t.string   "address"
     t.string   "description"
     t.string   "dishes"
@@ -213,7 +228,7 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
     t.string   "telephone"
     t.string   "wifi"
     t.string   "worktime"
-    t.string   "city",        :null => false
+    t.string   "city",           :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -222,11 +237,13 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "rating",     :limit => 21, :default => 0.0
-    t.integer  "votes",                    :default => 0
+    t.float    "rating",          :limit => 21, :default => 0.0
+    t.integer  "votes",                         :default => 0
     t.string   "photo"
+    t.integer  "fsq_users_count"
   end
 
+  add_index "networks", ["fsq_users_count"], :name => "index_networks_on_fsq_users_count"
   add_index "networks", ["id"], :name => "index_networks_on_id"
   add_index "networks", ["rating"], :name => "index_networks_on_rating"
   add_index "networks", ["votes"], :name => "index_networks_on_votes"
@@ -284,7 +301,6 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
     t.integer  "restaurant_id", :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "id",            :null => false
   end
 
   add_index "restaurant_tags", ["restaurant_id"], :name => "index_restaurant_tags_on_restaurant_id"
@@ -300,13 +316,14 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
 
   create_table "restaurants", :force => true do |t|
     t.string   "name"
+    t.integer  "network_id",                                          :null => false
+    t.float    "rating",             :limit => 21, :default => 0.0
     t.string   "name_eng"
     t.float    "lon"
     t.float    "lat"
     t.string   "fsq_lng"
     t.string   "fsq_lat"
     t.string   "address"
-    t.integer  "network_id",                                          :null => false
     t.string   "city"
     t.string   "time"
     t.string   "phone"
@@ -316,7 +333,6 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
     t.string   "businesslunch"
     t.string   "photo"
     t.integer  "votes",                            :default => 0
-    t.float    "rating",             :limit => 21, :default => 0.0
     t.string   "wifi",                             :default => "0"
     t.boolean  "chillum",                          :default => false
     t.boolean  "terrace",                          :default => false
@@ -352,7 +368,7 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
     t.string   "fsq_name"
     t.string   "fsq_address"
     t.string   "fsq_id"
-    t.integer  "has_menu",           :limit => 1
+    t.string   "station"
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"
@@ -395,6 +411,17 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
     t.datetime "updated_at"
   end
 
+  create_table "sessions", :force => true do |t|
+    t.integer  "user_id",       :default => 0
+    t.string   "session_token"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "salt"
+  end
+
+  add_index "sessions", ["id"], :name => "index_sessions_on_id"
+  add_index "sessions", ["user_id"], :name => "index_sessions_on_user_id"
+
   create_table "stations", :force => true do |t|
     t.string   "name"
     t.float    "lat"
@@ -433,6 +460,10 @@ ActiveRecord::Schema.define(:version => 20120112134313) do
     t.string   "photo"
     t.string   "name"
     t.integer  "facebook_id",                  :limit => 8
+    t.string   "twitter_id"
+    t.string   "vkontakte_id"
+    t.string   "gender"
+    t.string   "current_city"
   end
 
   add_index "users", ["facebook_id"], :name => "index_users_on_facebook_id"

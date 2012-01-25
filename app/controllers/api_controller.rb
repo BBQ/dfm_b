@@ -50,6 +50,50 @@ class ApiController < ApplicationController
     }
   end
   
+  def authenticate_user
+    if params[:access_token] && params[:provider]
+      session = User.authenticate_by_facebook(params[:access_token]) if params[:provider] == 'facebook'
+    end
+    return render :json => {
+          :session => session, 
+          :error => $error
+    }
+  end
+  
+  def follow_user
+    if !params[:user_id].blank? && !params[:token].blank? && !params[:follow_user_id].blank?
+        if Session.check_token(params[:user_id], params[:token]) && params[:user_id] != params[:follow_user_id]
+            if follower = Follower.find_by_user_id_and_follow_user_id(params[:user_id], params[:follow_user_id])
+              follower.destroy
+              status = 'unfollow'
+            elsif user = User.find_by_id(params[:follow_user_id])
+              Follower.create({:user_id => params[:user_id], :follow_user_id => params[:follow_user_id]})
+              status = 'follow'
+            else
+              $error = {:description => 'user or follower not found', :code => 5}
+            end
+        end
+    else
+      $error = {:description => 'Parameters missing', :code => 8}
+    end
+    
+    return render :json => {
+      :status => status ||= nil,
+      :error => $error
+    }
+    
+  end
+  
+  def check_user
+    if params[:token] && params[:user_id]
+      Session.check_token(params[:user_id], params[:token])
+    end
+    return render :json => {
+          :session => session, 
+          :error => $error
+    }
+  end
+  
   def get_dish
     if params[:dish_id]
       user_id = User.find_by_id(User.get_user_by_fb_token(params[:access_token])).id if params[:access_token]      

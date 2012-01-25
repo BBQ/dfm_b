@@ -17,11 +17,7 @@ class User < ActiveRecord::Base
   has_many :comments
   has_many :likes
   
-  def post_registration(access_token)
-
-  end
-  
-  def self.get_user_by_fb_token(access_token)
+  def self.get_user_by_fb_token(access_token) # Под снос! 
     begin
       rest = Koala::Facebook::GraphAndRestAPI.new(access_token) # pre-1.2beta
       result = rest.get_object("me")
@@ -33,17 +29,17 @@ class User < ActiveRecord::Base
         id = User.create({
           :email => result["email"] , 
           :name => result["name"], 
+          :gender => result["gender"],
+          :current_city => result["location"]["name"],
           :facebook_id => result["id"]
         }).id
         
         Authentication.create({
           :user_id => id,
           :provider => 'facebook',
-          :uid => result["id"] 
+          :uid => result["id"], 
         })
-        
-        User.new.get_user_fb_friends(access_token)
-        
+        User.new.get_user_fb_friends(access_token)        
       end
     rescue
       nil
@@ -51,6 +47,42 @@ class User < ActiveRecord::Base
     id
   end
   
+  def self.authenticate_by_facebook(access_token)
+    begin
+      
+      rest = Koala::Facebook::GraphAndRestAPI.new(access_token) # pre-1.2beta
+      result = rest.get_object("me")
+
+      if user = User.find_by_facebook_id(result["id"])
+        token = Session.get_token(user)
+      elsif result["email"] 
+        user = create_user_from_facebook(result)
+        token = Session.get_token(user)        
+      end
+    rescue
+      nil
+    end
+    {:token => token, :user_id => user.id} unless token.nil? 
+  end
+  
+  def self.create_user_from_facebook(auth_result)
+    user = User.create({
+      :email => auth_result["email"] , 
+      :name => auth_result["name"], 
+      :gender => auth_result["gender"],
+      :current_city => auth_result["location"]["name"],
+      :facebook_id => auth_result["id"]
+    })
+    
+    Authentication.create({
+      :user_id => id,
+      :provider => 'facebook',
+      :uid => auth_result["id"], 
+    })
+    User.new.get_user_fb_friends(access_token)
+    user
+  end
+    
   def get_user_fb_token(code)
     key = Dishfm::Application.config.sorcery.facebook.key
     secret = Dishfm::Application.config.sorcery.facebook.secret

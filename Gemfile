@@ -28,6 +28,9 @@ gem "geocoder"
 gem "kaminari"
 gem "xml-simple"
 
+gem 'russian', '~> 0.6.0'
+gem  'translit'
+
 # gem 'fast_trie', '0.5.0', :git => 'git://github.com/tyler/trie.git'
 
 # Use unicorn as the web server
