@@ -23,7 +23,7 @@ namespace :fsq do
   
     client = Foursquare2::Client.new(:client_id => @client_id, :client_secret => @client_secret)
     i = 0
-    Restaurant.where("fsq_lng IS NULL").each do |r|
+    Restaurant.all.each do |r|
       i+= 1
       fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lon}", :query => r.name) if r.lat && r.lon && r.name
     
@@ -35,8 +35,9 @@ namespace :fsq do
         r.fsq_checkins_count = fsq_hash.groups[0].items.first.stats.checkinsCount
         r.fsq_users_count = fsq_hash.groups[0].items.first.stats.usersCount
         r.fsq_tip_count = fsq_hash.groups[0].items.first.stats.tipCount
+        r.fsq_id = fsq_hash.groups[0].items.first.id
         r.save
-        p "#{i} #{r.name} #{r.address}"
+        p "#{i} #{r.fsq_id} #{r.name} #{r.address}"
       else
         fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lon}", :query => r.name_eng) if r.lat && r.lon && r.name_eng
         if fsq_hash && fsq_hash.groups[0].items.count > 0
@@ -47,8 +48,9 @@ namespace :fsq do
           r.fsq_checkins_count = fsq_hash.groups[0].items.first.stats.checkinsCount
           r.fsq_users_count = fsq_hash.groups[0].items.first.stats.usersCount
           r.fsq_tip_count = fsq_hash.groups[0].items.first.stats.tipCount
+          r.fsq_id = fsq_hash.groups[0].items.first.id
           r.save
-          p "#{i} #{r.name} #{r.address}"
+          p "#{i} #{r.fsq_id} #{r.name} #{r.address}"
         else
           p "#{i} FAIL!!! #{r.name} #{r.address}"
         end
