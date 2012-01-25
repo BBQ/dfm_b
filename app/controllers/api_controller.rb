@@ -53,9 +53,11 @@ class ApiController < ApplicationController
   def authenticate_user
     if params[:access_token] && params[:provider]
       session = User.authenticate_by_facebook(params[:access_token]) if params[:provider] == 'facebook'
+    else
+      $error = {:description => 'Parameters missing', :code => 8}
     end
     return render :json => {
-          :session => session, 
+          :session => session ||= nil, 
           :error => $error
     }
   end
