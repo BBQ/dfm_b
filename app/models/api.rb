@@ -21,6 +21,29 @@ class API < ActiveRecord::Base
       end
     
       review_data = []
+      # if dish.photo?
+      #   data = {
+      #     :review_id => id,
+      #     :created_at => created_at.to_time.to_i,
+      #     :text => text,
+      #     :dish_id => dish.id,
+      #     :dish_name => dish.name,
+      #     :dish_votes => dish.votes,
+      #     :restaurant_id => restaurant.id,    
+      #     :restaurant_name => restaurant.name,
+      #     :user_id => user.id,
+      #     :user_name => user.name,
+      #     :user_facebook_id => user.facebook_id,
+      #     :likes => count_likes,
+      #     :comments => count_comments,
+      #     :review_rating => rating,
+      #     :dish_rating => dish.rating,
+      #     :image_sd => photo.iphone.url != '/images/noimage.jpg' ? photo.iphone.url : '' ,
+      #     :image_hd => photo.iphone_retina.url != '/images/noimage.jpg' ? photo.iphone_retina.url : '',
+      #     :liked => user_id && Like.find_by_user_id_and_review_id(user_id, id) ? 1 : 0
+      #   }
+      #   review_data.push(data)
+      # end
       dish.reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}  
           
       restaurants = []
@@ -77,6 +100,7 @@ class API < ActiveRecord::Base
             :working_hours => restaurant.time,
             :wifi => restaurant.wifi.to_i,
             :cc => restaurant.cc == false ? 0 : 1,
+            :cuisines => restaurant.cuisines.map{|k| k.name}.join(', '),
             :terrace => restaurant.terrace == false ? 0 : 1,
             :lat => restaurant.lat,
             :lon => restaurant.lon,

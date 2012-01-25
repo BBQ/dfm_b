@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120125092823) do
+ActiveRecord::Schema.define(:version => 20120125135249) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -78,6 +78,14 @@ ActiveRecord::Schema.define(:version => 20120125092823) do
   add_index "dish_category_orders", ["network_id"], :name => "index_dish_category_orders_on_network_id"
   add_index "dish_category_orders", ["restaurant_id"], :name => "index_dish_category_orders_on_restaurant_id"
 
+  create_table "dish_comments", :force => true do |t|
+    t.integer  "user_id",    :null => false
+    t.integer  "dish_id",    :null => false
+    t.text     "text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "dish_extratypes", :force => true do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -86,6 +94,13 @@ ActiveRecord::Schema.define(:version => 20120125092823) do
 
   add_index "dish_extratypes", ["id"], :name => "index_dish_extratypes_on_id"
   add_index "dish_extratypes", ["name"], :name => "index_dish_extratypes_on_name"
+
+  create_table "dish_likes", :force => true do |t|
+    t.integer  "user_id",    :null => false
+    t.integer  "dish_id",    :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "dish_subtypes", :force => true do |t|
     t.string   "name"
@@ -134,6 +149,8 @@ ActiveRecord::Schema.define(:version => 20120125092823) do
     t.integer  "network_rating"
     t.integer  "network_votes"
     t.integer  "network_fsq_users_count"
+    t.integer  "count_likes"
+    t.integer  "count_comments"
   end
 
   add_index "dishes", ["dish_category_id"], :name => "dish_category_id"
