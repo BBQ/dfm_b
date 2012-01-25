@@ -149,7 +149,7 @@ class ApiController < ApplicationController
       Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).each do |restaurant|
        networks.push(restaurant.network_id) if networks.index(restaurant.network_id).blank?
       end
-      dishes = Dish.where("dishes.network_id IN (#{networks.join(',')})") if networks.count > 0
+      dishes = Dish.select('DISTINCT dishes.id, dishes.name, dishes.rating, dishes.votes, dishes.photo, dishes.network_id').where("dishes.network_id IN (#{networks.join(',')})") if networks.count > 0
       dishes = dishes.includes(:network, :restaurants)    
 
       if params[:sort] == 'distance'
