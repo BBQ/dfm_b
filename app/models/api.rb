@@ -1,3 +1,4 @@
+# encoding: utf-8
 class API < ActiveRecord::Base
 
   def self.get_reviews(user_id, dish_id)

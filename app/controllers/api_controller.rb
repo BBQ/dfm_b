@@ -75,7 +75,7 @@ class ApiController < ApplicationController
   end
   
   def get_dish
-    if params[:dish_id] && params[:user_id]
+    if params[:dish_id]
       return render :json => API.get_dish(params[:user_id] ,params[:dish_id])
     else
       $error = {:description => 'Parameters missing', :code => 8}
