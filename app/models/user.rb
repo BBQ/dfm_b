@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
-  def get_photo
+  def user_photo
     if photo.blank?
       "http://graph.facebook.com/#{facebook_id}/picture?type=square"
     else

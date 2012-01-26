@@ -75,8 +75,8 @@ class Review < ActiveRecord::Base
           :include => { 
             :dish => {:only => [:id, :name, :photo, :rating, :votes]},
             :restaurant => {:only => [:id, :name, :photo, :address, :rating, :votes]},
-            :likes => {:only => [:id], :include => {:user => { :only => [:id, :name, :facebook_id]}}},
-            :comments => {:only => [:id, :text, :created_at], :include => {:user => { :only => [:id, :name, :facebook_id]}}}
+            :likes => {:only => [:id], :include => {:user => { :only => [:id, :name], :methods => :user_photo}}},
+            :comments => {:only => [:id, :text, :created_at], :include => {:user => { :only => [:id, :name], :methods => :user_photo}}}
           })
   end
   
@@ -92,7 +92,7 @@ class Review < ActiveRecord::Base
       :restaurant_name => restaurant.name,
       :user_id => user.id,
       :user_name => user.name,
-      :user_photo => user.get_photo,
+      :user_photo => user.user_photo,
       :likes => count_likes,
       :comments => count_comments,
       :review_rating => rating,

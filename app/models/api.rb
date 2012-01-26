@@ -34,7 +34,7 @@ class API < ActiveRecord::Base
           :restaurant_name => dish.network.name,
           :user_id => user.id,
           :user_name => user.name,
-          :user_photo => user.get_photo,
+          :user_photo => user.user_photo,
           :likes => dish.count_likes ||= 0,
           :comments => dish.count_comments ||= 0,
           :review_rating => dish.single_rating ||= 0,
