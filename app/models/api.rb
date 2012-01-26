@@ -22,7 +22,7 @@ class API < ActiveRecord::Base
       end
     
       review_data = []
-      user = User.select([:id, :name, :photo]).find_by_id(1)
+      user = User.select([:id, :name, :photo, :facebook_id]).find_by_id(1)
       unless dish.photo.blank?
         data = {
           :review_id => "d#{dish.id}",
