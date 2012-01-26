@@ -24,14 +24,13 @@ class ApiController < ApplicationController
   
   def del_review
     if params[:review_id] && Session.check_token(params[:user_id], params[:token])   
-        user_id = User.get_user_by_fb_token(params[:access_token]) 
-        if review = Review.find_by_id_and_user_id(params[:review_id], user_id)
+        if review = Review.find_by_id_and_user_id(params[:review_id], params[:user_id])
           review.delete
         else
-          $error = {:description => 'Review not found', :code => 357}  
+          $error = {:description => 'Review not found', :code => 5}  
         end
     else
-        $error = {:description => 'Params missing', :code => 357}
+        $error = {:description => 'Params missing', :code => 8}
     end
     return render :json => {
           :error => $error
@@ -99,9 +98,8 @@ class ApiController < ApplicationController
       else
         id = params[:network_id]
         type = 'network'
-      end
-      user_id = User.find_by_id(User.get_user_by_fb_token(params[:access_token])).id if params[:access_token]         
-      return render :json => API.api_get_restaurant(id, type, user_id)
+      end     
+      return render :json => API.api_get_restaurant(id, type, params[:user_id])
     else
       return render :json => {:error => $error}
     end
@@ -457,8 +455,8 @@ class ApiController < ApplicationController
   end
   
   def add_review
-    if params[:review] && params[:review][:rating] && params[:access_token]
-      params[:review][:user_id] = User.get_user_by_fb_token(params[:access_token])
+    if params[:review] && params[:review][:rating] && Session.check_token(params[:user_id], params[:token])
+      params[:review][:user_id] = params[:user_id]
       
       chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
       return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 357}} unless chk24.blank?
