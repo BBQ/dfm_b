@@ -6,7 +6,7 @@ class API < ActiveRecord::Base
   
   def self.get_dish(user_id, dish_id)
     
-    if dish = Dish.select([:id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price]).find_by_id(dish_id)
+    if dish = Dish.select([:id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price, :created_at, :count_likes, :count_comments, :single_rating, :photo]).find_by_id(dish_id)
       
       user_review = Review.select(:rating).find_by_dish_id_and_user_id(dish.id,user_id) if user_id
       subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
@@ -21,29 +21,30 @@ class API < ActiveRecord::Base
       end
     
       review_data = []
-      # if dish.photo?
-      #   data = {
-      #     :review_id => id,
-      #     :created_at => created_at.to_time.to_i,
-      #     :text => text,
-      #     :dish_id => dish.id,
-      #     :dish_name => dish.name,
-      #     :dish_votes => dish.votes,
-      #     :restaurant_id => restaurant.id,    
-      #     :restaurant_name => restaurant.name,
-      #     :user_id => user.id,
-      #     :user_name => user.name,
-      #     :user_facebook_id => user.facebook_id,
-      #     :likes => count_likes,
-      #     :comments => count_comments,
-      #     :review_rating => rating,
-      #     :dish_rating => dish.rating,
-      #     :image_sd => photo.iphone.url != '/images/noimage.jpg' ? photo.iphone.url : '' ,
-      #     :image_hd => photo.iphone_retina.url != '/images/noimage.jpg' ? photo.iphone_retina.url : '',
-      #     :liked => user_id && Like.find_by_user_id_and_review_id(user_id, id) ? 1 : 0
-      #   }
-      #   review_data.push(data)
-      # end
+      user = User.select([:id, :name, :photo]).find_by_id(1)
+      unless dish.photo.blank?
+        data = {
+          :review_id => "d#{dish.id}",
+          :created_at => dish.created_at.to_time.to_i,
+          :text => 'фото предоставлено рестораном',
+          :dish_id => dish.id,
+          :dish_name => dish.name,
+          :dish_votes => dish.votes,
+          :restaurant_id => dish.network.restaurants.first.id,    
+          :restaurant_name => dish.network.name,
+          :user_id => user.id,
+          :user_name => user.name,
+          :user_photo => user.get_photo,
+          :likes => dish.count_likes ||= 0,
+          :comments => dish.count_comments ||= 0,
+          :review_rating => dish.single_rating ||= 0,
+          :dish_rating => dish.rating,
+          :image_sd => dish.photo.iphone.url,
+          :image_hd => dish.photo.iphone_retina.url,
+          :liked => user_id && DishLike.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0
+        }
+        review_data.push(data)
+       end
       dish.reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}  
           
       restaurants = []

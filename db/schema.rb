@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120125135249) do
+ActiveRecord::Schema.define(:version => 20120126102722) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -151,6 +151,7 @@ ActiveRecord::Schema.define(:version => 20120125135249) do
     t.integer  "network_fsq_users_count"
     t.integer  "count_likes"
     t.integer  "count_comments"
+    t.integer  "dish_single_rating"
   end
 
   add_index "dishes", ["dish_category_id"], :name => "dish_category_id"

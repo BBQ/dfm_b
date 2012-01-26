@@ -8,15 +8,14 @@ class ApiController < ApplicationController
   end
   
   def del_comment
-    if params[:comment_id] && params[:access_token]
-      user_id = User.get_user_by_fb_token(params[:access_token])     
-      if comment = Comment.find_by_id_and_user_id(params[:comment_id], user_id)
+    if params[:comment_id] && Session.check_token(params[:user_id], params[:token])
+      if comment = Comment.find_by_id_and_user_id(params[:comment_id], params[:user_id])
         comment.delete
       else
-        $error = {:description => 'Comment not found', :code => 357}
+        $error = {:description => 'Comment not found', :code => 5}
       end
     else
-        $error = {:description => 'Params missing', :code => 357}
+        $error = {:description => 'Params missing', :code => 8}
     end
     return render :json => {
           :error => $error
@@ -24,7 +23,7 @@ class ApiController < ApplicationController
   end
   
   def del_review
-    if params[:review_id] && params[:access_token]      
+    if params[:review_id] && Session.check_token(params[:user_id], params[:token])   
         user_id = User.get_user_by_fb_token(params[:access_token]) 
         if review = Review.find_by_id_and_user_id(params[:review_id], user_id)
           review.delete
@@ -35,17 +34,6 @@ class ApiController < ApplicationController
         $error = {:description => 'Params missing', :code => 357}
     end
     return render :json => {
-          :error => $error
-    }
-  end
-  
-  def get_user_id
-    if params[:id] && params[:provider]
-      user = User.find_by_facebook_id(params[:id]) if params[:provider] == 'facebook'
-      user_id = user.id if user
-    end
-    return render :json => {
-          :user_id => user_id, 
           :error => $error
     }
   end
@@ -86,21 +74,11 @@ class ApiController < ApplicationController
     
   end
   
-  def check_user
-    if params[:token] && params[:user_id]
-      Session.check_token(params[:user_id], params[:token])
-    end
-    return render :json => {
-          :session => session, 
-          :error => $error
-    }
-  end
-  
   def get_dish
-    if params[:dish_id]
-      user_id = User.find_by_id(User.get_user_by_fb_token(params[:access_token])).id if params[:access_token]      
-      return render :json => API.get_dish(user_id,params[:dish_id])
+    if params[:dish_id] && params[:user_id]
+      return render :json => API.get_dish(params[:user_id] ,params[:dish_id])
     else
+      $error = {:description => 'Parameters missing', :code => 8}
       return render :json => {:error => $error}
     end
   end
@@ -358,7 +336,6 @@ class ApiController < ApplicationController
   end
   
   def get_review
-    
     review = Review.find_by_id(params[:review_id]).as_json if params[:review_id]
     return render :json => {
       :review => review,
@@ -399,11 +376,11 @@ class ApiController < ApplicationController
   
     limit = params[:limit] ? params[:limit] : 25
     offset = params[:offset] ? params[:offset] : 0
+    
     reviews = Review.limit("#{offset}, #{limit}").order('id DESC').includes(:dish).where('photo IS NOT NULL')
-    user_id = User.get_user_by_fb_token(params[:access_token]) if params[:access_token]
-    count = Review.where('photo IS NOT NULL').count(:id)
+    
     review_data = []
-    reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}    
+    reviews.each {|r| review_data.push(r.format_review_for_api(params[:user_id]))}    
     
     return render :json => {
       :reviews => review_data,
@@ -413,30 +390,22 @@ class ApiController < ApplicationController
   end
   
   def like_review
-    if params[:review_id] && params[:access_token]
-      user_id = User.get_user_by_fb_token(params[:access_token])   
-      data = Like.new.save_me(user_id, params[:review_id]) if user_id
-      code = data[:error] ? 11 : nil
+    if params[:review_id] && Session.check_token(params[:user_id], params[:token])
+      data = Like.save(params[:user_id], params[:review_id])
     else
-      data[:error] = 'Parameters missing'
-      code = 357
+      $error = {:description => 'Parameters missing', :code => 8}
     end
     return render :json => {
-      :error => {:description => data[:error], :code => code}
+      :error => $error
     }
   end
   
   def comment_on_review
-    if params[:comment] && params[:review_id] && !params[:access_token].blank?
-      user_id = User.get_user_by_fb_token(params[:access_token])
-      unless user_id.blank?
-        comment = Comment.new.add({:user_id => user_id, :review_id => params[:review_id], :text => params[:comment]})
-      else
-        $error = {:description => 'User not found', :code => 555}
-      end
+    if params[:comment] && params[:review_id] && Session.check_token(params[:user_id], params[:token])
+        comment = Comment.add({:user_id => params[:user_id], :review_id => params[:review_id], :text => params[:comment]})
     else
       return render :json => {
-        :error => {:description => 'Parameters missing', :code => 357}
+        :error => {:description => 'Parameters missing', :code => 8}
       }
     end
     return render :json => {

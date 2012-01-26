@@ -19,6 +19,14 @@ class User < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
+  def get_photo
+    if photo.blank?
+      "http://graph.facebook.com/#{facebook_id}/picture?type=square"
+    else
+      photo.p60.url
+    end
+  end
+  
   def self.get_user_by_fb_token(access_token) # Под снос! 
     begin
       rest = Koala::Facebook::GraphAndRestAPI.new(access_token) # pre-1.2beta

@@ -92,7 +92,7 @@ class Review < ActiveRecord::Base
       :restaurant_name => restaurant.name,
       :user_id => user.id,
       :user_name => user.name,
-      :user_facebook_id => user.facebook_id,
+      :user_photo => user.get_photo,
       :likes => count_likes,
       :comments => count_comments,
       :review_rating => rating,

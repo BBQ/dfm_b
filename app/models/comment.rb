@@ -4,18 +4,29 @@ class Comment < ActiveRecord::Base
   
   default_scope order('id DESC')
   
-  def add(data)
-    comment_id = Comment.create(data)
-    review = Review.find_by_id(data[:review_id])
-    review.count_comments += 1
-    review.save
-    
-    # Send email
-    hours_7 = Notification.where("user_id = ? AND created_at >= ADDDATE(NOW(), INTERVAL - 7 HOUR)", review.user.id)
-    if hours_7.blank?
-      UserMailer.notification_email(data[:user_id], review, 'comment').deliver
-    end
-    
+  def self.add(data)
+    if data[:review_id][0] == 'd'
+      data[:review_id].slice!(0)
+      if dish = Dish.find_by_id(data[:review_id])
+        unless dish.photo.blank?
+          DishComment.create({:user_id => data[:user_id], :dish_id => data[:review_id], :text => data[:text]})
+          dish.count_comments += 1
+          dish.save
+        end
+      end
+    else
+      if review = Review.find_by_id(data[:review_id])
+        Comment.create(data)
+        review.count_comments += 1
+        review.save
+      end
+
+      # Send email
+      hours_7 = Notification.where("user_id = ? AND created_at >= ADDDATE(NOW(), INTERVAL - 7 HOUR)", review.user.id)
+      if hours_7.blank?
+        UserMailer.notification_email(data[:user_id], review, 'comment').deliver
+      end
+    end  
   end
 
   def delete
