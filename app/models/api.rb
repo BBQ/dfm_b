@@ -16,7 +16,7 @@ class API < ActiveRecord::Base
       if user = User.select([:id, :name, :facebook_id]).find_by_id(top_expert_id)
         top_expert = {
           :user_name => user.name,
-          :user_avatar => "http://graph.facebook.com/#{user.facebook_id}/picture?type=square",
+          :user_photo => user.user_photo,
           :user_id => user.id
         }
       end
@@ -126,7 +126,7 @@ class API < ActiveRecord::Base
       if user = User.find_by_id(top_expert_id)
         top_expert = {
           :user_name => user.name,
-          :user_avatar => "http://graph.facebook.com/#{user.facebook_id}/picture?type=square",
+          :user_photo => user.user_photo,
           :user_id => user.id
         }
       end

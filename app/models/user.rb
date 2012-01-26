@@ -21,10 +21,11 @@ class User < ActiveRecord::Base
   
   def user_photo
     if photo.blank?
-      "http://graph.facebook.com/#{facebook_id}/picture?type=square"
+      photo = "http://graph.facebook.com/#{facebook_id}/picture?type=square" unless facebook_id.blank?
     else
-      "http://test.dish.fm#{photo.p60.url}"
+      photo = "http://test.dish.fm#{photo.p120.url}"
     end
+    photo ||= ""
   end
   
   def self.get_user_by_fb_token(access_token) # Под снос! 
