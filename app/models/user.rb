@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
   
   def user_photo
     if photo.blank?
-      "http://graph.facebook.com/#{facebook_id || = 0}/picture?type=square"
+      "http://graph.facebook.com/#{facebook_id}/picture?type=square"
     else
       "http://test.dish.fm#{photo.p60.url}"
     end
