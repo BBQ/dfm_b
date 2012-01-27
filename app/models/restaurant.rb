@@ -76,7 +76,9 @@ class Restaurant < ActiveRecord::Base
   
   def find_image
     if photo.blank?
-      dish = Dish.where("network_id = ?", network_id).order('rating DESC, votes DESC').first.find_image if Dish.find_by_network_id(network_id)
+      if dish = Dish.where("network_id = ?", network_id).order('rating DESC, votes DESC')
+        dish.first.photo
+      end
     else
       photo
     end
