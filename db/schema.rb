@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120126163804) do
+ActiveRecord::Schema.define(:version => 20120127135324) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -126,14 +126,13 @@ ActiveRecord::Schema.define(:version => 20120126163804) do
     t.datetime "updated_at"
     t.integer  "order",      :default => 0
     t.string   "name_eng"
+    t.string   "photo"
   end
 
   add_index "dish_types", ["name"], :name => "name"
 
   create_table "dishes", :force => true do |t|
     t.integer  "network_id",                            :default => 0
-    t.integer  "count_comments",                        :default => 0
-    t.integer  "count_likes",                           :default => 0
     t.string   "name"
     t.string   "photo"
     t.integer  "price",                                 :default => 0
@@ -148,10 +147,11 @@ ActiveRecord::Schema.define(:version => 20120126163804) do
     t.datetime "updated_at"
     t.integer  "dish_extratype_id"
     t.integer  "created_by_user",         :limit => 1,  :default => 0,   :null => false
-    t.integer  "network_rating",                        :default => 0
-    t.integer  "network_votes",                         :default => 0
+    t.integer  "network_rating"
+    t.integer  "network_votes"
     t.integer  "network_fsq_users_count"
-    t.integer  "single_rating",                         :default => 0
+    t.integer  "count_comments",                        :default => 0
+    t.integer  "count_likes",                           :default => 0
   end
 
   add_index "dishes", ["dish_category_id"], :name => "dish_category_id"
@@ -409,14 +409,14 @@ ActiveRecord::Schema.define(:version => 20120126163804) do
   add_index "restaurants", ["wifi"], :name => "index_restaurants_on_wifi"
 
   create_table "reviews", :force => true do |t|
-    t.integer  "count_comments", :default => 0
     t.string   "photo"
     t.float    "rating",         :default => 0.0
-    t.integer  "count_likes",    :default => 0
     t.text     "text"
     t.integer  "dish_id",                           :null => false
     t.integer  "user_id",                           :null => false
     t.integer  "restaurant_id",                     :null => false
+    t.integer  "count_likes",    :default => 0
+    t.integer  "count_comments", :default => 0
     t.boolean  "web",            :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
