@@ -302,7 +302,7 @@ class ApiController < ApplicationController
       end
       if dont_add == 0
         dishes = []
-        if r.network.dishes
+        if r.network.dishes.where('photo IS NOT NULL').order('rating DESC')
           unless params[:keyword].blank?
             r.network.dishes.select([:id, :photo]).custom_search(params[:keyword]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
           else
