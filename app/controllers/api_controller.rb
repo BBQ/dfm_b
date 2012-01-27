@@ -86,6 +86,8 @@ class ApiController < ApplicationController
     return render :json => {
           :types => DishType.where('id != 10').order('`order`'),
           :tags => Tag.get_all,
+          :networks => Network.select([:id, :name]).all,
+          :cities => LocationTips.select([:id, :name]).all,
           :error => $error
     }
   end
