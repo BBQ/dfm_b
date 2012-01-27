@@ -112,7 +112,7 @@ class API < ActiveRecord::Base
       
       best_dishes = []
       
-      restaurant.network.dishes.select('DISTINCT id, name, photo, rating, votes').order("rating DESC, votes DESC").where("photo IS NOT NULL OR rating > 0").order(:rating).each do |dish|
+      restaurant.network.dishes.select('DISTINCT id, name, photo, rating, votes, dish_type_id').order("rating DESC, votes DESC").where("photo IS NOT NULL OR rating > 0").order(:rating).each do |dish|
           best_dishes.push({
             :id => dish.id,
             :name => dish.name,
