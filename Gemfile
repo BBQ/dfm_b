@@ -8,6 +8,7 @@ gem 'rails', '3.0.10'
 gem 'mysql2', '~> 0.2.11'
 
 gem 'sass'
+gem 'rb-fsevent'
 gem 'haml'
 gem 'jquery-rails'
 

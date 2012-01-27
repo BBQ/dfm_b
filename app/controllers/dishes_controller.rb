@@ -5,11 +5,14 @@ class DishesController < ApplicationController
     @review = Review.new
     @k = @page == 0 ? 0 : (@page - 1) * per_page
     
+    lat = params[:lat] ||= '55.753548'
+    lon = params[:lon] ||= '37.609239'
+    
     if params[:search] && params[:search][:find]
-      @dishes = Dish.where("LOWER(name) REGEXP '[[:<:]]#{params[:search][:find].downcase}'").order('rating DESC, votes DESC, photo DESC').page(@page).per(per_page)
+      @dishes = Dish.where("LOWER(name) REGEXP '[[:<:]]#{params[:search][:find].downcase}'").includes(:network, :restaurants).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon]).page(@page).per(per_page)
       @search = params[:search][:find]
     else
-      @dishes = Dish.order('rating DESC, photo DESC').page(@page).per(per_page)
+      @dishes = Dish.includes(:network, :restaurants).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon]).page(@page).per(per_page)
     end
     
     unless @dishes.blank?

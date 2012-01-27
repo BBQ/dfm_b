@@ -10,7 +10,7 @@ Dishfm::Application.routes.draw do
   get "logout" => "sessions#destroy", :as => "logout"
   resources :sessions
   
-  root :to => "dishfeed#index"
+  root :to => "reviews#index"
   
   match 'restaurants/:id' => 'restaurants#show', :as => :restaurant
   match 'restaurants' => 'restaurants#index', :as => :restaurants

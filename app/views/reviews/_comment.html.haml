@@ -1,0 +1,10 @@
+- review.comments.take(3).each do |comment|
+	= link_to image_tag("http://graph.facebook.com/#{comment.user.facebook_id}/picture?type=square"), dish_path('1')
+	= link_to comment.user.name + ':', dish_path('1')
+	.text
+		=comment.text
+	.hr
+- if logged_in?	
+	-form_tag "/comments/add/#{review.id}", :class => 'comment_form' do
+		= link_to image_tag("http://graph.facebook.com/#{current_user.facebook_id}/picture?type=square"), dish_path('1')
+		= text_area_tag 'comment', 'написать комментарий', :class => 'add_comment', :id => "comment_for_#{review.id}" 

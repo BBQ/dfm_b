@@ -38,8 +38,8 @@ class API < ActiveRecord::Base
           :user_photo => user.user_photo,
           :likes => dish.count_likes ||= 0,
           :comments => dish.count_comments ||= 0,
-          :review_rating => dish.single_rating ||= 0,
-          :dish_rating => dish.rating,
+          :review_rating => dish.rating ||= 0,
+          :dish_rating => dish.rating ||= 0,
           :image_sd => dish.photo.iphone.url,
           :image_hd => dish.photo.iphone_retina.url,
           :liked => user_id && DishLike.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0

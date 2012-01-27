@@ -343,7 +343,7 @@ img {
     margin: 0 10px; }
 
 #popup {
-  width: 1000px;
+  width: 750px;
   left: 50%;
   margin-left: -500px;
   top: 20px;
@@ -807,9 +807,14 @@ img {
       color: #d85f16;
       margin: 0 5px; }
     .dish .rate .voices {
-      font-size: 0.8em;
+      font-size: 0.7em;
       float: left;
       color: #a99c83; }
+    .dish .rate .address {
+      font-size: 0.7em;
+      float: none;
+      color: #433a28;
+      line-height: 2em; }
 
 .restaurant_obj {
   background: #e2ded6;
