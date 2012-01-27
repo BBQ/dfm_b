@@ -7,7 +7,7 @@ class API < ActiveRecord::Base
   
   def self.get_dish(user_id, dish_id)
     
-    if dish = Dish.select([:id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price, :created_at, :count_likes, :count_comments, :single_rating, :photo]).find_by_id(dish_id)
+    if dish = Dish.select([:id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
       
       user_review = Review.select(:rating).find_by_dish_id_and_user_id(dish.id,user_id) if user_id
       subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
