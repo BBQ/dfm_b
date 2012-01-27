@@ -302,11 +302,11 @@ class ApiController < ApplicationController
       end
       if dont_add == 0
         dishes = []
-        if r.network.dishes.where('photo IS NOT NULL').order('rating DESC')
+        if nd = r.network.dishes.where('photo IS NOT NULL')
           unless params[:keyword].blank?
-            r.network.dishes.select([:id, :photo]).custom_search(params[:keyword]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
+            nd.select([:id, :photo]).custom_search(params[:keyword]).where('photo IS NOT NULL')..order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
           else
-            r.network.dishes.order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?} 
+            nd.order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?} 
           end
         end
         networks.push({:network_id => r.network_id, :dishes => dishes}) 
