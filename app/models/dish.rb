@@ -20,7 +20,7 @@ class Dish < ActiveRecord::Base
       if review = Review.where("dish_id = ? AND photo IS NOT NULL", id).order('count_likes DESC').first
         review.photo
       else
-        dish_type.photo
+        dish_type.photo if dish_type
       end
     else
       photo
