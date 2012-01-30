@@ -4,7 +4,7 @@ class Tag < ActiveRecord::Base
   has_many :dish_tags
   has_many :dishes, :through => :dish_tags
   
-  def self.get_all
+  def self.get_all(timestamp = nil)
   
     ids = {
       1 => ['салат','salad','салатик'],
@@ -25,7 +25,8 @@ class Tag < ActiveRecord::Base
     }
   
     all_tags = [] 
-    Tag.select([:id, :name]).each do |t|
+    tags = timestamp ? Tag.select([:id, :name]).where('updated_at >= ?', timestamp) : Tag.select([:id, :name])
+    tags.each do |t|
       added = 0
       ids.each do |k,v|
         if t.id == k

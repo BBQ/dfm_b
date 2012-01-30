@@ -83,11 +83,17 @@ class ApiController < ApplicationController
   end
   
   def get_common_data
+    
+    dish_types = DishType.where('id != 10').order('`order`')
+    networks = Network.select([:id, :name])
+    locations = LocationTip.select([:id, :name])
+    params[:timestamp] = Time.at(params[:timestamp].to_i)
+    
     return render :json => {
-          :types => DishType.where('id != 10').order('`order`'),
-          :tags => Tag.get_all,
-          :networks => Network.select([:id, :name]).all,
-          :cities => LocationTip.select([:id, :name]).all,
+          :tags => Tag.get_all(params[:timestamp]),
+          :types => params[:timestamp] ? dish_types.where('updated_at >= ?', params[:timestamp]) : dish_types.all,
+          :networks => params[:timestamp] ? networks.where('updated_at >= ?', params[:timestamp]) : networks.all,
+          :cities => params[:timestamp] ? locations.where('updated_at >= ?', params[:timestamp]) : locations.all,
           :error => $error
     }
   end
