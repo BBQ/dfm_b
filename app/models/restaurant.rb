@@ -82,8 +82,8 @@ class Restaurant < ActiveRecord::Base
       unless dish.blank?
         dish.first.photo 
       else
-        review = Review.select(:photo).where("network_id = ?", id).network_id('count_likes DESC').first
-        review.photo unless review.blank?
+        review = Review.select(:photo).where("network_id = ?", id).network_id('count_likes DESC')
+        review.first.photo unless review.blank?
       end
     end
   end
