@@ -77,8 +77,8 @@ class Restaurant < ActiveRecord::Base
   def find_image
     if restaurant_image = RestaurantImage.select(:photo).find_by_restaurant_id(:id)
       restaurant_image.photo
-    elsif dish = Dish.select(:photo).find_by_photo_and_network_id("IS NOT NULL", network_id)
-      dish.photo
+    elsif dish = Dish.select(:photo).where("photo IS NOT NULL AND network_id = ?", network_id).order('rating DESC, votes DESC')
+      dish.first.photo
     elsif review = Review.select(:photo).where("network_id = ?", id).network_id('count_likes DESC').first
       review.photo
     end
