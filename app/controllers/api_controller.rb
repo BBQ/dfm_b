@@ -315,9 +315,9 @@ class ApiController < ApplicationController
         if dishes.count < 20
           if nd = r.network.reviews.where('photo IS NOT NULL')
             unless params[:keyword].blank?
-              nd.select([:dish_id, :photo]).order("count_likes DESC").custom_search(params[:keyword]).take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})}
+              nd.select([:id, :dish_id, :photo]).order("count_likes DESC").custom_search(params[:keyword]).take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})}
             else
-              nd.select([:dish_id, :photo]).order("count_likes DESC").take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})} 
+              nd.select([:id, :dish_id, :photo]).order("count_likes DESC").take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})} 
             end          
           end
         end
