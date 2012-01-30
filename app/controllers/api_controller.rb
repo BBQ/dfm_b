@@ -300,26 +300,28 @@ class ApiController < ApplicationController
       networks.each do |n|
         dont_add = 1 && break if r.network_id == n[:network_id]
       end
+      
       if dont_add == 0
+        
         dishes = []
         if nd = r.network.dishes.where('photo IS NOT NULL')
           unless params[:keyword].blank?
-            nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").custom_search(params[:keyword]).take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
+            nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").custom_search(params[:keyword]).take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd})}
           else
-            nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?} 
+            nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd})} 
           end          
         end
         
         if dishes.count < 20
           if nd = r.network.reviews.where('photo IS NOT NULL')
             unless params[:keyword].blank?
-              nd.select([:dish_id, :photo]).order("count_likes DESC").custom_search(params[:keyword]).take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url}) unless r.photo.blank?}
+              nd.select([:dish_id, :photo]).order("count_likes DESC").custom_search(params[:keyword]).take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})}
             else
-              nd.select([:dish_id, :photo]).order("count_likes DESC").take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url}) unless r.photo.blank?} 
+              nd.select([:dish_id, :photo]).order("count_likes DESC").take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})} 
             end          
           end
         end
-          
+            
         networks.push({:network_id => r.network_id, :dishes => dishes}) 
       end
     end
