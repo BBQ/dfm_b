@@ -241,7 +241,7 @@ namespace :mi do
    end
   
   task :match_d => :environment do
-    Restaurant.group(:network_id).where("source = 'web_mi' AND network_id > 3284").order(:network_id).each do |n|
+    Restaurant.group(:network_id).where("source = 'web_mi'").order(:network_id).each do |n|
       
       if r = MiRestaurant.find_by_our_network_id(n.network_id)
         p "#{r.our_network_id}. #{r.name}"
@@ -380,8 +380,161 @@ namespace :mi do
         end
       end  
     end
-    p 'Done!'
+    p 'Done!'  
+  end
+  
+  task :match_rwd => :environment do
     
+    Review.group(:network_id).where('id > 444').each do |review|
+      if review.network.dishes.count < 15
+        p "Start with #{review.id}."
+        
+        if cr = MiRestaurant.find_by_our_network_id(review.network_id)  
+          MiDish.where(:restaurant_id => cr.mi_id).each do |d|
+            if Dish.select(:id).where("network_id = ? AND name = ?", review.network_id, d.name).first.blank?   
+              types = {
+                '1' => 14,
+                '10' => 16,
+                '11' => 15,
+                '13' => 18,
+                '14' => 15,
+                '16' => 18,
+                '17' => 2,
+                '18' => 15,
+                '2' => 4,
+                '20' => 17, 
+                '3' => 15,
+                '4' => 15,
+                '5' => 15,
+                '594' => 15,
+                '6' => 15,
+                '6906' => 2,
+                '6907' => 2,
+                '6961' => 7,
+                '7' => 2,
+                '8' => 14,
+                '9' => 15
+              }
+
+              sub_types = {
+                '11' => 13,
+                '17' => 28,
+                '18' => 21,
+                '3' => 46,
+                '4' => 7,
+                '5' => 11,
+                '594' => 4,
+                '6' => 19,
+                '6907' => 27,
+                '9' => 5
+              }
+          
+               dc_name = d.category_name.downcase.gsub(/^\p{Space}+|\p{Space}+$/, "")
+               dish_category_id = DishCategory.find_by_name(dc_name) ? DishCategory.find_by_name(dc_name).id : DishCategory.create(:name => dc_name).id
+
+               dish_data = {
+                 :name => d.name,
+                 :remote_photo_url => d.pictures.blank? ? nil : "http://188.93.18.50/menutka/GetImageMedium/#{d.pictures[/"([\d]+)"/, 1]}.jpg",
+                 :price => d.price,
+                 :description => d.description['--- {}'].nil? ? d.description : nil,
+                 :network_id => review.network_id,
+
+                 :dish_category_id => dish_category_id,
+                 :dish_type_id => types[d.category_id],
+                 :dish_subtype_id => sub_types[d.category_id],
+                 :dish_extratype_id => d.vegetarian == 'true' ? 4 : nil,
+               }
+
+               Dish.create(dish_data)
+               p dish_data[:name]
+
+               dc_chk = ''
+               network_chk = ''
+               i = 0
+
+               if d.category_name != dc_chk
+                  i += 1
+                  if dc = DishCategory.find_by_name(dc_name)
+                      if dish_network =  Network.find_by_id(review.network_id)
+                          dish_network.restaurants.each do |r|
+                              unless DishCategoryOrder.find_by_dish_category_id_and_restaurant_id(dc.id, r.id)
+                                  DishCategoryOrder.create({
+                                    :dish_category_id => dc.id,
+                                    :network_id => dish_network.id,
+                                    :restaurant_id => r.id,
+                                    :order => i
+                                  })
+                                end
+                          end
+                          i = 0 if review.network_id != network_chk
+                          network_chk = review.network_id
+                      end
+                  end
+                  dc_chk = d.category_name
+               end
+
+            end
+          end
+        end
+        
+      end
+    end
+    
+    
+  end
+  
+  task :match_rwr => :environment do
+    Review.group(:network_id).each do |review|
+      if review.network.dishes.count < 15
+        p "Start with #{review.id}."
+        c = 0
+        MiRestaurant.where('our_network_id = ?', review.network_id).each do |cr|
+          if Restaurant.select(:id).find_by_name_and_address(cr.name, cr.address).blank?
+            restaurant_data = {
+              :name => cr.name.capitalize_first_letter,
+              :address => cr.address,
+              :time => cr.worktime,
+              :phone => cr.telephone,
+              :description => cr.description,
+              :web => cr.site,
+              :lat => cr.latitude,
+              :lon => cr.longitude,
+              :network_id => cr.our_network_id,
+              :wifi => cr.wifi || 0,
+              :station => cr.metro,
+              :source => 'web_mi',
+            }
+          
+            c += 1
+            restaurant = Restaurant.create(restaurant_data)
+            RestaurantImage.create(:remote_photo_url => "http://188.93.18.50/menutka/GetImageMedium/#{cr.picture}.jpg", :restaurant_id => restaurant.id) unless cr.picture.blank?
+            p "#{cr.id} #{restaurant_data[:name]} : #{restaurant_data[:address]}"  
+          end
+        end
+        
+        d = 0
+        if c > 0
+          
+          Review.includes(:restaurant).select(:restaurant_id).where('network_id = ?', review.network_id).each do |rev|
+            if rest = Restaurant.where("source = 'web_mi' AND network_id = ?", review.network_id).by_distance(rev.restaurant.lat, rev.restaurant.lon)
+              rev.restaurant_id = rest.first.id
+              rev.save
+            else
+              p "#{rev.restaurant_id} NOT FOUND =("
+            end
+          end
+          
+          Restaurant.where("source != 'web_mi' AND network_id = ?", review.network_id).each do |nr|
+            nr.destroy
+            d += 1
+          end
+          
+        end
+        p "Deleted: #{d}"
+        p "Created: #{c}"
+        
+      end
+    end
   end
   
   task :match_r => :environment do
@@ -416,9 +569,18 @@ namespace :mi do
           end
         end
         
-        if n.dishes.count == 0 && c > 0
+        if c > 0 and n.dishes.count < 20
           d = 0
+          revs = n.reviews.select(:restaurant_id)
           n.restaurants.where("source != 'web_mi'").each do |nr|
+            revs.each do |rev|
+              if rev.restaurant_id == nr.id
+                if rest = n.restaurants.where("source = 'web_mi'").by_distance(rev.restaurant.lat, rev.restaurant.lon)
+                  rev.restaurant_id = rest.first.id
+                  rev.save
+                end
+              end
+            end
             nr.destroy
             d += 1
           end
