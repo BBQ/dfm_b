@@ -78,7 +78,7 @@ class Restaurant < ActiveRecord::Base
     if restaurant_image = RestaurantImage.select(:photo).find_by_restaurant_id(:id)
       restaurant_image.photo
     else 
-      dish = Dish.select(:photo).where("photo IS NOT NULL AND network_id = ?", network_id).order('rating DESC, votes DESC')
+      dish = Dish.select([:id, :photo]).where("photo IS NOT NULL AND network_id = ?", network_id).order('rating DESC, votes DESC')
       unless dish.blank?
         dish.first.photo 
       else

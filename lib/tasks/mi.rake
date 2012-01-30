@@ -484,7 +484,7 @@ namespace :mi do
   end
   
   task :match_rwr => :environment do
-    Review.group(:network_id).each do |review|
+    Review.group(:network_id).order('network_id DESC').each do |review|
       if review.network.dishes.count < 15
         p "Start with #{review.id}."
         c = 0
@@ -515,18 +515,20 @@ namespace :mi do
         d = 0
         if c > 0
           
-          Review.includes(:restaurant).select(:restaurant_id).where('network_id = ?', review.network_id).each do |rev|
+          Review.includes(:restaurant).select([:id, :restaurant_id]).where('network_id = ?', review.network_id).each do |rev|
             if rest = Restaurant.where("source = 'web_mi' AND network_id = ?", review.network_id).by_distance(rev.restaurant.lat, rev.restaurant.lon)
-              rev.restaurant_id = rest.first.id
-              rev.save
+              
+              rev.restaurant_id = rest.first.id          
+              if rev.save
+                Restaurant.where("source != 'web_mi' AND network_id = ?", review.network_id).each do |nr|
+                  nr.destroy
+                  d += 1
+                end
+              end
+              
             else
               p "#{rev.restaurant_id} NOT FOUND =("
             end
-          end
-          
-          Restaurant.where("source != 'web_mi' AND network_id = ?", review.network_id).each do |nr|
-            nr.destroy
-            d += 1
           end
           
         end
