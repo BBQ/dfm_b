@@ -99,7 +99,8 @@ class Review < ActiveRecord::Base
       :dish_rating => dish.rating,
       :image_sd => photo.iphone.url != '/images/noimage.jpg' ? photo.iphone.url : '' ,
       :image_hd => photo.iphone_retina.url != '/images/noimage.jpg' ? photo.iphone_retina.url : '',
-      :liked => user_id && Like.find_by_user_id_and_review_id(user_id, id) ? 1 : 0
+      :liked => user_id && Like.find_by_user_id_and_review_id(user_id, id) ? 1 : 0,
+      :self_review => 0
     }
   end
   

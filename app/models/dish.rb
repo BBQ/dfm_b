@@ -7,6 +7,8 @@ class Dish < ActiveRecord::Base
   belongs_to :dish_extratype
   
   has_many :reviews, :dependent => :destroy
+  has_many :dish_likes, :dependent => :destroy
+  has_many :dish_coments, :dependent => :destroy
   
   belongs_to :network
   has_many :restaurants, :through => :network    
@@ -15,6 +17,62 @@ class Dish < ActiveRecord::Base
   has_many :tags, :through => :dish_tags
       
   mount_uploader :photo, ImageUploader
+  
+  def self_review
+    
+    get_likes = []
+    DishLike.all.each do |dl|
+      get_likes.push({
+        :id => dl.id,
+        :user => {
+          :id => dl.user_id,
+          :name => dl.user.name,
+          :user_photo => dl.user.user_photo
+        }
+      })
+    end
+    
+    get_comments = []
+    DishComment.all.each do |dc|
+      get_comments.push({
+        :id => dc.id,
+        :text => dc.text,
+        :created_at => dc.created_at.to_i,
+        :user => {
+          :id => dc.user_id,
+          :name => dc.user.name,
+          :user_photo => dc.user.user_photo
+        }
+      })
+    end
+    
+    restaurant = network.restaurants.order('rating DESC, votes DESC').first
+    
+    data = {
+      :review => {
+        :count_likes => count_likes,
+        :created_at => created_at.to_i,
+        :text => "фото ресторана",
+        :user_id => 1,
+        :dish => {
+          :id => id,
+          :name => name,
+          :photo => photo,
+          :rating => rating,
+          :votes => votes          
+        },
+        :restaurant => {
+          :address => restaurant.address,
+          :id => restaurant.id,
+          :photo => restaurant.find_image,
+          :rating => network.rating,
+          :votes => network.votes
+        },
+        :likes => get_likes,
+        :comments => get_comments
+      }
+    }
+  end
   
   def match_tags
     Tag.all.each do |t|
@@ -28,7 +86,7 @@ class Dish < ActiveRecord::Base
       tags_array.push("\b#{t.name_f.downcase}\b") unless t.name_f.blank? 
       tags = tags_array.join('|')
       
-      if /#{tags}/.match(name) || /#{tags}/.match(dish_category.name) || /#{tags}/.match(dish_type.name) || /#{tags}/.match(dish_subtype.name)
+      if /#{tags}/.match(name) || (dish_category && /#{tags}/.match(dish_category.name)) || (dish_type && /#{tags}/.match(dish_type.name)) || (dish_subtype && /#{tags}/.match(dish_subtype.name))
         DishTag.create({:tag_id => t.id, :dish_id => id})
       end
       
