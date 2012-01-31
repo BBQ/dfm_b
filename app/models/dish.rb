@@ -5,15 +5,35 @@ class Dish < ActiveRecord::Base
   belongs_to :dish_type
   belongs_to :dish_subtype
   belongs_to :dish_extratype
-  belongs_to :network
-  has_many :restaurants, :through => :network
   
   has_many :reviews, :dependent => :destroy
+  
+  belongs_to :network
+  has_many :restaurants, :through => :network    
   
   has_many :dish_tags, :dependent => :destroy
   has_many :tags, :through => :dish_tags
       
   mount_uploader :photo, ImageUploader
+  
+  def match_tags
+    Tag.all.each do |t|
+
+      tags_array = []      
+      tags_array.push("\b#{t.name_a.downcase}\b") unless t.name_a.blank? 
+      tags_array.push("\b#{t.name_b.downcase}\b") unless t.name_b.blank? 
+      tags_array.push("\b#{t.name_c.downcase}\b") unless t.name_c.blank? 
+      tags_array.push("\b#{t.name_d.downcase}\b") unless t.name_d.blank? 
+      tags_array.push("\b#{t.name_e.downcase}\b") unless t.name_e.blank? 
+      tags_array.push("\b#{t.name_f.downcase}\b") unless t.name_f.blank? 
+      tags = names_array.join('|')
+      
+      if /#{tags}/.match(name) || /#{tags}/.match(dish_category.name) || /#{tags}/.match(dish_type.name) || /#{tags}/.match(dish_subtype.name)
+        DishTag.create({:tag_id => t.id, :dish_id => id})
+      end
+      
+    end
+  end
   
   def find_image
     if photo.blank?
