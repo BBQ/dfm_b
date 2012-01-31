@@ -41,10 +41,7 @@ class DishesController < ApplicationController
         r.network.votes = 1?0 : r.network.votes - 1
         r.network.save
       end
-      
-      DishTag.where(:dish_id => params[:id]).each {|dt| dt.destroy}
-      DishComment.where(:dish_id => params[:id]).each {|dc| dc.destroy}
-      DishLike.where(:dish_id => params[:id]).each {|dl| dl.destroy}
+
       status = 'Cleared' if dish.destroy
       return render :json => status ||= 'SWR :`('
     else

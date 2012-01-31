@@ -8,7 +8,7 @@ class Dish < ActiveRecord::Base
   
   has_many :reviews, :dependent => :destroy
   has_many :dish_likes, :dependent => :destroy
-  has_many :dish_coments, :dependent => :destroy
+  has_many :dish_comments, :dependent => :destroy
   
   belongs_to :network
   has_many :restaurants, :through => :network    
