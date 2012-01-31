@@ -26,7 +26,7 @@ class Dish < ActiveRecord::Base
       tags_array.push("\b#{t.name_d.downcase}\b") unless t.name_d.blank? 
       tags_array.push("\b#{t.name_e.downcase}\b") unless t.name_e.blank? 
       tags_array.push("\b#{t.name_f.downcase}\b") unless t.name_f.blank? 
-      tags = names_array.join('|')
+      tags = tags_array.join('|')
       
       if /#{tags}/.match(name) || /#{tags}/.match(dish_category.name) || /#{tags}/.match(dish_type.name) || /#{tags}/.match(dish_subtype.name)
         DishTag.create({:tag_id => t.id, :dish_id => id})

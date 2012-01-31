@@ -3,9 +3,9 @@ class Like < ActiveRecord::Base
   belongs_to :review
   belongs_to :user
   
-  def self.save(user_id, review_id)
-    if review_id[0] == 'd'
-      dish_id = review_id[1..-1]
+  def self.save(user_id, review_id, self_review)
+    unless self_review.blank?
+      dish_id = review_id
       if dish = Dish.find_by_id(dish_id)
         unless dish.photo.blank?
           if like = DishLike.find_by_user_id_and_dish_id(user_id, dish_id)

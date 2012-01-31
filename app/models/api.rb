@@ -25,7 +25,7 @@ class API < ActiveRecord::Base
       user = User.select([:id, :name, :photo, :facebook_id]).find_by_id(1)
       unless dish.photo.blank?
         data = {
-          :review_id => "d#{dish.id}",
+          :review_id => dish.id,
           :created_at => dish.created_at.to_time.to_i,
           :text => 'фото предоставлено рестораном',
           :dish_id => dish.id,
@@ -42,7 +42,8 @@ class API < ActiveRecord::Base
           :dish_rating => dish.rating ||= 0,
           :image_sd => dish.photo.iphone.url,
           :image_hd => dish.photo.iphone_retina.url,
-          :liked => user_id && DishLike.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0
+          :liked => user_id && DishLike.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0,
+          :self_review => 1
         }
         review_data.push(data)
        end

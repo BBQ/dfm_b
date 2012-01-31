@@ -410,7 +410,7 @@ class ApiController < ApplicationController
   
   def like_review
     if params[:review_id] && Session.check_token(params[:user_id], params[:token])
-      data = Like.save(params[:user_id], params[:review_id])
+      data = Like.save(params[:user_id], params[:review_id], params[:self_review])
     else
       $error = {:description => 'Parameters missing', :code => 8}
     end
@@ -421,7 +421,7 @@ class ApiController < ApplicationController
   
   def comment_on_review
     if params[:comment] && params[:review_id] && Session.check_token(params[:user_id], params[:token])
-        comment = Comment.add({:user_id => params[:user_id], :review_id => params[:review_id], :text => params[:comment]})
+        comment = Comment.add({:user_id => params[:user_id], :review_id => params[:review_id], :text => params[:comment]}, params[:self_review])
     else
       return render :json => {
         :error => {:description => 'Parameters missing', :code => 8}

@@ -4,9 +4,8 @@ class Comment < ActiveRecord::Base
   
   default_scope order('id DESC')
   
-  def self.add(data)
-    if data[:review_id][0] == 'd'
-      data[:review_id].slice!(0)
+  def self.add(data, self_review)
+    unless self_review.blank?
       if dish = Dish.find_by_id(data[:review_id])
         unless dish.photo.blank?
           DishComment.create({:user_id => data[:user_id], :dish_id => data[:review_id], :text => data[:text]})
