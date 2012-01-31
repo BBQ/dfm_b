@@ -5,25 +5,22 @@ class Tag < ActiveRecord::Base
   has_many :dishes, :through => :dish_tags
   
   def self.get_all(timestamp = nil)
+    all_tags = [] 
+    tags = timestamp ? Tag.where('updated_at >= ?', timestamp) : Tag.select([:id, :name])
+    
+    tags.each do |t|
+      all_tags.push({:id => t.id, :name => t.name_a}) unless t.name_a.blank?
+      all_tags.push({:id => t.id, :name => t.name_b}) unless t.name_b.blank?
+      all_tags.push({:id => t.id, :name => t.name_c}) unless t.name_c.blank?
+      all_tags.push({:id => t.id, :name => t.name_d}) unless t.name_d.blank?
+      all_tags.push({:id => t.id, :name => t.name_e}) unless t.name_e.blank?
+      all_tags.push({:id => t.id, :name => t.name_f}) unless t.name_f.blank?
+    end
+    all_tags
+  end
   
-    ids = {
-      1 => ['салат','salad','салатик'],
-      2 => ['soup','суп','супы','супчик','супчики','супец'],
-      3 => ['pasta','паста','пасты','спагетти'],
-      4 => ['pizza','пицца','пиццы'],
-      5 => ['burger','бургер'],
-      6 => ['noodles','лапша'],
-      7 => ['risotto','ризотто'],
-      8 => ['rice','рис'],
-      9 => ['steak','стейк','стэйк'],
-      10 => ['sushi & rolls','суши и роллы','суши','sushi','ролл','сашими'],
-      11 => ['desserts','десерт','торт','пирожные','пирожное','выпечка','мороженое','пирог','сладости','сорбет'],
-      12 => ['drinks','напитки','напиток'],
-      13 => ['meat','мясо','мясное'],
-      14 => ['fish','рыба','морепродукты','креветки','мидии','форель','треска','карп','моллюски','устрицы','сибас','лосось','судак'],
-      15 => ['vegetables','овощи','овощь']
-    }
-  
+  def self.get_all_old(timestamp = nil)
+    
     all_tags = [] 
     tags = timestamp ? Tag.select([:id, :name]).where('updated_at >= ?', timestamp) : Tag.select([:id, :name])
     tags.each do |t|
