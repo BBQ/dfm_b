@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120127135324) do
+ActiveRecord::Schema.define(:version => 20120130161126) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -456,13 +456,15 @@ ActiveRecord::Schema.define(:version => 20120127135324) do
   end
 
   create_table "tags", :force => true do |t|
-    t.string   "name"
+    t.string   "name_a"
+    t.string   "name_b"
+    t.string   "name_c"
+    t.string   "name_d"
+    t.string   "name_e"
+    t.string   "name_f"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  add_index "tags", ["id"], :name => "index_tags_on_id"
-  add_index "tags", ["name"], :name => "index_tags_on_name"
 
   create_table "types", :force => true do |t|
     t.string   "name"
