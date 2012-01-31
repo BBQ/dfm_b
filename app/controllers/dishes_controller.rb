@@ -31,6 +31,7 @@ class DishesController < ApplicationController
   
   def delete
     if dish = Dish.find_by_id(params[:id])
+      
       dish.reviews.each do |r|
         r.restaurant.rating = r.restaurant.votes == 1?0 : (r.restaurant.rating * r.restaurant.votes - r.rating) / (r.restaurant.votes - 1)
         r.restaurant.votes = 1?0 : r.restaurant.votes - 1
