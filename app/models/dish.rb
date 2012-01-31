@@ -86,7 +86,7 @@ class Dish < ActiveRecord::Base
       tags_array.push("\b#{t.name_f.downcase}\b") unless t.name_f.blank? 
       tags = "/#{tags_array.join('|')}/"
       
-      if name.downcase.match(tags) || (dish_category && dish_category.name.downcase.match(tags)) || (dish_type && dish_type.name.downcase.match(tags)) || (dish_subtype && dish_subtype.name.downcase.match(tags))
+      if tags.match(name.downcase) || (dish_category && tags.match(dish_category.name.downcase)) || (dish_type && tags.match(dish_type.name.downcase)) || (dish_subtype && tags.match(dish_subtype.name.downcase))
         DishTag.create({:tag_id => t.id, :dish_id => id})
       end
       
