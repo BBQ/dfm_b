@@ -537,22 +537,27 @@ class ApiController < ApplicationController
       end
     
       if !params[:review][:dish_id] && params[:dish][:name] && params[:dish][:dish_type_id]
-        params[:dish][:network_id] = params[:review][:network_id]
-        return render :json => {:error => {:description => 'Dish type not found', :code => 4}} unless DishType.find_by_id(params[:dish][:dish_type_id])
-        return render :json => {:error => {:description => 'Dish subtype not found', :code => 5}} if params[:dish][:dish_subtype_id] && !DishSubtype.find_by_id(params[:dish][:dish_subtype_id])
-        
-        dish_category = DishType.find_by_id(params[:dish][:dish_type_id]).name
-        params[:dish][:dish_category_id] = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
-        params[:dish][:created_by_user] = params[:review][:user_id]
-        
-        if dish = Dish.create(params[:dish])
-          dish.match_tags
+        if dish = Dish.find_by_network_id_and_name(params[:review][:network_id], params[:dish][:name])
           params[:review][:dish_id] = dish.id
         else
-          return render :json => {:error => {:description => 'Dish create error', :code => 6}}        
+          params[:dish][:network_id] = params[:review][:network_id]
+          return render :json => {:error => {:description => 'Dish type not found', :code => 4}} unless DishType.find_by_id(params[:dish][:dish_type_id])
+          return render :json => {:error => {:description => 'Dish subtype not found', :code => 5}} if params[:dish][:dish_subtype_id] && !DishSubtype.find_by_id(params[:dish][:dish_subtype_id])
+        
+          dish_category = DishType.find_by_id(params[:dish][:dish_type_id]).name
+          params[:dish][:dish_category_id] = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
+          params[:dish][:created_by_user] = params[:review][:user_id]
+        
+          if dish_new = Dish.create(params[:dish])
+            dish_new.match_tags
+            params[:review][:dish_id] = dish_new.id
+          else
+            return render :json => {:error => {:description => 'Dish create error', :code => 6}}        
+          end
         end
-
       end
+      
+      
       return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless Dish.find_by_id(params[:review][:dish_id])
       
       if params[:review][:user_id]
