@@ -166,6 +166,7 @@ class ApiController < ApplicationController
     end
 
 
+    dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
     dishes = dishes.custom_search(search) unless search.blank?
     dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
     dishes = dishes.where(filters).joins(:restaurants) unless filters.blank?
@@ -379,32 +380,45 @@ class ApiController < ApplicationController
   end
   
   def get_user_profile
-    if params[:id]
+    if params[:id] && !params[:type].blank?
       
       limit = params[:limit] ? params[:limit] : 25
       offset = params[:offset] ? params[:offset] : 0
       
-      if params[:likes].to_i == 1
-        reviews = Review.where('id IN (SELECT review_id FROM likes WHERE user_id = ?)',params[:id])
-      else
-        reviews = Review.where('user_id = ?',params[:id])
+      reviews = Review.where('id IN (SELECT review_id FROM likes WHERE user_id = ?)',params[:id]) if params[:type] == 'likes'
+      reviews = Review.where('user_id = ?',params[:id]) if params[:type] == 'reviews'
+        
+      if reviews
+        review_count = reviews.count
+        reviews = reviews.limit("#{offset}, #{limit}").order("id DESC")
+      
+        review_data = Array.new
+        reviews.each do |review|
+          review_data.push(review.format_review_for_api(params[:id]))
+        end
+        
+        return render :json => {
+              :review_count => review_count,
+              :reviews => review_data, 
+              :error => $error
+        }
       end
       
-      review_count = reviews.count
-      reviews = reviews.limit("#{offset}, #{limit}").order("id DESC")
-      
-      review_data = Array.new
-      reviews.each do |review|
-        review_data.push(review.format_review_for_api(params[:id]))
+      if params[:type] == 'expert'   
+        r = Restaurant.where('restaurants.id IN(SELECT restaurant_id FROM reviews WHERE user_id = ?)', params[:id]).joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").limit(10)
+        # d = DishType.joins("LEFT OUTER JOIN (SELECT name, dish_type_id FROM dishes WHERE id IN (SELECT dish_id FROM reviews WHERE user_id='#{params[:id]}')) r ON dish_types.id = r.dish_type_id")
+        return render :json => {
+              :restaurants => r,
+              # :dishes => d, 
+              :error => $error
+        }
       end
-      
+    else
+      $error = {:description => 'Parameters missing', :code => 8}
+      return render :json => {
+            :error => $error
+      }
     end
-    
-    return render :json => {
-          :review_count => review_count,
-          :reviews => review_data, 
-          :error => $error
-    }
   end
   
   def get_reviews

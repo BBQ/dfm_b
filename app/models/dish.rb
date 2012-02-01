@@ -108,6 +108,10 @@ class Dish < ActiveRecord::Base
       COS((#{lon} - restaurants.lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344")
   end
   
+  def self.search_by_tag_id(id)
+    where("id IN (SELECT dish_id FROM dish_tags WHERE id = ?)", id)
+  end
+  
   def self.custom_search(keyword_or_id)
     ids = {
       1 => ['салат','salad','салатик'],
