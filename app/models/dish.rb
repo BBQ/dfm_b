@@ -59,15 +59,15 @@ class Dish < ActiveRecord::Base
     Tag.all.each do |t|
 
       tags_array = []      
-      tags_array.push("\b#{t.name_a}\b") unless t.name_a.blank? 
-      tags_array.push("\b#{t.name_b}\b") unless t.name_b.blank? 
-      tags_array.push("\b#{t.name_c}\b") unless t.name_c.blank? 
-      tags_array.push("\b#{t.name_d}\b") unless t.name_d.blank? 
-      tags_array.push("\b#{t.name_e}\b") unless t.name_e.blank? 
-      tags_array.push("\b#{t.name_f}\b") unless t.name_f.blank? 
-      tags = tags_array.join('|').downcase
+      tags_array.push("\\b#{t.name_a}\\b") unless t.name_a.blank? 
+      tags_array.push("\\b#{t.name_b}\\b") unless t.name_b.blank? 
+      tags_array.push("\\b#{t.name_c}\\b") unless t.name_c.blank? 
+      tags_array.push("\\b#{t.name_d}\\b") unless t.name_d.blank? 
+      tags_array.push("\\b#{t.name_e}\\b") unless t.name_e.blank? 
+      tags_array.push("\\b#{t.name_f}\\b") unless t.name_f.blank? 
+      tags = tags_array.join('|')
       
-      if /#{tags}/.match(name.downcase) || (dish_category && /#{tags}/.match(dish_category.name.downcase)) || (dish_type && /#{tags}/.match(dish_type.name.downcase)) || (dish_subtype && /#{tags}/.match(dish_subtype.name.downcase))
+      if name.scan(/#{tags}/i) || (dish_category && dish_category.name.scan(/#{tags}/i)) || (dish_type && dish_type.name.scan(/#{tags}/i)) || (dish_subtype && dish_subtype.name.scan(/#{tags}/i))
         DishTag.create({:tag_id => t.id, :dish_id => id})
       end
       
