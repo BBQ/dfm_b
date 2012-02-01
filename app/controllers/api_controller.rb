@@ -93,6 +93,7 @@ class ApiController < ApplicationController
   def get_common_data
     
     dish_types = DishType.where('id != 10').order('`order`')
+    
     networks = Network.select([:id, :name])
     locations = LocationTip.select([:id, :name])
     params[:timestamp] = Time.at(params[:timestamp].to_i)
