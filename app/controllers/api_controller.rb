@@ -357,7 +357,7 @@ class ApiController < ApplicationController
   def get_review  
     
     if params[:review_id]
-      if params[:self_review]
+      unless params[:self_review].blank?
         review = Dish.find_by_id(params[:review_id]).self_review()
       else
         review = Review.find_by_id(params[:review_id])
