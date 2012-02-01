@@ -71,10 +71,8 @@ class Review < ActiveRecord::Base
     self.restaurant.photo = self.restaurant.photo.iphone.url if restaurant && restaurant.photo
     self.comments.each {|c| c.created_at = c.created_at.to_i}
         
-    super(:only => [:user_id, :text, :count_likes, :created_at], 
-          :include => { 
-            :dish => {:only => [:id, :name, :photo, :rating, :votes]},
-            :restaurant => {:only => [:id, :name, :photo, :address, :rating, :votes]},
+    super(:only => [:user_id], 
+          :include => {
             :likes => {:only => [:id], :include => {:user => { :only => [:id, :name], :methods => :user_photo}}},
             :comments => {:only => [:id, :text, :created_at], :include => {:user => { :only => [:id, :name], :methods => :user_photo}}}
           })

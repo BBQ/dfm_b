@@ -46,28 +46,9 @@ class Dish < ActiveRecord::Base
       })
     end
     
-    restaurant = network.restaurants.order('rating DESC, votes DESC').first
-    
     data = {
       :review => {
-        :count_likes => count_likes,
-        :created_at => created_at.to_i,
-        :text => "фото ресторана",
         :user_id => 1,
-        :dish => {
-          :id => id,
-          :name => name,
-          :photo => photo,
-          :rating => rating,
-          :votes => votes          
-        },
-        :restaurant => {
-          :address => restaurant.address,
-          :id => restaurant.id,
-          :photo => restaurant.find_image,
-          :rating => network.rating,
-          :votes => network.votes
-        },
         :likes => get_likes,
         :comments => get_comments
       }
@@ -78,15 +59,15 @@ class Dish < ActiveRecord::Base
     Tag.all.each do |t|
 
       tags_array = []      
-      tags_array.push("\b#{t.name_a.downcase}\b") unless t.name_a.blank? 
-      tags_array.push("\b#{t.name_b.downcase}\b") unless t.name_b.blank? 
-      tags_array.push("\b#{t.name_c.downcase}\b") unless t.name_c.blank? 
-      tags_array.push("\b#{t.name_d.downcase}\b") unless t.name_d.blank? 
-      tags_array.push("\b#{t.name_e.downcase}\b") unless t.name_e.blank? 
-      tags_array.push("\b#{t.name_f.downcase}\b") unless t.name_f.blank? 
-      tags = "/#{tags_array.join('|')}/"
+      tags_array.push("\b#{t.name_a}\b") unless t.name_a.blank? 
+      tags_array.push("\b#{t.name_b}\b") unless t.name_b.blank? 
+      tags_array.push("\b#{t.name_c}\b") unless t.name_c.blank? 
+      tags_array.push("\b#{t.name_d}\b") unless t.name_d.blank? 
+      tags_array.push("\b#{t.name_e}\b") unless t.name_e.blank? 
+      tags_array.push("\b#{t.name_f}\b") unless t.name_f.blank? 
+      tags = tags_array.join('|').downcase
       
-      if tags.match(name.downcase) || (dish_category && tags.match(dish_category.name.downcase)) || (dish_type && tags.match(dish_type.name.downcase)) || (dish_subtype && tags.match(dish_subtype.name.downcase))
+      if /#{tags}/.match(name.downcase) || (dish_category && /#{tags}/.match(dish_category.name.downcase)) || (dish_type && /#{tags}/.match(dish_type.name.downcase)) || (dish_subtype && /#{tags}/.match(dish_subtype.name.downcase))
         DishTag.create({:tag_id => t.id, :dish_id => id})
       end
       
