@@ -9,10 +9,18 @@ class ApiController < ApplicationController
   
   def del_comment
     if params[:comment_id] && Session.check_token(params[:user_id], params[:token])
-      if comment = Comment.find_by_id_and_user_id(params[:comment_id], params[:user_id])
-        comment.delete
+      if params[:self_review].to_i == 1
+        if comment = DishComment.find_by_id_and_user_id(params[:comment_id], params[:user_id])
+          comment.delete
+        else
+          $error = {:description => 'Comment not found', :code => 5}
+        end
       else
-        $error = {:description => 'Comment not found', :code => 5}
+        if comment = Comment.find_by_id_and_user_id(params[:comment_id], params[:user_id])
+          comment.delete
+        else
+          $error = {:description => 'Comment not found', :code => 5}
+        end
       end
     else
         $error = {:description => 'Params missing', :code => 8}
@@ -357,7 +365,7 @@ class ApiController < ApplicationController
   def get_review  
     
     if params[:review_id]
-      if params[:self_review] == 1
+      if params[:self_review].to_i == 1
         review = Dish.find_by_id(params[:review_id]).self_review()
       else
         review = Review.find_by_id(params[:review_id])
@@ -429,7 +437,7 @@ class ApiController < ApplicationController
   
   def comment_on_review
     if params[:comment] && params[:review_id] && Session.check_token(params[:user_id], params[:token])
-        comment = Comment.add({:user_id => params[:user_id], :review_id => params[:review_id], :text => params[:comment]}, params[:self_review])
+      Comment.add({:user_id => params[:user_id], :review_id => params[:review_id], :text => params[:comment]}, params[:self_review])
     else
       return render :json => {
         :error => {:description => 'Parameters missing', :code => 8}
