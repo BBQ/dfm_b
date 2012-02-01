@@ -142,88 +142,82 @@ class ApiController < ApplicationController
       Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).each do |restaurant|
        networks.push(restaurant.network_id) if networks.index(restaurant.network_id).blank?
       end
-      dishes = Dish.select('DISTINCT dishes.id, dishes.name, dishes.rating, dishes.votes, dishes.photo, dishes.network_id').where("dishes.network_id IN (#{networks.join(',')})") if networks.count > 0
-      dishes = dishes.includes(:network, :restaurants)    
-
-      if params[:sort] == 'distance'
-        dishes = dishes.by_distance(params[:lat], params[:lon]).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC')  
-      else
-        dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
+      
+      if networks.count > 0 && dishes = Dish.select('DISTINCT dishes.id, dishes.name, dishes.rating, dishes.votes, dishes.photo, dishes.network_id').where("dishes.network_id IN (#{networks.join(',')})")
+        dishes = dishes.includes(:network, :restaurants)
+        if params[:sort] == 'distance'
+          dishes = dishes.by_distance(params[:lat], params[:lon]).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC')  
+        else
+          dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
+        end
       end
       
     else
       dishes = Dish.select('DISTINCT dishes.id, dishes.name, dishes.rating, dishes.votes, dishes.photo, dishes.network_id').order('rating DESC, votes DESC, network_rating DESC, network_votes DESC, photo DESC, network_fsq_users_count DESC')
     end
     
-    filters = []
-    if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000'
-      bill = []
-      bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
-      bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
-      bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
-      bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
-      bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
-      filters.push(bill.join(' OR ')) if bill.count > 0
-    end
+    if dishes
+      
+      filters = []
+      if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
+        bill = []
+        bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
+        bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
+        bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
+        bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
+        bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
+        filters.push(bill.join(' OR ')) if bill.count > 0
+      end
 
 
-    dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
-    dishes = dishes.custom_search(search) unless search.blank?
-    dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
-    dishes = dishes.where(filters).joins(:restaurants) unless filters.blank?
-
-    # dishes = Dish.select("DISTINCT `dishes`.id, dishes.`name`, dishes.`rating`, dishes.`votes`, dishes.`photo`, dishes.`network_id`")
-    # dishes = dishes.joins("LEFT OUTER JOIN `networks` ON `dishes`.`network_id` = `networks`.`id` LEFT OUTER JOIN `restaurants` ON `restaurants`.`network_id` = `networks`.`id`")
-    # dishes = dishes.near(lat, lon, radius) if radius
-
-    # if params[:sort] == 'distance'
-    #  dishes = dishes.by_distance(params[:lat], params[:lon]).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC')  
-    # else
-    #  dishes = dishes.order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
-    # end 
+      dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
+      dishes = dishes.custom_search(search) unless search.blank?
+      dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
+      dishes = dishes.where(filters).joins(:restaurants) unless filters.blank?
+      dishes = dishes.limit("#{offset}, #{limit}")
     
-    # dishes = dishes.custom_search(search) unless search.blank?
-    # dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
-    # dishes = dishes.where(filters) unless filters.blank?
-    
-    dishes = dishes.limit("#{offset}, #{limit}")
-    
-    restaurants = []
-    dishes.each do |dish|
-      if radius
-        dish.network.restaurants.select([:id, :name, :lat, :lon, :address]).near(params[:lat], params[:lon], radius).take(3).each do |r|
-          restaurants.push({
-            :id => r.id,
-            :name => r.name,
-            :lat => r.lat,
-            :lon => r.lon,
-            :address => r.address,
-            :dish_id => dish.id,
-          })
-        end
-      else
-        dish.network.restaurants.select([:id, :name, :lat, :lon, :address]).where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon]).take(3).each do |r|
-          restaurants.push({
-            :id => r.id,
-            :name => r.name,
-            :lat => r.lat,
-            :lon => r.lon,
-            :address => r.address,
-            :dish_id => dish.id,
-          })
+      restaurants = []
+      dishes.each do |dish|
+        if radius
+          dish.network.restaurants.select([:id, :name, :lat, :lon, :address]).near(params[:lat], params[:lon], radius).take(3).each do |r|
+            restaurants.push({
+              :id => r.id,
+              :name => r.name,
+              :lat => r.lat,
+              :lon => r.lon,
+              :address => r.address,
+              :dish_id => dish.id,
+            })
+          end
+        else
+          dish.network.restaurants.select([:id, :name, :lat, :lon, :address]).where('lat IS NOT NULL AND lon IS NOT NULL').by_distance(params[:lat], params[:lon]).take(3).each do |r|
+            restaurants.push({
+              :id => r.id,
+              :name => r.name,
+              :lat => r.lat,
+              :lon => r.lon,
+              :address => r.address,
+              :dish_id => dish.id,
+            })
+          end
         end
       end
-    end
          
-    return render :json => {
-            :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
-                  :methods => [:image_sd, :image_hd], 
-                  :include => {
-                    :network => {:only => [:id, :name]}
-                  }),
-            :restaurants => restaurants,
-            :error => $error
-    }
+      return render :json => {
+              :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
+                    :methods => [:image_sd, :image_hd], 
+                    :include => {
+                      :network => {:only => [:id, :name]}
+                    }),
+              :restaurants => restaurants,
+              :error => $error
+      }
+    else
+      $error = {:description => 'Nothing Found :(', :code => 5}
+      return render :json => {
+        :error => $error
+      }
+    end
   end
   
   def get_restaurants
@@ -232,7 +226,7 @@ class ApiController < ApplicationController
     offset = params[:offset] ||= 0
     
     filters = []
-    if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000'
+    if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
       bill = []
       bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
       bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'

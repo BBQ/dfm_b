@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120201155632) do
+ActiveRecord::Schema.define(:version => 20120201184044) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -152,7 +152,7 @@ ActiveRecord::Schema.define(:version => 20120201155632) do
     t.integer  "network_fsq_users_count"
     t.integer  "count_comments",                        :default => 0
     t.integer  "count_likes",                           :default => 0
-    t.integer  "top_user_id",                                            :null => false
+    t.integer  "top_user_id"
   end
 
   add_index "dishes", ["dish_category_id"], :name => "dish_category_id"
@@ -262,10 +262,11 @@ ActiveRecord::Schema.define(:version => 20120201155632) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "rating",          :limit => 21, :default => 0.0
-    t.integer  "votes",                         :default => 0
+    t.float    "rating",             :limit => 21, :default => 0.0
+    t.integer  "votes",                            :default => 0
     t.string   "photo"
     t.integer  "fsq_users_count"
+    t.integer  "fsq_checkins_count",               :default => 0
   end
 
   add_index "networks", ["fsq_users_count"], :name => "index_networks_on_fsq_users_count"
@@ -394,7 +395,7 @@ ActiveRecord::Schema.define(:version => 20120201155632) do
     t.string   "fsq_address"
     t.string   "fsq_id"
     t.string   "station"
-    t.integer  "top_user_id",                                         :null => false
+    t.integer  "top_user_id"
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"

@@ -15,11 +15,11 @@ namespace :fix do
   end
   
   desc "Update Foursquare User Checkins for Networks by setting max(Foursquare User Checkins) from network resataurant"
-  task :net_fsq_uc => :environment do
+  task :net_fsq => :environment do
     Network.all.each do |n|
-      c = n.restaurants.order('fsq_users_count DESC').limit(1)
+      c = n.restaurants.order('fsq_checkins_count DESC').limit(1)
       if r = c[0]
-        n.fsq_users_count = r.fsq_users_count
+        n.fsq_checkins_count = r.fsq_checkins_count ||= 0
         n.save
       end
     end
