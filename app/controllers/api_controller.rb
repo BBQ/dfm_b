@@ -91,18 +91,18 @@ class ApiController < ApplicationController
   end
   
   def get_common_data
-    
-    dish_types = DishType.where('id != 10').order('`order`')
-    
+    timestamp = Time.at(params[:timestamp].to_i) if params[:timestamp].to_i > 0
+            
+    keywords = Tag.select([:id, :name_a]).where("name_a IN ('salad','soup','pasta','pizza','burger','noodles','risotto','rice','steak','sushi','desserts','drinks','meat','fish','vegetables')")    
     networks = Network.select([:id, :name])
     locations = LocationTip.select([:id, :name])
-    params[:timestamp] = Time.at(params[:timestamp].to_i)
-    
+
     return render :json => {
-          :tags => Tag.get_all(params[:timestamp]),
-          :types => params[:timestamp] ? dish_types.where('updated_at >= ?', params[:timestamp]) : dish_types.all,
-          :networks => params[:timestamp] ? networks.where('updated_at >= ?', params[:timestamp]) : networks.all,
-          :cities => params[:timestamp] ? locations.where('updated_at >= ?', params[:timestamp]) : locations.all,
+          :types => DishType.format_for_api(timestamp),
+          :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords.all,
+          :networks => timestamp ? networks.where('updated_at >= ?', timestamp) : networks.all,
+          :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
+          :tags => Tag.get_all(timestamp),
           :error => $error
     }
   end
@@ -414,6 +414,12 @@ class ApiController < ApplicationController
               :error => $error
         }
       end
+      
+      if params[:type] == 'notifications'
+        return render :json => {
+              :error => $error
+        }
+        end   
     else
       $error = {:description => 'Parameters missing', :code => 8}
       return render :json => {

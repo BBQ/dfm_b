@@ -6,7 +6,7 @@ class Tag < ActiveRecord::Base
   
   def self.get_all(timestamp = nil)
     all_tags = [] 
-    tags = timestamp ? Tag.where('updated_at >= ?', timestamp) : Tag.select([:id, :name])
+    tags = timestamp ? Tag.where('updated_at >= ?', timestamp) : Tag.all
     
     tags.each do |t|
       all_tags.push({:id => t.id, :name => t.name_a}) unless t.name_a.blank?
