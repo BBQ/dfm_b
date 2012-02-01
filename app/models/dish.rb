@@ -67,7 +67,7 @@ class Dish < ActiveRecord::Base
       tags_array.push("\\b#{t.name_f}\\b") unless t.name_f.blank? 
       tags = tags_array.join('|')
       
-      if name.scan(/#{tags}/i) || (dish_category && dish_category.name.scan(/#{tags}/i)) || (dish_type && dish_type.name.scan(/#{tags}/i)) || (dish_subtype && dish_subtype.name.scan(/#{tags}/i))
+      if !name.scan(/#{tags}/i).blank? || (dish_category && !dish_category.name.scan(/#{tags}/i).blank?) || (dish_type && !dish_type.name.scan(/#{tags}/i).blank?) || (dish_subtype && !dish_subtype.name.scan(/#{tags}/i).blank?)
         DishTag.create({:tag_id => t.id, :dish_id => id})
       end
       
