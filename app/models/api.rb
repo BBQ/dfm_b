@@ -132,8 +132,8 @@ class API < ActiveRecord::Base
         }
       end
             
-      better_networks = Network.where('network.fsq_checkins_count >= ?', restaurant.network.fsq_checkins_count).count.to_f
-      popularity = (100 * better_networks / Network.where('network.fsq_checkins_count > 0').count.to_f).round(0)
+      better_networks = Network.where('networks.fsq_checkins_count >= ?', restaurant.network.fsq_checkins_count).count.to_f
+      popularity = (100 * better_networks / Network.where('networks.fsq_checkins_count > 0').count.to_f).round(0)
       
       popularity = case popularity
         when 0..33 then "Above average"
