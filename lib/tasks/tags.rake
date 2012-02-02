@@ -47,7 +47,7 @@ namespace :tags do
     file = directory + 'Catogories.xlsx'
     parser = Excelx.new(file, false, :ignore)  
 
-    dish_sheet = parser.sheets[5]
+    dish_sheet = parser.sheets[4]
     2.upto(parser.last_row(dish_sheet)) do |line|   
       
       data = {        
