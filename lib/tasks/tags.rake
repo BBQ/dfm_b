@@ -109,7 +109,7 @@ namespace :tags do
       names_array.push(t.name_d.downcase) unless t.name_d.blank? 
       names_array.push(t.name_e.downcase) unless t.name_e.blank? 
       names_array.push(t.name_f.downcase) unless t.name_f.blank? 
-      names = names_array.join('|').gsub(/'/, '\'') 
+      names = names_array.join('|').gsub(/\\|'/) { |c| "\\#{c}" }
       
       # Dishes      
       ds = Dish.where("
