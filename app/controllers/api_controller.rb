@@ -385,7 +385,7 @@ class ApiController < ApplicationController
             nd.each do |r|
                if params[:tag_id].to_i > 0
                  r.dish.dish_tags.each do |t|
-                   if t == params[:tag_id].to_i
+                   if t.tag_id == params[:tag_id].to_i
                      dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})
                      break
                    end
