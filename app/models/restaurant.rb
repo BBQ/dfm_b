@@ -22,6 +22,16 @@ class Restaurant < ActiveRecord::Base
     where("restaurants.id IN (SELECT restaurant_id FROM restaurant_tags WHERE tag_id = ?)", id)
   end
   
+  def self.bill(bill)
+    bill_array = []
+    bill_array.push('bill = "до 500 руб"') if bill[0] == '1'
+    bill_array.push('bill = "500 - 1000 руб"') if bill[1] == '1'
+    bill_array.push('bill = "1000 - 2000 руб"') if bill[2] == '1'
+    bill_array.push('bill = "2000 - 5000 руб"') if bill[3] == '1'
+    bill_array.push('bill = "более 5000 руб"') if bill[4] == '1'
+    where(bill_array.join(' OR '))
+  end
+  
   def self.search_by_word(keyword)
     ids = {
       1 => ['салат','salad','салатик'],

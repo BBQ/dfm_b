@@ -1,5 +1,33 @@
 # encoding: utf-8
 namespace :fix do
+  
+  desc "Update Foursquare User Checkins for Dishes by setting max(Foursquare User Checkins) from network resataurant"
+  task :dish_fsq => :environment do
+    Dish.all.each do |d|
+      c = d.network.restaurants.order('fsq_checkins_count DESC').limit(1)
+      if r = c[0]
+        d.fsq_checkins_count = r.fsq_checkins_count ||= 0
+        d.save
+      end
+    end
+    
+    Network.all.each do |n|
+      c = n.restaurants.order('fsq_checkins_count DESC').limit(1)
+      if r = c[0]
+        n.fsq_checkins_count = r.fsq_checkins_count ||= 0
+        n.save
+      end
+    end
+  end
+
+  desc "Update Restaurants set restaurants_count"
+  task :rest_count => :environment do
+    Restaurant.all.each do |r|
+      r.count_dishes = r.network.dishes.count ||= 0
+      r.save
+    end
+  end  
+  
 
   desc "Update Dishes with information from networks"
   task :upd_dishes => :environment do

@@ -121,6 +121,63 @@ class ApiController < ApplicationController
       return render :json => {:error => $error}
     end
   end
+
+  def get_dishes_new
+    
+    if params[:radius].to_f != 0 
+      radius = params[:radius].to_f
+    else
+      radius = 30 if params[:radius] == 'city'
+      radius = 40075 if params[:radius] == 'global'
+    end
+    
+    if radius
+      
+      limit = params[:limit] ||= 25
+      offset = params[:offset] ||= 0
+    
+      lat = params[:lat] ||= '55.753548'
+      lon = params[:lon] ||= '37.609239'
+    
+      restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).where('count_dishes > 0').group(:network_id)
+      restaurants = restaurants.bill(params[:bill]) if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
+    
+      networks = []  
+      restaurants.each {|r| networks.push(r.network_id)}
+      
+      dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id]).where("network_id IN (?)", networks.join(',')).order("rating DESC, votes DESC, photo DESC, fsq_checkins_count DESC")
+      dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
+      dishes = dishes.search(params[:search]) unless params[:search].blank?
+      dishes = dishes.limit("#{offset}, #{limit}")
+      
+      restaurants = []
+      dishes.each do |dish|
+        dish.network.restaurants.select([:id, :name, :lat, :lon, :address]).near(params[:lat], params[:lon], radius).take(3).each do |r|
+          restaurants.push({
+            :id => r.id,
+            :name => r.name,
+            :lat => r.lat,
+            :lon => r.lon,
+            :address => r.address,
+            :dish_id => dish.id,
+          })
+        end
+      end
+
+    else
+      $error = {:description => 'Parameters missing', :code => 8}    
+    end
+    return render :json => {
+            :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
+                  :methods => [:image_sd, :image_hd], 
+                  :include => {
+                    :network => {:only => [:id, :name]}
+                  }),
+            :restaurants => restaurants,
+            :error => $error
+    }
+    
+  end
   
   def get_dishes
     limit = params[:limit] ||= 25
@@ -135,8 +192,6 @@ class ApiController < ApplicationController
       radius = params[:radius].to_f != 0 ? params[:radius].to_f : nil
     end
 
-    search = params[:search].blank? ? params[:keyword] : params[:search]
-    
     if radius && radius <= 5
       networks = []
       Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).each do |restaurant|
@@ -158,7 +213,6 @@ class ApiController < ApplicationController
     
     if dishes
       
-      filters = []
       if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
         bill = []
         bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
@@ -166,13 +220,12 @@ class ApiController < ApplicationController
         bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
         bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
         bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
-        filters.push(bill.join(' OR ')) if bill.count > 0
+        filters = (bill.join(' OR ')) if bill.count > 0
       end
 
 
       dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
-      dishes = dishes.custom_search(search) unless search.blank?
-      dishes = dishes.where('dish_type_id = ?', params[:type]) unless params[:type].blank?
+      dishes = dishes.custom_search(params[:search]) unless params[:search].blank?
       dishes = dishes.where(filters).joins(:restaurants) unless filters.blank?
       dishes = dishes.limit("#{offset}, #{limit}")
     

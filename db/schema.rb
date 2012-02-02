@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120201184044) do
+ActiveRecord::Schema.define(:version => 20120202141528) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -153,6 +153,7 @@ ActiveRecord::Schema.define(:version => 20120201184044) do
     t.integer  "count_comments",                        :default => 0
     t.integer  "count_likes",                           :default => 0
     t.integer  "top_user_id"
+    t.integer  "fsq_checkins_count",                    :default => 0
   end
 
   add_index "dishes", ["dish_category_id"], :name => "dish_category_id"
@@ -396,6 +397,7 @@ ActiveRecord::Schema.define(:version => 20120201184044) do
     t.string   "fsq_id"
     t.string   "station"
     t.integer  "top_user_id"
+    t.integer  "count_dishes",                     :default => 0
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"

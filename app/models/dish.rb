@@ -112,60 +112,15 @@ class Dish < ActiveRecord::Base
     where("dishes.id IN (SELECT dish_id FROM dish_tags WHERE tag_id = ?)", id)
   end
   
-  def self.custom_search(keyword_or_id)
-    ids = {
-      1 => ['салат','salad','салатик'],
-      2 => ['soup','суп','супы','супчик','супчики','супец'],
-      3 => ['pasta','паста','пасты','спагетти'],
-      4 => ['pizza','пицца','пиццы'],
-      5 => ['burger','бургер'],
-      6 => ['noodles','лапша'],
-      7 => ['risotto','ризотто'],
-      8 => ['rice','рис'],
-      9 => ['steak','стейк','стэйк'],
-      10 => ['sushi & rolls','суши и роллы','суши','sushi','ролл','сашими'],
-      11 => ['desserts','десерт','торт','пирожные','пирожное','выпечка','мороженое','пирог','сладости','сорбет'],
-      12 => ['drinks','напитки','напиток'],
-      13 => ['meat','мясо','мясное'],
-      14 => ['fish','рыба','морепродукты','креветки','мидии','форель','треска','карп','моллюски','устрицы','сибас','лосось','судак'],
-      15 => ['vegetables','овощи','овощь']
-    }
-    
-    condition = 'dishes.id IN (SELECT dish_id FROM dish_tags WHERE tag_id = ?)'
-    
-    if keyword_or_id.to_i != 0
-      id = keyword_or_id
-      where(condition, id)
-    else
-      keyword = keyword_or_id.downcase
-      id = 0
-      
-      ids.each {|k,v| id = k if v.include?(keyword)}        
-
-      if id == 0 && tag = Tag.find_by_name(keyword)
-        id = tag.id
-      end
-      
-      if id != 0
-        where(condition, id)
-      else
-        if word = SearchWord.find_by_name(keyword)
-          word.count += 1
-          word.save
-        else
-          SearchWord.create(:name => keyword, :count => 1)
-        end
-
-        where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]') 
-              OR 
-              dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
-              OR
-              dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
-              OR 
-              LOWER(dishes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]'")    
-      end
-      
-    end
+  def self.search(keyword)
+    keyword = keyword.downcase
+    where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]') 
+          OR 
+          dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
+          OR
+          dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
+          OR 
+          LOWER(dishes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]'")    
   end
   
 end
