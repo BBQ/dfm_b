@@ -296,6 +296,7 @@ class ApiController < ApplicationController
     
     restaurants = restaurants.where("restaurants.`name` LIKE ?", "%#{params[:search].gsub(/[']/) { |x| '\\' + x }}%") unless params[:search].blank?
     restaurants = restaurants.search_by_word(params[:keyword]) unless params[:keyword].blank?
+    restaurants = restaurants.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
     restaurants = restaurants.where(all_filters) unless all_filters.blank?
     
     if restaurants

@@ -18,6 +18,10 @@ class Restaurant < ActiveRecord::Base
   # geocoded_by :geo_address, :latitude  => :lat, :longitude => :lon
   # after_validation :geocode, :if => :address_changed?
   
+  def self.search_by_tag_id(id)
+    where("restaurants.id IN (SELECT restaurant_id FROM restaurant_tags WHERE tag_id = ?)", id)
+  end
+  
   def self.search_by_word(keyword)
     ids = {
       1 => ['салат','salad','салатик'],
