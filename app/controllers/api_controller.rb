@@ -381,14 +381,20 @@ class ApiController < ApplicationController
         end
         
         if dishes.count < 20
-          if !params[:search].blank?
-            nd = r.network.reviews.where('photo IS NOT NULL').includes(:dishes).search(params[:search]).group(:dish_id)
-          elsif params[:tag_id].to_i > 0  
-            nd = r.network.reviews.where('photo IS NOT NULL').includes(:dishes).search_by_tag_id(params[:tag_id]).group(:dish_id)
-          else
-            nd = r.network.reviews.where('photo IS NOT NULL').includes(:dishes).group(:dish_id)
+          if nd = r.network.reviews.select([:id, :dish_id, :photo]).order("count_likes DESC").where('photo IS NOT NULL').group(:dish_id).take(num_images - dishes.count)
+            nd.each do |r|
+               if params[:tag_id].to_i > 0
+                 r.dish.dish_tags.each do |t|
+                   if t = params[:tag_id].to_i
+                     dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})
+                     break
+                   end
+                 end
+               else
+                 dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})
+               end
+            end
           end
-          nd.select([:id, :dish_id, :photo]).order("count_likes DESC").take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})} if nd
         end
             
         networks.push({:network_id => r.network_id, :dishes => dishes}) 
