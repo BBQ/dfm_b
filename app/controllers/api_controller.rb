@@ -93,15 +93,15 @@ class ApiController < ApplicationController
   def get_common_data
     timestamp = Time.at(params[:timestamp].to_i) if params[:timestamp].to_i > 0
             
-    keywords = Tag.select([:id, :name_a]).where("name_a IN ('salad','soup','pasta','pizza','burger','noodles','risotto','rice','steak','sushi','desserts','drinks','meat','fish','vegetables')")    
+    keywords = Tag.select("id, name_a as name").where("name_a IN ('salad','soup','pasta','pizza','burger','noodles','risotto','rice','steak','sushi','desserts','drinks','meat','fish','vegetables')")    
     networks = Network.select([:id, :name])
     locations = LocationTip.select([:id, :name])
 
     return render :json => {
-          :types => DishType.format_for_api(timestamp),
+          # :types => DishType.format_for_api(timestamp),
           :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords.all,
-          :networks => timestamp ? networks.where('updated_at >= ?', timestamp) : networks.all,
-          :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
+          # :networks => timestamp ? networks.where('updated_at >= ?', timestamp) : networks.all,
+          # :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
           :tags => Tag.get_all(timestamp),
           :error => $error
     }
