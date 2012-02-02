@@ -381,7 +381,7 @@ class ApiController < ApplicationController
         end
         
         if dishes.count < 20
-          if nd = r.network.reviews.where('photo IS NOT NULL')
+          if nd = r.network.reviews.where('photo IS NOT NULL').group(:dish_id)
             nd.select([:id, :dish_id, :photo]).order("count_likes DESC").take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})}       
           end
         end
