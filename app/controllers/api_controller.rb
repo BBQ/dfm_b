@@ -359,7 +359,7 @@ class ApiController < ApplicationController
       restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.lat, restaurants.lon, restaurants.network_id, restaurants.rating, restaurants.votes, restaurants.fsq_id').limit("#{offset}, #{limit}") 
     end
     
-    num_images =20
+    num_images = 20
     networks = []
     restaurants.each do |r|
       dont_add = 0
@@ -371,8 +371,8 @@ class ApiController < ApplicationController
         
         dishes = []
         if nd = r.network.dishes.where('photo IS NOT NULL')
-          unless params[:keyword].blank?
-            nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").custom_search(params[:keyword]).take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
+          unless params[:search].blank?
+            nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").search(params[:search]).take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
           else
             nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?} 
           end          
