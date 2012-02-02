@@ -72,7 +72,8 @@ namespace :tags do
   
   desc "Match Dish Tags"
   task :match => :environment do
-    tags  = Tag.all
+    tags  = Tag.where("id > 232")
+    # tags  = Tag.all
     # tags = Tag.where('id in(SELECT tags.id, dish_tags.tag_id FROM tags LEFT JOIN dish_tags on tags.id = dish_tags.tag_id GROUP BY tags.name_a HAVING dish_tags.tag_id IS NULL)')
     
     tags.each do |t|
