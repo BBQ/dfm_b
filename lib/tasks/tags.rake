@@ -70,9 +70,31 @@ namespace :tags do
       p 'done!'
   end
   
+  desc "Match Restaurant Tags"
+  task :match_rest => :environment do
+    Network.all.each do |n|
+     n.restaurants.each do |r|
+       dishes_id = []
+       r.network.dishes.each do |d|
+         dishes_id.push(d.id)
+       end
+       dishes_id.join(',')
+       DishTag.select("DISTINCT tag_id").where("dish_id IN (?)", dishes_id).each do |t|
+          data = {
+            :tag_id => t.tag_id, 
+            :restaurant_id => r.id
+          }
+          p "#{data}"
+          RestaurantTag.create(data)
+       end
+     end
+   end
+     p 'It`s done!'
+   end
+  
   desc "Match Dish Tags"
-  task :match => :environment do
-    tags  = Tag.where("id > 232")
+  task :match_dishes => :environment do
+    tags  = Tag.where("id = 297")
     # tags  = Tag.all
     # tags = Tag.where('id in(SELECT tags.id, dish_tags.tag_id FROM tags LEFT JOIN dish_tags on tags.id = dish_tags.tag_id GROUP BY tags.name_a HAVING dish_tags.tag_id IS NULL)')
     
@@ -87,7 +109,7 @@ namespace :tags do
       names_array.push(t.name_d.downcase) unless t.name_d.blank? 
       names_array.push(t.name_e.downcase) unless t.name_e.blank? 
       names_array.push(t.name_f.downcase) unless t.name_f.blank? 
-      names = names_array.join('|')
+      names = names_array.join('|').gsub(/'/, '\'') 
       
       # Dishes      
       ds = Dish.where("
