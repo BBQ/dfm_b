@@ -373,6 +373,8 @@ class ApiController < ApplicationController
         if nd = r.network.dishes.where('photo IS NOT NULL')
           unless params[:search].blank?
             nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").search(params[:search]).take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
+          elsif params[:tag_id].to_i > 0
+            nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").search_by_tag_id(params[:tag_id]).take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
           else
             nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?} 
           end          
