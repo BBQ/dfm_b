@@ -113,14 +113,14 @@ class Dish < ActiveRecord::Base
   end
   
   def self.search(keyword)
-    keyword = keyword.downcase
-    where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]') 
+    keyword.downcase!
+    where("(dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]') 
           OR 
           dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
           OR
           dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')
           OR 
-          LOWER(dishes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]'")    
+          LOWER(dishes.`name`) REGEXP '[[:<:]]#{keyword}[[:>:]]')")    
   end
   
 end

@@ -139,13 +139,13 @@ class ApiController < ApplicationController
       lat = params[:lat] ||= '55.753548'
       lon = params[:lon] ||= '37.609239'
     
-      restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).where('count_dishes > 0').group(:network_id)
+      restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).group(:network_id)
       restaurants = restaurants.bill(params[:bill]) if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
     
       networks = []  
       restaurants.each {|r| networks.push(r.network_id)}
-      
-      dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id]).where("network_id IN (?)", networks.join(',')).order("rating DESC, votes DESC, photo DESC, fsq_checkins_count DESC")
+
+      dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id]).where("network_id IN (#{networks.join(',')})",).order("rating DESC, votes DESC, photo DESC, fsq_checkins_count DESC")
       dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
       dishes = dishes.search(params[:search]) unless params[:search].blank?
       dishes = dishes.limit("#{offset}, #{limit}")
@@ -168,6 +168,7 @@ class ApiController < ApplicationController
       $error = {:description => 'Parameters missing', :code => 8}    
     end
     return render :json => {
+            :p => networks.count,
             :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
                   :methods => [:image_sd, :image_hd], 
                   :include => {
@@ -225,7 +226,7 @@ class ApiController < ApplicationController
 
 
       dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
-      dishes = dishes.custom_search(params[:search]) unless params[:search].blank?
+      dishes = dishes.search(params[:search]) unless params[:search].blank?
       dishes = dishes.where(filters).joins(:restaurants) unless filters.blank?
       dishes = dishes.limit("#{offset}, #{limit}")
     
