@@ -382,16 +382,16 @@ class ApiController < ApplicationController
         
         if dishes.count < 20
           if nd = r.network.reviews.select([:id, :dish_id, :photo]).order("count_likes DESC").where('photo IS NOT NULL').group(:dish_id).take(num_images - dishes.count)
-            nd.each do |r|
+            nd.each do |rw|
                if params[:tag_id].to_i > 0
-                 r.dish.dish_tags.each do |t|
+                 rw.dish.dish_tags.each do |t|
                    if t.tag_id == params[:tag_id].to_i
-                     dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})
+                     dishes.push({:id => rw[:dish_id], :photo => rw.photo.iphone.url})
                      break
                    end
                  end
                else
-                 dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})
+                 dishes.push({:id => rw[:dish_id], :photo => rw.photo.iphone.url})
                end
             end
           end
