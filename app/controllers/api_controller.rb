@@ -98,10 +98,10 @@ class ApiController < ApplicationController
     locations = LocationTip.select([:id, :name])
 
     return render :json => {
-          # :types => DishType.format_for_api(timestamp),
+          :types => DishType.format_for_api(timestamp),
           :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords.all,
-          # :networks => timestamp ? networks.where('updated_at >= ?', timestamp) : networks.all,
-          # :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
+          :networks => timestamp ? networks.where('updated_at >= ?', timestamp) : networks.all,
+          :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
           :tags => Tag.get_all(timestamp),
           :error => $error
     }
@@ -146,9 +146,9 @@ class ApiController < ApplicationController
       if networks.count > 0 && dishes = Dish.select('DISTINCT dishes.id, dishes.name, dishes.rating, dishes.votes, dishes.photo, dishes.network_id').where("dishes.network_id IN (#{networks.join(',')})")
         dishes = dishes.includes(:network, :restaurants)
         if params[:sort] == 'distance'
-          dishes = dishes.by_distance(params[:lat], params[:lon]).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC')  
+          dishes = dishes.by_distance(params[:lat], params[:lon]).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, networks.fsq_checkins_count DESC')  
         else
-          dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
+          dishes = dishes.includes(:network).order('dishes.rating DESC, dishes.votes DESC, networks.rating DESC, networks.votes DESC, dishes.photo DESC, networks.fsq_checkins_count DESC').by_distance(params[:lat], params[:lon])  
         end
       end
       

@@ -109,7 +109,7 @@ class Dish < ActiveRecord::Base
   end
   
   def self.search_by_tag_id(id)
-    where("id IN (SELECT dish_id FROM dish_tags WHERE id = ?)", id)
+    where("dishes.id IN (SELECT dish_id FROM dish_tags WHERE tag_id = ?)", id)
   end
   
   def self.custom_search(keyword_or_id)
