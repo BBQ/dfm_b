@@ -388,6 +388,7 @@ class ApiController < ApplicationController
               nd.select([:id, :dish_id, :photo]).order("count_likes DESC").take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url}) if r.dish.search_by_tag_id(params[:tag_id])}       
             else
               nd.select([:id, :dish_id, :photo]).order("count_likes DESC").take(num_images - dishes.count).each {|r| dishes.push({:id => r[:dish_id], :photo => r.photo.iphone.url})}
+            end
           end
         end
             
