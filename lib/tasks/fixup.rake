@@ -1,6 +1,22 @@
 # encoding: utf-8
 namespace :fix do
   
+  desc "Update Ratings for Dishes"
+  task :dish_rating => :environment do
+      Review.select(:dish_id).group(:dish_id) do |rw|
+        if dish = Dish.find_by_id(rw.dish_id)
+
+          summ = 0
+          dish.reviews.each {|dr| summ += dr.rating}
+
+          dish.votes = dish.reviews.count
+          dish.rating = summ/dish.votes
+
+          dish.save
+        end
+      end
+  end
+  
   desc "Update Foursquare User Checkins for Dishes by setting max(Foursquare User Checkins) from network resataurant"
   task :dish_fsq => :environment do
     Dish.all.each do |d|

@@ -121,8 +121,120 @@ class ApiController < ApplicationController
       return render :json => {:error => $error}
     end
   end
-
+  
   def get_dishes_new
+    
+    if params[:radius].to_f != 0 
+      radius = params[:radius].to_f
+    else
+      radius = 30 if params[:radius] == 'city'
+      radius = 40075 if params[:radius] == 'global'
+    end
+    
+    if radius
+      
+      limit = params[:limit] ||= 125
+      offset = params[:offset] ||= 0
+    
+      lat = params[:lat] ||= '55.753548'
+      lon = params[:lon] ||= '37.609239'
+    
+      restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).group(:network_id)
+      restaurants = restaurants.bill(params[:bill]) if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
+    
+      networks = []  
+      restaurants.each {|r| networks.push(r.network_id)}
+      
+      dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id]).where("network_id IN (#{networks.join(',')})").order("votes DESC, photo DESC, fsq_checkins_count DESC")
+      dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
+      dishes = dishes.search(params[:search]) unless params[:search].blank?
+      
+      if params[:dish_id] && params[:dish_id].to_i > 0 
+        if dish = Dish.select(:rating).find_by_id(params[:dish_id].to_i)
+          if params[:tag_id].to_i > 0
+            if dish = Dish.select(:rating).search_by_tag_id(params[:tag_id]).find_by_id(params[:dish_id].to_i)
+              rating = dish.rating
+            end
+          else
+            rating = dish.rating
+          end
+        end
+      end
+      
+      if rating.nil?
+        start = 1
+        rating = 5 
+      else
+        start = 0
+      end
+      
+      step = 0.25  
+      dishes_array = []
+      (0..(5-step)).step(step) do |n|
+          n1 = 5 + step - n
+          n2 = n1 - step != 0 ? n1 - step : 0.0000001
+          if (rating >= n2 && rating < n1) || (rating > n2 && rating > n1 && dishes_array.count < limit)
+            
+            start = 1 if rating > n2 && rating > n1 && dishes_array.count < limit
+            if dishes_between = dishes.where("rating >= ? AND rating < ?", n2, n1)
+              
+              dishes_between.each do |d|
+                if start == 1
+                  if dishes_array.count <= limit
+                    dishes_array.push({
+                      :id => d.id,
+                      :name => d.name,
+                      :rating => d.rating,
+                      :votes => d.votes,
+                    })
+                  else
+                    break
+                  end
+                end
+                start = 1 if d.id == params[:dish_id].to_i
+              end
+            end
+          end
+      end
+      
+      if dishes_array.count < limit
+        if dishes_zero_rating = dishes.where("fsq_checkins_count > 0")
+          dishes_zero_rating.each do |d|
+            if start == 1
+              if dishes_array.count <= limit
+                dishes_array.push({
+                  :id => d.id,
+                  :name => d.name,
+                  :rating => d.rating,
+                  :votes => d.votes,
+                })
+              else
+                break
+              end
+            end
+            start = 1 if d.id == params[:dish_id].to_i
+        end
+      end
+      
+
+    else
+      $error = {:description => 'Parameters missing', :code => 8}    
+    end
+    
+    return render :json => {
+            :p => dishes_array,
+            :c => dishes_array.count,
+            # :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
+            #       :methods => [:image_sd, :image_hd], 
+            #       :include => {
+            #         :network => {:only => [:id, :name]}
+            #       }),
+            # :restaurants => restaurants,
+            :error => $error
+    }
+  end
+
+  def get_dishes_new_v1
     
     if params[:radius].to_f != 0 
       radius = params[:radius].to_f
