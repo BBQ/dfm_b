@@ -3,9 +3,9 @@ namespace :fix do
   
   desc "Update Ratings for Dishes"
   task :dish_rating => :environment do
-      Review.select(:dish_id).group(:dish_id) do |rw|
+      Review.select(:dish_id).group(:dish_id).each do |rw|
         if dish = Dish.find_by_id(rw.dish_id)
-
+          p "#{dish.id} #{dish.name}"
           summ = 0
           dish.reviews.each {|dr| summ += dr.rating}
 
