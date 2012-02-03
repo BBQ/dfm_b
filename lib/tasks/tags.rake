@@ -79,7 +79,7 @@ namespace :tags do
          dishes_id.push(d.id)
        end
        dishes_id.join(',')
-       DishTag.select("DISTINCT tag_id").where("dish_id IN (?)", dishes_id).each do |t|
+       DishTag.select("DISTINCT tag_id").where("dish_id IN (?) AND tag_id = 298", dishes_id).each do |t|
           data = {
             :tag_id => t.tag_id, 
             :restaurant_id => r.id
