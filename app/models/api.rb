@@ -86,7 +86,7 @@ class API < ActiveRecord::Base
     end
   end
   
-  def self.api_get_restaurant(id, type, user_id)
+  def self.get_restaurant(id, type, user_id)
     restaurant = type == 'restaurant' ? Restaurant.find_by_id(id) : Restaurant.find_by_network_id(id)   
     if restaurant        
       

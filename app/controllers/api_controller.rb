@@ -116,7 +116,7 @@ class ApiController < ApplicationController
         id = params[:network_id]
         type = 'network'
       end     
-      return render :json => API.api_get_restaurant(id, type, params[:user_id])
+      return render :json => API.get_restaurant(id, type, params[:user_id])
     else
       return render :json => {:error => $error}
     end
