@@ -11,7 +11,7 @@ class DishType < ActiveRecord::Base
   def self.format_for_api(timestamp = nil)
     dtss = timestamp ? DishType.where("id NOT IN(4,6,7,14,16,19,25) AND updated_at >= ?", timestamp) : DishType.where("id NOT IN(4,6,7,14,16,19,25)")
     
-    if dtss.first
+    if dtss.count > 0
       dish_types = [:type => {
         :title => 'Starter',
         :subtypes => [
@@ -71,9 +71,9 @@ class DishType < ActiveRecord::Base
           }
         ]
       })
-    end
     else
       []
+    end
   end
   
 end
