@@ -215,6 +215,7 @@ class ApiController < ApplicationController
             start = 1 if d.id == params[:dish_id].to_i
         end
       end
+    end
       
 
     else
