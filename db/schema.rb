@@ -11,18 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120202141528) do
-
-  create_table "_tags", :force => true do |t|
-    t.string   "name_a"
-    t.string   "name_b"
-    t.string   "name_c"
-    t.string   "name_d"
-    t.string   "name_e"
-    t.string   "name_f"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+ActiveRecord::Schema.define(:version => 20120206183048) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -165,6 +154,7 @@ ActiveRecord::Schema.define(:version => 20120202141528) do
     t.integer  "count_likes",                           :default => 0
     t.integer  "top_user_id",                           :default => 0
     t.integer  "fsq_checkins_count",                    :default => 0
+    t.integer  "no_rate_order",                         :default => 0
   end
 
   add_index "dishes", ["dish_category_id"], :name => "dish_category_id"
@@ -175,6 +165,7 @@ ActiveRecord::Schema.define(:version => 20120202141528) do
   add_index "dishes", ["network_id"], :name => "network_id"
   add_index "dishes", ["network_rating"], :name => "index_dishes_on_network_rating"
   add_index "dishes", ["network_votes"], :name => "index_dishes_on_network_votes"
+  add_index "dishes", ["no_rate_order"], :name => "index_dishes_on_no_rate_order"
   add_index "dishes", ["photo"], :name => "index_dishes_on_photo"
   add_index "dishes", ["rating"], :name => "index_dishes_on_rating"
   add_index "dishes", ["votes"], :name => "index_dishes_on_votes"

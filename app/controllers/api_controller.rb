@@ -163,7 +163,7 @@ class ApiController < ApplicationController
     
     if radius
       
-      limit = params[:limit] ? params[:limit].to_i : 25
+      limit = params[:limit] ? params[:limit].to_i : 125
       offset = params[:offset] ? params[:offset].to_i : 0
     
       lat = params[:lat] ||= '55.753548'
@@ -180,20 +180,25 @@ class ApiController < ApplicationController
       dishes = dishes.search(params[:search]) unless params[:search].blank?
       
       if params[:dish_id] && params[:dish_id].to_i > 0 
-        if dish = Dish.select(:rating).find_by_id(params[:dish_id].to_i)
+        if dish = Dish.select([:rating, :fsq_checkins_count]).find_by_id(params[:dish_id].to_i)
           if params[:tag_id].to_i > 0
-            if dish = Dish.select(:rating).search_by_tag_id(params[:tag_id]).find_by_id(params[:dish_id].to_i)
+            if dish = Dish.select([:rating, :fsq_checkins_count]).search_by_tag_id(params[:tag_id]).find_by_id(params[:dish_id].to_i)
               rating = dish.rating
+              fsq_checkins_count = dish.fsq_checkins_count
             end
           else
             rating = dish.rating
+            fsq_checkins_count = dish.fsq_checkins_count
           end
         end
       end
       
+      foursquare_max = Dish.select("max(fsq_checkins_count) as max_fsq").first.max_fsq
+      
       if rating.nil?
         start = 1
-        rating = 5 
+        rating = 5
+        fsq_checkins_count = foursquare_max
       else
         start = 0
       end
@@ -201,12 +206,12 @@ class ApiController < ApplicationController
       step = 0.25  
       dishes_array = []
       (0..(5-step)).step(step) do |n|
-          n1 =  n = 0 ? 5 : 5 + step - n
-          n2 = n1 - step != 0 ? n1 - step : 0.0000001
-          if (rating >= n2 && rating < n1) || (rating > n2 && rating > n1 && dishes_array.count < limit)
+          n1 = 5 - n
+          n2 = n1 - step != 0 ? n1 - step : 0
+          if (rating > n2 && rating <= n1) || (rating > n2 && rating > n1 && dishes_array.count < limit)
             
             start = 1 if rating > n2 && rating > n1 && dishes_array.count < limit
-            if dishes_between = dishes.where("rating >= ? AND rating < ?", n2, n1)
+            if dishes_between = dishes.where("rating > ? AND rating <= ?", n2, n1)
               
               dishes_between.each do |d|
                 if start == 1
@@ -227,33 +232,45 @@ class ApiController < ApplicationController
           end
       end
       
-      if dishes_array.count < limit
-        if dishes_zero_rating = dishes.where("fsq_checkins_count > 0 AND rating = 0")
-          dishes_zero_rating.each do |d|
-            if start == 1
-              if dishes_array.count < limit
-                dishes_array.push({
-                  :id => d.id,
-                  :name => d.name,
-                  :rating => d.rating,
-                  :votes => d.votes,
-                })
-              else
-                break
+      step_fsq = foursquare_max/2
+      (0..(foursquare_max-step_fsq)).step(step_fsq) do |n|
+          
+        n1 = foursquare_max - n
+        n2 = n1 - step_fsq != 0 ? n1 - step_fsq : 0
+      
+        if (fsq_checkins_count > n2 && fsq_checkins_count <= n1) || (fsq_checkins_count > n2 && fsq_checkins_count > n1 && dishes_array.count < limit)
+        
+          start = 1 if fsq_checkins_count > n2 && fsq_checkins_count > n1 && dishes_array.count < limit
+          if dishes_between = dishes.where("fsq_checkins_count > ? AND fsq_checkins_count <= ?", n2, n1)
+          
+            dishes_between.each do |d|
+              if start == 1
+                if dishes_array.count < limit
+                  dishes_array.push({
+                    :id => d.id,
+                    :name => d.name,
+                    :rating => d.rating,
+                    :votes => d.votes,
+                  })
+                else
+                  break
+                end
               end
+              start = 1 if d.id == params[:dish_id].to_i
             end
-            start = 1 if d.id == params[:dish_id].to_i
+          end
         end
       end
-    end
+      
     
     else
       $error = {:description => 'Parameters missing', :code => 8}    
     end
     
     return render :json => {
-            :p => dishes_array,
+            :d => dishes_array,
             :c => dishes_array.count,
+            :l => limit,
             # :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
             #       :methods => [:image_sd, :image_hd], 
             #       :include => {

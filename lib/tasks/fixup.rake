@@ -1,6 +1,17 @@
 # encoding: utf-8
 namespace :fix do
   
+  desc "Update no_rate_order for Dishes"
+  task :dish_norate => :environment do
+    i = 1
+    Dish.where('rating = 0').order("fsq_checkins_count DESC, photo DESC, description DESC, updated_at DESC, price DESC").each do |d|
+      d.no_rate_order = i
+      p d.id
+      d.save
+      i += 1
+    end
+  end
+  
   desc "Update Ratings for Dishes"
   task :dish_rating => :environment do
       Review.select(:dish_id).group(:dish_id).each do |rw|
