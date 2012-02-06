@@ -1,7 +1,7 @@
 class CreateRestaurantTags < ActiveRecord::Migration  
   def self.up
     create_table :restaurant_tags, :id => false do |t|
-      t.column :id, ID_COLUMN,
+      t.column :id, ID_COLUMN
       t.column :tag_id, LINKED_ID_COLUMN
       t.column :restaurant_id, LINKED_ID_COLUMN
 
