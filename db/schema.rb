@@ -13,6 +13,17 @@
 
 ActiveRecord::Schema.define(:version => 20120202141528) do
 
+  create_table "_tags", :force => true do |t|
+    t.string   "name_a"
+    t.string   "name_b"
+    t.string   "name_c"
+    t.string   "name_d"
+    t.string   "name_e"
+    t.string   "name_f"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
     t.string   "encrypted_password",     :limit => 128, :default => "", :null => false
@@ -152,7 +163,7 @@ ActiveRecord::Schema.define(:version => 20120202141528) do
     t.integer  "network_fsq_users_count"
     t.integer  "count_comments",                        :default => 0
     t.integer  "count_likes",                           :default => 0
-    t.integer  "top_user_id"
+    t.integer  "top_user_id",                           :default => 0
     t.integer  "fsq_checkins_count",                    :default => 0
   end
 
@@ -323,7 +334,7 @@ ActiveRecord::Schema.define(:version => 20120202141528) do
     t.datetime "updated_at"
   end
 
-  create_table "restaurant_tags", :id => false, :force => true do |t|
+  create_table "restaurant_tags", :force => true do |t|
     t.integer  "tag_id",        :null => false
     t.integer  "restaurant_id", :null => false
     t.datetime "created_at"
@@ -396,8 +407,7 @@ ActiveRecord::Schema.define(:version => 20120202141528) do
     t.string   "fsq_address"
     t.string   "fsq_id"
     t.string   "station"
-    t.integer  "top_user_id"
-    t.integer  "count_dishes",                     :default => 0
+    t.integer  "top_user_id",                      :default => 0
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"

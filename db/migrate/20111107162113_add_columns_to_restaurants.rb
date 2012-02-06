@@ -14,7 +14,6 @@ class AddColumnsToRestaurants < ActiveRecord::Migration
     add_column :restaurants, :music, :string
     add_column :restaurants, :menu_url, :string
     add_column :restaurants, :parking, :string
-    add_column :restaurants, :description, :text
     change_column :restaurants, :wifi, :string
   end
 
@@ -33,7 +32,6 @@ class AddColumnsToRestaurants < ActiveRecord::Migration
     remove_column :restaurants, :music
     remove_column :restaurants, :menu_url
     remove_column :restaurants, :parking
-    remove_column :restaurants, :description
     change_column :restaurants, :wifi, :boolean
   end
 end
