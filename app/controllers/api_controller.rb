@@ -7,6 +7,35 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def get_user_following
+    if params[:user_id]
+      following = []
+      User.select([:id, :photo, :name, :facebook_id]).where('id IN (SELECT follow_user_id FROM followers WHERE user_id = ?)', params[:user_id]).each do |f|
+        following.push({
+          :user_id => f.id,
+          :name => f.name,
+          :photo => f.user_photo
+        })
+      end
+      followers =  []
+      User.select([:id, :photo, :name, :facebook_id]).where('id IN (SELECT user_id FROM followers WHERE follow_user_id = ?)', params[:user_id]).each do |f|
+          followers.push({
+            :user_id => f.id,
+            :name => f.name,
+            :photo => f.user_photo
+          })
+      end
+    else
+      $error = {:description => 'Params missing', :code => 8}
+    end
+    
+    return render :json => {
+          :following => following ||= [],
+          :followers => followers ||= [],
+          :error => $error
+    }
+  end
+  
   def del_comment
     if params[:comment_id] && Session.check_token(params[:user_id], params[:token])
       if params[:self_review].to_i == 1
@@ -53,6 +82,7 @@ class ApiController < ApplicationController
     end
     return render :json => {
           :session => session ||= nil, 
+          :photo => User.find_by_id(session[:user_id]).user_photo,
           :error => $error
     }
   end
@@ -99,11 +129,11 @@ class ApiController < ApplicationController
 
     return render :json => {
           :types => DishType.format_for_api(timestamp),
-          :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords.all,
-          :networks => timestamp ? networks.where('updated_at >= ?', timestamp) : networks.all,
-          :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
-          :tags => Tag.get_all(timestamp),
-          :error => $error
+          # :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords.all,
+          # :networks => timestamp ? networks.where('updated_at >= ?', timestamp) : networks.all,
+          # :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
+          # :tags => Tag.get_all(timestamp),
+          # :error => $error
     }
   end
   
@@ -133,8 +163,8 @@ class ApiController < ApplicationController
     
     if radius
       
-      limit = params[:limit] ||= 125
-      offset = params[:offset] ||= 0
+      limit = params[:limit] ? params[:limit].to_i : 25
+      offset = params[:offset] ? params[:offset].to_i : 0
     
       lat = params[:lat] ||= '55.753548'
       lon = params[:lon] ||= '37.609239'
@@ -171,7 +201,7 @@ class ApiController < ApplicationController
       step = 0.25  
       dishes_array = []
       (0..(5-step)).step(step) do |n|
-          n1 = 5 + step - n
+          n1 =  n = 0 ? 5 : 5 + step - n
           n2 = n1 - step != 0 ? n1 - step : 0.0000001
           if (rating >= n2 && rating < n1) || (rating > n2 && rating > n1 && dishes_array.count < limit)
             
@@ -180,7 +210,7 @@ class ApiController < ApplicationController
               
               dishes_between.each do |d|
                 if start == 1
-                  if dishes_array.count <= limit
+                  if dishes_array.count < limit
                     dishes_array.push({
                       :id => d.id,
                       :name => d.name,
@@ -198,10 +228,10 @@ class ApiController < ApplicationController
       end
       
       if dishes_array.count < limit
-        if dishes_zero_rating = dishes.where("fsq_checkins_count > 0")
+        if dishes_zero_rating = dishes.where("fsq_checkins_count > 0 AND rating = 0")
           dishes_zero_rating.each do |d|
             if start == 1
-              if dishes_array.count <= limit
+              if dishes_array.count < limit
                 dishes_array.push({
                   :id => d.id,
                   :name => d.name,
@@ -216,8 +246,7 @@ class ApiController < ApplicationController
         end
       end
     end
-      
-
+    
     else
       $error = {:description => 'Parameters missing', :code => 8}    
     end
@@ -553,10 +582,15 @@ class ApiController < ApplicationController
   end
   
   def get_user_profile
-    if params[:id] && !params[:type].blank?
+    if params[:id]
       
       limit = params[:limit] ? params[:limit] : 25
       offset = params[:offset] ? params[:offset] : 0
+      
+      following_count = Follower.select(:id).where(:user_id => params[:id]).count(:id) rescue 0 
+      followers_count = Follower.select(:id).where(:follow_user_id => params[:id]).count(:id) rescue 0
+      
+      params[:type] ||= 'reviews'
       
       reviews = Review.where('id IN (SELECT review_id FROM likes WHERE user_id = ?)',params[:id]) if params[:type] == 'likes'
       reviews = Review.where('user_id = ?',params[:id]) if params[:type] == 'reviews'
@@ -573,6 +607,8 @@ class ApiController < ApplicationController
         return render :json => {
               :review_count => review_count,
               :reviews => review_data, 
+              :following_count => following_count,
+              :followers_count => followers_count,              
               :error => $error
         }
       end
@@ -582,6 +618,8 @@ class ApiController < ApplicationController
         # d = DishType.joins("LEFT OUTER JOIN (SELECT name, dish_type_id FROM dishes WHERE id IN (SELECT dish_id FROM reviews WHERE user_id='#{params[:id]}')) r ON dish_types.id = r.dish_type_id")
         return render :json => {
               :restaurants => r,
+              :following_count => following_count,
+              :followers_count => followers_count,
               # :dishes => d, 
               :error => $error
         }
@@ -589,12 +627,16 @@ class ApiController < ApplicationController
       
       if params[:type] == 'notifications'
         return render :json => {
+              :following_count => following_count,
+              :followers_count => followers_count,
               :error => $error
         }
         end   
     else
       $error = {:description => 'Parameters missing', :code => 8}
       return render :json => {
+            :following_count => following_count,
+            :followers_count => followers_count,
             :error => $error
       }
     end

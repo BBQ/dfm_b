@@ -12,7 +12,9 @@ class DishType < ActiveRecord::Base
     dtss = timestamp ? DishType.where("id NOT IN(4,6,7,14,16,19,25) AND updated_at >= ?", timestamp) : DishType.where("id NOT IN(4,6,7,14,16,19,25)")
     
     if dtss.count > 0
+      
       dish_types = [:type => {
+        :photo => DishType.find_by_id(15).photo.p120.url,
         :title => 'Starter',
         :subtypes => [
           {
@@ -32,6 +34,7 @@ class DishType < ActiveRecord::Base
           }
         ]
       }]
+      
       dtss.order('`order`').each do |dt|
       
         dish_st = []
@@ -45,6 +48,7 @@ class DishType < ActiveRecord::Base
       
         dish_types.push(
           :type => {
+            :photo => dt.photo.p120.url,
             :title => dt.name_eng,
             :subtypes => dish_st
           }
@@ -52,6 +56,7 @@ class DishType < ActiveRecord::Base
       end
     
       dish_types.push(:type => {
+        :photo => DishType.find_by_id(25).photo.p120.url,
         :title => 'Other',
         :subtypes => [
           {
