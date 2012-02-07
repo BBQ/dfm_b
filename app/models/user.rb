@@ -58,13 +58,13 @@ class User < ActiveRecord::Base
     id
   end
   
-  def authenticate_by_twitter(oauth_token, oauth_token_secret)
+  def self.authenticate_by_twitter(oauth_token, oauth_token_secret)
     begin
       client = Twitter::Client.new(:oauth_token => oauth_token, :oauth_token_secret => oauth_token_secret)
       if user = User.find_by_twitter_id(client.user.id)
         token = Session.get_token(user)
       elsif result["email"] 
-        user = create_user_from_twitter(client.user)
+        user = create_user_from_twitter(client)
         token = Session.get_token(user)        
       end
     rescue
@@ -73,14 +73,14 @@ class User < ActiveRecord::Base
     {:token => token, :user_id => user.id} unless token.nil?
   end
   
-  def self.create_user_from_twitter(auth_result)
+  def self.create_user_from_twitter(client)
     user = User.create({
-      :name => auth_result.name, 
-      :twitter_id => auth_result.id,
-      :remote_photo_url => auth_result.profile_image
+      :name => client.user.name, 
+      :twitter_id => client.user.id,
+      :remote_photo_url => client.profile_image
     })
     
-    User.get_user_tw_friends(auth_result.id)
+    User.get_user_tw_friends(client.user.id)
     user
   end
   
