@@ -43,11 +43,6 @@ Rails.application.config.sorcery.configure do |config|
                                                                       # You can change it by your local ca_file.
                                                                       # i.e. '/etc/pki/tls/certs/ca-bundle.crt'
 
-  # config.twitter.key = "eYVNBjBDi33aa9GkA3w"
-  # config.twitter.secret = "XpbeSdCoaKSmQGSeokz5qcUATClRW5u08QWNfv71N8"
-  # config.twitter.callback_url = "http://0.0.0.0:3000/oauth/callback?provider=twitter"
-  # config.twitter.user_info_mapping = {:email => "screen_name"}
-  #
   
   # if Rails.env.production?
   require 'socket'
@@ -60,6 +55,7 @@ Rails.application.config.sorcery.configure do |config|
     app_id_or_api_key = '133629496729663'
     app_secret = '32d9a614607a08c39d51f2f80647c072'
     url = "http://dishfm.local/oauths/callback?provider=facebook"
+
   else
     # foursquare
     @client_id = '0JWDGVS0JRP4TTDORCLGXDTEHHIM5ENWZSNJMA11EYNCLR2C'
@@ -69,6 +65,7 @@ Rails.application.config.sorcery.configure do |config|
     app_id_or_api_key = '304688586223462'
     app_secret = 'f65df2374b64e5a2902278655ba98c30'
     url = "http://test.dish.fm/oauths/callback?provider=facebook"
+
   end
   
   config.facebook.key = app_id_or_api_key

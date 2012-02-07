@@ -23,7 +23,7 @@ gem "mini_magick"
 gem "sorcery"
 
 gem "koala"
-gem "foursquare2"
+gem "foursquare2", "~> 1.3.6"
 gem "geocoder"
 
 gem "kaminari"
@@ -31,6 +31,8 @@ gem "xml-simple"
 
 gem 'russian', '~> 0.6.0'
 gem 'translit'
+
+gem "twitter", "~> 2.1.0"
 
 # gem 'fast_trie', '0.5.0', :git => 'git://github.com/tyler/trie.git'
 

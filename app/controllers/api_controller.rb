@@ -75,8 +75,12 @@ class ApiController < ApplicationController
   end
   
   def authenticate_user
-    if params[:access_token] && params[:provider]
-      session = User.authenticate_by_facebook(params[:access_token]) if params[:provider] == 'facebook'
+    if params[:provider]
+      if params[:provider] == 'facebook' && params[:access_token]
+        session = User.authenticate_by_facebook(params[:access_token]) 
+      elsif params[:provider] == 'twitter' && params[:oauth_token] && params[:oauth_token_secret]
+        session = User.authenticate_by_twitter(params[:oauth_token], params[:oauth_token_secret])
+      end
     else
       $error = {:description => 'Parameters missing', :code => 8}
     end
@@ -299,11 +303,6 @@ class ApiController < ApplicationController
     return render :json => {
             :dishes => dishes_array,
             :restaurants => restaurants_array,
-            # :dishes => dishes.as_json(:only => [:id, :name, :rating, :votes],
-            #       :methods => [:image_sd, :image_hd], 
-            #       :include => {
-            #         :network => {:only => [:id, :name]}
-            #       })
             :error => $error
     }
   end

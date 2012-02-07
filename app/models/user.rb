@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
 
   # validates_confirmation_of :password
   # validates_presence_of :password, :on => :create
-  validates_presence_of :email
+  # validates_presence_of :email
   validates_uniqueness_of :email
   
   has_many :reviews
@@ -56,6 +56,32 @@ class User < ActiveRecord::Base
       nil
     end
     id
+  end
+  
+  def authenticate_by_twitter(oauth_token, oauth_token_secret)
+    begin
+      client = Twitter::Client.new(:oauth_token => oauth_token, :oauth_token_secret => oauth_token_secret)
+      if user = User.find_by_twitter_id(client.user.id)
+        token = Session.get_token(user)
+      elsif result["email"] 
+        user = create_user_from_twitter(client.user)
+        token = Session.get_token(user)        
+      end
+    rescue
+      nil
+    end
+    {:token => token, :user_id => user.id} unless token.nil?
+  end
+  
+  def self.create_user_from_twitter(auth_result)
+    user = User.create({
+      :name => auth_result.name, 
+      :twitter_id => auth_result.id,
+      :remote_photo_url => auth_result.profile_image
+    })
+    
+    User.get_user_tw_friends(auth_result.id)
+    user
   end
   
   def self.authenticate_by_facebook(access_token)
@@ -107,7 +133,7 @@ class User < ActiveRecord::Base
     end
   end
   
-  def get_user_fb_friends(code_or_access_token)
+  def self.get_user_fb_friends(code_or_access_token)
     if code_or_access_token
       if User.new.get_user_fb_token(code_or_access_token)
         access_token = User.new.get_user_fb_token(code_or_access_token)
@@ -116,6 +142,10 @@ class User < ActiveRecord::Base
       end
     end
     system "rake get_facebook_friends ACCESS_TOKEN='#{access_token}' &" if access_token
+  end
+  
+  def self.get_user_tw_friends(user_id)
+    system "rake get_twitter_friends USER=#{user_id} &" if user_id
   end
   
 
