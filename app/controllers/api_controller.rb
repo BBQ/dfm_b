@@ -262,7 +262,7 @@ class ApiController < ApplicationController
         foursquare_max = Dish.select("max(fsq_checkins_count) as max_fsq").first.max_fsq
         fsq_checkins_count = foursquare_max if fsq_checkins_count.nil? || fsq_checkins_count == 0
 
-        step_fsq = foursquare_max/10
+        step_fsq = foursquare_max/5
         (0..(foursquare_max-step_fsq)).step(step_fsq) do |n|
           
           n1 = foursquare_max - n
