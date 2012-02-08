@@ -33,6 +33,7 @@ gem 'russian', '~> 0.6.0'
 gem 'translit'
 
 gem "twitter", "~> 2.1.0"
+gem 'apn_on_rails', :git => 'https://github.com/natescherer/apn_on_rails.git', :branch => 'rails3'
 
 # gem 'fast_trie', '0.5.0', :git => 'git://github.com/tyler/trie.git'
 
