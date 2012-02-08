@@ -5,3 +5,9 @@ require File.expand_path('../config/application', __FILE__)
 require 'rake'
 
 Dishfm::Application.load_tasks
+
+begin   
+ require 'apn_on_rails_tasks'   
+rescue MissingSourceFile => e   
+ puts e.message   
+end

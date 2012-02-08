@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
     rescue
       nil
     end
-    {:token => token, :user_id => user.id, :photo => user.user_photo} unless token.nil?
+    {:name => user.name, :token => token, :user_id => user.id, :photo => user.user_photo} unless token.nil?
   end
   
   def self.create_user_from_twitter(client)
@@ -99,7 +99,7 @@ class User < ActiveRecord::Base
     rescue
       nil
     end
-    {:token => token, :user_id => user.id, :photo => user.user_photo} unless token.nil? 
+    {:name => user.name, :token => token, :user_id => user.id, :photo => user.user_photo} unless token.nil? 
   end
   
   def self.create_user_from_facebook(auth_result)

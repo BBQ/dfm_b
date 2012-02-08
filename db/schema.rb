@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120206183048) do
+ActiveRecord::Schema.define(:version => 20120208095953) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -30,6 +30,30 @@ ActiveRecord::Schema.define(:version => 20120206183048) do
 
   add_index "admins", ["email"], :name => "index_admins_on_email", :unique => true
   add_index "admins", ["reset_password_token"], :name => "index_admins_on_reset_password_token", :unique => true
+
+  create_table "apn_devices", :force => true do |t|
+    t.string   "token",              :default => "", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "last_registered_at"
+  end
+
+  add_index "apn_devices", ["token"], :name => "index_apn_devices_on_token", :unique => true
+
+  create_table "apn_notifications", :force => true do |t|
+    t.integer  "device_id",                        :null => false
+    t.integer  "errors_nb",         :default => 0
+    t.string   "device_language"
+    t.string   "sound"
+    t.string   "alert"
+    t.integer  "badge"
+    t.text     "custom_properties"
+    t.datetime "sent_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "apn_notifications", ["device_id"], :name => "index_apn_notifications_on_device_id"
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
