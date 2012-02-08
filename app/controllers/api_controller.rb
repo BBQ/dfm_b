@@ -84,9 +84,9 @@ class ApiController < ApplicationController
     else
       $error = {:description => 'Parameters missing', :code => 8}
     end
+    
     return render :json => {
           :session => session ||= nil, 
-          :photo => User.find_by_id(session[:user_id]).user_photo,
           :error => $error
     }
   end
