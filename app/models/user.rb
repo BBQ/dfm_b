@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
     if photo.blank?
       ph = "http://graph.facebook.com/#{facebook_id}/picture?type=square" unless facebook_id.blank?
     else
-      ph = "http://dev.dish.fm#{photo.p120.url}"
+      ph = "http://test.dish.fm#{photo.p120.url}"
     end
     ph ||= ""
   end
