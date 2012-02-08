@@ -7,9 +7,16 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  
+  
   def send_notification
     
-    device = APN::Device.create(:token => "66f522e4 c5814527 0e845adf a79fb627 01bfc57c 669c3273 caf05927 2f787b16")   
+    if device = APN::Device.where(:token => "66f522e4 c5814527 0e845adf a79fb627 01bfc57c 669c3273 caf05927 2f787b16")
+      device = device.first
+    else
+      device = APN::Device.create(:token => "66f522e4 c5814527 0e845adf a79fb627 01bfc57c 669c3273 caf05927 2f787b16")
+    end
+    
     notification = APN::Notification.new   
     notification.device = device   
     notification.badge = 500   
