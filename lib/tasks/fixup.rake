@@ -30,7 +30,7 @@ namespace :fix do
   
   desc "Update Foursquare User Checkins for Dishes by setting max(Foursquare User Checkins) from network resataurant"
   task :dish_fsq => :environment do
-    Dish.all.each do |d|
+    Dish.where('fsq_checkins_count = 0').each do |d|
       p d.name
       c = d.network.restaurants.order('fsq_checkins_count DESC').limit(1)
       if r = c[0]
