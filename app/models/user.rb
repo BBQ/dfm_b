@@ -63,7 +63,7 @@ class User < ActiveRecord::Base
       client = Twitter::Client.new(:oauth_token => oauth_token, :oauth_token_secret => oauth_token_secret)
       if user = User.find_by_twitter_id(client.user.id)
         token = Session.get_token(user)
-      elsif result["email"] 
+      else
         user = create_user_from_twitter(client)
         token = Session.get_token(user)        
       end
