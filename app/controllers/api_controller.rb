@@ -202,13 +202,14 @@ class ApiController < ApplicationController
       
       if params[:dish_id] && params[:dish_id].to_i > 0 
 
-          if dish = Dish.select([:id, :rating, :fsq_checkins_count]).find_by_id(params[:dish_id].to_i)
+          if dish = Dish.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)
                       
             dish = dish.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
-            rating = dish.rating
-            fsq_checkins_count = dish.fsq_checkins_count if dish.fsq_checkins_count > 0
+            rating = dish.first.rating
+            fsq_checkins_count = dish.first.fsq_checkins_count if dish.first.fsq_checkins_count > 0
             
           end
+          dish = dish.first
       end
       
       if rating.nil?
@@ -261,7 +262,7 @@ class ApiController < ApplicationController
         foursquare_max = Dish.select("max(fsq_checkins_count) as max_fsq").first.max_fsq
         fsq_checkins_count = foursquare_max if fsq_checkins_count.nil? || fsq_checkins_count == 0
 
-        step_fsq = foursquare_max/100
+        step_fsq = foursquare_max/10
         (0..(foursquare_max-step_fsq)).step(step_fsq) do |n|
           
           n1 = foursquare_max - n
