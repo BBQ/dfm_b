@@ -578,11 +578,13 @@ class ApiController < ApplicationController
   end
   
   def get_reviews
-  
+    
     limit = params[:limit] ? params[:limit] : 25
     offset = params[:offset] ? params[:offset] : 0
     
     reviews = Review.limit("#{offset}, #{limit}").order('id DESC').includes(:dish).where('photo IS NOT NULL')
+    
+    reviews = reviews.following(params[:following_for_user_id].to_i) if params[:following_for_user_id].to_i > 0
     
     review_data = []
     reviews.each {|r| review_data.push(r.format_review_for_api(params[:user_id]))}    

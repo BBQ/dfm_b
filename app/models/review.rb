@@ -9,6 +9,10 @@ class Review < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader 
   
+  def self.following(user_id)
+    where("user_id IN (SELECT follow_user_id FROM followers WHERE user_id = '#{user_id}')")
+  end
+  
   def delete
       result = "Something wrong with review #{id} ..."
       data = Hash.new
