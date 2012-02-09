@@ -114,11 +114,13 @@ class ApiController < ApplicationController
         session = User.authenticate_by_twitter(params[:oauth_token], params[:oauth_token_secret])
       end
       
+      #Add push token
       if params[:push_token] && session
-        push_token = APN::Device.where(:token => params[:push_token]).first
-        if push_token.user_id == 0
-          push_token.user_id = session[:user_id]
-          push_token.save
+        if push_token = APN::Device.where(:token => params[:push_token]).first
+          if push_token.user_id == 0
+            push_token.user_id = session[:user_id]
+            push_token.save
+          end
         end
       end
       
