@@ -1,6 +1,6 @@
 class Notification < ActiveRecord::Base
   
-  def send_review_like_push(from_user_id, review)
+  def self.send_review_like_push(from_user_id, review)
     
     if device = APN::Device.where(:user_id => review.user.id).first  
       if user = User.select(:name).find_by_id(from_user_id)  
