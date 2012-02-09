@@ -1,6 +1,6 @@
 class AddUserToApnDevices < ActiveRecord::Migration
   def self.up
-    add_column :apn_devices, :user, :integer
+    add_column :apn_devices, :user_id, INT_UNSIGNED
   end
 
   def self.down
