@@ -1,5 +1,56 @@
 # encoding: utf-8
+
+# NY 
+# 1. 
+#   x = -74.26877975463867
+#   y = 40.600486274654804
+# 2.
+#   x = -74.25178527832031
+#   y = 40.600486274654804
+# 3.
+#   x = -74.26877975463867
+#   y = 40.487692978918865
+# 4.
+#   x = -74.25178527832031
+#   y = 40.487692978918865
+# 
+#   1-----2
+#   |  F  |
+#   |  S  |
+#   3-----4
+
+
 namespace :fsq do
+  
+  desc "Parse NY from FS" 
+  task :parse_ny => :environment do
+    
+    lng_x1 = -74.26877975463867
+    lng_x2 = -74.25178527832031
+    
+    lat_y1 = 40.600486274654804
+    lat_y2 = 40.487692978918865 
+    
+    n = 100
+    step_lng_x = abs(lng_x2 - lng_x1 / n)
+    step_lon_y = abs(lat_y1 - lat_y2 / n)
+    
+    client = Foursquare2::Client.new(:client_id => @client_id, :client_secret => @client_secret)
+    
+    (0..n).step(step_lng_x) do |k|
+      
+      lng = lng_x1 + step_lng_x * k
+      (0..n).step(step_lon_y) do |m|
+        
+        lat = lat_y1 - step_lon_y * m
+        p fsq_hash = client.search_venues(:ll => "#{lat},#{lng}")
+      
+      end
+      
+    end
+
+    
+  end
   
   desc "Recheck location for nil coordinates" 
   task :r_loc => :environment do
