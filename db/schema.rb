@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120208095953) do
+ActiveRecord::Schema.define(:version => 20120208165001) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(:version => 20120208095953) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "last_registered_at"
+    t.integer  "user"
   end
 
   add_index "apn_devices", ["token"], :name => "index_apn_devices_on_token", :unique => true

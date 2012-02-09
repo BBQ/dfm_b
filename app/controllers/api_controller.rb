@@ -7,14 +7,21 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
-  
+  def add_push_token
+    if params[:token]
+      APN::Device.create(:token => params[:token]) unless APN::Device.where(:token => params[:token]).first
+    else
+      $error = {:description => 'Params missing', :code => 8}
+    end
+    return render :json => {
+          :error => $error
+    }
+  end
   
   def send_notification
     
-    if device = APN::Device.where(:token => "66f522e4 c5814527 0e845adf a79fb627 01bfc57c 669c3273 caf05927 2f787b16")
-      device = device.first
-    else
-      device = APN::Device.create(:token => "66f522e4 c5814527 0e845adf a79fb627 01bfc57c 669c3273 caf05927 2f787b16")
+    unless device = APN::Device.where(:token => "c1aba4c4 1b9b2e95 a0d2ceee 5a16582e 311daabd 56e62ad9 80b68d29 53d98a85").first
+      device = APN::Device.create(:token => "c1aba4c4 1b9b2e95 a0d2ceee 5a16582e 311daabd 56e62ad9 80b68d29 53d98a85")
     end
     
     notification = APN::Notification.new   
