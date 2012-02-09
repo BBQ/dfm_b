@@ -116,8 +116,10 @@ class ApiController < ApplicationController
       
       if params[:push_token] && session
         push_token = APN::Device.where(:token => params[:push_token]).first
-        push_token.user_id = session[:user_id]
-        push_token.save
+        if push_token.user_id == 0
+          push_token.user_id = session[:user_id]
+          push_token.save
+        end
       end
       
     else
