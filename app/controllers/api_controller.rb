@@ -549,7 +549,7 @@ class ApiController < ApplicationController
       end
       
       if params[:type] == 'expert'   
-        r = Restaurant.where('restaurants.id IN(SELECT restaurant_id FROM reviews WHERE user_id = ?)', params[:id]).joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").limit(10)
+        r = Restaurant.where('restaurants.id IN(SELECT restaurant_id FROM reviews WHERE user_id = ?)', params[:id]).joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
         # d = DishType.joins("LEFT OUTER JOIN (SELECT name, dish_type_id FROM dishes WHERE id IN (SELECT dish_id FROM reviews WHERE user_id='#{params[:id]}')) r ON dish_types.id = r.dish_type_id")
         return render :json => {
               :restaurants => r,
@@ -562,9 +562,11 @@ class ApiController < ApplicationController
       
       if params[:type] == 'notifications'
         if Session.check_token(params[:id], params[:token])
+          
+          offset = (offset / 3).to_i
         
           data = []
-          Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).each do |l|
+          Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").each do |l|
             if user = User.find_by_id(l.user_id)
               data.push({
                 :date => l.updated_at.to_i,
@@ -580,7 +582,7 @@ class ApiController < ApplicationController
             end
           end
         
-          Comment.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).each do |c|
+          Comment.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").each do |c|
             if user = User.find_by_id(c.user_id)
               data.push({
                 :date => c.updated_at.to_i,
@@ -596,7 +598,7 @@ class ApiController < ApplicationController
             end
           end
         
-          Follower.select([:user_id, :updated_at]).where("follow_user_id = ?", params[:id]).each do |f|
+          Follower.select([:user_id, :updated_at]).where("follow_user_id = ?", params[:id]).limit("#{offset}, #{limit}").each do |f|
             if user = User.find_by_id(f.user_id)
               data.push({
                 :date => f.updated_at.to_i,
