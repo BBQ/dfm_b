@@ -561,6 +561,53 @@ class ApiController < ApplicationController
       end
       
       if params[:type] == 'notifications'
+        
+        data = []
+        Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).each do |l|
+          if user = User.find_by_id(l.user_id)
+            data.push({
+              :type => 'like',
+              :review_id => l.review_id,
+              :user => {
+                :name => user.name,
+                :id => user.id,
+                :photo => user.user_photo
+              },
+              :text => "#{user.name} liked your review on #{Review.find_by_id(l.review_id).dish.name}"
+            })
+          end
+        end
+        
+        Comment.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).each do |c|
+          if user = User.find_by_id(c.user_id)
+            data.push({
+              :type => 'comment',
+              :review_id => c.review_id,
+              :user => {
+                :name => user.name,
+                :id => user.id,
+                :photo => user.user_photo
+              },
+              :text => "#{user.name} comment on your review about #{Review.find_by_id(c.review_id).dish.name}"
+            })
+          end
+        end
+        
+        Follower.select([:user_id, :updated_at]).where("follow_user_id = ?", params[:id]).each do |f|
+          if user = User.find_by_id(f.user_id)
+            data.push({
+              :type => 'followed',
+              :review_id => '',
+              :user => {
+                :name => user.name,
+                :id => user.id,
+                :photo => user.user_photo
+              },
+              :text => "#{user.name} start following you"
+            })
+          end
+        end
+        
         return render :json => {
               :following_count => following_count,
               :followers_count => followers_count,

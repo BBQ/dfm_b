@@ -14,10 +14,10 @@
 #   x = -74.25178527832031
 #   y = 40.487692978918865
 # 
-#   1-----2
+#   1---2ne
 #   |  F  |
 #   |  S  |
-#   3-----4
+#   3sw---4
 
 
 namespace :fsq do
@@ -43,7 +43,7 @@ namespace :fsq do
       (0..n).step(step_lon_y) do |m|
         
         lat = lat_y1 - step_lon_y * m
-        p fsq_hash = client.search_venues(:ll => "#{lat},#{lng}")
+        p fsq_hash = client.search_venues(:ll => "#{lat},#{lng}", :intent => "browse")
       
       end
       
