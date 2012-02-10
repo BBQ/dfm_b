@@ -560,7 +560,7 @@ class ApiController < ApplicationController
         }
       end
       
-      if params[:type] == 'notifications'
+      if params[:type] == 'notifications' && Session.check_token(params[:id], params[:token])
         
         data = []
         Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).each do |l|
