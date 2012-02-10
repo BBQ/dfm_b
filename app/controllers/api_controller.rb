@@ -566,7 +566,7 @@ class ApiController < ApplicationController
         Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).each do |l|
           if user = User.find_by_id(l.user_id)
             data.push({
-              :date => f.updated_at.to_i,
+              :date => l.updated_at.to_i,
               :type => 'like',
               :review_id => l.review_id,
               :user => {
@@ -582,7 +582,7 @@ class ApiController < ApplicationController
         Comment.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).each do |c|
           if user = User.find_by_id(c.user_id)
             data.push({
-              :date => f.updated_at.to_i,
+              :date => c.updated_at.to_i,
               :type => 'comment',
               :review_id => c.review_id,
               :user => {
