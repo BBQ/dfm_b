@@ -609,8 +609,7 @@ class ApiController < ApplicationController
         end
         
         return render :json => {
-              :following_count => following_count,
-              :followers_count => followers_count,
+              :notifications => data
               :error => $error
         }
         end   

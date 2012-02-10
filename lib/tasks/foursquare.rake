@@ -4,10 +4,10 @@
 # 1. 
 #   x = -74.26877975463867
 #   y = 40.600486274654804
-# 2.
+# 2.ne
 #   x = -74.25178527832031
 #   y = 40.600486274654804
-# 3.
+# 3.sw
 #   x = -74.26877975463867
 #   y = 40.487692978918865
 # 4.
@@ -25,30 +25,39 @@ namespace :fsq do
   desc "Parse NY from FS" 
   task :parse_ny => :environment do
     
+    require 'digest/md5'
+    checksum = Digest::MD5.new.hexdigest
+    
     lng_x1 = -74.26877975463867
     lng_x2 = -74.25178527832031
     
     lat_y1 = 40.600486274654804
     lat_y2 = 40.487692978918865 
     
-    n = 100
-    step_lng_x = abs(lng_x2 - lng_x1 / n)
-    step_lon_y = abs(lat_y1 - lat_y2 / n)
+    n = 10
+    step_lng_x = (((lng_x2).abs - (lng_x1).abs)).abs / n
+    step_lon_y = (((lat_y1).abs - (lat_y2).abs)).abs / n
     
     client = Foursquare2::Client.new(:client_id => @client_id, :client_secret => @client_secret)
     
     (0..n).step(step_lng_x) do |k|
+      sw_x = lng_x1 + step_lng_x * k
+      ne_x = lng_x1 + step_lng_x * (k + 1)
       
-      lng = lng_x1 + step_lng_x * k
-      (0..n).step(step_lon_y) do |m|
+      (0..n).step(step_lon_y) do |m| 
+    
+        ne_y = lat_y1 - step_lon_y * m
+        sw_y = lat_y1 - step_lon_y * (m + 1)
+        p "#{ne_y}, #{ne_x}"       
+        fsq_hash = client.search_venues(:ne => "#{ne_y},#{ne_x}", :sw =>"#{sw_y},#{sw_x}", :intent => "browse")
+        if (checksum != Digest::MD5.hexdigest(fsq_hash.to_s))
+          p fsq_hash
+        end
         
-        lat = lat_y1 - step_lon_y * m
-        p fsq_hash = client.search_venues(:ll => "#{lat},#{lng}", :intent => "browse")
-      
+        checksum = Digest::MD5.hexdigest(fsq_hash.to_s)
+        
       end
-      
     end
-
     
   end
   
