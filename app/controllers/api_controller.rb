@@ -609,7 +609,7 @@ class ApiController < ApplicationController
         end
         
         return render :json => {
-              :notifications => data
+              :notifications => data,
               :error => $error
         }
         end   
