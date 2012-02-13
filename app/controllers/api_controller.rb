@@ -567,7 +567,7 @@ class ApiController < ApplicationController
           limit = (limit.to_i / 3).to_i
         
           data = []
-          Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").each do |l|
+          Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").order("updated_at DESC").each do |l|
             if user = User.find_by_id(l.user_id)
               data.push({
                 :date => l.updated_at.to_i,
@@ -583,7 +583,7 @@ class ApiController < ApplicationController
             end
           end
         
-          Comment.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").each do |c|
+          Comment.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").order("updated_at DESC").each do |c|
             if user = User.find_by_id(c.user_id)
               data.push({
                 :date => c.updated_at.to_i,
@@ -599,7 +599,7 @@ class ApiController < ApplicationController
             end
           end
         
-          Follower.select([:user_id, :updated_at]).where("follow_user_id = ?", params[:id]).limit("#{offset}, #{limit}").each do |f|
+          Follower.select([:user_id, :updated_at]).where("follow_user_id = ?", params[:id]).limit("#{offset}, #{limit}").order("updated_at DESC").each do |f|
             if user = User.find_by_id(f.user_id)
               data.push({
                 :date => f.updated_at.to_i,
