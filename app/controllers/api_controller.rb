@@ -9,7 +9,7 @@ class ApiController < ApplicationController
   
   def find_friends
     if params[:user_id] && (params[:access_token] || (params[:oauth_token] && params[:oauth_token_secret]))
-      data = Array
+      data = []
       
       if (params[:access_token])
         rest = Koala::Facebook::GraphAPI.new(params[:access_token])
