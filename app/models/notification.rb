@@ -12,7 +12,7 @@ class Notification < ActiveRecord::Base
         notification.device = device   
         notification.badge = 1   
         notification.sound = true   
-        notification.alert =    
+        notification.alert = alert    
         notification.save
         system "rake apn:notifications:deliver &"
       end
