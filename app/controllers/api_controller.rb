@@ -7,6 +7,46 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def find_friends
+    if params[:user_id] && (params[:access_token] || (params[:oauth_token] && params[:oauth_token_secret]))
+      data = Hash
+      
+      if (params[:access_token])
+        rest = Koala::Facebook::GraphAPI.new(params[:access_token])
+        user = rest.get_object("me")
+
+        rest.get_connections("me", "friends").each do |f|
+          if user = User.select([:id, :name, :photo]).find_by_facebook_id(f['id'])
+            data.push({
+              :id => user.id,
+              :name => user.name,
+              :photo => user.user_photo
+            })
+          end
+        end
+
+      elsif (params[:oauth_token] && params[:oauth_token_secret])
+        client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])
+
+        Twitter.follower_ids(client.user.id).ids.each do |id|
+          if user = User.select([:id, :name, :photo]).find_by_twitter_id(id)
+            data.push({
+              :id => user.id,
+              :name => user.name,
+              :photo => user.user_photo
+            })
+          end
+        end         
+      end
+    else
+      $error = {:description => 'Params missing', :code => 8}
+    end
+    return render :json => {
+          :users => data,
+          :error => $error
+    }
+  end
+  
   def add_push_token
     if params[:token]
       APN::Device.create(:token => params[:token]) unless APN::Device.where(:token => params[:token]).first
