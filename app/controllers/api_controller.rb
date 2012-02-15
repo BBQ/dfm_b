@@ -16,7 +16,7 @@ class ApiController < ApplicationController
         user = rest.get_object("me")
 
         rest.get_connections("me", "friends").each do |f|
-          if user = User.select([:id, :name, :photo]).find_by_facebook_id(f['id'])
+          if user = User.select([:id, :name, :photo, :facebook_id]).find_by_facebook_id(f['id'])
             data.push({
               :id => user.id,
               :name => user.name,
