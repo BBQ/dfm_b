@@ -4,15 +4,13 @@ class Notification < ActiveRecord::Base
     
     if device = APN::Device.where(:user_id => review.user.id).first  
       if user = User.select(:name).find_by_id(from_user_id)  
-        
-        alert = "#{user.name} like your review #{review.dish.name}"
-        alert = alert.unpack("a"*256).join if alert.unpack("C*").size > 256
-        
+        alert = "#{user.name.split.first} #{user.name.split.second[0]}. like your review on dish #{review.dish.name}"
+        if self.alert = "#{self.alert.slice 0 .. 80}..." if self.alert.length > 80
         notification = APN::Notification.new   
         notification.device = device   
         notification.badge = 1   
         notification.sound = true   
-        notification.alert = alert  
+        notification.alert =    
         notification.save
         system "rake apn:notifications:deliver &"
       end
