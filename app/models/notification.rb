@@ -6,7 +6,7 @@ class Notification < ActiveRecord::Base
       if user = User.select(:name).find_by_id(from_user_id)  
         
         alert = "#{user.name.split.first} #{user.name.split.second[0]}. like your review on dish #{review.dish.name}"
-        alert = "#{alert.slice 0 .. 80}..." if alert.length > 80
+        alert = "#{alert.slice 0 .. 70}..." if alert.length > 70
         
         notification = APN::Notification.new   
         notification.device = device   
