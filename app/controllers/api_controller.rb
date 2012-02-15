@@ -617,6 +617,7 @@ class ApiController < ApplicationController
         else
           $error = {:description => 'Parameters missing', :code => 8}
         end
+        data.sort_by { |record| -record[:updated_at].last }
         return render :json => {
               :notifications => data,
               :error => $error
