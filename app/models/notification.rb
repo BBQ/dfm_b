@@ -5,8 +5,8 @@ class Notification < ActiveRecord::Base
     if device = APN::Device.where(:user_id => review.user.id).first  
       if user = User.select(:name).find_by_id(from_user_id)  
         
-        alert = "#{user.name} like your review on dish #{review.dish.name}"
-        alert = "#{alert.slice 0 .. 250}..." if alert.length > 250
+        alert = "#{user.name} like your review #{review.dish.name}"
+        alert = alert.unpack("a"*256).join if alert.unpack("C*").size > 256
         
         notification = APN::Notification.new   
         notification.device = device   

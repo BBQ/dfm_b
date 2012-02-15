@@ -111,7 +111,7 @@ class ApiController < ApplicationController
       if params[:provider] == 'facebook' && params[:access_token]
         session = User.authenticate_by_facebook(params[:access_token]) 
       elsif params[:provider] == 'twitter' && params[:oauth_token] && params[:oauth_token_secret]
-        session = User.authenticate_by_twitter(params[:oauth_token], params[:oauth_token_secret])
+        session = User.authenticate_by_twitter(params[:oauth_token], params[:oauth_token_secret], params[:email])
       end
       
       #Add push token
