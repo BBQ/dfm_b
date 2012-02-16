@@ -83,7 +83,7 @@ class ApiController < ApplicationController
             data.push({
               :id => 0,
               :name => client.user.name,
-              :photo => client.user.avatar
+              :photo => client.user.profile_image_url
             })
           end
         end         
