@@ -12,6 +12,38 @@ namespace :fix do
     end
   end
   
+  desc "Update Ratings for Networks"
+  task :netw_rating => :environment do
+      Review.select(:network_id).group(:network_id).each do |rw|
+        if data = Network.find_by_id(rw.network_id)
+          p "#{data.id} #{data.name}"
+          summ = 0
+          data.reviews.each {|rr| summ += rr.rating}
+
+          data.votes = data.reviews.count
+          data.rating = summ/data.votes
+
+          data.save
+        end
+      end
+  end
+  
+  desc "Update Ratings for Restaurants"
+  task :rest_rating => :environment do
+      Review.select(:restaurant_id).group(:restaurant_id).each do |rw|
+        if rest = Restaurant.find_by_id(rw.restaurant_id)
+          p "#{rest.id} #{rest.name}"
+          summ = 0
+          rest.reviews.each {|rr| summ += rr.rating}
+
+          rest.votes = rest.reviews.count
+          rest.rating = summ/rest.votes
+
+          rest.save
+        end
+      end
+  end
+  
   desc "Update Ratings for Dishes"
   task :dish_rating => :environment do
       Review.select(:dish_id).group(:dish_id).each do |rw|
