@@ -27,8 +27,13 @@ class ApiController < ApplicationController
           user.save          
         end
       end
-    
+    else
+      $error = {:description => 'Params missing', :code => 8}
     end
+    
+    return render :json => {
+          :error => $error
+    }
   end
   
   def find_friends
@@ -41,27 +46,36 @@ class ApiController < ApplicationController
 
         rest.get_connections("me", "friends").each do |f|
           if user = User.select([:id, :name, :photo, :facebook_id]).find_by_facebook_id(f['id'])
-            data.push({
-              :id => user.id,
-              :name => user.name,
-              :photo => user.user_photo
-            })
+            user_id = user.id
+          else
+            user_id = 0
           end
+          data.push({
+            :id => user_id,
+            :name => user.name,
+            :photo => user.user_photo
+          })
+          
         end
-
-      elsif (params[:oauth_token] && params[:oauth_token_secret])
+      end
+      
+      if (params[:oauth_token] && params[:oauth_token_secret])
         client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])
 
         Twitter.follower_ids(client.user.id).ids.each do |id|
           if user = User.select([:id, :name, :photo]).find_by_twitter_id(id)
-            data.push({
-              :id => user.id,
-              :name => user.name,
-              :photo => user.user_photo
-            })
+            user_id = user.id
+          else
+            user_id = 0
           end
+          data.push({
+            :id => user_id,
+            :name => user.name,
+            :photo => user.user_photo
+          })
         end         
       end
+      
     else
       $error = {:description => 'Params missing', :code => 8}
     end
@@ -80,26 +94,6 @@ class ApiController < ApplicationController
     return render :json => {
           :error => $error
     }
-  end
-  
-  def send_notification
-    
-    unless device = APN::Device.where(:token => "c1aba4c4 1b9b2e95 a0d2ceee 5a16582e 311daabd 56e62ad9 80b68d29 53d98a85").first
-      device = APN::Device.create(:token => "c1aba4c4 1b9b2e95 a0d2ceee 5a16582e 311daabd 56e62ad9 80b68d29 53d98a85")
-    end
-    
-    notification = APN::Notification.new   
-    notification.device = device   
-    notification.badge = 500   
-    notification.sound = true   
-    notification.alert = "My first push"   
-    notification.save
-    
-    return render :json => {
-          :device => device ||= [],
-          :error => $error
-    }
-    
   end
   
   def get_user_following
