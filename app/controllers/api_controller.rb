@@ -11,21 +11,28 @@ class ApiController < ApplicationController
     if Session.check_token(params[:user_id], params[:token]) && (params[:access_token] || (params[:oauth_token] && params[:oauth_token_secret]))
       user = User.find_by_id(params[:user_id])
     
-      if params[:access_token]
+      if params[:access_token] && user.facebook_id.blank?
+      
         if session = User.authenticate_by_facebook(params[:access_token])
-          
           rest = Koala::Facebook::GraphAndRestAPI.new(params[:access_token])
           result = rest.get_object("me")
           
           user.facebook_id = result["id"]
           user.save          
           
+          old_user = User.find_by_id(result["id"])
+          Review.where(:user_id)
+        
+          
         end  
-      elsif params[:oauth_token] && params[:oauth_token_secret]
-        if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])
+      
+      elsif params[:oauth_token] && params[:oauth_token_secret] && user.twitter_id.blank?
+     
+        if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])     
           user.twitter_id = client.user.id
           user.save          
         end
+        
       end
     else
       $error = {:description => 'Params missing', :code => 8}
@@ -46,15 +53,18 @@ class ApiController < ApplicationController
 
         rest.get_connections("me", "friends").each do |f|
           if user = User.select([:id, :name, :photo, :facebook_id]).find_by_facebook_id(f['id'])
-            user_id = user.id
+            data.push({
+              :id => user.id,
+              :name => user.name,
+              :photo => user.user_photo
+            })
           else
-            user_id = 0
+            data.push({
+              :id => 0,
+              :name => f['name'],
+              :photo => "http://graph.facebook.com/#{f['id']}/picture?type=square"
+            })
           end
-          data.push({
-            :id => user_id,
-            :name => user.name,
-            :photo => user.user_photo
-          })
           
         end
       end
@@ -64,15 +74,18 @@ class ApiController < ApplicationController
 
         Twitter.follower_ids(client.user.id).ids.each do |id|
           if user = User.select([:id, :name, :photo]).find_by_twitter_id(id)
-            user_id = user.id
+            data.push({
+              :id => user.id,
+              :name => user.name,
+              :photo => user.user_photo
+            })
           else
-            user_id = 0
+            data.push({
+              :id => 0,
+              :name => client.user.name,
+              :photo => client.user.photo
+            })
           end
-          data.push({
-            :id => user_id,
-            :name => user.name,
-            :photo => user.user_photo
-          })
         end         
       end
       
