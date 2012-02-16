@@ -485,11 +485,14 @@ class ApiController < ApplicationController
         restaurants = Restaurant
       end
       restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
-      #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').by_distance(lat, lon).to_sql}) r1
+      #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC')}) r1
       ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
     end
     
-    restaurants = restaurants.where("restaurants.`name` LIKE ?", "%#{params[:search].gsub(/[']/) { |x| '\\' + x }}%") unless params[:search].blank?
+    unless params[:search].blank?
+      search = params[:search].gsub(/[']/) { |x| '\\' + x }
+      restaurants = restaurants.where("restaurants.`name` LIKE ? OR restaurants.`name_eng` LIKE ?", "%#{search}%", "%#{search}%")
+    end
     restaurants = restaurants.search_by_word(params[:keyword]) unless params[:keyword].blank?
     restaurants = restaurants.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
     restaurants = restaurants.where(all_filters) unless all_filters.blank?
@@ -497,7 +500,7 @@ class ApiController < ApplicationController
     
     if restaurants
       count = params[:sort] != 'distance' ? restaurants.count.count : restaurants.count
-      restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.lat, restaurants.lon, restaurants.network_id, restaurants.rating, restaurants.votes, restaurants.fsq_id').limit("#{offset}, #{limit}") 
+      restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.network_id, restaurants.rating, restaurants.votes, restaurants.fsq_id').limit("#{offset}, #{limit}") 
     end
     
     num_images = 20
@@ -507,35 +510,16 @@ class ApiController < ApplicationController
       networks.each do |n|
         dont_add = 1 && break if r.network_id == n[:network_id]
       end
-      
       if dont_add == 0
-        
         dishes = []
-        if nd = r.network.dishes.where('photo IS NOT NULL')
-          if !params[:search].blank?
-            nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").search(params[:search]).take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
-          elsif params[:tag_id].to_i > 0
-            nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").search_by_tag_id(params[:tag_id]).take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?}
-          else
-            nd.select([:id, :photo]).order("dishes.rating DESC, dishes.votes DESC, dishes.photo DESC").take(num_images).each {|d| dishes.push({:id => d[:id], :photo => d.image_sd}) unless d.image_sd.blank?} 
-          end          
-        end
-        
-        if dishes.count < 20
-          if nd = r.network.reviews.select([:id, :dish_id, :photo]).order("count_likes DESC").where('photo IS NOT NULL').group(:dish_id).take(num_images - dishes.count)
-            nd.each do |rw|
-               if params[:tag_id].to_i > 0
-                 rw.dish.dish_tags.each do |t|
-                   if t.tag_id == params[:tag_id].to_i
-                     dishes.push({:id => rw[:dish_id], :photo => rw.photo.iphone.url})
-                     break
-                   end
-                 end
-               else
-                 dishes.push({:id => rw[:dish_id], :photo => rw.photo.iphone.url})
-               end
-            end
-          end
+        r.network.dishes.select('DISTINCT id, name, photo, rating, votes, dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").where("photo IS NOT NULL OR rating > 0").limit(num_images).each do |dish|
+            dishes.push({
+              :id => dish.id,
+              :name => dish.name,
+              :photo => dish.image_sd,
+              :rating => dish.rating,
+              :votes => dish.votes
+            })
         end
             
         networks.push({:network_id => r.network_id, :dishes => dishes}) 

@@ -81,6 +81,7 @@ class Restaurant < ActiveRecord::Base
   end
     
   def as_json(options={})
+    self[:address] = "#{address}, #{city}" unless city.nil?
     self[:rating] = self.network.rating
     self[:votes] = self.network.votes
     self[:fsq_id] = self.fsq_id || ''
