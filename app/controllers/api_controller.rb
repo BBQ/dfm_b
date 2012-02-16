@@ -80,11 +80,11 @@ class ApiController < ApplicationController
                 :photo => user.user_photo
               })
             else
-            
+              user = Twitter.user(id)
               data.push({
                 :id => 0,
-                :name => 1,
-                :photo => 2
+                :name => user.name,
+                :photo => user.profile_image_url
               })
             end
           end   
