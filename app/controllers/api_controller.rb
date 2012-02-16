@@ -83,8 +83,8 @@ class ApiController < ApplicationController
             
               data.push({
                 :id => 0,
-                :name => Twitter.user(id).name,
-                :photo => Twitter.user(id).profile_image_url
+                :name => 1,
+                :photo => 2
               })
             end
           end   
