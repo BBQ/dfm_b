@@ -13,7 +13,12 @@ namespace :fix do
   end
   
   desc "Update Ratings for Networks"
-  task :netw_rating => :environment do
+  task :n_rating => :environment do
+    Network.where('rating > 0 OR votes > 0').each do |n|
+      n.rating = 0
+      n.votes = 0
+      n.save
+    end
       Review.select(:network_id).group(:network_id).each do |rw|
         if data = Network.find_by_id(rw.network_id)
           p "#{data.id} #{data.name}"
@@ -29,7 +34,12 @@ namespace :fix do
   end
   
   desc "Update Ratings for Restaurants"
-  task :rest_rating => :environment do
+  task :r_rating => :environment do
+      Restaurant.where('rating > 0 OR votes > 0').each do |r|
+        r.rating = 0
+        r.votes = 0
+        r.save
+      end
       Review.select(:restaurant_id).group(:restaurant_id).each do |rw|
         if rest = Restaurant.find_by_id(rw.restaurant_id)
           p "#{rest.id} #{rest.name}"
@@ -45,7 +55,12 @@ namespace :fix do
   end
   
   desc "Update Ratings for Dishes"
-  task :dish_rating => :environment do
+  task :d_rating => :environment do
+    Dish.where('rating > 0 OR votes > 0').each do |d|
+      d.rating = 0
+      d.votes = 0
+      d.save
+    end
       Review.select(:dish_id).group(:dish_id).each do |rw|
         if dish = Dish.find_by_id(rw.dish_id)
           p "#{dish.id} #{dish.name}"
