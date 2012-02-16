@@ -58,7 +58,7 @@ class User < ActiveRecord::Base
     id
   end
   
-  def self.authenticate_by_twitter(oauth_token, oauth_token_secret, email)
+  def self.authenticate_by_twitter(oauth_token, oauth_token_secret, email = nil)
     begin
       client = Twitter::Client.new(:oauth_token => oauth_token, :oauth_token_secret => oauth_token_secret)
       if user = User.find_by_twitter_id(client.user.id)
@@ -81,7 +81,7 @@ class User < ActiveRecord::Base
       :remote_photo_url => client.profile_image
     })
     
-    User.get_user_tw_friends(client.user.id)
+    # User.get_user_tw_friends(client.user.id)
     user
   end
   
@@ -117,7 +117,7 @@ class User < ActiveRecord::Base
       :provider => 'facebook',
       :uid => auth_result["id"], 
     })
-    User.new.get_user_fb_friends(access_token)
+    # User.new.get_user_fb_friends(access_token)
     user
   end
     

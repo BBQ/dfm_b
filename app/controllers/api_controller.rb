@@ -7,6 +7,30 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def add_social_network_account
+    if Session.check_token(params[:user_id], params[:token]) && (params[:access_token] || (params[:oauth_token] && params[:oauth_token_secret]))
+      user = User.find_by_id(params[:user_id])
+    
+      if params[:access_token]
+        if session = User.authenticate_by_facebook(params[:access_token])
+          
+          rest = Koala::Facebook::GraphAndRestAPI.new(params[:access_token])
+          result = rest.get_object("me")
+          
+          user.facebook_id = result["id"]
+          user.save          
+          
+        end  
+      elsif params[:oauth_token] && params[:oauth_token_secret]
+        if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])
+          user.twitter_id = client.user.id
+          user.save          
+        end
+      end
+    
+    end
+  end
+  
   def find_friends
     if params[:user_id] && (params[:access_token] || (params[:oauth_token] && params[:oauth_token_secret]))
       data = []
