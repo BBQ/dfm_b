@@ -239,7 +239,7 @@ class ApiController < ApplicationController
     locations = LocationTip.select([:id, :name])
 
     return render :json => {
-          :types => DishType.format_for_api(timestamp)
+          :types => DishType.format_for_api(timestamp),
           :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords.all,
           :networks => timestamp ? networks.where('updated_at >= ?', timestamp) : networks.all,
           :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
