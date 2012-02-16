@@ -14,7 +14,7 @@ class DishType < ActiveRecord::Base
     if dtss.count > 0
       
       dish_types = [:type => {
-        :photo => DishType.find_by_id(16).photo.p120.url,
+        :photo => DishType.find_by_id(16).photo.url,
         :title => 'Starter',
         :subtypes => [
           {
@@ -48,7 +48,7 @@ class DishType < ActiveRecord::Base
       
         dish_types.push(
           :type => {
-            :photo => dt.photo.p120.url,
+            :photo => dt.photo.url,
             :title => dt.name_eng,
             :subtypes => dish_st
           }
@@ -56,7 +56,7 @@ class DishType < ActiveRecord::Base
       end
     
       dish_types.push(:type => {
-        :photo => DishType.find_by_id(25).photo.p120.url,
+        :photo => DishType.find_by_id(25).photo.url,
         :title => 'Other',
         :subtypes => [
           {
