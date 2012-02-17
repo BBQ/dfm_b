@@ -40,7 +40,8 @@ class ApiController < ApplicationController
             Follower.where(:user_id => old_user.id).each do |d|
               d.user_id = user.id
               d.save
-            end        
+            end
+            old_user.destroy    
           end
           
         end  
@@ -72,6 +73,7 @@ class ApiController < ApplicationController
               d.user_id = user.id
               d.save
             end 
+            old_user.destroy
           end
           
         end
