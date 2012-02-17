@@ -20,28 +20,28 @@ class ApiController < ApplicationController
           user.facebook_id = result["id"]
           user.save          
           
-          old_user = User.find_by_id(result["id"])
+          if old_user = User.find_by_facebook_id(result["id"])
           
-          Review.where(:user_id => old_user.id).each do |d|
-            d.user_id = user.id
-            d.save
-          end
+            Review.where(:user_id => old_user.id).each do |d|
+              d.user_id = user.id
+              d.save
+            end
           
-          Like.where(:user_id => old_user.id).each do |d|
-            d.user_id = user.id
-            d.save
-          end
+            Like.where(:user_id => old_user.id).each do |d|
+              d.user_id = user.id
+              d.save
+            end
           
-          Comment.where(:user_id => old_user.id).each do |d|
-            d.user_id = user.id
-            d.save
-          end
+            Comment.where(:user_id => old_user.id).each do |d|
+              d.user_id = user.id
+              d.save
+            end
           
-          Follower.where(:user_id => old_user.id).each do |d|
-            d.user_id = user.id
-            d.save
+            Follower.where(:user_id => old_user.id).each do |d|
+              d.user_id = user.id
+              d.save
+            end        
           end
-        
           
         end  
       
@@ -49,7 +49,31 @@ class ApiController < ApplicationController
      
         if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])     
           user.twitter_id = client.user.id
-          user.save          
+          user.save         
+          
+          if old_user = User.find_by_facebook_id(client.user.id)
+          
+            Review.where(:user_id => old_user.id).each do |d|
+              d.user_id = user.id
+              d.save
+            end
+          
+            Like.where(:user_id => old_user.id).each do |d|
+              d.user_id = user.id
+              d.save
+            end
+          
+            Comment.where(:user_id => old_user.id).each do |d|
+              d.user_id = user.id
+              d.save
+            end
+          
+            Follower.where(:user_id => old_user.id).each do |d|
+              d.user_id = user.id
+              d.save
+            end 
+          end
+          
         end
         
       end
