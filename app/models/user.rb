@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
   # validates_confirmation_of :password
   # validates_presence_of :password, :on => :create
   # validates_presence_of :email
-  validates_uniqueness_of :email
+  validates_uniqueness_of :email, :allow_nil, :allow_blank
   
   has_many :reviews
   has_many :comments
@@ -76,7 +76,7 @@ class User < ActiveRecord::Base
   def self.create_user_from_twitter(client, email)
     user = User.create({
       :name => client.user.name,
-      :email => email ,  
+      :email => email,  
       :twitter_id => client.user.id,
       :remote_photo_url => client.profile_image
     })
