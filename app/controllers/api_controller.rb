@@ -133,7 +133,7 @@ class ApiController < ApplicationController
         if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])
 
           client.follower_ids.ids.each do |id|
-            if user = User.select([:id, :name, :photo]).find_by_twitter_id(id)
+            if user = User.select([:id, :name, :photo, :facebook_id]).find_by_twitter_id(id)
               data.push({
                 :id => user.id,
                 :name => user.name,
@@ -143,7 +143,7 @@ class ApiController < ApplicationController
           end  
 
           client.friend_ids.ids.each do |id|
-            if user = User.select([:id, :name, :photo]).find_by_twitter_id(id)
+            if user = User.select([:id, :name, :photo, :facebook_id]).find_by_twitter_id(id)
               data.push({
                 :id => user.id,
                 :name => user.name,
