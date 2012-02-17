@@ -131,8 +131,8 @@ class ApiController < ApplicationController
       
       if (params[:oauth_token] && params[:oauth_token_secret])
         if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])
-          ids = Twitter.follower_ids(client.user.id).ids
-          ids.each do |id|
+
+          client.follower_ids.ids.each do |id|
             if user = User.select([:id, :name, :photo]).find_by_twitter_id(id)
               data.push({
                 :id => user.id,
@@ -140,7 +140,18 @@ class ApiController < ApplicationController
                 :photo => user.user_photo
               })
             end
-          end   
+          end  
+
+          client.friend_ids.ids.each do |id|
+            if user = User.select([:id, :name, :photo]).find_by_twitter_id(id)
+              data.push({
+                :id => user.id,
+                :name => user.name,
+                :photo => user.user_photo
+              })
+            end
+          end
+           
         end      
       end
       
