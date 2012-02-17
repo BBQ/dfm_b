@@ -686,11 +686,9 @@ class ApiController < ApplicationController
       if params[:type] == 'notifications'
         if Session.check_token(params[:id], params[:token])
           
-          offset = 30
           limit = 30
-        
           data = []
-          Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").order("updated_at DESC").each do |d|
+          Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
                 :date => d.updated_at.to_i,
@@ -706,7 +704,7 @@ class ApiController < ApplicationController
             end
           end
         
-          Comment.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").order("updated_at DESC").each do |d|
+          Comment.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
                 :date => d.updated_at.to_i,
@@ -722,7 +720,7 @@ class ApiController < ApplicationController
             end
           end
         
-          Follower.select([:user_id, :updated_at]).where("follow_user_id = ?", params[:id]).limit("#{offset}, #{limit}").order("updated_at DESC").each do |f|
+          Follower.select([:user_id, :updated_at]).where("follow_user_id = ?", params[:id]).limit("#{limit}").order("updated_at DESC").each do |f|
             if user = User.find_by_id(f.user_id)
               data.push({
                 :date => f.updated_at.to_i,
@@ -746,6 +744,7 @@ class ApiController < ApplicationController
               :notifications => data,
               :error => $error
         }
+        
         end   
     else
       $error = {:description => 'Parameters missing', :code => 8}
