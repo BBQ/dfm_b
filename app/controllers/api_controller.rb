@@ -13,13 +13,7 @@ class ApiController < ApplicationController
     
       if params[:access_token] && user.facebook_id.blank?
       
-        if session = User.authenticate_by_facebook(params[:access_token])
-          rest = Koala::Facebook::GraphAndRestAPI.new(params[:access_token])
-          result = rest.get_object("me")
-          
-          user.facebook_id = result["id"]
-          user.save          
-          
+        if session = User.authenticate_by_facebook(params[:access_token])          
           if old_user = User.find_by_facebook_id(result["id"])
           
             Review.where(:user_id => old_user.id).each do |d|
@@ -41,16 +35,21 @@ class ApiController < ApplicationController
               d.user_id = user.id
               d.save
             end
-            # old_user.destroy    
+            
+            rest = Koala::Facebook::GraphAndRestAPI.new(params[:access_token])
+            result = rest.get_object("me")
+
+            user.facebook_id = result["id"]
+            user.save
+            
+            old_user.destroy    
           end
           
         end  
       
       elsif params[:oauth_token] && params[:oauth_token_secret] && user.twitter_id.blank?
      
-        if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])     
-          user.twitter_id = client.user.id
-          user.save         
+        if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])           
           
           if old_user = User.find_by_twitter_id(client.user.id)
           
@@ -72,8 +71,12 @@ class ApiController < ApplicationController
             Follower.where(:user_id => old_user.id).each do |d|
               d.user_id = user.id
               d.save
-            end 
-            # old_user.destroy
+            end
+                        
+            user.twitter_id = client.user.id
+            user.save
+            
+            old_user.destroy
           end
           
         end
