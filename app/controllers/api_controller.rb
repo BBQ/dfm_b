@@ -690,34 +690,34 @@ class ApiController < ApplicationController
           limit = 30
         
           data = []
-          Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").order("updated_at DESC").each do |l|
-            if user = User.find_by_id(l.user_id)
+          Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").order("updated_at DESC").each do |d|
+            if user = User.find_by_id(d.user_id)
               data.push({
-                :date => l.updated_at.to_i,
+                :date => d.updated_at.to_i,
                 :type => 'like',
-                :review_id => l.review_id,
+                :review_id => d.review_id,
                 :user => {
                   :name => user.name,
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "#{user.name} liked your review on #{Review.find_by_id(l.review_id).dish.name}"
+                :text => "#{user.name} liked your review on #{Review.find_by_id(d.review_id).dish.name}"
               })
             end
           end
         
-          Comment.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").order("updated_at DESC").each do |c|
-            if user = User.find_by_id(c.user_id)
+          Comment.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").order("updated_at DESC").each do |d|
+            if user = User.find_by_id(d.user_id)
               data.push({
-                :date => c.updated_at.to_i,
+                :date => d.updated_at.to_i,
                 :type => 'comment',
-                :review_id => c.review_id,
+                :review_id => d.review_id,
                 :user => {
                   :name => user.name,
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "#{user.name} comment on your review about #{Review.find_by_id(c.review_id).dish.name}"
+                :text => "#{user.name} comment on your review about #{Review.find_by_id(d.review_id).dish.name}"
               })
             end
           end
