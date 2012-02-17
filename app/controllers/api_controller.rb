@@ -52,7 +52,7 @@ class ApiController < ApplicationController
           user.twitter_id = client.user.id
           user.save         
           
-          if old_user = User.find_by_facebook_id(client.user.id)
+          if old_user = User.find_by_twitter_id(client.user.id)
           
             Review.where(:user_id => old_user.id).each do |d|
               d.user_id = user.id
