@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
   # validates_confirmation_of :password
   # validates_presence_of :password, :on => :create
   # validates_presence_of :email
-  validates_uniqueness_of :email, :allow_nil, :allow_blank
+  validates_uniqueness_of :email, :allow_nil => true, :allow_blank => true
   
   has_many :reviews
   has_many :comments
