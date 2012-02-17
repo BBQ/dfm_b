@@ -137,7 +137,8 @@ class ApiController < ApplicationController
               data.push({
                 :id => user.id,
                 :name => user.name,
-                :photo => user.user_photo
+                :photo => user.user_photo,
+                :use => 1
               })
             end
           end  
@@ -147,7 +148,8 @@ class ApiController < ApplicationController
               data.push({
                 :id => user.id,
                 :name => user.name,
-                :photo => user.user_photo
+                :photo => user.user_photo,
+                :use => 1
               })
             end
           end
