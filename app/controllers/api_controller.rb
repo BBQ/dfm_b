@@ -41,7 +41,7 @@ class ApiController < ApplicationController
               d.user_id = user.id
               d.save
             end
-            old_user.destroy    
+            # old_user.destroy    
           end
           
         end  
@@ -73,7 +73,7 @@ class ApiController < ApplicationController
               d.user_id = user.id
               d.save
             end 
-            old_user.destroy
+            # old_user.destroy
           end
           
         end
