@@ -36,6 +36,11 @@ class ApiController < ApplicationController
               d.save
             end
             
+            Follower.where(:follow_user_id => old_user.id).each do |d|
+              d.follow_user_id = user.id
+              d.save
+            end
+            
             rest = Koala::Facebook::GraphAndRestAPI.new(params[:access_token])
             result = rest.get_object("me")
 
@@ -70,6 +75,11 @@ class ApiController < ApplicationController
           
             Follower.where(:user_id => old_user.id).each do |d|
               d.user_id = user.id
+              d.save
+            end
+            
+            Follower.where(:follow_user_id => old_user.id).each do |d|
+              d.follow_user_id = user.id
               d.save
             end
                         
