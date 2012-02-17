@@ -686,8 +686,8 @@ class ApiController < ApplicationController
       if params[:type] == 'notifications'
         if Session.check_token(params[:id], params[:token])
           
-          offset = (offset.to_i / 3).to_i
-          limit = (limit.to_i / 3).to_i
+          offset = 30
+          limit = 30
         
           data = []
           Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{offset}, #{limit}").order("updated_at DESC").each do |l|
