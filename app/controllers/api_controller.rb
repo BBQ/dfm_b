@@ -737,12 +737,11 @@ class ApiController < ApplicationController
               })
             end
           end
-          data.sort_by { |record| -record[:updated_at].last }
+          data.sort_by { |k| k["updated_at"] }.reverse
         else
           $error = {:description => 'Parameters missing', :code => 8}
         end
         
-        data.sort_by { |record| -record[:updated_at].last }
         return render :json => {
               :notifications => data,
               :error => $error
