@@ -21,7 +21,26 @@ class ApiController < ApplicationController
           user.save          
           
           old_user = User.find_by_id(result["id"])
-          Review.where(:user_id)
+          
+          Review.where(:user_id => old_user.id).each do |d|
+            d.user_id = user.id
+            d.save
+          end
+          
+          Like.where(:user_id => old_user.id).each do |d|
+            d.user_id = user.id
+            d.save
+          end
+          
+          Comment.where(:user_id => old_user.id).each do |d|
+            d.user_id = user.id
+            d.save
+          end
+          
+          Follower.where(:user_id => old_user.id).each do |d|
+            d.user_id = user.id
+            d.save
+          end
         
           
         end  
@@ -56,13 +75,15 @@ class ApiController < ApplicationController
             data.push({
               :id => user.id,
               :name => user.name,
-              :photo => user.user_photo
+              :photo => user.user_photo,
+              :use => 1
             })
           else
             data.push({
               :id => 0,
               :name => f['name'],
-              :photo => "http://graph.facebook.com/#{f['id']}/picture?type=square"
+              :photo => "http://graph.facebook.com/#{f['id']}/picture?type=square",
+              :use => 0
             })
           end
           
@@ -78,13 +99,6 @@ class ApiController < ApplicationController
                 :id => user.id,
                 :name => user.name,
                 :photo => user.user_photo
-              })
-            else
-              user = Twitter.user(id)
-              data.push({
-                :id => 0,
-                :name => user.name,
-                :photo => user.profile_image_url
               })
             end
           end   
