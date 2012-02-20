@@ -111,7 +111,7 @@ class ApiController < ApplicationController
 
         rest.get_connections("me", "friends").each do |f|
           if user = User.select([:id, :name, :photo, :facebook_id]).find_by_facebook_id(f['id'])
-            unless Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
+            unless f = Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
               data.push({
                 :id => user.id,
                 :name => user.name,
@@ -139,7 +139,7 @@ class ApiController < ApplicationController
 
           client.follower_ids.ids.each do |id|
             if user = User.select([:id, :name, :photo, :facebook_id]).find_by_twitter_id(id)
-              unless Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
+              unless f = Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
                 data.each do |d|
                   if d[:id] == user.id
                     d[:twitter] = 1
@@ -161,7 +161,7 @@ class ApiController < ApplicationController
 
           client.friend_ids.ids.each do |id|
             if user = User.select([:id, :name, :photo, :facebook_id]).find_by_twitter_id(id)
-              unless Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
+              unless f = Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
                 dont_push = 0
                 data.each do |d|
                   if d[:id] == user.id
