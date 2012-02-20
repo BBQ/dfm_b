@@ -859,7 +859,11 @@ class ApiController < ApplicationController
             params[:review][:restaurant_id] = r.id
             params[:review][:network_id] = r.network_id
           else
-
+            
+            unless r_category = RestaurantCategory.find_by_name(venue.categories.name)
+              r_category = RestaurantCategory.create(:name => venue.categories.name)
+            end
+            
             data = {
               :name => venue.name,
               :address => venue.location.address,
@@ -876,6 +880,8 @@ class ApiController < ApplicationController
               :fsq_address => venue.location.address,
               :source => 'foursquare',
               :name => venue.name,
+              :phone => venue.contact.formattedPhone,
+              :restaurant_category => r_category.id,
               :network_id => Network.find_by_name(venue.name) ? Network.find_by_name(venue.name).id : Network.create(:name => venue.name).id
             }
             if r = Restaurant.create(data)
