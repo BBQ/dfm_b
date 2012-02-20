@@ -172,7 +172,7 @@ class ApiController < ApplicationController
                 :use => 1,
                 :twitter => 1,
                 :facebook => 0
-              }) if dont_push.nil?
+              }) if dont_push
             end
           end
            
