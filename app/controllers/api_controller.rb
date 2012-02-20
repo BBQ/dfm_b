@@ -111,14 +111,16 @@ class ApiController < ApplicationController
 
         rest.get_connections("me", "friends").each do |f|
           if user = User.select([:id, :name, :photo, :facebook_id]).find_by_facebook_id(f['id'])
-            data.push({
-              :id => user.id,
-              :name => user.name,
-              :photo => user.user_photo,
-              :use => 1,
-              :twitter => 0,
-              :facebook => 1
-            })
+            unless Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
+              data.push({
+                :id => user.id,
+                :name => user.name,
+                :photo => user.user_photo,
+                :use => 1,
+                :twitter => 0,
+                :facebook => 1
+              })
+            end
           else
             data.push({
               :id => 0,
@@ -129,7 +131,6 @@ class ApiController < ApplicationController
               :facebook => 1
             })
           end
-          
         end
       end
       
@@ -138,45 +139,48 @@ class ApiController < ApplicationController
 
           client.follower_ids.ids.each do |id|
             if user = User.select([:id, :name, :photo, :facebook_id]).find_by_twitter_id(id)
-              data.each do |d|
-                if d[:id] == user.id
-                  d[:twitter] = 1
-                  dont_push = 1
-                  break
+              unless Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
+                data.each do |d|
+                  if d[:id] == user.id
+                    d[:twitter] = 1
+                    dont_push = 1
+                    break
+                  end
                 end
+                data.push({
+                  :id => user.id,
+                  :name => user.name,
+                  :photo => user.user_photo,
+                  :use => 1,
+                  :twitter => 1,
+                  :facebook => 0
+                }) if dont_push.nil?
               end
-              data.push({
-                :id => user.id,
-                :name => user.name,
-                :photo => user.user_photo,
-                :use => 1,
-                :twitter => 1,
-                :facebook => 0
-              }) if dont_push.nil?
             end
-          end  
+          end
 
           client.friend_ids.ids.each do |id|
             if user = User.select([:id, :name, :photo, :facebook_id]).find_by_twitter_id(id)
-              dont_push = 0
-              data.each do |d|
-                if d[:id] == user.id
-                  d[:twitter] = 1
-                  dont_push = 1
-                  break
+              unless Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
+                dont_push = 0
+                data.each do |d|
+                  if d[:id] == user.id
+                    d[:twitter] = 1
+                    dont_push = 1
+                    break
+                  end
                 end
+                data.push({
+                  :id => user.id,
+                  :name => user.name,
+                  :photo => user.user_photo,
+                  :use => 1,
+                  :twitter => 1,
+                  :facebook => 0
+                }) if dont_push != 1
               end
-              data.push({
-                :id => user.id,
-                :name => user.name,
-                :photo => user.user_photo,
-                :use => 1,
-                :twitter => 1,
-                :facebook => 0
-              }) if dont_push != 1
             end
           end
-           
         end      
       end
       
