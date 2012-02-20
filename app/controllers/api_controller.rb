@@ -138,7 +138,9 @@ class ApiController < ApplicationController
                 :id => user.id,
                 :name => user.name,
                 :photo => user.user_photo,
-                :use => 1
+                :use => 1,
+                :twitter => 1,
+                :facebook => 0
               })
             end
           end  
@@ -149,9 +151,15 @@ class ApiController < ApplicationController
                 :id => user.id,
                 :name => user.name,
                 :photo => user.user_photo,
-                :use => 1
+                :use => 1,
+                :twitter => 1,
+                :facebook => 0
               })
             end
+          end
+          
+          client.group_by{|r| r[:name]}.map do |k, v|
+            v.inject({}) { |r, h| r.merge(h){ |key, o, n| o || n } }
           end
            
         end      
@@ -587,7 +595,7 @@ class ApiController < ApplicationController
       end
       if dont_add == 0
         dishes = []
-        r.network.dishes.select('DISTINCT id, name, photo, rating, votes, dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").where("photo IS NOT NULL OR rating > 0").limit(num_images).each do |dish|
+        r.network.dishes.select('DISTINCT id, name, photo, rating, votes, dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").where("photo IS NOT NULL").limit(num_images).each do |dish|
             dishes.push({
               :id => dish.id,
               :name => dish.name,
@@ -887,6 +895,8 @@ class ApiController < ApplicationController
             if r = Restaurant.create(data)
               params[:review][:restaurant_id] = r.id
               params[:review][:network_id] = r.network_id
+              
+              
             else
               return render :json => {:error => {:description => 'Error on creat restaurant', :code => 1}}
             end
