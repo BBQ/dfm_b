@@ -115,14 +115,18 @@ class ApiController < ApplicationController
               :id => user.id,
               :name => user.name,
               :photo => user.user_photo,
-              :use => 1
+              :use => 1,
+              :twitter => 1,
+              :facebook => 0
             })
           else
             data.push({
               :id => 0,
               :name => f['name'],
               :photo => "http://graph.facebook.com/#{f['id']}/picture?type=square",
-              :use => 0
+              :use => 0,
+              :twitter => 1,
+              :facebook => 0
             })
           end
           
@@ -134,6 +138,13 @@ class ApiController < ApplicationController
 
           client.follower_ids.ids.each do |id|
             if user = User.select([:id, :name, :photo, :facebook_id]).find_by_twitter_id(id)
+              data.each do |d|
+                if d[:id] == user.id
+                  d[:twitter] = 1
+                  dont_push = 1
+                  break
+                end
+              end
               data.push({
                 :id => user.id,
                 :name => user.name,
@@ -141,12 +152,19 @@ class ApiController < ApplicationController
                 :use => 1,
                 :twitter => 1,
                 :facebook => 0
-              })
+              }) if dont_push.nil?
             end
           end  
 
           client.friend_ids.ids.each do |id|
             if user = User.select([:id, :name, :photo, :facebook_id]).find_by_twitter_id(id)
+              data.each do |d|
+                if d[:id] == user.id
+                  d[:twitter] = 1
+                  dont_push = 1
+                  break
+                end
+              end
               data.push({
                 :id => user.id,
                 :name => user.name,
@@ -154,7 +172,7 @@ class ApiController < ApplicationController
                 :use => 1,
                 :twitter => 1,
                 :facebook => 0
-              })
+              }) if dont_push.nil?
             end
           end
            
