@@ -158,10 +158,6 @@ class ApiController < ApplicationController
             end
           end
            
-           h = {}
-           client.each{ |x| h[yield(x)] = x }
-           client = h.values
-           
         end      
       end
       
@@ -711,7 +707,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "liked your review on #{Review.find_by_id(d.review_id).dish.name}"
+                :text => "liked your review on #{Review.find_by_id(d.review_id).dish.name}."
               })
             end
           end
@@ -727,7 +723,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "comment on your review about #{Review.find_by_id(d.review_id).dish.name}"
+                :text => "commented on your review about #{Review.find_by_id(d.review_id).dish.name}."
               })
             end
           end
@@ -743,7 +739,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "start following you"
+                :text => "started following you."
               })
             end
           end
