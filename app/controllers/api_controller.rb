@@ -158,6 +158,10 @@ class ApiController < ApplicationController
             end
           end
            
+           h = {}
+           client.each{ |x| h[yield(x)] = x }
+           client = h.values
+           
         end      
       end
       
@@ -635,10 +639,14 @@ class ApiController < ApplicationController
       else
         review = Review.find_by_id(params[:review_id])
       end
+    else
+      $error = {:description => 'Parameters missing', :code => 8}
     end
     
+    review = review.format_review_for_api if review && params[:info].to_i == 1
+    
     return render :json => {
-      :review => review.format_review_for_api ||= [],
+      :review => review,
       :error => $error
     }
   end
@@ -703,7 +711,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "#{user.name} liked your review on #{Review.find_by_id(d.review_id).dish.name}"
+                :text => "liked your review on #{Review.find_by_id(d.review_id).dish.name}"
               })
             end
           end
@@ -719,7 +727,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "#{user.name} comment on your review about #{Review.find_by_id(d.review_id).dish.name}"
+                :text => "comment on your review about #{Review.find_by_id(d.review_id).dish.name}"
               })
             end
           end
@@ -735,7 +743,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "#{user.name} start following you"
+                :text => "start following you"
               })
             end
           end
