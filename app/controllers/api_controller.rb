@@ -638,7 +638,7 @@ class ApiController < ApplicationController
     end
     
     return render :json => {
-      :review => review.format_review_for_api,
+      :review => review.format_review_for_api ||= [],
       :error => $error
     }
   end
