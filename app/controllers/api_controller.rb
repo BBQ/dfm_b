@@ -157,10 +157,6 @@ class ApiController < ApplicationController
               })
             end
           end
-          
-          client.group_by{|r| r[:name]}.map do |k, v|
-            v.inject({}) { |r, h| r.merge(h){ |key, o, n| o || n } }
-          end
            
         end      
       end
@@ -642,7 +638,7 @@ class ApiController < ApplicationController
     end
     
     return render :json => {
-      :review => review,
+      :review => review.format_review_for_api,
       :error => $error
     }
   end

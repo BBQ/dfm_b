@@ -82,7 +82,7 @@ class Review < ActiveRecord::Base
           })
   end
   
-  def format_review_for_api(user_id)
+  def format_review_for_api(user_id=nil)
     data = {
       :review_id => id,
       :created_at => created_at.to_time.to_i,
