@@ -116,8 +116,8 @@ class ApiController < ApplicationController
               :name => user.name,
               :photo => user.user_photo,
               :use => 1,
-              :twitter => 1,
-              :facebook => 0
+              :twitter => 0,
+              :facebook => 1
             })
           else
             data.push({
@@ -125,8 +125,8 @@ class ApiController < ApplicationController
               :name => f['name'],
               :photo => "http://graph.facebook.com/#{f['id']}/picture?type=square",
               :use => 0,
-              :twitter => 1,
-              :facebook => 0
+              :twitter => 0,
+              :facebook => 1
             })
           end
           
