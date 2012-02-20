@@ -158,6 +158,7 @@ class ApiController < ApplicationController
 
           client.friend_ids.ids.each do |id|
             if user = User.select([:id, :name, :photo, :facebook_id]).find_by_twitter_id(id)
+              dont_push = 0
               data.each do |d|
                 if d[:id] == user.id
                   d[:twitter] = 1
@@ -172,7 +173,7 @@ class ApiController < ApplicationController
                 :use => 1,
                 :twitter => 1,
                 :facebook => 0
-              }) if dont_push
+              }) if dont_push != 1
             end
           end
            
