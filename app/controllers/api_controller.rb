@@ -614,7 +614,12 @@ class ApiController < ApplicationController
       end
       if dont_add == 0
         dishes = []
-        dishes_w_img = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
+        
+        if params[:tag_id].to_i > 0
+          dishes_w_img = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images).search_by_tag_id(params[:tag_id])
+        else
+          dishes_w_img = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
+        end
         
         dishes_w_img.each do |dish|
             dishes.push({
