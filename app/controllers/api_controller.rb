@@ -614,19 +614,16 @@ class ApiController < ApplicationController
       end
       if dont_add == 0
         dishes = []
-        if params[:tag_id]
-          dishes_arr = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").search_by_tag_id(params[:tag_id]).limit(num_images)
-        else
-          dishes_arr = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
-        end
-        dishes_arr.each do |dish|
-          dishes.push({
-            :id => dish.id,
-            :name => dish.name,
-            :photo => dish.image_sd,
-            :rating => dish.rating,
-            :votes => dish.votes
-          })
+        dishes_w_img = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
+        
+        dishes_w_img.each do |dish|
+            dishes.push({
+              :id => dish.id,
+              :name => dish.name,
+              :photo => dish.image_sd,
+              :rating => dish.rating,
+              :votes => dish.votes
+            })
         end
             
         networks.push({:network_id => r.network_id, :dishes => dishes}) 
