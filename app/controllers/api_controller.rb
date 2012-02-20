@@ -614,7 +614,7 @@ class ApiController < ApplicationController
       end
       if dont_add == 0
         dishes = []
-        r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").joins(:reviews).where("photo IS NOT NULL AND reviews.photo IS NOT NULL").limit(num_images).each do |dish|
+        r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").joins(:reviews).where("dishes.photo IS NOT NULL AND reviews.photo IS NOT NULL").limit(num_images).each do |dish|
             dishes.push({
               :id => dish.id,
               :name => dish.name,
