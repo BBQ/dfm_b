@@ -724,7 +724,7 @@ class ApiController < ApplicationController
       if params[:type] == 'notifications'
         if Session.check_token(params[:id], params[:token])
           
-          limit = 30
+          limit = 100
           data = []
           Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
             if user = User.find_by_id(d.user_id)
@@ -774,6 +774,7 @@ class ApiController < ApplicationController
             end
           end
           data.sort_by { |k| k["updated_at"] }.reverse
+          data.delete_if { |k| data.index(k) > 99 }
         else
           $error = {:description => 'Parameters missing', :code => 8}
         end
@@ -797,11 +798,15 @@ class ApiController < ApplicationController
   def get_reviews
     
     limit = params[:limit] ? params[:limit] : 25
-        
-    reviews = Review.limit(limit).order('id DESC').includes(:dish).where('photo IS NOT NULL')
-    reviews = reviews.where("id < ?", params[:review_id]) if params[:review_id] 
     
-    reviews = reviews.following(params[:following_for_user_id].to_i) if params[:following_for_user_id].to_i > 0
+    if params[:following_for_user_id].to_i > 0
+      reviews = Review.following(params[:following_for_user_id].to_i)
+    else
+      reviews = Review.where('photo IS NOT NULL')
+    end
+    
+    reviews = reviews.limit(limit).order('id DESC').includes(:dish)
+    reviews = reviews.where("id < ?", params[:review_id]) if params[:review_id] 
     
     review_data = []
     reviews.each {|r| review_data.push(r.format_review_for_api(params[:user_id]))}    
@@ -925,6 +930,7 @@ class ApiController < ApplicationController
             if r = Restaurant.create(data)
               params[:review][:restaurant_id] = r.id
               params[:review][:network_id] = r.network_id
+              
               
               
             else
