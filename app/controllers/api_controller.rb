@@ -903,8 +903,16 @@ class ApiController < ApplicationController
             params[:review][:network_id] = r.network_id
           else
             
-            unless r_category = RestaurantCategory.find_by_name(venue.categories.name)
-              r_category = RestaurantCategory.create(:name => venue.categories.name)
+            if category = RestaurantCategory.find_by_name(venue.categories.name)
+              category_id = category.id
+            else
+              category_id = RestaurantCategory.create(:name => venue.categories.name).id
+            end
+            
+            if network = Network.find_by_name(venue.name)
+              network_id = Network.find_by_name(venue.name).id
+            else
+              network_id = Network.create(:name => venue.name).id
             end
             
             data = {
@@ -924,14 +932,36 @@ class ApiController < ApplicationController
               :source => 'foursquare',
               :name => venue.name,
               :phone => venue.contact.formattedPhone,
-              :restaurant_category => r_category.id,
-              :network_id => Network.find_by_name(venue.name) ? Network.find_by_name(venue.name).id : Network.create(:name => venue.name).id
+              :restaurant_category => category_id,
+              :network_id => network_id
             }
             if r = Restaurant.create(data)
               params[:review][:restaurant_id] = r.id
               params[:review][:network_id] = r.network_id
               
-              
+              client.venue_menu(params[:foursquare_venue_id]).each do |m|
+                m.entries.items.each do |i|
+                  
+                  if dish_category = DishCategory.find_by_name(i.name)
+                    dish_category_id = dish_category.id
+                  else
+                    dish_category_id = DishCategory.create(:name => i.name).id
+                  end
+                  
+                  i.entries.items.each do |d|   
+                    data = {
+                      :network_id => r.network_id,
+                      :name => d.name,
+                      :price => d.prices.first,
+                      :currency => d.prices.first[0].chr,
+                      :description => d.description,
+                      :dish_category_id => dish_category_id,
+                    
+                    }
+                    Dish.creat(data)
+                  end
+                end
+              end
               
             else
               return render :json => {:error => {:description => 'Error on creat restaurant', :code => 1}}
