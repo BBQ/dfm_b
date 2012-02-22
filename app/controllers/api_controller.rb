@@ -980,7 +980,7 @@ class ApiController < ApplicationController
               system "rake tags:match_rest NETWORK_ID='#{params[:review][:network_id]}' &"
               
             else
-              return render :json => {:error => {:description => s'Error on creat restaurant', :code => 1}}
+              return render :json => {:error => {:description => 'Error on creat restaurant', :code => 1}}
             end
           end
         else
