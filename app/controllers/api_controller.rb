@@ -308,7 +308,7 @@ class ApiController < ApplicationController
               status = 'unfollow'
             elsif user = User.find_by_id(params[:follow_user_id])
               Follower.create({:user_id => params[:user_id], :follow_user_id => params[:follow_user_id]})
-              Notification.send_review_push(user_id, review, 'following')
+              Notification.send_review_push(params[:user_id], review, 'following')
               status = 'follow'
             else
               $error = {:description => 'user or follower not found', :code => 5}
@@ -894,6 +894,7 @@ class ApiController < ApplicationController
       return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 357}} unless chk24.blank?
       
       if params[:review][:restaurant_id].blank?
+        dish_category_id = ''
         
         unless params[:foursquare_venue_id].blank?
           client = Foursquare2::Client.new(:client_id => 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV', :client_secret => '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX')
@@ -904,10 +905,10 @@ class ApiController < ApplicationController
             params[:review][:network_id] = r.network_id
           else
             
-            if category = RestaurantCategory.find_by_name(venue.categories.name)
+            if category = RestaurantCategory.find_by_name(venue.categories.first.name)
               category_id = category.id
             else
-              category_id = RestaurantCategory.create(:name => venue.categories.name).id
+              category_id = RestaurantCategory.create(:name => venue.categories.first.name).id
             end
             
             if network = Network.find_by_name(venue.name)
@@ -933,7 +934,7 @@ class ApiController < ApplicationController
               :source => 'foursquare',
               :name => venue.name,
               :phone => venue.contact.formattedPhone,
-              :restaurant_category => category_id,
+              :restaurant_category_id => category_id,
               :network_id => network_id
             }
             if r = Restaurant.create(data)
@@ -941,15 +942,15 @@ class ApiController < ApplicationController
               params[:review][:network_id] = r.network_id
               
               client.venue_menu(params[:foursquare_venue_id]).each do |m|
-                m.entries.items.each do |i|
-                  
+                m.entries.fourth.second.items.each do |i|
+                   
                   if dish_category = DishCategory.find_by_name(i.name)
                     dish_category_id = dish_category.id
                   else
                     dish_category_id = DishCategory.create(:name => i.name).id
                   end
                   
-                  i.entries.items.each do |d|   
+                  i.entries.third.second.items.each do |d|   
                     data = {
                       :network_id => r.network_id,
                       :name => d.name,
@@ -959,7 +960,7 @@ class ApiController < ApplicationController
                       :dish_category_id => dish_category_id,
                     
                     }
-                    Dish.creat(data)
+                    Dish.create(data)
                   end
                 end
               end
@@ -991,11 +992,18 @@ class ApiController < ApplicationController
           params[:review][:dish_id] = dish.id
         else
           params[:dish][:network_id] = params[:review][:network_id]
-          return render :json => {:error => {:description => 'Dish type not found', :code => 4}} unless DishType.find_by_id(params[:dish][:dish_type_id])
-          return render :json => {:error => {:description => 'Dish subtype not found', :code => 5}} if params[:dish][:dish_subtype_id] && !DishSubtype.find_by_id(params[:dish][:dish_subtype_id])
+          # return render :json => {:error => {:description => 'Dish type not found', :code => 4}} unless DishType.find_by_id(params[:dish][:dish_type_id])
+          # return render :json => {:error => {:description => 'Dish subtype not found', :code => 5}} if params[:dish][:dish_subtype_id] && !DishSubtype.find_by_id(params[:dish][:dish_subtype_id])
         
-          dish_category = DishType.find_by_id(params[:dish][:dish_type_id]).name
-          params[:dish][:dish_category_id] = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
+          if DishType.find_by_id(params[:dish][:dish_type_id])
+            dish_category = DishType.find_by_id(params[:dish][:dish_type_id]).name
+            params[:dish][:dish_category_id] = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
+          else
+            params[:dish][:dish_category_id] = dish_category_id
+          end
+          
+          return render :json => {:error => {:description => 'Dish category not found', :code => 4}} unless params[:dish][:dish_category_id]
+          
           params[:dish][:created_by_user] = params[:review][:user_id]
         
           if dish_new = Dish.create(params[:dish])
