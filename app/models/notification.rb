@@ -13,15 +13,18 @@ class Notification < ActiveRecord::Base
           alert = "#{user.name.split.first} #{user.name.split.second[0]}. started #{type} you"
         end
       end
-      alert = "#{alert.slice 0 .. 40}..." if alert.length > 40
 
-      notification = APN::Notification.new   
-      notification.device = device   
-      notification.badge = 1   
-      notification.sound = true   
-      notification.alert = alert    
-      notification.save
-      system "rake apn:notifications:deliver &"
+      if device
+        alert = "#{alert.slice 0 .. 40}..." if alert.length > 40
+        notification = APN::Notification.new   
+        notification.device = device   
+        notification.badge = 1   
+        notification.sound = true   
+        notification.alert = alert    
+        notification.save
+        system "rake apn:notifications:deliver &"
+      end
+      
     end
   end
   
