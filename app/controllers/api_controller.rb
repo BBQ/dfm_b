@@ -287,7 +287,10 @@ class ApiController < ApplicationController
             push_token.user_id = session[:user_id]
             push_token.save
           end
+        else
+          APN::Device.create({:token => params[:push_token], :user_id => session[:user_id]})
         end
+        
       end
       
     else
