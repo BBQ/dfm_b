@@ -913,10 +913,10 @@ class ApiController < ApplicationController
               category_id = RestaurantCategory.create(:name => venue.categories.first.name).id
             end
             
-            if network = Network.find_by_name(venue.name)
-              network_id = Network.find_by_name(venue.name).id
+            if network = Network.find_by_name_and_city(venue.name, venue.location.city)
+              network_id = network.id
             else
-              network_id = Network.create(:name => venue.name).id
+              network_id = Network.create({:name => venue.name, :city =>venue.location.city}).id
             end
             
             data = {
