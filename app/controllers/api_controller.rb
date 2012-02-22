@@ -308,7 +308,7 @@ class ApiController < ApplicationController
               status = 'unfollow'
             elsif user = User.find_by_id(params[:follow_user_id])
               Follower.create({:user_id => params[:user_id], :follow_user_id => params[:follow_user_id]})
-              Notification.send_review_push(params[:user_id], review, 'following')
+              Notification.send_push(params[:user_id], review, 'following')
               status = 'follow'
             else
               $error = {:description => 'user or follower not found', :code => 5}
