@@ -961,12 +961,18 @@ class ApiController < ApplicationController
                     :order => cat_ord
                   })
                   
-                  i.entries.third.second.items.each do |d|   
+                  i.entries.third.second.items.each do |d|  
+                    
+                    if d.prices 
+                      price = /(.)(\d+)\./.match(d.prices.first)[2]
+                      currency = /(.)(\d+)\./.match(d.prices.first)[1]
+                    end
+                    
                     data = {
                       :network_id => r.network_id,
                       :name => d.name,
-                      :price => /(.)(\d+)\./.match(d.prices.first)[2],
-                      :currency => /(.)(\d+)\./.match(d.prices.first)[1],
+                      :price => price ||= 0,
+                      :currency => currency ||= '',
                       :description => d.description,
                       :dish_category_id => dish_category_id,
                     }
