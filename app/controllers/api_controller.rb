@@ -290,7 +290,6 @@ class ApiController < ApplicationController
         else
           APN::Device.create({:token => params[:push_token], :user_id => session[:user_id]})
         end
-        
       end
       
     else
@@ -945,6 +944,7 @@ class ApiController < ApplicationController
               params[:review][:network_id] = r.network_id
               
               client.venue_menu(params[:foursquare_venue_id]).each do |m|
+                cat_ord = 0
                 m.entries.fourth.second.items.each do |i|
                    
                   if dish_category = DishCategory.find_by_name(i.name)
@@ -953,23 +953,34 @@ class ApiController < ApplicationController
                     dish_category_id = DishCategory.create(:name => i.name).id
                   end
                   
+                  cat_ord += 1
+                  DishCategoryOrder.create({
+                    :restaurant_id => params[:review][:restaurant_id], 
+                    :network_id =>  params[:review][:network_id],
+                    :dish_category_id => dish_category_id,
+                    :order => cat_ord
+                  })
+                  
                   i.entries.third.second.items.each do |d|   
                     data = {
                       :network_id => r.network_id,
                       :name => d.name,
-                      :price => d.prices.first,
-                      :currency => d.prices.first[0].chr,
+                      :price => /(.)(\d+)\./.match(d.prices.first)[2],
+                      :currency => /(.)(\d+)\./.match(d.prices.first)[1],
                       :description => d.description,
                       :dish_category_id => dish_category_id,
-                    
                     }
                     Dish.create(data)
+                    
                   end
                 end
               end
               
+              system "rake tags:match_dishes NETWORK_ID='#{params[:review][:network_id]}' &"
+              system "rake tags:match_rest NETWORK_ID='#{params[:review][:network_id]}' &"
+              
             else
-              return render :json => {:error => {:description => 'Error on creat restaurant', :code => 1}}
+              return render :json => {:error => {:description => s'Error on creat restaurant', :code => 1}}
             end
           end
         else

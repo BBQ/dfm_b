@@ -72,6 +72,11 @@ namespace :tags do
   
   desc "Match Restaurant Tags"
   task :match_rest => :environment do
+    if ENV["NETWORK_ID"]
+      networks = Network.where(:id => ENV["NETWORK_ID"])
+    else
+      networks = Network.all
+    end
     Network.all.each do |n|
      n.restaurants.each do |r|
        dishes_id = []
@@ -79,7 +84,7 @@ namespace :tags do
          dishes_id.push(d.id)
        end
        dishes_id.join(',')
-       DishTag.select("DISTINCT tag_id").where("dish_id IN (?) AND tag_id = 298", dishes_id).each do |t|
+       DishTag.select("DISTINCT tag_id").where("dish_id IN (?)", dishes_id).each do |t|
           data = {
             :tag_id => t.tag_id, 
             :restaurant_id => r.id
@@ -94,8 +99,8 @@ namespace :tags do
   
   desc "Match Dish Tags"
   task :match_dishes => :environment do
-    tags  = Tag.where("id = 298")
-    # tags  = Tag.all
+    # tags  = Tag.where("id = 298")
+    tags  = Tag.all
     # tags = Tag.where('id in(SELECT tags.id, dish_tags.tag_id FROM tags LEFT JOIN dish_tags on tags.id = dish_tags.tag_id GROUP BY tags.name_a HAVING dish_tags.tag_id IS NULL)')
     
     tags.each do |t|
@@ -120,6 +125,8 @@ namespace :tags do
             dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{names}[[:>:]]')
             OR 
             LOWER(dishes.`name`) REGEXP '[[:<:]]#{names}[[:>:]]'")
+            
+      ds = ds.where(:network_id => ENV["NETWORK_ID"]) if ENV["NETWORK_ID"]
       
       ds.each do |d|
         data = {
