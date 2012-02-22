@@ -950,7 +950,7 @@ class ApiController < ApplicationController
                   if dish_category = DishCategory.find_by_name(i.name)
                     dish_category_id = dish_category.id
                   else
-                    dish_category_id = DishCategory.create(:name => i.name).id
+                    dish_category_id = DishCategory.create({:name => i.name}).id
                   end
                   
                   cat_ord += 1
@@ -964,7 +964,7 @@ class ApiController < ApplicationController
                   i.entries.third.second.items.each do |d|  
                     
                     if d.prices 
-                      price = /(.)(\d+)\./.match(d.prices.first)[2]
+                      price = /(.)(\d+)\./.match(d.prices.first)[2].to_i
                       currency = /(.)(\d+)\./.match(d.prices.first)[1]
                     end
                     
