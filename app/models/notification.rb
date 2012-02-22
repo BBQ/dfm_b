@@ -4,7 +4,7 @@ class Notification < ActiveRecord::Base
     
     if user = User.select(:name).find_by_id(from_user_id)  
       
-      if type == 'like' || type = 'comment'
+      if type == 'like' || type == 'comment'
         if device = APN::Device.where(:user_id => data.user.id).first   
           alert = "#{user.name.split.first} #{user.name.split.second[0]}. #{type} your review #{data.dish.name}"
         end
