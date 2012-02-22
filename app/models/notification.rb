@@ -1,11 +1,14 @@
 class Notification < ActiveRecord::Base
   
-  def self.send_review_like_push(from_user_id, review)
+  def self.send_push(from_user_id, review, type)
     
     if device = APN::Device.where(:user_id => review.user.id).first  
       if user = User.select(:name).find_by_id(from_user_id)  
         
-        alert = "#{user.name.split.first} #{user.name.split.second[0]}. like your review #{review.dish.name}"
+        text = "#{type} your review" if type == 'like' || type = 'comment'
+        text = "started #{type} you" if type == 'following'
+        
+        alert = "#{user.name.split.first} #{user.name.split.second[0]}. #{text} #{review.dish.name}"
         alert = "#{alert.slice 0 .. 40}..." if alert.length > 40
         
         notification = APN::Notification.new   

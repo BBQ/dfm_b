@@ -31,7 +31,7 @@ class Like < ActiveRecord::Base
           review.save
 
           # Send email
-          Notification.send_review_like_push(user_id, review)
+          Notification.send_push(user_id, review, 'like')
           hours_7 = Notification.where('user_id = ? AND created_at >= ADDDATE(NOW(), INTERVAL - 7 HOUR)', review.user.id)
           UserMailer.notification_email(user_id, review, 'like').deliver if hours_7.blank? 
         end
