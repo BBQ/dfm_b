@@ -15,13 +15,16 @@ class Dish < ActiveRecord::Base
   
   has_many :dish_tags, :dependent => :destroy
   has_many :tags, :through => :dish_tags
+  
+  has_many :dish_likes, :dependent => :destroy
+  has_many :dish_comments, :dependent => :destroy
       
   mount_uploader :photo, ImageUploader
   
   def self_review
     
     get_likes = []
-    DishLike.all.each do |dl|
+    dish_likes.each do |dl|
       get_likes.push({
         :id => dl.id,
         :user => {
@@ -33,7 +36,7 @@ class Dish < ActiveRecord::Base
     end
     
     get_comments = []
-    DishComment.all.each do |dc|
+    dish_comments.each do |dc|
       get_comments.push({
         :id => dc.id,
         :text => dc.text,

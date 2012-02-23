@@ -664,7 +664,7 @@ class ApiController < ApplicationController
     
     if params[:review_id]
       if params[:self_review].to_i == 1
-        review = Dish.find_by_id(params[:review_id]).self_review()
+        review = Dish.find_by_id(params[:review_id]).self_review
       else
         review = Review.find_by_id(params[:review_id])
       end
