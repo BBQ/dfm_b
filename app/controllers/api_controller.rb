@@ -964,8 +964,8 @@ class ApiController < ApplicationController
                   i.entries.third.second.items.each do |d|  
                     
                     if d.prices 
-                      price = /(.)(\d+)\./.match(d.prices.first)[2].to_i
-                      currency = /(.)(\d+)\./.match(d.prices.first)[1]
+                      price = /(.)(\d+\.\d+)/.match(d.prices.first)[2]
+                      currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
                     end
                     
                     data = {
