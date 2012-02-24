@@ -1,6 +1,6 @@
 class CreateDishDeliveries < ActiveRecord::Migration
   def self.up
-    create_table :dish_deliveries do |t|, :id => false do |t|
+    create_table :dish_deliveries, :id => false do |t|
       t.column :id, ID_COLUMN
       t.string :name
       t.string :photo
