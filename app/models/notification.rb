@@ -7,16 +7,16 @@ class Notification < ActiveRecord::Base
       if type == 'like' || type == 'comment'
         if device = APN::Device.where(:user_id => data.user.id).first   
           alert = "#{user.name.split.first} #{user.name.split.second[0]}. #{type} your review #{data.dish.name}"
-          badge = Like.where("user_id = ? and read = 1", data.user.id).count(:id)
-          badge += Comment.where("user_id = ? and read = 1", data.user.id).count(:id)
-          badge += Follower.where("user_id = ? and read = 1", data.user.id).count(:id)
+          badge = Like.where("user_id = ? and `read` = 1", data.user.id).count(:id)
+          badge += Comment.where("user_id = ? and `read` = 1", data.user.id).count(:id)
+          badge += Follower.where("user_id = ? and `read` = 1", data.user.id).count(:id)
         end
       elsif type == 'following'
         if device = APN::Device.where(:user_id => data).first  
           alert = "#{user.name.split.first} #{user.name.split.second[0]}. started #{type} you"
-          badge = Like.where("user_id = ? and read = 1", data).count(:id)
-          badge += Comment.where("user_id = ? and read = 1", data).count(:id)
-          badge += Follower.where("user_id = ? and read = 1", data).count(:id)
+          badge = Like.where("user_id = ? and `read` = 1", data).count(:id)
+          badge += Comment.where("user_id = ? and `read` = 1", data).count(:id)
+          badge += Follower.where("user_id = ? and `read` = 1", data).count(:id)
         end
       end
 
