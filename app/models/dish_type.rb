@@ -1,5 +1,7 @@
 class DishType < ActiveRecord::Base
+  
   has_many :dishes
+  has_many :dish_deliveries
   has_many :dish_subtypes
   
   mount_uploader :photo, ImageUploader
