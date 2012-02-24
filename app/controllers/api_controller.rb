@@ -773,7 +773,7 @@ class ApiController < ApplicationController
                 :date => f.updated_at.to_i,
                 :type => 'followed',
                 :review_id => '',
-                :read => d.read,
+                :read => f.read,
                 :user => {
                   :name => user.name,
                   :id => user.id,
