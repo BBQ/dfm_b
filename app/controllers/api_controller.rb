@@ -729,7 +729,7 @@ class ApiController < ApplicationController
           
           limit = 100
           data = []
-          Like.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
+          Like.select([:id, :user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
                 :date => d.updated_at.to_i,
@@ -747,7 +747,7 @@ class ApiController < ApplicationController
             end
           end
         
-          Comment.select([:user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
+          Comment.select([:id, :user_id, :review_id, :updated_at]).where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
                 :date => d.updated_at.to_i,
@@ -765,7 +765,7 @@ class ApiController < ApplicationController
             end
           end
         
-          Follower.select([:user_id, :updated_at]).where("follow_user_id = ?", params[:id]).limit("#{limit}").order("updated_at DESC").each do |f|
+          Follower.select([:id, :user_id, :updated_at]).where("follow_user_id = ?", params[:id]).limit("#{limit}").order("updated_at DESC").each do |f|
             if user = User.find_by_id(f.user_id)
               data.push({
                 :date => f.updated_at.to_i,
@@ -778,6 +778,8 @@ class ApiController < ApplicationController
                 },
                 :text => "started following you."
               })
+              f.read = 1
+              f.save
             end
           end
           data.sort_by { |k| k["updated_at"] }.reverse
