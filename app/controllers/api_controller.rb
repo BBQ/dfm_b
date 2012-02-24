@@ -118,7 +118,7 @@ class ApiController < ApplicationController
                 :photo => user.user_photo,
                 :use => 1,
                 :twitter => 0,
-                :facebook => 1
+                :facebook => user.facebook_id
               })
             end
           else
@@ -128,7 +128,7 @@ class ApiController < ApplicationController
               :photo => "http://graph.facebook.com/#{f['id']}/picture?type=square",
               :use => 0,
               :twitter => 0,
-              :facebook => 1
+              :facebook => f['id']
             })
           end
         end
@@ -142,7 +142,7 @@ class ApiController < ApplicationController
               unless f = Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
                 data.each do |d|
                   if d[:id] == user.id
-                    d[:twitter] = 1
+                    d[:twitter] = user.twitter_id
                     dont_push = 1
                     break
                   end
@@ -152,7 +152,7 @@ class ApiController < ApplicationController
                   :name => user.name,
                   :photo => user.user_photo,
                   :use => 1,
-                  :twitter => 1,
+                  :twitter => user.twitter_id,
                   :facebook => 0
                 }) if dont_push.nil?
               end
@@ -729,7 +729,7 @@ class ApiController < ApplicationController
           
           limit = 100
           data = []
-          Like.select('id, user_id, review_id, `read`, updated_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
+          Like.select('id, user_id, review_id, `read`, updated_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?) AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
                 :date => d.updated_at.to_i,
@@ -748,7 +748,7 @@ class ApiController < ApplicationController
             end
           end
         
-          Comment.select('id, user_id, review_id, `read`, updated_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)", params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
+          Comment.select('id, user_id, review_id, `read`, updated_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)  AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
                 :date => d.updated_at.to_i,
@@ -785,6 +785,7 @@ class ApiController < ApplicationController
               f.save
             end
           end
+          
           data.sort_by { |k| k["updated_at"] }.reverse
           data.delete_if { |k| data.index(k) > 99 }
         else
