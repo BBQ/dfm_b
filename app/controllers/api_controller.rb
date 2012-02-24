@@ -742,6 +742,8 @@ class ApiController < ApplicationController
                 },
                 :text => "liked your review on #{Review.find_by_id(d.review_id).dish.name}."
               })
+              d.read = 1
+              d.save
             end
           end
         
@@ -758,6 +760,8 @@ class ApiController < ApplicationController
                 },
                 :text => "commented on your review about #{Review.find_by_id(d.review_id).dish.name}."
               })
+              d.read = 1
+              d.save
             end
           end
         
