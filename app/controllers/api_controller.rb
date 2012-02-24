@@ -735,7 +735,7 @@ class ApiController < ApplicationController
                 :date => d.updated_at.to_i,
                 :type => 'like',
                 :review_id => d.review_id,
-                :read => d.read,
+                :read => d.read ? 1 : 0,
                 :user => {
                   :name => user.name,
                   :id => user.id,
@@ -754,7 +754,7 @@ class ApiController < ApplicationController
                 :date => d.updated_at.to_i,
                 :type => 'comment',
                 :review_id => d.review_id,
-                :read => d.read,
+                :read => d.read ? 1 : 0,
                 :user => {
                   :name => user.name,
                   :id => user.id,
@@ -773,7 +773,7 @@ class ApiController < ApplicationController
                 :date => f.updated_at.to_i,
                 :type => 'followed',
                 :review_id => '',
-                :read => f.read,
+                :read => f.read ? 1 : 0,
                 :user => {
                   :name => user.name,
                   :id => user.id,
