@@ -152,7 +152,7 @@ class API < ActiveRecord::Base
           :restaurant => {
               :image_sd => restaurant.find_image && restaurant.find_image.iphone.url != '/images/noimage.jpg' ? restaurant.find_image.iphone.url : '',
               :image_hd => restaurant.find_image && restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
-              :description => restaurant.description ?  "restaurant.description, restaurant.restaurant_category.name" : ''
+              :description => restaurant.description ?  "#{restaurant.restaurant_category.name}, #{restaurant.description}" : ''
           },
           :restaurants => restaurants,
           :error => {:description => '', :code => ''}
