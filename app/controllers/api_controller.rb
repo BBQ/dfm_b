@@ -729,10 +729,10 @@ class ApiController < ApplicationController
           
           limit = 100
           data = []
-          Like.select('id, user_id, review_id, `read`, updated_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?) AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
+          Like.select('id, user_id, review_id, `read`, created_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?) AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("created_at DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
-                :date => d.updated_at.to_i,
+                :date => d.created_at.to_i,
                 :type => 'like',
                 :review_id => d.review_id,
                 :read => d.read ? 1 : 0,
@@ -748,10 +748,10 @@ class ApiController < ApplicationController
             end
           end
         
-          Comment.select('id, user_id, review_id, `read`, updated_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)  AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("updated_at DESC").each do |d|
+          Comment.select('id, user_id, review_id, `read`, created_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)  AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("created_at DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
-                :date => d.updated_at.to_i,
+                :date => d.created_at.to_i,
                 :type => 'comment',
                 :review_id => d.review_id,
                 :read => d.read ? 1 : 0,
@@ -767,12 +767,12 @@ class ApiController < ApplicationController
             end
           end
         
-          Follower.select('id, user_id, `read`, updated_at').where("follow_user_id = ?", params[:id]).limit("#{limit}").order("updated_at DESC").each do |f|
+          Follower.select('id, user_id, `read`, created_at').where("follow_user_id = ?", params[:id]).limit("#{limit}").order("created_at DESC").each do |f|
             if user = User.find_by_id(f.user_id)
               data.push({
-                :date => f.updated_at.to_i,
+                :date => f.created_at.to_i,
                 :type => 'followed',
-                :review_id => '',
+                :review_id => 0,
                 :read => f.read ? 1 : 0,
                 :user => {
                   :name => user.name,
@@ -786,7 +786,7 @@ class ApiController < ApplicationController
             end
           end
           
-          data.sort_by { |k| k["updated_at"] }.reverse
+          data = data.sort_by { |k| k[:data] }.reverse
           data.delete_if { |k| data.index(k) > 99 }
         else
           $error = {:description => 'Parameters missing', :code => 8}
