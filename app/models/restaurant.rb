@@ -13,6 +13,8 @@ class Restaurant < ActiveRecord::Base
   has_many :restaurant_cuisines
   has_many :cuisines, :through => :restaurant_cuisines
   
+  belongs_to :restaurant_category
+  
   mount_uploader :photo, ImageUploader 
   
   # geocoded_by :geo_address, :latitude  => :lat, :longitude => :lon
