@@ -584,19 +584,14 @@ class ApiController < ApplicationController
       end     
       restaurants = restaurants.joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').where('lat IS NOT NULL AND lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
     else
-      if params[:type] == 'delivery'
-        restaurants = Delivery
+      if radius
+        restaurants = Restaurant.near(lat, lon, radius)
       else
-        if radius
-          restaurants = Restaurant.near(lat, lon, radius)
-        else
-          restaurants = Restaurant
-        end
-      
-        restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
-        #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
-        ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
+        restaurants = Restaurant
       end
+      restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
+      #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
+      ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
     end
     
     unless params[:search].blank?
@@ -609,7 +604,6 @@ class ApiController < ApplicationController
     restaurants = restaurants.where(:network_id => params[:network_id]) unless params[:network_id].blank?
     
     if restaurants
-      count = params[:sort] != 'distance' ? restaurants.count.count : restaurants.count
       restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.network_id, restaurants.rating, restaurants.votes, restaurants.fsq_id').limit("#{offset}, #{limit}") 
     end
     
@@ -647,7 +641,6 @@ class ApiController < ApplicationController
           :load_additional => load_additional ||= 0,
           :restaurants => restaurants.as_json({:keyword => params[:keyword] ||= nil}),
           :networks => networks,
-          :count => count,
           :error => $error
     }
     
@@ -734,7 +727,7 @@ class ApiController < ApplicationController
           
           limit = 100
           data = []
-          Like.select('id, user_id, review_id, `read`, created_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?) AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("created_at DESC").each do |d|
+          Like.select('id, user_id, review_id, `read`, created_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?) AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("id DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
                 :date => d.created_at.to_i,
@@ -753,7 +746,7 @@ class ApiController < ApplicationController
             end
           end
         
-          Comment.select('id, user_id, review_id, `read`, created_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)  AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("created_at DESC").each do |d|
+          Comment.select('id, user_id, review_id, `read`, created_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)  AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("id DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
                 :date => d.created_at.to_i,
@@ -772,7 +765,7 @@ class ApiController < ApplicationController
             end
           end
         
-          Follower.select('id, user_id, `read`, created_at').where("follow_user_id = ?", params[:id]).limit("#{limit}").order("created_at DESC").each do |f|
+          Follower.select('id, user_id, `read`, created_at').where("follow_user_id = ?", params[:id]).limit("#{limit}").order("id DESC").each do |f|
             if user = User.find_by_id(f.user_id)
               data.push({
                 :date => f.created_at.to_i,
@@ -791,8 +784,7 @@ class ApiController < ApplicationController
             end
           end
           
-          data = data.sort_by { |k| k[:data] }.reverse
-          data.delete_if { |k| data.index(k) > 99 }
+          data = data.sort_by { |k| k[:data] }.reverse!
         else
           $error = {:description => 'Parameters missing', :code => 8}
         end
