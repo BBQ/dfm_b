@@ -910,9 +910,10 @@ class ApiController < ApplicationController
           :dish_id => dish.id,
           :fb_friends => params[:fb_friends],
           :tw_friends => params[:tw_friends],
-          :friends => params[:friends]
+          :friends => params[:friends],
+          :home_cooked => 1
         }        
-        HomeCook.create(data)
+        Review.create(data)
 
       else  
             
