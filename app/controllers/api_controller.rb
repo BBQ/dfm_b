@@ -600,14 +600,20 @@ class ApiController < ApplicationController
       search = params[:search].gsub(/[']/) { |x| '\\' + x }
       restaurants = restaurants.where("restaurants.`name` LIKE ? OR restaurants.`name_eng` LIKE ?", "%#{search}%", "%#{search}%")
     end
+    
     restaurants = restaurants.search_by_word(params[:keyword]) unless params[:keyword].blank?
     restaurants = restaurants.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
     restaurants = restaurants.where(all_filters) unless all_filters.blank?
     restaurants = restaurants.where(:network_id => params[:network_id]) unless params[:network_id].blank?
-    restaurants = restaurants.where('delivery IS NOT NULL') unless params[:type] == 'delivery'
+    
+    if params[:type] == 'delivery'
+      restaurants = restaurants.where('delivery IS NOT NULL')
+    else
+      restaurants = restaurants.where('delivery_only != 1')
+    end
     
     if restaurants
-      restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.network_id, restaurants.rating, restaurants.votes, restaurants.fsq_id').limit("#{offset}, #{limit}").where('delivery_only != 1')
+      restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.network_id, restaurants.rating, restaurants.votes, restaurants.fsq_id').limit("#{offset}, #{limit}")
     end
     
     num_images = 20
