@@ -919,7 +919,6 @@ class ApiController < ApplicationController
         end
         
         friends = []
-        
         params[:fb_friends].split(',').each do |f|
           if user = User.find_by_facebook_id(f)
             friends.push(user.id)
@@ -934,6 +933,7 @@ class ApiController < ApplicationController
             friends.push(user.id)
           else
             friends.push(Twitter.user(f).name)
+          end
         end
         
         params[:friends].split(',').each do |f|
