@@ -577,7 +577,7 @@ class ApiController < ApplicationController
     end
             
     
-    if params[:sort] == 'delivery'
+    if params[:delivery] == '1'
       restaurants = Delivery
     else
       if params[:sort] == 'distance'
