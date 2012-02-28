@@ -82,7 +82,21 @@ class Review < ActiveRecord::Base
           })
   end
   
-  def format_review_for_api(user_id=nil)
+  def format_review_for_api(user_id=nil)    
+    friends_with = []
+    friends.split(',').each do |u|
+      if user = User.find_by_id(u)
+        friends_with.push({
+          :id => user.id,
+          :name => user.name
+        })
+      else
+        friends_with.push({
+          :id => 0,
+          :name => u 
+        })
+      end
+    end
     data = {
       :review_id => id,
       :created_at => created_at.to_time.to_i,
@@ -104,9 +118,7 @@ class Review < ActiveRecord::Base
       :liked => user_id && Like.find_by_user_id_and_review_id(user_id, id) ? 1 : 0,
       :self_review => 0,
       :home_cooked => home_cooked,
-      :fb_friends => fb_friends,
-      :tw_friends => tw_friends,
-      :friends => friends
+      :friends => friends_with
     }
   end
   

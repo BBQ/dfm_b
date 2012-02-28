@@ -838,11 +838,13 @@ class ApiController < ApplicationController
   end
   
   def like_review
+    
     if params[:review_id] && Session.check_token(params[:user_id], params[:token])
       data = Like.save(params[:user_id], params[:review_id], params[:self_review])
     else
       $error = {:description => 'Parameters missing', :code => 8}
     end
+    
     return render :json => {
       :error => $error
     }
@@ -915,11 +917,32 @@ class ApiController < ApplicationController
         unless dish = HomeCook.find_by_name(params[:dish_name])
           dish = HomeCook.create(params[:dish_name])
         end
+        
+        friends = []
+        
+        params[:fb_friends].split(',').each do |f|
+          if user = User.find_by_facebook_id(f)
+            friends.push(user.id)
+          else
+            rest = Koala::Facebook::GraphAPI.new
+            friends.push(rest.get_object(f)[:name])
+          end
+        end
+        
+        params[:tw_friends].split(',').each do |f|
+          if user = User.find_by_twitter_id(f) 
+            friends.push(user.id)
+          else
+            friends.push(Twitter.user(f).name)
+        end
+        
+        params[:friends].split(',').each do |f|
+          friends.push(f)
+        end
+        
         data = {
           :dish_id => dish.id,
-          :fb_friends => params[:fb_friends],
-          :tw_friends => params[:tw_friends],
-          :friends => params[:friends],
+          :friends => friends.join(','),
           :home_cooked => 1
         }        
         Review.create(data)
