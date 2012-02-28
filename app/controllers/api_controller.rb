@@ -609,7 +609,7 @@ class ApiController < ApplicationController
     if params[:type] == 'delivery'
       restaurants = restaurants.where('delivery IS NOT NULL')
     else
-      restaurants = restaurants.where('delivery_only != 1')
+      restaurants = restaurants.where('delivery_only IS NULL')
     end
     
     if restaurants
