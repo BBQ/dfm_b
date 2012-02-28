@@ -56,6 +56,7 @@ GEM
     builder (2.1.2)
     carrierwave (0.5.8)
       activesupport (~> 3.0)
+    chronic (0.6.7)
     configatron (2.9.0)
       yamler (>= 0.1.0)
     erubis (2.6.6)
@@ -157,6 +158,9 @@ GEM
       simple_oauth (~> 0.1)
     tzinfo (0.3.31)
     unicode (0.4.1)
+    whenever (0.7.3)
+      activesupport (>= 2.3.4)
+      chronic (~> 0.6.3)
     xml-simple (1.1.1)
     yamler (0.1.0)
 
@@ -185,4 +189,5 @@ DEPENDENCIES
   translit
   twitter (~> 2.1.0)
   unicode
+  whenever
   xml-simple

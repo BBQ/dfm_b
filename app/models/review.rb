@@ -90,8 +90,8 @@ class Review < ActiveRecord::Base
       :dish_id => dish.id,
       :dish_name => dish.name,
       :dish_votes => dish.votes,
-      :restaurant_id => restaurant.id,    
-      :restaurant_name => restaurant.name,
+      :restaurant_id => restaurant.id ||= 0,    
+      :restaurant_name => restaurant.name ||= '',
       :user_id => user.id,
       :user_name => user.name,
       :user_photo => user.user_photo,
@@ -102,7 +102,11 @@ class Review < ActiveRecord::Base
       :image_sd => photo.iphone.url != '/images/noimage.jpg' ? photo.iphone.url : '' ,
       :image_hd => photo.iphone_retina.url != '/images/noimage.jpg' ? photo.iphone_retina.url : '',
       :liked => user_id && Like.find_by_user_id_and_review_id(user_id, id) ? 1 : 0,
-      :self_review => 0
+      :self_review => 0,
+      :home_cooked => home_cooked,
+      :fb_friends => fb_friends,
+      :tw_friends => tw_friends,
+      :friends => friends
     }
   end
   
