@@ -84,17 +84,19 @@ class Review < ActiveRecord::Base
   
   def format_review_for_api(user_id=nil)    
     friends_with = []
-    friends.split(',').each do |u|
-      if user = User.find_by_id(u)
-        friends_with.push({
-          :id => user.id,
-          :name => user.name
-        })
-      else
-        friends_with.push({
-          :id => 0,
-          :name => u 
-        })
+    if friends
+      friends.split(',').each do |u|
+        if user = User.find_by_id(u)
+          friends_with.push({
+            :id => user.id,
+            :name => user.name
+          })
+        else
+          friends_with.push({
+            :id => 0,
+            :name => u 
+          })
+        end
       end
     end
     data = {
