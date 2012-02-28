@@ -575,28 +575,25 @@ class ApiController < ApplicationController
     else
       radius = params[:radius].to_f != 0 ? params[:radius].to_f : nil
     end
-            
     
-    if params[:type] == 'delivery'
-      restaurants = Delivery
-    else
-      if params[:sort] == 'distance'
-        if radius
-          restaurants = Restaurant.near(lat, lon, radius).by_distance(lat, lon)
-        else
-          restaurants = Restaurant.by_distance(lat, lon)
-        end     
-        restaurants = restaurants.joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').where('lat IS NOT NULL AND lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
+    
+    
+    if params[:sort] == 'distance'
+      if radius
+        restaurants = Restaurant.near(lat, lon, radius).by_distance(lat, lon)
       else
-        if radius
-          restaurants = Restaurant.near(lat, lon, radius)
-        else
-          restaurants = Restaurant
-        end
-        restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
-        #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
-        ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
+        restaurants = Restaurant.by_distance(lat, lon)
+      end     
+      restaurants = restaurants.joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').where('lat IS NOT NULL AND lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
+    else
+      if radius
+        restaurants = Restaurant.near(lat, lon, radius)
+      else
+        restaurants = Restaurant
       end
+      restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
+      #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
+      ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
     end
     
     unless params[:search].blank?
@@ -607,9 +604,10 @@ class ApiController < ApplicationController
     restaurants = restaurants.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
     restaurants = restaurants.where(all_filters) unless all_filters.blank?
     restaurants = restaurants.where(:network_id => params[:network_id]) unless params[:network_id].blank?
+    restaurants = restaurants.where('delivery IS NOT NULL') unless params[:type] == 'delivery'
     
     if restaurants
-      restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.network_id, restaurants.rating, restaurants.votes, restaurants.fsq_id').limit("#{offset}, #{limit}") 
+      restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.network_id, restaurants.rating, restaurants.votes, restaurants.fsq_id').limit("#{offset}, #{limit}").where('delivery_only != 1')
     end
     
     num_images = 20
