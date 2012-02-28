@@ -950,8 +950,8 @@ class ApiController < ApplicationController
       else  
             
         if params[:review][:restaurant_id].blank?
+          
           dish_category_id = ''
-        
           unless params[:foursquare_venue_id].blank?
             client = Foursquare2::Client.new(:client_id => 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV', :client_secret => '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX')
             venue = client.venue(params[:foursquare_venue_id])
@@ -993,6 +993,7 @@ class ApiController < ApplicationController
                 :restaurant_category_id => category_id,
                 :network_id => network_id
               }
+              
               if r = Restaurant.create(data)
                 params[:review][:restaurant_id] = r.id
                 params[:review][:network_id] = r.network_id
@@ -1043,6 +1044,14 @@ class ApiController < ApplicationController
                 return render :json => {:error => {:description => 'Error on creat restaurant', :code => 1}}
               end
             end
+          elsif params[:restaurant][:name] && params[:restaurant][:category]
+            if restaurant_category = RestaurantCategory.find_by_name(params[:restaurant][:category])
+              params[:restaurant][:restaurant_category_id] = restaurant_category.id
+            else
+              params[:restaurant][:restaurant_category_id] = RestaurantCategory.create({:name => params[:restaurant][:category]}).id
+            end
+            params[:restaurant].delete(:category)
+            Restaurant.create(params[:restaurant])
           else
             return render :json => {:error => {:description => 'Restaurant not found', :code => 1}}
           end
