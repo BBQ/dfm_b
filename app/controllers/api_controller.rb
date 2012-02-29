@@ -952,7 +952,7 @@ class ApiController < ApplicationController
         if params[:review][:restaurant_id].blank?
           
           dish_category_id = ''
-          unless params[:foursquare_venue_id].blank?
+          if !params[:foursquare_venue_id].blank?
             client = Foursquare2::Client.new(:client_id => 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV', :client_secret => '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX')
             venue = client.venue(params[:foursquare_venue_id])
 
@@ -1043,6 +1043,7 @@ class ApiController < ApplicationController
               else
                 return render :json => {:error => {:description => 'Error on creat restaurant', :code => 1}}
               end
+            end
           elsif params[:restaurant][:name] && params[:restaurant][:category]
             if restaurant_category = RestaurantCategory.find_by_name(params[:restaurant][:category])
               params[:restaurant][:restaurant_category_id] = restaurant_category.id
