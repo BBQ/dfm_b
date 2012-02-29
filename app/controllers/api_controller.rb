@@ -1043,7 +1043,6 @@ class ApiController < ApplicationController
               else
                 return render :json => {:error => {:description => 'Error on creat restaurant', :code => 1}}
               end
-            end
           elsif params[:restaurant][:name] && params[:restaurant][:category]
             if restaurant_category = RestaurantCategory.find_by_name(params[:restaurant][:category])
               params[:restaurant][:restaurant_category_id] = restaurant_category.id
