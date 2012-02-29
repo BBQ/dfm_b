@@ -1000,8 +1000,6 @@ class ApiController < ApplicationController
           return render :json => {:error => {:description => 'User not found', :code => 8}}
         end
             
-        Review.create(data)
-
       else  
             
         if params[:review][:restaurant_id].blank?
