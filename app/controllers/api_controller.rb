@@ -18,7 +18,9 @@ class ApiController < ApplicationController
       end
       
       params[:restaurant].delete(:category)
-      r_id = r.id if r = Restaurant.create(params[:restaurant])
+      if params[:restaurant][:network_id] = Network.create({:name => params[:restaurant][:name], :city => params[:restaurant][:city]; }).id
+        r_id = r.id if r = Restaurant.create(params[:restaurant])
+      end
     
     else
       $error = {:description => 'Params missing', :code => 8}
