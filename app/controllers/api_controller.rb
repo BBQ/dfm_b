@@ -151,7 +151,7 @@ class ApiController < ApplicationController
                 :photo => user.user_photo,
                 :use => 1,
                 :twitter => 0,
-                :facebook => user.facebook_id
+                :facebook => user.facebook_id.to_s
               })
             end
           else
@@ -175,7 +175,7 @@ class ApiController < ApplicationController
               unless f = Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
                 data.each do |d|
                   if d[:id] == user.id
-                    d[:twitter] = user.twitter_id
+                    d[:twitter] = user.twitter_id.to_s
                     dont_push = 1
                     break
                   end
@@ -185,7 +185,7 @@ class ApiController < ApplicationController
                   :name => user.name,
                   :photo => user.user_photo,
                   :use => 1,
-                  :twitter => user.twitter_id,
+                  :twitter => user.twitter_id.to_s,
                   :facebook => 0
                 }) if dont_push.nil?
               end
@@ -208,7 +208,7 @@ class ApiController < ApplicationController
                   :name => user.name,
                   :photo => user.user_photo,
                   :use => 1,
-                  :twitter => 1,
+                  :twitter => user.twitter_id.to_s,
                   :facebook => 0
                 }) if dont_push != 1
               end
