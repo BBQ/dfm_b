@@ -21,7 +21,6 @@ class Notification < ActiveRecord::Base
       end
 
       if device
-        
         alert = "#{alert.slice 0 .. 40}..." if alert.length > 40
         notification = APN::Notification.new   
         notification.device = device   
@@ -30,6 +29,8 @@ class Notification < ActiveRecord::Base
         notification.alert = alert    
         notification.save
         system "rake apn:notifications:deliver &"
+        system "rake email:notifications:deliver &"
+        
       end
       
     end

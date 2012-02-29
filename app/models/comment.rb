@@ -22,10 +22,6 @@ class Comment < ActiveRecord::Base
 
       # Send email
       Notification.send_push(data[:user_id], review, 'comment')
-      hours_7 = Notification.where("user_id = ? AND created_at >= ADDDATE(NOW(), INTERVAL - 7 HOUR)", review.user.id)
-      if hours_7.blank?
-        UserMailer.notification_email(data[:user_id], review, 'comment').deliver
-      end
     end  
   end
 
