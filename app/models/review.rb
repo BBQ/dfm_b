@@ -128,7 +128,7 @@ class Review < ActiveRecord::Base
     dish.photo.iphone.url
   end
   
-  def review_exist?(user_id, dish_id)
+  def self.review_exist?(user_id, dish_id)
     if fb = Review.where('user_id = ? && dish_id = ? && web = 1', user_id, dish_id).first
       fb
     end
