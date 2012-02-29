@@ -121,7 +121,7 @@ class Review < ActiveRecord::Base
       :likes => count_likes,
       :comments => count_comments,
       :review_rating => rating,
-      :dish_rating => dish.rating,
+      :dish_rating => review_dish.rating,
       :image_sd => photo.iphone.url != '/images/noimage.jpg' ? photo.iphone.url : '' ,
       :image_hd => photo.iphone_retina.url != '/images/noimage.jpg' ? photo.iphone_retina.url : '',
       :liked => user_id && Like.find_by_user_id_and_review_id(user_id, id) ? 1 : 0,
