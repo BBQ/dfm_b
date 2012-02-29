@@ -99,15 +99,20 @@ class Review < ActiveRecord::Base
         end
       end
     end
-
-    dish = HomeCook.find_by_id(dish_id) if home_cooked == 1
+    
+    if home_cooked == 1
+      review_dish = HomeCook.find_by_id(dish_id) 
+    else
+      review_dish = Dish.find_by_id(dish_id) 
+    end
+    
     data = {
       :review_id => id,
       :created_at => created_at.to_time.to_i,
       :text => text,
       :dish_id => dish_id,
-      :dish_name => dish.name,
-      :dish_votes => dish.votes,
+      :dish_name => review_dish.name,
+      :dish_votes => review_dish.votes,
       :restaurant_id => restaurant.id ||= 0,    
       :restaurant_name => restaurant.name ||= '',
       :user_id => user.id,
