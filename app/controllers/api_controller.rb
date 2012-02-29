@@ -18,7 +18,8 @@ class ApiController < ApplicationController
       end
       
       params[:restaurant].delete(:category)
-      if params[:restaurant][:network_id] = Network.create({:name => params[:restaurant][:name], :city => params[:restaurant][:city]; }).id
+      if  n = Network.create({:name => params[:restaurant][:name], :city => params[:restaurant][:city]})
+        params[:restaurant][:network_id] = n.id
         r_id = r.id if r = Restaurant.create(params[:restaurant])
       end
     
