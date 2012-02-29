@@ -7,6 +7,30 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def add_restaurant
+    
+    if params[:restaurant][:name] && params[:restaurant][:category]
+      
+      if restaurant_category = RestaurantCategory.find_by_name(params[:restaurant][:category])
+        params[:restaurant][:restaurant_category_id] = restaurant_category.id
+      else
+        params[:restaurant][:restaurant_category_id] = RestaurantCategory.create({:name => params[:restaurant][:category]}).id
+      end
+      
+      params[:restaurant].delete(:category)
+      r_id = r.id if r = Restaurant.create(params[:restaurant])
+    
+    else
+      $error = {:description => 'Params missing', :code => 8}
+    end
+    
+    return render :json => {
+          :error => $error,
+          :restaurant_id => r_id ||= 0
+    }
+    
+  end
+  
   def add_social_network_account
     if Session.check_token(params[:user_id], params[:token]) && (params[:access_token] || (params[:oauth_token] && params[:oauth_token_secret]))
       user = User.find_by_id(params[:user_id])
@@ -1044,14 +1068,6 @@ class ApiController < ApplicationController
                 return render :json => {:error => {:description => 'Error on creat restaurant', :code => 1}}
               end
             end
-          elsif params[:restaurant][:name] && params[:restaurant][:category]
-            if restaurant_category = RestaurantCategory.find_by_name(params[:restaurant][:category])
-              params[:restaurant][:restaurant_category_id] = restaurant_category.id
-            else
-              params[:restaurant][:restaurant_category_id] = RestaurantCategory.create({:name => params[:restaurant][:category]}).id
-            end
-            params[:restaurant].delete(:category)
-            Restaurant.create(params[:restaurant])
           else
             return render :json => {:error => {:description => 'Restaurant not found', :code => 1}}
           end
