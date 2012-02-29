@@ -9,7 +9,7 @@ class ApiController < ApplicationController
   
   def add_restaurant
     
-    if params[:restaurant][:name] && params[:restaurant][:category]
+    if params[:restaurant][:name] && params[:restaurant][:category] && (params[:restaurant][:address] || (params[:restaurant][:lat] && params[:restaurant][:lon]))
       
       if restaurant_category = RestaurantCategory.find_by_name(params[:restaurant][:category])
         params[:restaurant][:restaurant_category_id] = restaurant_category.id
