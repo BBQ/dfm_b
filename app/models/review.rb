@@ -142,10 +142,9 @@ class Review < ActiveRecord::Base
       dish = HomeCook.find(user_review[:dish_id])
     else
       dish = Dish.find(user_review[:dish_id])
+      restaurant = Restaurant.find_by_id(user_review[:restaurant_id])
+      network = Network.find_by_id(restaurant.network_id)
     end
-    
-    restaurant = Restaurant.find_by_id(user_review[:restaurant_id])
-    network = Network.find_by_id(restaurant.network_id)
   
     if fb = review_exist?(user_review[:user_id], user_review[:dish_id])
       if rating > 0
