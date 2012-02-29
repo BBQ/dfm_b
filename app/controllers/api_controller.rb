@@ -947,37 +947,59 @@ class ApiController < ApplicationController
       return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 357}} unless chk24.blank?
       
       if params[:home_cooked].to_i == 1
-        unless dish = HomeCook.find_by_name(params[:dish_name])
-          dish = HomeCook.create(params[:dish_name])
+        unless dish = HomeCook.find_by_name(params[:dish][:name])
+          data = {
+            :name => params[:dish][:name], 
+            :dish_type_id => params[:dish][:dish_type_id],
+            :dish_subtype_id => params[:dish][:dish_subtype_id]
+          }
+          dish = HomeCook.create(data)
         end
         
         friends = []
-        params[:fb_friends].split(',').each do |f|
-          if user = User.find_by_facebook_id(f)
-            friends.push(user.id)
-          else
-            rest = Koala::Facebook::GraphAPI.new
-            friends.push(rest.get_object(f)[:name])
+        
+        if params[:fb_friends]
+          params[:fb_friends].split(',').each do |f|
+            if user = User.find_by_facebook_id(f)
+              friends.push(user.id)
+            else
+              rest = Koala::Facebook::GraphAPI.new
+              friends.push(rest.get_object(f)[:name])
+            end
           end
         end
         
-        params[:tw_friends].split(',').each do |f|
-          if user = User.find_by_twitter_id(f) 
-            friends.push(user.id)
-          else
-            friends.push(Twitter.user(f).name)
+        if params[:tw_friends]
+          params[:tw_friends].split(',').each do |f|
+            if user = User.find_by_twitter_id(f) 
+              friends.push(user.id)
+            else
+              friends.push(Twitter.user(f).name)
+            end
           end
         end
         
-        params[:friends].split(',').each do |f|
-          friends.push(f)
+        if params[:friends]
+          params[:friends].split(',').each do |f|
+            friends.push(f)
+          end
         end
         
-        data = {
-          :dish_id => dish.id,
-          :friends => friends.join(','),
-          :home_cooked => 1
-        }        
+        params[:review][:dish_id] = dish.id
+        params[:review][:friends] = friends.join(',')
+        params[:review][:home_cooked] = 1 
+        
+        if params[:uuid] && image = Image.find_by_uuid(params[:uuid])
+          params[:review][:photo] = File.open(image.photo.file.file)  
+          image.destroy
+        end 
+        
+        if params[:review][:user_id]
+          Review.save_review(params[:review])
+        else
+          return render :json => {:error => {:description => 'User not found', :code => 8}}
+        end
+            
         Review.create(data)
 
       else  
@@ -1126,7 +1148,7 @@ class ApiController < ApplicationController
         return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless Dish.find_by_id(params[:review][:dish_id])
       
         if params[:review][:user_id]
-          Review.new.save_review(params[:review])
+          Review.save_review(params[:review])
         else
           return render :json => {:error => {:description => 'User not found', :code => 69}}
         end

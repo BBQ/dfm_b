@@ -134,7 +134,7 @@ class Review < ActiveRecord::Base
     end
   end  
   
-  def save_review(user_review)
+  def self.save_review(user_review)
    
     rating = user_review[:rating].to_f
     dish = Dish.find(user_review[:dish_id])
