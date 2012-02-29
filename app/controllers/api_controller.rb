@@ -9,7 +9,7 @@ class ApiController < ApplicationController
   
   def add_restaurant
     
-    if params[:restaurant][:name] && params[:restaurant][:category] && (params[:restaurant][:address] || (params[:restaurant][:lat] && params[:restaurant][:lon]))
+    if (params[:restaurant][:address] || (params[:restaurant][:lat] && params[:restaurant][:lon]) || params[:restaurant][:web] || params[:restaurant][:phone]) && params[:restaurant][:name] && params[:restaurant][:category]
       
       if restaurant_category = RestaurantCategory.find_by_name(params[:restaurant][:category])
         params[:restaurant][:restaurant_category_id] = restaurant_category.id
@@ -28,7 +28,7 @@ class ApiController < ApplicationController
       if r = Restaurant.create(params[:restaurant])
         r_id = r.id 
       end
-    
+          
     else
       $error = {:description => 'Params missing', :code => 8}
     end
@@ -946,7 +946,7 @@ class ApiController < ApplicationController
       chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
       return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 357}} unless chk24.blank?
       
-      if params[:home_cooked] == 1
+      if params[:home_cooked].to_i == 1
         unless dish = HomeCook.find_by_name(params[:dish_name])
           dish = HomeCook.create(params[:dish_name])
         end
