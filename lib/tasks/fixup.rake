@@ -6,7 +6,15 @@ namespace :fix do
     Restaurant.where('city IS NULL').each do |r|
       if result = Geocoder.search("#{r.lat},#{r.lon}")[0]
         p "#{r.id}. #{r.name}"
-        r.city = result.address_components[3]['long_name']
+        if city = result.address_components[3]
+          if city['long_name'] == 'Moscow'
+            r.city = city['long_name']
+          else
+            r.city = result.address_components[2]['long_name']
+          end
+        else
+          r.city = result.address_components[1]['long_name']
+        end
         r.save
       end
     end
