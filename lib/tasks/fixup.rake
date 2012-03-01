@@ -3,7 +3,7 @@ namespace :fix do
   
   desc "Fill restaurants with cities"
   task :city => :environment do
-    Restaurant.all.each do |r|
+    Restaurant.where('city IS NULL').each do |r|
       result = Geocoder.search("#{r.lat},#{r.lon}")
       r.city = result.city
       r.save
