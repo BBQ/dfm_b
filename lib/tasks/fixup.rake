@@ -5,9 +5,8 @@ namespace :fix do
   task :city => :environment do
     Restaurant.where('city IS NULL').each do |r|
       result = Geocoder.search("#{r.lat},#{r.lon}")
-      restaurant = Restaurant.find_by_id(r.id)
-      restaurant.city = result.city
-      restaurant.save
+      r.city = result[0].address_components[3]['long_name']
+      r.save
     end
   end
   
