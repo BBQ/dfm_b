@@ -94,7 +94,7 @@ class User < ActiveRecord::Base
       if user = User.find_by_facebook_id(result["id"])
         token = Session.get_token(user)
       elsif result["email"] 
-        user = create_user_from_facebook(result)
+        user = create_user_from_facebook(rest)
         token = Session.get_token(user)        
       end
     rescue
@@ -103,13 +103,16 @@ class User < ActiveRecord::Base
     {:name => user.name, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id, :twitter_id => user.twitter_id} unless token.nil? 
   end
   
-  def self.create_user_from_facebook(auth_result)
+  def self.create_user_from_facebook(rest)
+    auth_result = rest.get_object("me")
+    
     user = User.create({
       :email => auth_result["email"] , 
       :name => auth_result["name"], 
       :gender => auth_result["gender"],
       :current_city => auth_result["location"]["name"],
-      :facebook_id => auth_result["id"]
+      :facebook_id => auth_result["id"],
+      :fb_access_token => auth_result["access_token"]
     })
     
     Authentication.create({
@@ -117,7 +120,13 @@ class User < ActiveRecord::Base
       :provider => 'facebook',
       :uid => auth_result["id"], 
     })
-    # User.new.get_user_fb_friends(access_token)
+    
+    rest.get_connections("me", "friends").each do |f|
+      if user_friend = User.find_by_facebook_id(f['id'])
+        Notification.send_push(user.id, user_friend.id, 'new_fb_user')
+      end
+    end
+    
     user
   end
     

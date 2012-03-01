@@ -18,6 +18,13 @@ class Notification < ActiveRecord::Base
           badge += Comment.where("user_id = ? and `read` != 1", data).count(:id)
           badge += Follower.where("user_id = ? and `read` != 1", data).count(:id)
         end
+      elsif type == 'new_fb_user'
+        if device = APN::Device.where(:user_id => data).first  
+          alert = "Your facebook friend #{user.name.split.first} #{user.name.split.second[0]}. has joined Dish.fm"
+          badge = Like.where("user_id = ? and `read` != 1", data).count(:id)
+          badge += Comment.where("user_id = ? and `read` != 1", data).count(:id)
+          badge += Follower.where("user_id = ? and `read` != 1", data).count(:id)
+        end
       end
 
       if device

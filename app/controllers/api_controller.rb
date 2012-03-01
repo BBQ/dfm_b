@@ -918,7 +918,7 @@ class ApiController < ApplicationController
         categories.sort_by!{|k| k[:order] && k.delete(:order) }
       
         dishes.group(:dish_type_id).each do |dish|
-          types.push({:id => dish.dish_type.id, :name => dish.dish_type.name, :order => dish.dish_type.order}) if dish.dish_type
+          types.push({:id => dish.dish_type.id, :name => dish.dish_type.name_eng, :order => dish.dish_type.order}) if dish.dish_type
         end
         types.sort_by!{|k| k[:order] }
       
