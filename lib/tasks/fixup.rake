@@ -4,9 +4,10 @@ namespace :fix do
   desc "Fill restaurants with cities"
   task :city => :environment do
     Restaurant.where('city IS NULL').each do |r|
-      result = Geocoder.search("#{r.lat},#{r.lon}")
-      r.city = result[0].address_components[3]['long_name']
-      r.save
+      if result = Geocoder.search("#{r.lat},#{r.lon}")
+        r.city = result[0].address_components[3]['long_name']
+        r.save
+      end
     end
   end
   
