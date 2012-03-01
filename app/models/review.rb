@@ -148,7 +148,7 @@ class Review < ActiveRecord::Base
     if user_review[:home_cooked] == 1
       dish = HomeCook.find(user_review[:dish_id])
     else
-      dish = Dish.find(user_review[:dish_id])
+      dish = Dish.find(user_review[:dish_id])      
       restaurant = Restaurant.find_by_id(user_review[:restaurant_id])
       network = Network.find_by_id(restaurant.network_id)
     end
@@ -193,6 +193,17 @@ class Review < ActiveRecord::Base
       end
       status = 'created'
     end
+    
+    if top_uid = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0]
+      dish.top_user_id = top_uid
+      dish.save
+    end
+    
+    if top_uid = (Review.where('restaurant_id = ?', restaurant.id).group('user_id').count).max[0]
+      restaurant.top_user_id = top_uid
+      restaurant.save
+    end
+    
     {:status => 'updated', :dish => dish}
   end 
 

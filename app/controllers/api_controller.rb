@@ -753,13 +753,13 @@ class ApiController < ApplicationController
       end
       
       if params[:type] == 'expert'   
-        r = Restaurant.where('restaurants.id IN(SELECT restaurant_id FROM reviews WHERE user_id = ?)', params[:id]).joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').order("fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
-        # d = DishType.joins("LEFT OUTER JOIN (SELECT name, dish_type_id FROM dishes WHERE id IN (SELECT dish_id FROM reviews WHERE user_id='#{params[:id]}')) r ON dish_types.id = r.dish_type_id")
+       
+       r = Restaurant.select([:id, :name, :address, :photo]).where(:top_user_id => params[:id])
+       d = Dish.select([:id, :name, :photo]).where(:top_user_id => params[:id])
+       
         return render :json => {
-              :restaurants => r,
-              :following_count => following_count,
-              :followers_count => followers_count,
-              # :dishes => d, 
+              :restaurants => r ||= [],
+              :dishes => d ||= [], 
               :error => $error
         }
       end
