@@ -1,6 +1,15 @@
 # encoding: utf-8
 namespace :fix do
   
+  desc "Fill restaurants with cities"
+  task :city => :environment do
+    Restaurant.all.each do |r|
+      result = Geocoder.search("#{r.lat},#{r.lon}")
+      r.city = result.city
+      r.save
+    end
+  end
+  
   desc "Update no_rate_order for Dishes"
   task :dish_norate => :environment do
     i = 1

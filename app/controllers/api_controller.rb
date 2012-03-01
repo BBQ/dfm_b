@@ -25,6 +25,19 @@ class ApiController < ApplicationController
         params[:restaurant][:network_id] = n.id
       end
       
+      if params[:restaurant][:lat] && params[:restaurant][:lon] && params[:restaurant][:address].blank?
+        result = Geocoder.search("#{params[:restaurant][:lat]},#{params[:restaurant][:lon]}")
+        params[:restaurant][:address] = result.address  
+      end
+      
+      if params[:restaurant][:lat].blank? && params[:restaurant][:lon].blank? && params[:restaurant][:address]
+        result = Geocoder.search("#{params[:restaurant][:address]}")
+        params[:restaurant][:lat] = result.latitude
+        params[:restaurant][:lon] = result.longitude
+      end
+      
+      params[:restaurant][:city] = result.city
+      
       if r = Restaurant.create(params[:restaurant])
         r_id = r.id 
       end
