@@ -45,19 +45,19 @@ class ApiController < ApplicationController
       end
       
       unless r.blank?
-        if city = r.address_components[3]
+        if city = r[0].address_components[3]
           if city['long_name'] == 'Moscow'
             params[:restaurant][:city] = city['long_name']
           else
-            params[:restaurant][:city] = r.address_components[2]['long_name']
+            params[:restaurant][:city] = r[0].address_components[2]['long_name']
           end
         else
-          params[:restaurant][:city] = r.address_components[1]['long_name']
+          params[:restaurant][:city] = r[0].address_components[1]['long_name']
         end
       end
             
-      if r = Restaurant.create(params[:restaurant])
-        r_id = r.id 
+      if rest = Restaurant.create(params[:restaurant])
+        r_id = rest.id 
       end
           
     else
