@@ -5,7 +5,7 @@ namespace :import do
   task :restoran_ru => :environment do
     
     directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/'
-    file = directory + 'Restoran RU-2 -1.xlsx'
+    file = directory + 'Restoran RU-2 - 1.xlsx'
     
     parser = Excelx.new(file, false, :ignore)  
     dish_sheet = parser.sheets[0]
