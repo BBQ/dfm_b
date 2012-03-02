@@ -918,27 +918,23 @@ namespace :mi do
                        :weight => d['Weight'][0]
                   }
 
-                  unless MiDish.select(:mi_id).find_by_mi_id(data[:mi_id])
-                   MiDish.create(data)
-                   p "#{data[:mi_id]} - #{data[:name]}, at #{data[:restaurant_name]} YES!"
-                  else
-                   p "#{data[:mi_id]} ALREADY EXIST!"
-                  end
+                   unless MiDish.select(:mi_id).find_by_mi_id(data[:mi_id])
+                     MiDish.create(data)
+                     p "#{data[:mi_id]} - #{data[:name]}, at #{data[:restaurant_name]} YES!"
+                    else
+                     p "#{data[:mi_id]} ALREADY EXIST!"
+                    end
+                end
+                p "#{r.mi_id} ok!"
+              rescue
+                p "#{i} NOT EXIST!"
               end
-              p "#{r.mi_id} ok!"
+
             rescue
-              p "#{i} NOT EXIST!"
+              p "#{r.mi_id} err!"
             end
-
-          rescue
-            p "#{r.mi_id} err!"
           end
-        end
-
       end
-    end  
-
-  end
   
   task :parse, [:type] => :environment do |t, args|
   
