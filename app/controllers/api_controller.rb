@@ -36,14 +36,16 @@ class ApiController < ApplicationController
         params[:restaurant][:lon] = r[0].geometry['location']['lng']
       end
       
-      if !r.blank? && city = r.address_components[3]
-        if city['long_name'] == 'Moscow'
-          params[:restaurant][:city] = city['long_name']
+      unless r.blank?
+        if city = r.address_components[3]
+          if city['long_name'] == 'Moscow'
+            params[:restaurant][:city] = city['long_name']
+          else
+            params[:restaurant][:city] = r.address_components[2]['long_name']
+          end
         else
-          params[:restaurant][:city] = r.address_components[2]['long_name']
+          params[:restaurant][:city] = r.address_components[1]['long_name']
         end
-      else
-        params[:restaurant][:city] = r.address_components[1]['long_name']
       end
             
       if r = Restaurant.create(params[:restaurant])
