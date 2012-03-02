@@ -25,15 +25,21 @@ class ApiController < ApplicationController
         params[:restaurant][:network_id] = n.id
       end
       
-      if params[:restaurant][:lat] && params[:restaurant][:lon] && params[:restaurant][:address].blank?
-        r = Geocoder.search("#{params[:restaurant][:lat]},#{params[:restaurant][:lon]}")
-        params[:restaurant][:address] = "#{r[0].address_components[1]['long_name']}, #{r[0].address_components[0]['long_name']}"
+      if params[:restaurant][:address]
+        if r = Geocoder.search("#{params[:restaurant][:address]}")
+          if params[:restaurant][:lat].blank? && params[:restaurant][:lon].blank?
+            params[:restaurant][:lat] = r[0].geometry['location']['lat']
+            params[:restaurant][:lon] = r[0].geometry['location']['lng']
+          end
+        end
       end
       
-      if params[:restaurant][:lat].blank? && params[:restaurant][:lon].blank? && params[:restaurant][:address]
-        r = Geocoder.search("#{params[:restaurant][:address]}")
-        params[:restaurant][:lat] = r[0].geometry['location']['lat']
-        params[:restaurant][:lon] = r[0].geometry['location']['lng']
+      if params[:restaurant][:lat] && params[:restaurant][:lon]
+        if r = Geocoder.search("#{params[:restaurant][:lat]},#{params[:restaurant][:lon]}")
+          if params[:restaurant][:address].blank?
+            params[:restaurant][:address] = "#{r[0].address_components[1]['long_name']}, #{r[0].address_components[0]['long_name']}"
+          end
+        end
       end
       
       unless r.blank?
