@@ -1,6 +1,52 @@
 # encoding: utf-8
 namespace :import do
   
+  desc "Import Restoran.ru" 
+  task :restoran_ru => :environment do
+    directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/'
+    file = directory + 'Restoran RU-2 -1.xlsx'
+    parser = Excelx.new(file, false, :ignore)  
+    
+    dish_sheet = parser.sheets[0]
+    2.upto(parser.last_row(dish_sheet)) do |line|
+      rest_name = parser.cell(line,'B', dish_sheet).to_s.gsub(/^\p{Space}+|\p{Space}+$/, "")
+      if r = Restaurant.find_by_name(rest_name)
+        p r.name
+        if r.network.dishes.count < 20
+
+          # Prepare data
+          name = parser.cell(line,'D', dish_sheet).strip.gsub(/'\s|\s'|[“”‛’»«`]/, '"')
+          description = parser.cell(line,'E', dish_sheet).to_s.gsub(/'\s|\s'|[“”‛’»«`]/, '"').strip if parser.cell(line,'E', dish_sheet)
+
+          dish_category = parser.cell(line,'C', dish_sheet).downcase.gsub(/^\p{Space}+|\p{Space}+$/, "") unless parser.cell(line,'C', dish_sheet).blank?
+          dish_category_id = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
+
+          dish_type = parser.cell(line,'G', dish_sheet).downcase.gsub(/^\p{Space}+|\p{Space}+$/, "") unless parser.cell(line,'G', dish_sheet).blank?
+          dish_type_id = DishType.find_by_name(dish_type) ? DishType.find_by_name(dish_type).id : DishType.create(:name => dish_type).id
+
+
+          dish_data = {
+            :name => name,
+            :price => parser.cell(line,'F', dish_sheet),
+            :description => description,
+            :dish_category_id => dish_category_id,
+            :dish_type_id => dish_type_id,
+            :network_id => r.network_id,
+            :dish_subtype_id => 0
+          }
+
+          unless Dish.find_by_name_and_network_id(dish_data[:name], dish_data[:network_id])
+            # Dish.create(dish_data) unless dish_data[:name].blank?
+            p dish_data[:name]
+          end
+        end
+      end
+    end
+        
+    
+    
+  end
+  
   desc "Check was all dishes imported" 
   task :check_import, [:dirname, :filename] => :environment do |t, args|
     
