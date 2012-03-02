@@ -18,12 +18,15 @@ class ApiController < ApplicationController
       end
       params[:restaurant].delete(:category)
       
-      if n = Network.find_by_name(params[:restaurant][:name])
-        params[:restaurant][:network_id] = n.id
-      else
-        n = Network.create({:name => params[:restaurant][:name], :city => params[:restaurant][:city]})
-        params[:restaurant][:network_id] = n.id
-      end
+      # if n = Network.find_by_name(params[:restaurant][:name])
+      #   params[:restaurant][:network_id] = n.id
+      # else
+      #   n = Network.create({:name => params[:restaurant][:name], :city => params[:restaurant][:city]})
+      #   params[:restaurant][:network_id] = n.id
+      # end
+      
+      n = Network.create({:name => params[:restaurant][:name], :city => params[:restaurant][:city]})
+      params[:restaurant][:network_id] = n.id
       
       if params[:restaurant][:address]
         r = Geocoder.search("#{params[:restaurant][:address]}")
