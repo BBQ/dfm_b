@@ -12,14 +12,22 @@ namespace :import do
     
     dish_category_id_new = 0
     restaurant_id_new = 0
+    checked = 0
     i = 0
     
     2.upto(parser.last_row(dish_sheet)) do |line|
       rest_name = parser.cell(line,'B', dish_sheet).to_s.gsub(/^\p{Space}+|\p{Space}+$/, "")
       if r = Restaurant.find_by_name(rest_name)
+        
         p r.name
-        if r.network.dishes.count < 20
-
+        if restaurant_id_new != r.id
+          checked = 0
+          i = 0
+        end
+        
+        if r.network.dishes.count < 20 || checked == 1
+          checked = 1
+          
           # Prepare data
           name = parser.cell(line,'D', dish_sheet).strip.gsub(/'\s|\s'|[“”‛’»«`]/, '"')
           description = parser.cell(line,'E', dish_sheet).to_s.gsub(/'\s|\s'|[“”‛’»«`]/, '"').strip if parser.cell(line,'E', dish_sheet)
@@ -42,20 +50,20 @@ namespace :import do
           }
 
           unless Dish.find_by_name_and_network_id(dish_data[:name], dish_data[:network_id])
-            # Dish.create(dish_data) unless dish_data[:name].blank?
+            Dish.create(dish_data) unless dish_data[:name].blank?
             p dish_data[:name]
           end
           
-          # DishCategoryOrder set
+          # Set Dish Category Order
           if dish_category_id_new != dish_category_id
-            i = 0 if restaurant_id_new != r.id
             dish_category_order_data = {
               :restaurant_id => r.id,
               :network_id => r.network_id,
               :dish_category_id => dish_category_id,
-              :order => i + 1
+              :order => i += 1
             }
-            # DishCategoryOrder.create(dish_category_order_data)     
+            
+            DishCategoryOrder.create(dish_category_order_data)     
             p dish_category_order_data
             
             dish_category_id_new = dish_category_id
