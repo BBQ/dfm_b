@@ -3,11 +3,17 @@ namespace :import do
   
   desc "Import Restoran.ru" 
   task :restoran_ru => :environment do
+    
     directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/'
     file = directory + 'Restoran RU-2 -1.xlsx'
-    parser = Excelx.new(file, false, :ignore)  
     
+    parser = Excelx.new(file, false, :ignore)  
     dish_sheet = parser.sheets[0]
+    
+    dish_category_id_new = 0
+    restaurant_id_new = 0
+    i = 0
+    
     2.upto(parser.last_row(dish_sheet)) do |line|
       rest_name = parser.cell(line,'B', dish_sheet).to_s.gsub(/^\p{Space}+|\p{Space}+$/, "")
       if r = Restaurant.find_by_name(rest_name)
@@ -39,6 +45,23 @@ namespace :import do
             # Dish.create(dish_data) unless dish_data[:name].blank?
             p dish_data[:name]
           end
+          
+          # DishCategoryOrder set
+          if dish_category_id_new != dish_category_id
+            i = 0 if restaurant_id_new != r.id
+            dish_category_order_data = {
+              :restaurant_id => r.id,
+              :network_id => r.network_id,
+              :dish_category_id => dish_category_id,
+              :order => i + 1
+            }
+            # DishCategoryOrder.create(dish_category_order_data)     
+            p dish_category_order_data
+            
+            dish_category_id_new = dish_category_id
+            restaurant_id_new = r.id
+          end
+          
         end
       end
     end
