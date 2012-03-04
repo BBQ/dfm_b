@@ -834,7 +834,7 @@ namespace :mi do
         :telephone => r['Telephone'][0],
         :wifi => r['WiFi'][0],
         :worktime => r['WorkTime'][0],
-        :city => 'MSK '
+        :city => 'SPB'
       }    
       restaurant = MiRestaurant.find_by_mi_id(data[:mi_id])
 
