@@ -801,8 +801,8 @@ namespace :mi do
             <tns2:Filter>
               <tns2:Id>4</tns2:Id>
               <tns2:NumericValues>
-                <tns3:double>#{lat_msk}</tns3:double>
-                <tns3:double>#{lng_msk}</tns3:double>
+                <tns3:double>#{lat_spb}</tns3:double>
+                <tns3:double>#{lng_spb}</tns3:double>
               </tns2:NumericValues>
               <tns2:Switcher>true</tns2:Switcher>
               <tns2:Type>3</tns2:Type>
