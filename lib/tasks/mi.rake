@@ -941,7 +941,13 @@ namespace :mi do
     
     MiRestaurant.all.each do |mi_r|
       
-      unless n = Network.find_by_name(mi_r.name)
+      if n = Network.find_by_name(mi_r.name)
+        n = n
+      elsif r = Restaurant.find_by_name(mi_r.name)
+        n = r.network
+        n.name = r.name
+        n.save
+      else
         city = mi_r.city == "SPB" ? "Saint Petersburg" : "Moscow"
         n = Network.create({:name => mi_r.name, :city => city})
       end
@@ -1010,7 +1016,7 @@ namespace :mi do
             # Set Dish Category Order
             if dish_category_id_new != dish_category_id
               i += 1
-              Restaurant.where(:name => mi_r.name).each do |r|
+              Restaurant.where(:network_id => r.network_id).each do |r|
                 dish_category_order_data = {
                   :restaurant_id => r.id,
                   :network_id => r.network_id,
@@ -1019,7 +1025,6 @@ namespace :mi do
                 }
 
                 DishCategoryOrder.create(dish_category_order_data)
-                p dish_category_order_data[:order]
                 dish_category_id_new = dish_category_id
                 restaurant_id_new = r.id
               end
