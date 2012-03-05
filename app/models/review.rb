@@ -200,9 +200,11 @@ class Review < ActiveRecord::Base
       dish.save
     end
     
-    if top_uid = (Review.where('restaurant_id = ?', restaurant.id).group('user_id').count).max[0]
-      restaurant.top_user_id = top_uid
-      restaurant.save
+    if restaurant
+      if top_uid = (Review.where('restaurant_id = ?', restaurant.id).group('user_id').count).max[0]
+        restaurant.top_user_id = top_uid
+        restaurant.save
+      end
     end
     
     {:status => 'updated', :dish => dish}
