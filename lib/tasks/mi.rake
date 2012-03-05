@@ -974,6 +974,7 @@ namespace :mi do
         end
 
         i = 0
+        dish_category_id_new = 0
         MiDish.where(:restaurant_id => mi_r.mi_id).each do |mi_d|
           
           dc_name = mi_d.category_name.downcase.gsub(/^\p{Space}+|\p{Space}+$/, "")
