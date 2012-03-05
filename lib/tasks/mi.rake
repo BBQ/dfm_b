@@ -937,6 +937,78 @@ namespace :mi do
     end
   end
   
+  task :copy => :environment do
+    
+    MiRestaurant.all.each do |mi_r|
+      
+      unless n = Network.find_by_name(mi_r.name)
+        city = mi_r.city == "SPB" ? "Saint Petersburg" : "Moscow"
+        n = Network.create({:name => mi_r.name, :city => city})
+      end
+      
+      if n.dishes.count < 30
+
+        n.restaurants.each {|rest| rest.destroy}
+
+        MiRestaurant.where(:name => mi_r.name).each do |mi_ar|
+          restaurant_data = {
+            :name => mi_ar.name.capitalize_first_letter,
+            :address => mi_ar.address,
+            :time => mi_ar.worktime,
+            :phone => mi_ar.telephone,
+            :description => mi_ar.description,
+            :web => mi_ar.site,
+            :lat => mi_ar.latitude,
+            :lon => mi_ar.longitude,
+            :network_id => mi_ar.our_network_id,
+            :wifi => mi_ar.wifi || 0,
+            :station => mi_ar.metro,
+            :source => 'web_mi_u1',
+          }
+          Restaurant.create(restaurant_data)
+          mi_ar.step = 11
+          mi_ar.save
+        end
+
+        MiDish.where(:restaurant_id => mi_r.mi_id).each do |mi_d|
+          
+          dc_name = d.category_name.downcase.gsub(/^\p{Space}+|\p{Space}+$/, "")
+          dish_category_id = DishCategory.find_by_name(dc_name) ? DishCategory.find_by_name(dc_name).id : DishCategory.create(:name => dc_name).id
+
+          types = {'1' => 14, '10' => 16, '11' => 15, '13' => 18, '14' => 15, '16' => 18, '17' => 2, '18' => 15,
+            '2' => 4, '20' => 17, '3' => 15, '4' => 15, '5' => 15, '594' => 15, '6' => 15, '6906' => 2, '6907' => 2,
+            '6961' => 7, '7' => 2, '8' => 14, '9' => 15
+          }
+      
+          sub_types = {'11' => 13, '17' => 28, '18' => 21, '3' => 46, '4' => 7, '5' => 11, '594' => 4, '6' => 19,
+            '6907' => 27, '9' => 5
+          }
+          
+          dish_data = {
+            :name => mi_d.name,
+            :remote_photo_url => mi_d.pictures.blank? ? nil : "http://188.93.18.50/menutka/GetImageMedium/#{d.pictures[/"([\d]+)"/, 1]}.jpg",
+            :price => mi_d.price,
+            :description => mi_d.description['--- {}'].nil? ? mi_d.description : nil,
+            :network_id => n.id,
+
+            :dish_category_id => dish_category_id,
+            :dish_type_id => types[d.category_id],
+            :dish_subtype_id => sub_types[d.category_id],
+            :dish_extratype_id => mi_d.vegetarian == 'true' ? 4 : nil,
+          }
+          
+          Dish.creat(dish_data)  
+        end
+        
+        MiRestaurant.where(:name => mi_r.name).each do |mi_ar|
+          mi_ar.step = 12
+          mi_ar.save
+        end
+      
+      end
+  end
+  
+  
   task :parse, [:type] => :environment do |t, args|
   
     require 'rubygems'
@@ -1201,4 +1273,6 @@ namespace :mi do
       end
     end
   end
+  
+  
 end
