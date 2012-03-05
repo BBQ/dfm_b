@@ -975,7 +975,7 @@ namespace :mi do
 
         MiDish.where(:restaurant_id => mi_r.mi_id).each do |mi_d|
           
-          dc_name = d.category_name.downcase.gsub(/^\p{Space}+|\p{Space}+$/, "")
+          dc_name = mi_d.category_name.downcase.gsub(/^\p{Space}+|\p{Space}+$/, "")
           dish_category_id = DishCategory.find_by_name(dc_name) ? DishCategory.find_by_name(dc_name).id : DishCategory.create(:name => dc_name).id
 
           types = {'1' => 14, '10' => 16, '11' => 15, '13' => 18, '14' => 15, '16' => 18, '17' => 2, '18' => 15,
@@ -989,14 +989,14 @@ namespace :mi do
           
           dish_data = {
             :name => mi_d.name,
-            :remote_photo_url => mi_d.pictures.blank? ? nil : "http://188.93.18.50/menutka/GetImageMedium/#{d.pictures[/"([\d]+)"/, 1]}.jpg",
+            :remote_photo_url => mi_d.pictures.blank? ? nil : "http://188.93.18.50/menutka/GetImageMedium/#{mi_d.pictures[/"([\d]+)"/, 1]}.jpg",
             :price => mi_d.price,
             :description => mi_d.description['--- {}'].nil? ? mi_d.description : nil,
             :network_id => n.id,
 
             :dish_category_id => dish_category_id,
-            :dish_type_id => types[d.category_id],
-            :dish_subtype_id => sub_types[d.category_id],
+            :dish_type_id => types[mi_d.category_id],
+            :dish_subtype_id => sub_types[mi_d.category_id],
             :dish_extratype_id => mi_d.vegetarian == 'true' ? 4 : nil,
           }
           
