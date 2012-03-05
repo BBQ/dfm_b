@@ -946,6 +946,8 @@ namespace :mi do
         n = Network.create({:name => mi_r.name, :city => city})
       end
       
+      p n.name
+      
       if n.dishes.count < 30
 
         n.restaurants.each {|rest| rest.destroy}
@@ -968,6 +970,7 @@ namespace :mi do
           Restaurant.create(restaurant_data)
           mi_ar.step = 11
           mi_ar.save
+          p " - #{mi_ar.address}"
         end
 
         MiDish.where(:restaurant_id => mi_r.mi_id).each do |mi_d|
@@ -997,7 +1000,8 @@ namespace :mi do
             :dish_extratype_id => mi_d.vegetarian == 'true' ? 4 : nil,
           }
           
-          Dish.creat(dish_data)  
+          Dish.creat(dish_data)
+          p "  --- #{mi_d.name}"  
         end
         
         MiRestaurant.where(:name => mi_r.name).each do |mi_ar|
