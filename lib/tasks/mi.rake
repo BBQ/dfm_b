@@ -1009,12 +1009,13 @@ namespace :mi do
             
             # Set Dish Category Order
             if dish_category_id_new != dish_category_id
+              i += 1
               Restaurant.where(:name => mi_r.name).each do |r|
                 dish_category_order_data = {
                   :restaurant_id => r.id,
                   :network_id => r.network_id,
                   :dish_category_id => dish_category_id,
-                  :order => i += 1
+                  :order => i
                 }
 
                 DishCategoryOrder.create(dish_category_order_data)
