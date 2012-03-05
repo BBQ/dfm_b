@@ -1009,6 +1009,7 @@ namespace :mi do
           
           # Set Dish Category Order
           if dish_category_id_new != dish_category_id
+            restaurant_id_new = 0
             Restaurant.where(:name => mi_r.name).each do |r|
               i = 0 if restaurant_id_new != r.id            
               dish_category_order_data = {
