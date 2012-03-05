@@ -962,7 +962,7 @@ namespace :mi do
             :web => mi_ar.site,
             :lat => mi_ar.latitude,
             :lon => mi_ar.longitude,
-            :network_id => mi_ar.our_network_id,
+            :network_id => n.id,
             :wifi => mi_ar.wifi || 0,
             :station => mi_ar.metro,
             :source => 'web_mi_u1',
@@ -970,7 +970,7 @@ namespace :mi do
           r = Restaurant.create(restaurant_data)
           mi_ar.step = 11
           mi_ar.save
-          p " - #{mi_ar.address}"
+          p "--- #{mi_ar.address}"
         end
 
         i = 0
@@ -1004,34 +1004,34 @@ namespace :mi do
           
           unless Dish.find_by_name_and_network_id(dish_data[:name], dish_data[:network_id])
             Dish.create(dish_data)
-            p " --- #{mi_d.name}"  
-          end
-          
-          # Set Dish Category Order
-          if dish_category_id_new != dish_category_id
-            restaurant_id_new = 0
-            Restaurant.where(:name => mi_r.name).each do |r|
-              i = 0 if restaurant_id_new != r.id            
-              dish_category_order_data = {
-                :restaurant_id => r.id,
-                :network_id => r.network_id,
-                :dish_category_id => dish_category_id,
-                :order => i += 1
-              }
-          
-              DishCategoryOrder.create(dish_category_order_data)     
-              p dish_category_order_data
-              dish_category_id_new = dish_category_id
-              restaurant_id_new = r.id
+            p "  - #{mi_d.name}"  
+            
+            # Set Dish Category Order
+            if dish_category_id_new != dish_category_id
+              restaurant_id_new = 0
+              Restaurant.where(:name => mi_r.name).each do |r|
+                i = 0 if restaurant_id_new != r.id            
+                dish_category_order_data = {
+                  :restaurant_id => r.id,
+                  :network_id => r.network_id,
+                  :dish_category_id => dish_category_id,
+                  :order => i += 1
+                }
+
+                DishCategoryOrder.create(dish_category_order_data)
+                p dish_category_order_data
+                dish_category_id_new = dish_category_id
+                restaurant_id_new = r.id
+              end
             end
           end
+
+          MiRestaurant.where(:name => mi_r.name).each do |mi_ar|
+            mi_ar.step = 12
+            mi_ar.save
+          end
+          
         end
-        
-        MiRestaurant.where(:name => mi_r.name).each do |mi_ar|
-          mi_ar.step = 12
-          mi_ar.save
-        end
-      
       end
     end
   end
