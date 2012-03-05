@@ -956,7 +956,13 @@ namespace :mi do
       
       if n.dishes.count < 30
         
-        n.restaurants.each {|rest| rest.destroy}
+        if n.dishes.count == 0
+          n.restaurants.each {|rest| rest.destroy}
+        else
+          n.restaurants.each do |r_del|
+            r_del.destroy if r_del.reviews.count == 0
+          end
+        end
 
         MiRestaurant.where(:name => mi_r.name).each do |mi_ar|
           restaurant_data = {
