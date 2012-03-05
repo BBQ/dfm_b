@@ -1004,7 +1004,7 @@ namespace :mi do
           
           unless Dish.find_by_name_and_network_id(dish_data[:name], dish_data[:network_id])
             Dish.create(dish_data)
-            p "  --- #{mi_d.name}"  
+            p " --- #{mi_d.name}"  
           end
           
           # Set Dish Category Order
