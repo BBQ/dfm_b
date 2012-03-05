@@ -949,7 +949,7 @@ namespace :mi do
       p n.name
       
       if n.dishes.count < 30
-
+        
         n.restaurants.each {|rest| rest.destroy}
 
         MiRestaurant.where(:name => mi_r.name).each do |mi_ar|
@@ -967,12 +967,13 @@ namespace :mi do
             :station => mi_ar.metro,
             :source => 'web_mi_u1',
           }
-          Restaurant.create(restaurant_data)
+          r = Restaurant.create(restaurant_data)
           mi_ar.step = 11
           mi_ar.save
           p " - #{mi_ar.address}"
         end
 
+        i = 0
         MiDish.where(:restaurant_id => mi_r.mi_id).each do |mi_d|
           
           dc_name = mi_d.category_name.downcase.gsub(/^\p{Space}+|\p{Space}+$/, "")
@@ -1000,8 +1001,24 @@ namespace :mi do
             :dish_extratype_id => mi_d.vegetarian == 'true' ? 4 : nil,
           }
           
-          Dish.creat(dish_data)
-          p "  --- #{mi_d.name}"  
+          unless Dish.find_by_name_and_network_id(dish_data[:name], dish_data[:network_id])
+            Dish.create(dish_data)
+            p "  --- #{mi_d.name}"  
+          end
+          
+          # Set Dish Category Order
+          if dish_category_id_new != dish_category_id
+            dish_category_order_data = {
+              :restaurant_id => r.id,
+              :network_id => r.network_id,
+              :dish_category_id => dish_category_id,
+              :order => i += 1
+            }
+            
+            DishCategoryOrder.create(dish_category_order_data)     
+            p dish_category_order_data
+            dish_category_id_new = dish_category_id
+          end
         end
         
         MiRestaurant.where(:name => mi_r.name).each do |mi_ar|
