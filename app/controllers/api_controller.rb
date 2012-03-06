@@ -1171,7 +1171,7 @@ class ApiController < ApplicationController
           end
         end
       
-        return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless Dish.find_by_id(params[:review][:dish_id])
+        return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless dfc = Dish.find_by_id(params[:review][:dish_id])
       
         if params[:review][:user_id]
           Review.save_review(params[:review])
