@@ -25,21 +25,27 @@ class Review < ActiveRecord::Base
         dish_id = review.dish_id
         data[:rating] = rating
                   
-        restaurant = Restaurant.find_by_id(restaurant_id)
-        data[:rrb] = restaurant.rating
-        data[:rvb] = restaurant.votes
-        restaurant.rating = restaurant.votes == 1?0 : (restaurant.rating * restaurant.votes - rating) / (restaurant.votes - 1)
-        restaurant.votes = restaurant.votes == 1?0 : restaurant.votes - 1
-        data[:rra] = restaurant.rating
-        data[:rva] = restaurant.votes
+        if restaurant = Restaurant.find_by_id(restaurant_id)
+         
+          data[:rrb] = restaurant.rating
+          data[:rvb] = restaurant.votes
+          restaurant.rating = restaurant.votes == 1?0 : (restaurant.rating * restaurant.votes - rating) / (restaurant.votes - 1)
+          restaurant.votes = restaurant.votes == 1?0 : restaurant.votes - 1
+          data[:rra] = restaurant.rating
+          data[:rva] = restaurant.votes
       
-        network = Network.find_by_id(restaurant.network_id)
-        data[:nrb] = network.rating
-        data[:nvb] = network.votes
-        network.rating = network.votes == 1?0 : (network.rating * network.votes - rating) / (network.votes - 1)
-        network.votes = network.votes == 1?0 : network.votes - 1
-        data[:nra] = network.rating
-        data[:nva] = network.votes
+          network = Network.find_by_id(restaurant.network_id)
+          data[:nrb] = network.rating
+          data[:nvb] = network.votes
+          network.rating = network.votes == 1?0 : (network.rating * network.votes - rating) / (network.votes - 1)
+          network.votes = network.votes == 1?0 : network.votes - 1
+          data[:nra] = network.rating
+          data[:nva] = network.votes
+          
+          restaurant.save
+          network.save
+          
+        end
       
         dish = Dish.find_by_id(dish_id)
         data[:drb] = dish.rating
@@ -58,10 +64,7 @@ class Review < ActiveRecord::Base
            dish.save
         end
 
-        restaurant.save
-        network.save
         review.destroy
-
         result = "review with id #{id} gone forever!"
         end
       end

@@ -957,7 +957,7 @@ class ApiController < ApplicationController
         types.sort_by!{|k| k[:order] }
       
         return render :json => {
-          :dishes => dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes, :price], :methods => [:image_sd, :image_hd]), 
+          :dishes => dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes], :methods => [:image_sd, :image_hd, :price]), 
           :categories => categories.as_json(),
           :types => types.as_json,
           :error => $error

@@ -97,6 +97,10 @@ class Dish < ActiveRecord::Base
     find_image && find_image.iphone_retina.url != '/images/noimage.jpg' ? find_image.iphone_retina.url  : ''
   end
   
+  def price
+    "#{price} #{currency}"
+  end
+  
   def self.near(lat, lon, rad = 1)
     where("((ACOS(
       SIN(restaurants.lat * PI() / 180) * SIN(? * PI() / 180) + 
