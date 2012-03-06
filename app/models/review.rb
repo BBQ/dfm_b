@@ -89,7 +89,7 @@ class Review < ActiveRecord::Base
         if user = User.find_by_id(u)
           friends_with.push({
             :id => user.id,
-            :name => user.name
+            :photo => user.user_photo
           })
         else
           friends_with.push({
