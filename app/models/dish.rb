@@ -98,7 +98,7 @@ class Dish < ActiveRecord::Base
   end
   
   def price
-    "#{price} #{currency}"
+    "#{self.price} #{self.currency}"
   end
   
   def self.near(lat, lon, rad = 1)
