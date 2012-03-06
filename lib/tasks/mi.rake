@@ -939,22 +939,35 @@ namespace :mi do
   
   task :copy => :environment do
     
-    MiRestaurant.all.each do |mi_r|
+    MiRestaurant.where(:city => 'MSK').each do |mi_r|
       
-      if n = Network.find_by_name(mi_r.name)
+      p "#{mi_r.mi_id} #{mi_r.name}"
+      
+      mi_name = mi_r.name.gsub(/^\p{Space}+|\p{Space}+$/, "")
+      if n = Network.find_by_name(mi_name)
         n = n
-      elsif r = Restaurant.find_by_name(mi_r.name)
+      elsif r = Restaurant.find_by_name_eng(mi_name)
+        n = r.network
+        n.name = r.name
+        n.save
+      elsif n = Network.find_by_name(mi_name.gsub('.', ""))
+        n.name = mi_r.name
+        n.save
+      elsif r = Restaurant.find_by_name(mi_name)
         n = r.network
         n.name = r.name
         n.save
       else
         city = mi_r.city == "SPB" ? "Saint Petersburg" : "Moscow"
-        n = Network.create({:name => mi_r.name, :city => city})
+        n = Network.create({:name => mi_name, :city => city})
+        p ""
+        p "------++++++ NEW NETWORK !!! ++++++------"
+        p ""
       end
       
-      p n.name
+      p "#{n.id} #{n.name}"
       
-      if n.dishes.count < 30
+      if n.dishes.count < 15
         
         if n.dishes.count == 0
           n.restaurants.each {|rest| rest.destroy}
@@ -1017,7 +1030,7 @@ namespace :mi do
           
           unless Dish.find_by_name_and_network_id(dish_data[:name], dish_data[:network_id])
             Dish.create(dish_data)
-            p "  - #{mi_d.name}"  
+            p "    --- #{mi_d.name}"  
             
             # Set Dish Category Order
             if dish_category_id_new != dish_category_id
