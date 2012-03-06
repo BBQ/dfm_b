@@ -998,7 +998,7 @@ class ApiController < ApplicationController
               friends.push(user.id)
             else
               rest = Koala::Facebook::GraphAPI.new
-              friends.push(rest.get_object(f)[:name])
+              friends.push(rest.get_object(f)['name'])
             end
           end
         end

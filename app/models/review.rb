@@ -86,17 +86,21 @@ class Review < ActiveRecord::Base
     friends_with = []
     if friends
       friends.split(',').each do |u|
+        
         if user = User.find_by_id(u)
           friends_with.push({
             :id => user.id,
+            :name => user.name,
             :photo => user.user_photo
           })
         else
           friends_with.push({
             :id => 0,
-            :name => u 
+            :name => u,
+            :photo => user.name,
           })
         end
+        
       end
     end
     
