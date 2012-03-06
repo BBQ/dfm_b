@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120208165001) do
+ActiveRecord::Schema.define(:version => 20120306101041) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -36,22 +36,23 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "last_registered_at"
-    t.integer  "user"
+    t.integer  "user_id",            :default => 0
   end
 
   add_index "apn_devices", ["token"], :name => "index_apn_devices_on_token", :unique => true
 
   create_table "apn_notifications", :force => true do |t|
     t.integer  "device_id",                        :null => false
+    t.datetime "sent_at"
     t.integer  "errors_nb",         :default => 0
     t.string   "device_language"
     t.string   "sound"
     t.string   "alert"
     t.integer  "badge"
     t.text     "custom_properties"
-    t.datetime "sent_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "mailed_at"
   end
 
   add_index "apn_notifications", ["device_id"], :name => "index_apn_notifications_on_device_id"
@@ -70,6 +71,7 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
     t.text     "text"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "read"
   end
 
   create_table "cuisines", :force => true do |t|
@@ -80,6 +82,31 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
 
   add_index "cuisines", ["id"], :name => "index_cuisines_on_id"
   add_index "cuisines", ["name"], :name => "index_cuisines_on_name"
+
+  create_table "deliveries", :force => true do |t|
+    t.string   "name"
+    t.string   "city"
+    t.string   "address"
+    t.string   "time"
+    t.string   "phone"
+    t.string   "web"
+    t.text     "description"
+    t.string   "photo"
+    t.float    "lon"
+    t.float    "lat"
+    t.integer  "votes",       :default => 0
+    t.integer  "rating",      :default => 0
+    t.string   "source"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "name_eng"
+    t.integer  "top_user_id", :default => 0
+  end
+
+  add_index "deliveries", ["address"], :name => "index_deliveries_on_address"
+  add_index "deliveries", ["city"], :name => "index_deliveries_on_city"
+  add_index "deliveries", ["id"], :name => "index_deliveries_on_id"
+  add_index "deliveries", ["name"], :name => "index_deliveries_on_name"
 
   create_table "dish_categories", :force => true do |t|
     t.string   "name"
@@ -109,6 +136,28 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
     t.text     "text"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "dish_deliveries", :force => true do |t|
+    t.string   "name"
+    t.string   "photo"
+    t.integer  "price",             :default => 0
+    t.string   "currency"
+    t.integer  "rating",            :default => 0
+    t.integer  "votes",             :default => 0
+    t.text     "description"
+    t.integer  "delivery_id",       :default => 0
+    t.integer  "dish_category_id",                 :null => false
+    t.integer  "dish_type_id",                     :null => false
+    t.integer  "dish_subtype_id",                  :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "top_user_id",       :default => 0
+    t.integer  "dish_extratype_id", :default => 0
+    t.integer  "created_by_user",   :default => 0
+    t.integer  "count_comments",    :default => 0
+    t.integer  "count_likes",       :default => 0
+    t.integer  "no_rate_order",     :default => 0
   end
 
   create_table "dish_extratypes", :force => true do |t|
@@ -157,29 +206,29 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
   add_index "dish_types", ["name"], :name => "name"
 
   create_table "dishes", :force => true do |t|
-    t.integer  "network_id",                            :default => 0
+    t.integer  "network_id",                                                           :default => 0
     t.string   "name"
     t.string   "photo"
-    t.integer  "price",                                 :default => 0
+    t.decimal  "price",                                 :precision => 10, :scale => 0, :default => 0
     t.string   "currency"
-    t.float    "rating",                  :limit => 21, :default => 0.0
-    t.integer  "votes",                                 :default => 0
+    t.float    "rating",                  :limit => 21,                                :default => 0.0
+    t.integer  "votes",                                                                :default => 0
     t.text     "description"
-    t.integer  "dish_category_id",                                       :null => false
-    t.integer  "dish_type_id",                                           :null => false
+    t.integer  "dish_category_id",                                                                      :null => false
+    t.integer  "dish_type_id"
     t.integer  "dish_subtype_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "dish_extratype_id"
-    t.integer  "created_by_user",         :limit => 1,  :default => 0,   :null => false
+    t.integer  "created_by_user",         :limit => 1,                                 :default => 0,   :null => false
     t.integer  "network_rating"
     t.integer  "network_votes"
     t.integer  "network_fsq_users_count"
-    t.integer  "count_comments",                        :default => 0
-    t.integer  "count_likes",                           :default => 0
-    t.integer  "top_user_id",                           :default => 0
-    t.integer  "fsq_checkins_count",                    :default => 0
-    t.integer  "no_rate_order",                         :default => 0
+    t.integer  "count_comments",                                                       :default => 0
+    t.integer  "count_likes",                                                          :default => 0
+    t.integer  "top_user_id",                                                          :default => 0
+    t.integer  "fsq_checkins_count",                                                   :default => 0
+    t.integer  "no_rate_order",                                                        :default => 0
   end
 
   add_index "dishes", ["dish_category_id"], :name => "dish_category_id"
@@ -200,6 +249,7 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
     t.integer  "follow_user_id", :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "read"
   end
 
   create_table "friends", :id => false, :force => true do |t|
@@ -214,6 +264,23 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
   add_index "friends", ["friend_id", "user_id"], :name => "index_friends_on_friend_id_and_user_id"
   add_index "friends", ["user_id", "friend_id"], :name => "index_friends_on_user_id_and_friend_id"
 
+  create_table "home_cooks", :force => true do |t|
+    t.string   "name"
+    t.string   "photo"
+    t.integer  "rating",            :default => 0
+    t.integer  "votes",             :default => 0
+    t.text     "description"
+    t.integer  "dish_type_id",                     :null => false
+    t.integer  "dish_subtype_id"
+    t.integer  "dish_extratype_id"
+    t.integer  "created_by_user"
+    t.integer  "count_comments",    :default => 0
+    t.integer  "count_likes",       :default => 0
+    t.integer  "top_user_id",       :default => 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "images", :force => true do |t|
     t.string   "photo"
     t.string   "uuid"
@@ -226,6 +293,7 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
     t.integer  "review_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "read"
   end
 
   add_index "likes", ["user_id", "review_id"], :name => "index_likes_on_user_id_and_review_id"
@@ -295,6 +363,7 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
     t.string   "photo"
     t.integer  "fsq_users_count"
     t.integer  "fsq_checkins_count",               :default => 0
+    t.string   "city"
   end
 
   add_index "networks", ["fsq_users_count"], :name => "index_networks_on_fsq_users_count"
@@ -327,6 +396,12 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
   end
 
   add_index "rails_admin_histories", ["item", "table", "month", "year"], :name => "index_rails_admin_histories"
+
+  create_table "restaurant_categories", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "restaurant_cuisines", :id => false, :force => true do |t|
     t.integer "restaurant_id"
@@ -370,15 +445,15 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
 
   create_table "restaurants", :force => true do |t|
     t.string   "name"
-    t.integer  "network_id",                                          :null => false
-    t.float    "rating",             :limit => 21, :default => 0.0
+    t.string   "city"
+    t.integer  "network_id",                                              :null => false
+    t.float    "rating",                 :limit => 21, :default => 0.0
     t.string   "name_eng"
     t.float    "lon"
     t.float    "lat"
     t.string   "fsq_lng"
     t.string   "fsq_lat"
     t.string   "address"
-    t.string   "city"
     t.string   "time"
     t.string   "phone"
     t.string   "web"
@@ -386,11 +461,11 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
     t.string   "breakfast"
     t.string   "businesslunch"
     t.string   "photo"
-    t.integer  "votes",                            :default => 0
-    t.string   "wifi",                             :default => "0"
-    t.boolean  "chillum",                          :default => false
-    t.boolean  "terrace",                          :default => false
-    t.boolean  "cc",                               :default => false
+    t.integer  "votes",                                :default => 0
+    t.string   "wifi",                                 :default => "0"
+    t.boolean  "chillum",                              :default => false
+    t.boolean  "terrace",                              :default => false
+    t.boolean  "cc",                                   :default => false
     t.string   "source"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -409,13 +484,13 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
     t.string   "parking"
     t.string   "menu_url"
     t.string   "bill"
-    t.string   "sun",                              :default => ""
-    t.string   "mon",                              :default => ""
-    t.string   "tue",                              :default => ""
-    t.string   "wed",                              :default => ""
-    t.string   "thu",                              :default => ""
-    t.string   "fri",                              :default => ""
-    t.string   "sat",                              :default => ""
+    t.string   "sun",                                  :default => ""
+    t.string   "mon",                                  :default => ""
+    t.string   "tue",                                  :default => ""
+    t.string   "wed",                                  :default => ""
+    t.string   "thu",                                  :default => ""
+    t.string   "fri",                                  :default => ""
+    t.string   "sat",                                  :default => ""
     t.integer  "fsq_checkins_count"
     t.integer  "fsq_tip_count"
     t.integer  "fsq_users_count"
@@ -423,7 +498,9 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
     t.string   "fsq_address"
     t.string   "fsq_id"
     t.string   "station"
-    t.integer  "top_user_id",                      :default => 0
+    t.integer  "top_user_id",                          :default => 0
+    t.integer  "restaurant_category_id",               :default => 0
+    t.boolean  "delivery_only"
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"
@@ -445,13 +522,15 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
     t.text     "text"
     t.integer  "dish_id",                           :null => false
     t.integer  "user_id",                           :null => false
-    t.integer  "restaurant_id",                     :null => false
+    t.integer  "restaurant_id"
     t.integer  "count_likes",    :default => 0
     t.integer  "count_comments", :default => 0
     t.boolean  "web",            :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "network_id",     :default => 0
+    t.boolean  "home_cooked"
+    t.text     "friends"
   end
 
   add_index "reviews", ["count_likes"], :name => "index_reviews_on_count_likes"
@@ -521,9 +600,11 @@ ActiveRecord::Schema.define(:version => 20120208165001) do
     t.string   "vkontakte_id"
     t.string   "gender"
     t.string   "current_city"
+    t.string   "fb_access_token"
   end
 
   add_index "users", ["facebook_id"], :name => "index_users_on_facebook_id"
   add_index "users", ["remember_me_token"], :name => "index_users_on_remember_me_token"
+  add_index "users", ["twitter_id"], :name => "twitter_id"
 
 end

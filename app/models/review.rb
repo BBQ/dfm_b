@@ -93,11 +93,12 @@ class Review < ActiveRecord::Base
             :name => user.name,
             :photo => user.user_photo
           })
-        else
+        elsif user = u.split('@@@')
+          user[0] = "http://graph.facebook.com/#{user[0]}/picture?type=square" if user[0].to_i != 0
           friends_with.push({
             :id => 0,
-            :name => u,
-            :photo => user.name,
+            :name => user[1],
+            :photo => user[0],
           })
         end
         

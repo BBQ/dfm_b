@@ -998,7 +998,7 @@ class ApiController < ApplicationController
               friends.push(user.id)
             else
               rest = Koala::Facebook::GraphAPI.new
-              friends.push(rest.get_object(f)['name'])
+              friends.push("#{f}@@@#{rest.get_object(f)['name']}")
             end
           end
         end
@@ -1008,14 +1008,8 @@ class ApiController < ApplicationController
             if user = User.find_by_twitter_id(f) 
               friends.push(user.id)
             else
-              friends.push(Twitter.user(f).name)
+              friends.push("#{Twitter.user(f).profile_image_url}@@@#{Twitter.user(f).name}")
             end
-          end
-        end
-        
-        if params[:friends]
-          params[:friends].split(',').each do |f|
-            friends.push(f)
           end
         end
         
