@@ -47,7 +47,7 @@ class Review < ActiveRecord::Base
           
         end
       
-        dish = home_cooked == 1 ? HomeCook.find_by_id(dish_id) : Dish.find_by_id(dish_id)
+        dish = review.home_cooked == 1 ? HomeCook.find_by_id(dish_id) : Dish.find_by_id(dish_id)
         
         data[:drb] = dish.rating
         data[:dvb] = dish.votes      
