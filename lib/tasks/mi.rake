@@ -939,6 +939,7 @@ namespace :mi do
   
   task :not_found => :environment do
     require 'csv'
+    log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/#{Time.new.strftime("%F-%H_%M_%S")}_mi_copy.log"
     
     MiRestaurant.where(:city => 'MSK').each do |mi_r|
       
@@ -954,7 +955,6 @@ namespace :mi do
       else
         
         p "#{mi_r.mi_id} #{mi_r.name} NOT FOUND IN DB"
-        log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/#{Time.new.strftime("%F-%H_%M_%S")}_mi_copy.log"
         CSV.open(log_file_path, "a") do |csv|
           csv << ["#{mi_r.mi_id};#{mi_r.name}"]
         end
@@ -965,6 +965,7 @@ namespace :mi do
   
   task :copy => :environment do
     require 'csv'
+    log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/#{Time.new.strftime("%F-%H_%M_%S")}_mi_copy.log"
     
     MiRestaurant.where(:city => 'MSK').each do |mi_r|
       
@@ -984,7 +985,6 @@ namespace :mi do
         n.save
       else
         p "#{mi_r.mi_id} #{mi_r.name} NOT FOUND IN DB"
-        log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/#{Time.new.strftime("%F-%H_%M_%S")}_mi_copy.log"
         CSV.open(log_file_path, "a") do |csv|
           csv << ["#{mi_r.mi_id};#{mi_r.name}"]
         end
