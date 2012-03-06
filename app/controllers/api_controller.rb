@@ -227,7 +227,7 @@ class ApiController < ApplicationController
           end
 
           client.friend_ids.ids.each do |id|
-            if user = User.select([:id, :name, :photo, :facebook_id]).find_by_twitter_id(id)
+            if user = User.select([:id, :name, :photo, :twitter_id]).find_by_twitter_id(id)
               unless f = Follower.find_by_user_id_and_follow_user_id(params[:user_id], user.id)
                 dont_push = 0
                 data.each do |d|
