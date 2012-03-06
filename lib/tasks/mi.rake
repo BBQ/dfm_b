@@ -937,6 +937,26 @@ namespace :mi do
     end
   end
   
+  task :not_found => :environment do
+    
+    MiRestaurant.where(:city => 'MSK').each do |mi_r|
+      
+      mi_name = mi_r.name.gsub(/^\p{Space}+|\p{Space}+$/, "")
+      if n = Network.find_by_name(mi_name)
+        n
+      elsif r = Restaurant.find_by_name_eng(mi_name)
+        r
+      elsif n = Network.find_by_name(mi_name.gsub('.', ""))
+        n
+      elsif r = Restaurant.find_by_name(mi_name)
+        r
+      else
+        p "#{mi_r.mi_id} #{mi_r.name}"
+      end
+      
+    end
+  end
+  
   task :copy => :environment do
     
     MiRestaurant.where(:city => 'MSK').each do |mi_r|
