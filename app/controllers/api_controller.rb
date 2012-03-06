@@ -981,13 +981,17 @@ class ApiController < ApplicationController
       return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 357}} unless chk24.blank?
       
       if params[:home_cooked].to_i == 1
-        unless dish = HomeCook.find_by_name(params[:dish][:name])
-          data = {
-            :name => params[:dish][:name], 
-            :dish_type_id => params[:dish][:dish_type_id],
-            :dish_subtype_id => params[:dish][:dish_subtype_id]
-          }
-          dish = HomeCook.create(data)
+        if params[:dish][:name] && params[:dish][:dish_type_id] && params[:dish][:dish_subtype_id]
+          unless dish = HomeCook.find_by_name(params[:dish][:name])
+            data = {
+              :name => params[:dish][:name], 
+              :dish_type_id => params[:dish][:dish_type_id],
+              :dish_subtype_id => params[:dish][:dish_subtype_id]
+            }
+            dish = HomeCook.create(data)
+          end
+        else
+          return render :json => {:error => {:description => 'Params missing', :code => 9}}
         end
         
         friends = []

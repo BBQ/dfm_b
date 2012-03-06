@@ -938,6 +938,7 @@ namespace :mi do
   end
   
   task :not_found => :environment do
+    require 'csv'
     
     MiRestaurant.where(:city => 'MSK').each do |mi_r|
       
@@ -951,17 +952,21 @@ namespace :mi do
       elsif r = Restaurant.find_by_name(mi_name)
         r
       else
-        p "#{mi_r.mi_id} #{mi_r.name}"
+        
+        p "#{mi_r.mi_id} #{mi_r.name} NOT FOUND IN DB"
+        log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/#{Time.new.strftime("%F-%H_%M_%S")}_mi_copy.log"
+        CSV.open(log_file_path, "a") do |csv|
+          csv << ["#{mi_r.mi_id};#{mi_r.name}"]
+        end
+        
       end
-      
     end
   end
   
   task :copy => :environment do
+    require 'csv'
     
     MiRestaurant.where(:city => 'MSK').each do |mi_r|
-      
-      p "#{mi_r.mi_id} #{mi_r.name}"
       
       mi_name = mi_r.name.gsub(/^\p{Space}+|\p{Space}+$/, "")
       if n = Network.find_by_name(mi_name)
@@ -978,17 +983,16 @@ namespace :mi do
         n.name = r.name
         n.save
       else
-        city = mi_r.city == "SPB" ? "Saint Petersburg" : "Moscow"
-        n = Network.create({:name => mi_name, :city => city})
-        p ""
-        p "------++++++ NEW NETWORK !!! ++++++------"
-        p ""
+        p "#{mi_r.mi_id} #{mi_r.name} NOT FOUND IN DB"
+        log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/#{Time.new.strftime("%F-%H_%M_%S")}_mi_copy.log"
+        CSV.open(log_file_path, "a") do |csv|
+          csv << ["#{mi_r.mi_id};#{mi_r.name}"]
+        end
       end
       
-      p "#{n.id} #{n.name}"
+      if n && n.dishes.count < 15
+        p "#{n.id} #{n.name}"
       
-      if n.dishes.count < 15
-        
         if n.dishes.count == 0
           n.restaurants.each {|rest| rest.destroy}
         else
@@ -1012,17 +1016,19 @@ namespace :mi do
             :station => mi_ar.metro,
             :source => 'web_mi_u1',
           }
+          
           r = Restaurant.create(restaurant_data)
           mi_ar.step = 11
           mi_ar.save
           p "--- #{mi_ar.address}"
+          
         end
 
         i = 0
         dish_category_id_new = 0
         restaurant_id_new = 0
         MiDish.where(:restaurant_id => mi_r.mi_id).each do |mi_d|
-          
+        
           dc_name = mi_d.category_name.downcase.gsub(/^\p{Space}+|\p{Space}+$/, "")
           dish_category_id = DishCategory.find_by_name(dc_name) ? DishCategory.find_by_name(dc_name).id : DishCategory.create(:name => dc_name).id
 
@@ -1030,11 +1036,11 @@ namespace :mi do
             '2' => 4, '20' => 17, '3' => 15, '4' => 15, '5' => 15, '594' => 15, '6' => 15, '6906' => 2, '6907' => 2,
             '6961' => 7, '7' => 2, '8' => 14, '9' => 15
           }
-      
+    
           sub_types = {'11' => 13, '17' => 28, '18' => 21, '3' => 46, '4' => 7, '5' => 11, '594' => 4, '6' => 19,
             '6907' => 27, '9' => 5
           }
-          
+        
           dish_data = {
             :name => mi_d.name,
             :remote_photo_url => mi_d.pictures.blank? ? nil : "http://188.93.18.50/menutka/GetImageMedium/#{mi_d.pictures[/"([\d]+)"/, 1]}.jpg",
@@ -1047,11 +1053,11 @@ namespace :mi do
             :dish_subtype_id => sub_types[mi_d.category_id],
             :dish_extratype_id => mi_d.vegetarian == 'true' ? 4 : nil,
           }
-          
+        
           unless Dish.find_by_name_and_network_id(dish_data[:name], dish_data[:network_id])
             Dish.create(dish_data)
             p "    --- #{mi_d.name}"  
-            
+          
             # Set Dish Category Order
             if dish_category_id_new != dish_category_id
               i += 1
@@ -1074,7 +1080,7 @@ namespace :mi do
             mi_ar.step = 12
             mi_ar.save
           end
-          
+        
         end
       end
     end
