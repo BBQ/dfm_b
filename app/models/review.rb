@@ -47,7 +47,8 @@ class Review < ActiveRecord::Base
           
         end
       
-        dish = Dish.find_by_id(dish_id)
+        dish = home_cooked == 1 ? HomeCook.find_by_id(dish_id) : Dish.find_by_id(dish_id)
+        
         data[:drb] = dish.rating
         data[:dvb] = dish.votes      
         dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - rating) / (dish.votes - 1)
@@ -55,17 +56,17 @@ class Review < ActiveRecord::Base
         data[:dra] = dish.rating
         data[:dva] = dish.votes
               
-        if review && dish && restaurant && network
-               
-        if dish.created_by_user != 0 && dish.votes == 0 
-           dish.delete
-           data[:deleted] = 'yes'
-        else
-           dish.save
-        end
-
-        review.destroy
-        result = "review with id #{id} gone forever!"
+        if review && dish
+          
+          if dish.created_by_user != 0 && dish.votes == 0 
+             dish.delete
+             data[:deleted] = 'yes'
+          else
+             dish.save
+          end
+          review.destroy
+          result = "review with id #{id} gone forever!"
+          
         end
       end
       data[:result] = result
