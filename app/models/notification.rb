@@ -6,7 +6,8 @@ class Notification < ActiveRecord::Base
       
       if type == 'like' || type == 'comment'
         if device = APN::Device.where(:user_id => data.user.id).first   
-          alert = "#{user.name.split.first} #{user.name.split.second[0]}. #{type} your review #{data.dish.name}"
+          dish_name = data.home_cooked == 1 ? data.home_cook.name : data.dish.name
+          alert = "#{user.name.split.first} #{user.name.split.second[0]}. #{type} your review #{dish_name}"
           badge = Like.where("user_id = ? and `read` != 1", data.user.id).count(:id)
           badge += Comment.where("user_id = ? and `read` != 1", data.user.id).count(:id)
           badge += Follower.where("user_id = ? and `read` != 1", data.user.id).count(:id)

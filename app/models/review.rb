@@ -1,5 +1,6 @@
 class Review < ActiveRecord::Base
   belongs_to :dish
+  belongs_to :home_cook
   belongs_to :restaurant
   belongs_to :network
   belongs_to :user
@@ -182,11 +183,11 @@ class Review < ActiveRecord::Base
       review = Review.find(fb.id)
       review.rating = rating if rating > 0
       review.comment = user_review[:comment] unless user_review[:comment].blank?
-      review.save
+      r = review.save
       status = 'updated'
     else
       if rating > 0
-          Review.create(user_review)  
+          r = Review.create(user_review)  
           dish.rating = (dish.rating * dish.votes + rating) / (dish.votes + 1)
           dish.votes += 1
           dish.save
@@ -215,8 +216,8 @@ class Review < ActiveRecord::Base
         restaurant.save
       end
     end
-    
     {:status => 'updated', :dish => dish}
+    r
   end 
 
 end
