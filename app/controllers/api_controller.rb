@@ -1200,7 +1200,7 @@ class ApiController < ApplicationController
            
                 # graph.put_wall_post("Hey, Welcome to the Web Application!!!!", {:name => "..."}, "682620569") invite user
 
-              end
+              # end
             end
             
             
