@@ -396,7 +396,7 @@ class ApiController < ApplicationController
   
   def get_dish
     if params[:dish_id]
-      return render :json => API.get_dish(params[:user_id] ,params[:dish_id])
+      return render :json => API.get_dish(params[:user_id], params[:dish_id], params[:home_cooked])
     else
       $error = {:description => 'Parameters missing', :code => 8}
       return render :json => {:error => $error}
@@ -980,6 +980,29 @@ class ApiController < ApplicationController
       chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
       return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 357}} unless chk24.blank?
       
+      friends = []
+      if params[:fb_friends]
+        params[:fb_friends].split(',').each do |f|
+          if user = User.find_by_facebook_id(f)
+            friends.push(user.id)
+          else
+            rest = Koala::Facebook::GraphAPI.new
+            friends.push("#{f}@@@#{rest.get_object(f)['name']}")
+          end
+        end
+      end
+      
+      if params[:tw_friends]
+        params[:tw_friends].split(',').each do |f|
+          if user = User.find_by_twitter_id(f) 
+            friends.push(user.id)
+          else
+            friends.push("#{Twitter.user(f).profile_image_url}@@@#{Twitter.user(f).name}")
+          end
+        end
+      end
+      params[:review][:friends] = friends.join(',')
+      
       if params[:home_cooked].to_i == 1
         if params[:dish] && params[:dish][:name] && params[:dish][:dish_type_id]
           unless dish = HomeCook.find_by_name(params[:dish][:name])
@@ -994,31 +1017,7 @@ class ApiController < ApplicationController
           return render :json => {:error => {:description => 'Params missing', :code => 9}}
         end
         
-        friends = []
-        
-        if params[:fb_friends]
-          params[:fb_friends].split(',').each do |f|
-            if user = User.find_by_facebook_id(f)
-              friends.push(user.id)
-            else
-              rest = Koala::Facebook::GraphAPI.new
-              friends.push("#{f}@@@#{rest.get_object(f)['name']}")
-            end
-          end
-        end
-        
-        if params[:tw_friends]
-          params[:tw_friends].split(',').each do |f|
-            if user = User.find_by_twitter_id(f) 
-              friends.push(user.id)
-            else
-              friends.push("#{Twitter.user(f).profile_image_url}@@@#{Twitter.user(f).name}")
-            end
-          end
-        end
-        
         params[:review][:dish_id] = dish.id
-        params[:review][:friends] = friends.join(',')
         params[:review][:home_cooked] = 1 
         
         if params[:uuid] && image = Image.find_by_uuid(params[:uuid])

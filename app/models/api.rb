@@ -5,9 +5,15 @@ class API < ActiveRecord::Base
     # Coming soon
   end
   
-  def self.get_dish(user_id, dish_id)
+  def self.get_dish(user_id, dish_id, home_cooked)
     
-    if dish = Dish.select([:id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
+    if home_cooked.to_i == 1
+      dish = HomeCook.select([:id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
+    else
+      dish = Dish.select([:id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
+    end
+    
+    if !dish.nil?
       
       user_review = Review.select(:rating).find_by_dish_id_and_user_id(dish.id,user_id) if user_id
       subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
@@ -49,17 +55,20 @@ class API < ActiveRecord::Base
        end
       dish.reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}  
           
-      restaurants = []
-      dish.network.restaurants.each do |restaurant|
-        restaurants.push({
-          :id => restaurant.id,
-          :address => restaurant.address,
-          :phone => restaurant.phone.to_s,
-          :working_hours => restaurant.time,
-          :lat => restaurant.lat,
-          :lon => restaurant.lon,
-          :description => restaurant.description.to_s
-        })
+     
+      if home_cooked.to_i != 1
+        restaurants = []
+        dish.network.restaurants.each do |restaurant|
+          restaurants.push({
+            :id => restaurant.id,
+            :address => restaurant.address,
+            :phone => restaurant.phone.to_s,
+            :working_hours => restaurant.time,
+            :lat => restaurant.lat,
+            :lon => restaurant.lon,
+            :description => restaurant.description.to_s
+          })
+        end
       end
     
       data = {
@@ -70,18 +79,19 @@ class API < ActiveRecord::Base
         :votes => dish.votes,
         :type_name => dish.dish_type ? dish.dish_type.name : '',
         :subtype_name => dish.dish_subtype ? dish.dish_subtype.name : '',
-        :restaurant_name => dish.network.name, 
-        :restaurant_id => dish.network.restaurants.first.id, 
+        :restaurant_name => home_cooked.to_i == 1 ? '' : dish.network.name, 
+        :restaurant_id => home_cooked.to_i == 1 ? 0 : dish.network.restaurants.first.id, 
         :description => dish.description.to_s,
-        :price => dish.price,
+        :price => home_cooked.to_i == 1 ? 0 : dish.price,
         :reviews => review_data,
         :top_expert => top_expert ||= nil,
         :restaurants => restaurants,
         :error => {:description => nil, :code => nil}
-      }
+      }  
       data.as_json
+      
     else
-      {:error => {:description => 'Dish not found', :code => 108}}.as_json
+      {:error => {:description => 'Dish not found', :code => 7}}.as_json
     end
   end
   
