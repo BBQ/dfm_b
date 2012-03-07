@@ -93,6 +93,8 @@ class User < ActiveRecord::Base
 
       if user = User.find_by_facebook_id(result["id"])
         token = Session.get_token(user)
+        user.fb_access_token = access_token
+        user.save
       elsif result["email"] 
         user = create_user_from_facebook(rest)
         token = Session.get_token(user)        

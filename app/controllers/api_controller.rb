@@ -1179,7 +1179,8 @@ class ApiController < ApplicationController
       
         if params[:review][:user_id]
           Review.save_review(params[:review])
-          if u = User.find_by_id(params[:user_id])
+          if params[:post_on_facebook] == 1 && u = User.find_by_id(params[:user_id])
+            @graph = Koala::Facebook::API.new(u.fb_access_token)
             @graph.put_object(u.facebook_id, "feed", :message => "I am writing on my wall!")
           end
         else
