@@ -1179,6 +1179,9 @@ class ApiController < ApplicationController
       
         if params[:review][:user_id]
           Review.save_review(params[:review])
+          if u = User.find_by_id(params[:user_id])
+            @graph.put_object(u.facebook_id, "feed", :message => "I am writing on my wall!")
+          end
         else
           return render :json => {:error => {:description => 'User not found', :code => 69}}
         end

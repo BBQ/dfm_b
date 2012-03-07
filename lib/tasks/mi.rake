@@ -205,7 +205,7 @@ namespace :mi do
         
         p "#{mi_r.mi_id} #{mi_r.name} NOT FOUND IN DB"
         CSV.open(log_file_path, "a") do |csv|
-          csv << ["#{mi_r.mi_id};#{mi_r.name}"]
+          csv << ["#{mi_r.mi_id};#{mi_r.name};#{mi_r.address}"]
         end
       end
     end

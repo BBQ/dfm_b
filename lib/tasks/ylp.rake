@@ -1,7 +1,7 @@
 # encoding: utf-8
 namespace :ylp do
   
-  require 'rubygems'
+  # require 'rubygems'
   require 'oauth'
   
   task :parse => :environment do
