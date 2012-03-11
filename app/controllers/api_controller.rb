@@ -1196,7 +1196,7 @@ class ApiController < ApplicationController
                    end
                   end
                   
-                  albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if albuminfo["id"].nil?
+                  albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if albuminfo.nil?
                   picture = graph.put_picture("http://dev.dish.fm/#{r.photo.iphone_retina.url}",{:caption => "#{r.text} - #{r.dish.name} @ #{r.network.name} http://dish.fm/reviews/#{r.id}"}, albuminfo["id"])
 
                   tags = []
