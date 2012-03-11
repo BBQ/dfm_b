@@ -1,6 +1,6 @@
 class Review < ActiveRecord::Base
   belongs_to :dish
-  belongs_to :home_cook, :primary_key => :id, :foreign_key => :dish_id
+  belongs_to :home_cook
   belongs_to :restaurant
   belongs_to :network
   belongs_to :user

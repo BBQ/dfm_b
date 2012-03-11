@@ -7,7 +7,7 @@ class API < ActiveRecord::Base
   
   def self.get_dish(user_id, dish_id, home_cooked)
     
-    if home_cooked.to_i == 1
+    if home_cooked == '1'
       dish = HomeCook.select([:id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
     else
       dish = Dish.select([:id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
@@ -52,7 +52,7 @@ class API < ActiveRecord::Base
           :self_review => 1
         }
         review_data.push(data)
-       end
+      end
       dish.reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}  
           
      

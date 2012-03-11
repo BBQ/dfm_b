@@ -5,7 +5,7 @@ class HomeCook < ActiveRecord::Base
     belongs_to :dish_type
     belongs_to :dish_subtype
     belongs_to :dish_extratype
-    has_many :reviews, :dependent => :destroy, :foreign_key => :id
+    has_many :reviews, :dependent => :destroy, :foreign_key => :dish_id
     
     def find_image
       if photo.blank?
