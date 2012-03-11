@@ -1188,6 +1188,7 @@ class ApiController < ApplicationController
                    end
                   end
              
+                  albuminfo = {}
                   graph.get_connections('me', 'albums').each do |alb|
                    if alb['name'] == 'Dish.fm Photos'
                      albuminfo = {'id' => alb['id']}
