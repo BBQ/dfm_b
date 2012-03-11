@@ -809,7 +809,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "liked your review on #{Review.find_by_id(d.review_id).dish.name}."
+                :text => "liked your review on #{d.review.dish.name}."
               })
               d.read = 1
               d.save
