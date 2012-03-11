@@ -89,6 +89,7 @@ class Review < ActiveRecord::Base
   
   def format_review_for_api(user_id=nil)    
     friends_with = []
+    
     if friends
       friends.split(',').each do |u|
         
