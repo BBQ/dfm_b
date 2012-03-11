@@ -1173,45 +1173,47 @@ class ApiController < ApplicationController
         if params[:review][:user_id]
           if r = Review.save_review(params[:review])
             
-            if params[:post_on_facebook] == '1'
-             if u = User.find_by_id(params[:user_id])
-               unless u.fb_access_token.blank?
-                graph = Koala::Facebook::API.new(u.fb_access_token)
+            unless r.photo.iphone_retina.url.blank?
+              
+              if params[:post_on_facebook] == '1'
+               if u = User.find_by_id(params[:user_id])
+                 unless u.fb_access_token.blank?
+                  graph = Koala::Facebook::API.new(u.fb_access_token)
 
-                if r.text.blank? 
-                 r.text = case r.rating
-                   when 1..2,99 then "Survived"
-                   when 3..3,99 then "Ate"
-                   when 4..5,0 then "Enjoyed"
-                 end
-                end
+                  if r.text.blank? 
+                   r.text = case r.rating
+                     when 1..2,99 then "Survived"
+                     when 3..3,99 then "Ate"
+                     when 4..5,0 then "Enjoyed"
+                   end
+                  end
              
-                alb_ex = 0
-                graph.get_connections('me', 'albums').each do |alb|
-                 if alb['name'] == 'Dish.fm Photos'
-                   alb_ex = 1
-                   break
-                 end
-                end
+                  alb_ex = 0
+                  graph.get_connections('me', 'albums').each do |alb|
+                   if alb['name'] == 'Dish.fm Photos'
+                     alb_ex = 1
+                     break
+                   end
+                  end
                   
-                albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if alb_ex == 0
-                picture = graph.put_picture("http://dev.dish.fm/#{r.photo.iphone_retina.url}",{:caption => "#{r.text} - #{r.dish.name} @ #{r.network.name} http://dish.fm/reviews/#{r.id}"}, albuminfo["id"])
+                  albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if alb_ex == 0
+                  picture = graph.put_picture("http://dev.dish.fm/#{r.photo.iphone_retina.url}",{:caption => "#{r.text} - #{r.dish.name} @ #{r.network.name} http://dish.fm/reviews/#{r.id}"}, albuminfo["id"])
 
-                tags = []
-                if params[:fb_friends]
-                 params[:fb_friends].split(',').each do |f|
-                   tags.push("{\"tag_uid\":\"#{f}\"}")
-                 end
-                end
+                  tags = []
+                  if params[:fb_friends]
+                   params[:fb_friends].split(',').each do |f|
+                     tags.push("{\"tag_uid\":\"#{f}\"}")
+                   end
+                  end
 
-                graph.put_object(picture['id'],'tags', :tags => "[#{tags.join(',')}]")
+                  graph.put_object(picture['id'],'tags', :tags => "[#{tags.join(',')}]")
                                       
-                  # Invite user
-                  # graph.put_wall_post("Hey, Welcome to the Web Application!!!!", {:name => "..."}, "682620569")
+                    # Invite user
+                    # graph.put_wall_post("Hey, Welcome to the Web Application!!!!", {:name => "..."}, "682620569")
+                  end
                 end
               end
             end
-            
             
           end
         else
