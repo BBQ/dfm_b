@@ -971,8 +971,8 @@ class ApiController < ApplicationController
     if params[:review] && params[:review][:rating] && Session.check_token(params[:user_id], params[:token])
       params[:review][:user_id] = params[:user_id]
       
-      chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
-      return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 357}} unless chk24.blank?
+      # chk24 = Review.where("user_id = ? AND dish_id = ? AND created_at >= current_date()-1",params[:review][:user_id], params[:review][:dish_id])
+      # return render :json => {:error => {:description => 'You can post review only once at 24 hours', :code => 357}} unless chk24.blank?
       
       friends = []
       if params[:fb_friends]
