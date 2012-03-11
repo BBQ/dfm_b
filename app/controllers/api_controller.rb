@@ -1188,15 +1188,14 @@ class ApiController < ApplicationController
                    end
                   end
              
-                  alb_ex = 0
                   graph.get_connections('me', 'albums').each do |alb|
                    if alb['name'] == 'Dish.fm Photos'
-                     alb_ex = 1
+                     albuminfo["id"] = alb['id']
                      break
                    end
                   end
                   
-                  albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if alb_ex == 0
+                  albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if albuminfo["id"].nil?
                   picture = graph.put_picture("http://dev.dish.fm/#{r.photo.iphone_retina.url}",{:caption => "#{r.text} - #{r.dish.name} @ #{r.network.name} http://dish.fm/reviews/#{r.id}"}, albuminfo["id"])
 
                   tags = []
