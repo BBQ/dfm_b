@@ -1182,57 +1182,12 @@ class ApiController < ApplicationController
       end
       
       unless r.photo.iphone_retina.url.blank?
-        
         if params[:post_on_facebook] == '1'
-         
-         data = {
-           :home_cooked =>params[:home_cooked],
-         }
-         
-         if u = User.find_by_id(r.user_id)
-           unless u.fb_access_token.blank?
-            graph = Koala::Facebook::API.new(u.fb_access_token)
-
-            if r.text.blank?
-              r.text = case r.rating
-                when 0..2.99 then "Survived"
-                when 3..3.99 then "Ate"
-                when 4..5 then "Enjoyed"
-              end
-              dish_text = "#{r.text}"
-            else
-              dish_text = "#{r.text} -"
-            end
-            place = params[:home_cooked] == '1' ? "#{r.home_cook.name} (home-cooked)" : "#{r.dish.name} @ #{r.network.name}"
-       
-            albuminfo = {}
-            graph.get_connections('me', 'albums').each do |alb|
-             if alb['name'] == 'Dish.fm Photos'
-               albuminfo = {'id' => alb['id']}
-               break
-             end
-            end
-            
-            caption = "#{dish_text} #{place} http://dish.fm/reviews/#{r.id}"
-            albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if albuminfo["id"].blank?
-            
-            picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
-
-            tags = []
-            if params[:fb_friends]
-             params[:fb_friends].split(',').each do |f|
-               tags.push("{\"tag_uid\":\"#{f}\"}")
-             end
-            end
-
-            graph.put_object(picture['id'],'tags', :tags => "[#{tags.join(',')}]")
-                                
-              # Invite user
-              # graph.put_wall_post("Hey, Welcome to the Web Application!!!!", {:name => "..."}, "682620569")
-            end
-          end
+          system "rake facebook:dish_in REVIEW_ID='#{r.id}' &"
         end
       end
+      # Invite user
+      # graph.put_wall_post("Hey, Welcome to the Web Application!!!!", {:name => "..."}, "682620569")
       
     else
       $error = {:description => 'Parameters missing', :code => 8}
