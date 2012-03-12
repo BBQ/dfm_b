@@ -1180,12 +1180,15 @@ class ApiController < ApplicationController
                  unless u.fb_access_token.blank?
                   graph = Koala::Facebook::API.new(u.fb_access_token)
 
-                  if r.text.blank? 
-                   r.text = case r.rating
-                     when 0..2.99 then "Survived"
-                     when 3..3.99 then "Ate"
-                     when 4..5 then "Enjoyed"
-                   end
+                  if r.text.blank?
+                    r.text = case r.rating
+                      when 0..2.99 then "Survived"
+                      when 3..3.99 then "Ate"
+                      when 4..5 then "Enjoyed"
+                    end
+                    dish_text = "#{r.text} #{r.dish.name}"
+                  else
+                    dish_text = "#{r.text} - #{r.dish.name}"
                   end
              
                   albuminfo = {}
@@ -1196,8 +1199,11 @@ class ApiController < ApplicationController
                    end
                   end
                   
+                  place = if params[home_cooked] == '1' ? "(home-cooked)" : "@ #{r.network.name}"
+                  caption = "#{dish_text} #{place} http://dish.fm/reviews/#{r.id}"
+                  
                   albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if albuminfo["id"].blank?
-                  picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}",{:caption => "#{r.text} - #{r.dish.name} @ #{r.network.name} http://dish.fm/reviews/#{r.id}"}, albuminfo["id"])
+                  picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}",{:caption => caption}, albuminfo["id"])
 
                   tags = []
                   if params[:fb_friends]
