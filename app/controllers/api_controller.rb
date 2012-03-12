@@ -1183,7 +1183,7 @@ class ApiController < ApplicationController
       
       unless r.photo.iphone_retina.url.blank?
         if params[:post_on_facebook] == '1'
-          system "rake facebook:dish_in REVIEW_ID='#{r.id}' &"
+          system "rake facebook:dishin REVIEW_ID='#{r.id}' &"
         end
       end
       # Invite user
