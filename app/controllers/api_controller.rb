@@ -1182,9 +1182,9 @@ class ApiController < ApplicationController
 
                   if r.text.blank? 
                    r.text = case r.rating
-                     when 0..2,99 then "Survived"
-                     when 3..3,99 then "Ate"
-                     when 4..5,01 then "Enjoyed"
+                     when 0..2.99 then "Survived"
+                     when 3..3.99 then "Ate"
+                     when 4..5 then "Enjoyed"
                    end
                   end
              
