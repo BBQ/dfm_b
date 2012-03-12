@@ -1020,7 +1020,10 @@ class ApiController < ApplicationController
         end 
         
         if params[:review][:user_id]
-          Review.save_review(params[:review])
+          r = Review.save_review(params[:review])
+          
+          
+          
         else
           return render :json => {:error => {:description => 'User not found', :code => 8}}
         end
@@ -1171,86 +1174,66 @@ class ApiController < ApplicationController
         return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless dfc = Dish.find_by_id(params[:review][:dish_id])
       
         if params[:review][:user_id]
-          
-          require 'logger' 
-          
-          if r = Review.save_review(params[:review])
-            
-            Logger.new('development.log', "#{r}")  
-            
-            unless r.photo.iphone_retina.url.blank?
-              
-            Logger.new('development.log', "#{r.photo.iphone_retina.url}")
-            
-              if params[:post_on_facebook] == '1'
-               
-               Logger.new('development.log', "#{params[:post_on_facebook]}")
-               
-               data = {
-                 :home_cooked =>params[:home_cooked],
-                 :fb_friends => params[:fb_friends]
-               }
-               
-               if u = User.find_by_id(r.user_id)
-                 
-                 Logger.new('development.log', "#{u}")
-                 
-                 unless u.fb_access_token.blank?
-                   
-                   Logger.new('development.log', "#{u.fb_access_token}")
-                   
-                  graph = Koala::Facebook::API.new(u.fb_access_token)
-
-                  if r.text.blank?
-                    r.text = case r.rating
-                      when 0..2.99 then "Survived"
-                      when 3..3.99 then "Ate"
-                      when 4..5 then "Enjoyed"
-                    end
-                    dish_text = "#{r.text} #{r.dish.name}"
-                  else
-                    dish_text = "#{r.text} - #{r.dish.name}"
-                  end
-                  place = params[:home_cooked] == '1' ? "(home-cooked)" : "@ #{r.network.name}"
-             
-             
-                   Logger.new('development.log', "#{place}")
-             
-                  albuminfo = {}
-                  graph.get_connections('me', 'albums').each do |alb|
-                   if alb['name'] == 'Dish.fm Photos'
-                     albuminfo = {'id' => alb['id']}
-                     break
-                   end
-                  end
-                  
-                  caption = "#{dish_text} #{place} http://dish.fm/reviews/#{r.id}"
-                  albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if albuminfo["id"].blank?
-                  
-                  picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
-
-                  tags = []
-                  if params[:fb_friends]
-                   params[:fb_friends].split(',').each do |f|
-                     tags.push("{\"tag_uid\":\"#{f}\"}")
-                   end
-                  end
-
-                  graph.put_object(picture['id'],'tags', :tags => "[#{tags.join(',')}]")
-                                      
-                    # Invite user
-                    # graph.put_wall_post("Hey, Welcome to the Web Application!!!!", {:name => "..."}, "682620569")
-                  end
-                end
-              end
-            end
-            
-          end
+          r = Review.save_review(params[:review])
         else
           return render :json => {:error => {:description => 'User not found', :code => 69}}
         end
         
       end
+      
+      unless r.photo.iphone_retina.url.blank?
+        
+        if params[:post_on_facebook] == '1'
+         
+         data = {
+           :home_cooked =>params[:home_cooked],
+         }
+         
+         if u = User.find_by_id(r.user_id)
+           unless u.fb_access_token.blank?
+            graph = Koala::Facebook::API.new(u.fb_access_token)
+
+            if r.text.blank?
+              r.text = case r.rating
+                when 0..2.99 then "Survived"
+                when 3..3.99 then "Ate"
+                when 4..5 then "Enjoyed"
+              end
+              dish_text = "#{r.text} #{r.dish.name}"
+            else
+              dish_text = "#{r.text} - #{r.dish.name}"
+            end
+            place = params[:home_cooked] == '1' ? "(home-cooked)" : "@ #{r.network.name}"
+       
+            albuminfo = {}
+            graph.get_connections('me', 'albums').each do |alb|
+             if alb['name'] == 'Dish.fm Photos'
+               albuminfo = {'id' => alb['id']}
+               break
+             end
+            end
+            
+            caption = "#{dish_text} #{place} http://dish.fm/reviews/#{r.id}"
+            albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if albuminfo["id"].blank?
+            
+            picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
+
+            tags = []
+            if params[:fb_friends]
+             params[:fb_friends].split(',').each do |f|
+               tags.push("{\"tag_uid\":\"#{f}\"}")
+             end
+            end
+
+            graph.put_object(picture['id'],'tags', :tags => "[#{tags.join(',')}]")
+                                
+              # Invite user
+              # graph.put_wall_post("Hey, Welcome to the Web Application!!!!", {:name => "..."}, "682620569")
+            end
+          end
+        end
+      end
+      
     else
       $error = {:description => 'Parameters missing', :code => 8}
   end
