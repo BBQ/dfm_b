@@ -20,7 +20,7 @@ namespace :facebook do
           else
             dish_text = "#{r.text} -"
           end
-          place = r.home_cooked == 1 ? "#{r.home_cook.name} (home-cooked)" : "#{r.dish.name} @ #{r.network.name}"
+          place = r.home_cooked == true ? "#{r.home_cook.name} (home-cooked)" : "#{r.dish.name} @ #{r.network.name}"
 
           albuminfo = {}
           graph.get_connections('me', 'albums').each do |alb|
