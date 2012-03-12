@@ -1199,11 +1199,11 @@ class ApiController < ApplicationController
                 when 3..3.99 then "Ate"
                 when 4..5 then "Enjoyed"
               end
-              dish_text = "#{r.text} #{r.dish.name}"
+              dish_text = "#{r.text}"
             else
-              dish_text = "#{r.text} - #{r.dish.name}"
+              dish_text = "#{r.text} -"
             end
-            place = params[:home_cooked] == '1' ? "(home-cooked)" : "@ #{r.network.name}"
+            place = params[:home_cooked] == '1' ? "#{r.home_cook.name} (home-cooked)" : "#{r.dish.name} @ #{r.network.name}"
        
             albuminfo = {}
             graph.get_connections('me', 'albums').each do |alb|
