@@ -1176,15 +1176,15 @@ class ApiController < ApplicationController
           
           if r = Review.save_review(params[:review])
             
-            Logger.new('application.log', "#{r}")  
+            Logger.new('development.log', "#{r}")  
             
             unless r.photo.iphone_retina.url.blank?
               
-            Logger.new('application.log', "#{r.photo.iphone_retina.url}")
+            Logger.new('development.log', "#{r.photo.iphone_retina.url}")
             
               if params[:post_on_facebook] == '1'
                
-               Logger.new('application.log', "#{params[:post_on_facebook]}")
+               Logger.new('development.log', "#{params[:post_on_facebook]}")
                
                data = {
                  :home_cooked =>params[:home_cooked],
@@ -1193,11 +1193,11 @@ class ApiController < ApplicationController
                
                if u = User.find_by_id(r.user_id)
                  
-                 Logger.new('application.log', "#{u}")
+                 Logger.new('development.log', "#{u}")
                  
                  unless u.fb_access_token.blank?
                    
-                   Logger.new('application.log', "#{u.fb_access_token}")
+                   Logger.new('development.log', "#{u.fb_access_token}")
                    
                   graph = Koala::Facebook::API.new(u.fb_access_token)
 
@@ -1214,7 +1214,7 @@ class ApiController < ApplicationController
                   place = params[:home_cooked] == '1' ? "(home-cooked)" : "@ #{r.network.name}"
              
              
-                   Logger.new('application.log', "#{place}")
+                   Logger.new('development.log', "#{place}")
              
                   albuminfo = {}
                   graph.get_connections('me', 'albums').each do |alb|
