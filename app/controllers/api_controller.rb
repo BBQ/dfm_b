@@ -1171,11 +1171,20 @@ class ApiController < ApplicationController
         return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless dfc = Dish.find_by_id(params[:review][:dish_id])
       
         if params[:review][:user_id]
+          
+          require 'logger' 
+          
           if r = Review.save_review(params[:review])
+            
+            Logger.new('application.log', "#{r}")  
             
             unless r.photo.iphone_retina.url.blank?
               
+            Logger.new('application.log', "#{r.photo.iphone_retina.url}")
+            
               if params[:post_on_facebook] == '1'
+               
+               Logger.new('application.log', "#{params[:post_on_facebook]}")
                
                data = {
                  :home_cooked =>params[:home_cooked],
@@ -1183,7 +1192,13 @@ class ApiController < ApplicationController
                }
                
                if u = User.find_by_id(r.user_id)
+                 
+                 Logger.new('application.log', "#{u}")
+                 
                  unless u.fb_access_token.blank?
+                   
+                   Logger.new('application.log', "#{u.fb_access_token}")
+                   
                   graph = Koala::Facebook::API.new(u.fb_access_token)
 
                   if r.text.blank?
@@ -1197,6 +1212,9 @@ class ApiController < ApplicationController
                     dish_text = "#{r.text} - #{r.dish.name}"
                   end
                   place = params[:home_cooked] == '1' ? "(home-cooked)" : "@ #{r.network.name}"
+             
+             
+                   Logger.new('application.log', "#{place}")
              
                   albuminfo = {}
                   graph.get_connections('me', 'albums').each do |alb|
