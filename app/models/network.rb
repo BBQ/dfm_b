@@ -1,4 +1,5 @@
 class Network < ActiveRecord::Base
+  
   has_many :dishes
   has_many :restaurants
   has_many :reviews

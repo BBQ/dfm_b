@@ -1182,9 +1182,9 @@ class ApiController < ApplicationController
 
                   if r.text.blank? 
                    r.text = case r.rating
-                     when 1..2,99 then "Survived"
+                     when 0..2,99 then "Survived"
                      when 3..3,99 then "Ate"
-                     when 4..5,0 then "Enjoyed"
+                     when 4..5,01 then "Enjoyed"
                    end
                   end
              
@@ -1197,7 +1197,7 @@ class ApiController < ApplicationController
                   end
                   
                   albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if albuminfo["id"].blank?
-                  picture = graph.put_picture("http://dev.dish.fm/#{r.photo.iphone_retina.url}",{:caption => "#{r.text} - #{r.dish.name} @ #{r.network.name} http://dish.fm/reviews/#{r.id}"}, albuminfo["id"])
+                  picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}",{:caption => "#{r.text} - #{r.dish.name} @ #{r.network.name} http://dish.fm/reviews/#{r.id}"}, albuminfo["id"])
 
                   tags = []
                   if params[:fb_friends]
