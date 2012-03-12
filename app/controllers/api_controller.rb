@@ -1190,6 +1190,7 @@ class ApiController < ApplicationController
                   else
                     dish_text = "#{r.text} - #{r.dish.name}"
                   end
+                  place = params[home_cooked] == '1' ? "(home-cooked)" : "@ #{r.network.name}"
              
                   albuminfo = {}
                   graph.get_connections('me', 'albums').each do |alb|
@@ -1199,11 +1200,10 @@ class ApiController < ApplicationController
                    end
                   end
                   
-                  place = if params[home_cooked] == '1' ? "(home-cooked)" : "@ #{r.network.name}"
                   caption = "#{dish_text} #{place} http://dish.fm/reviews/#{r.id}"
-                  
                   albuminfo = graph.put_object('me','albums', :name=>'Dish.fm Photos') if albuminfo["id"].blank?
-                  picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}",{:caption => caption}, albuminfo["id"])
+                  
+                  picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
 
                   tags = []
                   if params[:fb_friends]
