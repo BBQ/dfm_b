@@ -88,7 +88,7 @@ class Restaurant < ActiveRecord::Base
     self[:votes] = self.network.votes
     self[:fsq_id] = self.fsq_id || ''
         
-    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon, :network_id, :fsq_id], :methods => [:has_menu])
+    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon, :network_id, :fsq_id], :methods => [:has_menu, :thumb])
   end
   
   def has_menu
@@ -107,6 +107,10 @@ class Restaurant < ActiveRecord::Base
         review.first.photo unless review.blank?
       end
     end
+  end
+  
+  def thumb
+    find_image && find_image.iphone.url != '/images/noimage.jpg' ? find_image.p120.url  : ''
   end
   
   def self.near(lat, lon, rad = 1)
