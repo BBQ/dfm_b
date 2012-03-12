@@ -1190,7 +1190,7 @@ class ApiController < ApplicationController
                   else
                     dish_text = "#{r.text} - #{r.dish.name}"
                   end
-                  place = params[home_cooked] == '1' ? "(home-cooked)" : "@ #{r.network.name}"
+                  place = params[:home_cooked] == '1' ? "(home-cooked)" : "@ #{r.network.name}"
              
                   albuminfo = {}
                   graph.get_connections('me', 'albums').each do |alb|
