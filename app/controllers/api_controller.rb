@@ -1176,7 +1176,13 @@ class ApiController < ApplicationController
             unless r.photo.iphone_retina.url.blank?
               
               if params[:post_on_facebook] == '1'
-               if u = User.find_by_id(params[:user_id])
+               
+               data = {
+                 :home_cooked =>params[:home_cooked],
+                 :fb_friends => params[:fb_friends]
+               }
+               
+               if u = User.find_by_id(r.user_id)
                  unless u.fb_access_token.blank?
                   graph = Koala::Facebook::API.new(u.fb_access_token)
 
