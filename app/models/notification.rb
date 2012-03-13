@@ -23,7 +23,7 @@ class Notification < ActiveRecord::Base
           end
         end
       elsif type == 'dishin'
-        Folower.select(:user_id).where(:follow_user_id => from_user_id).each do |f|
+        Follower.select(:user_id).where(:follow_user_id => from_user_id).each do |f|
           if device = APN::Device.where(:user_id => f.user_id).first
             dish_name = data.home_cooked == true ? data.home_cook.name : data.dish.name
             alert = "#{user.name.split.first} #{user.name.split.second[0]}. dished in #{dish_name}"
