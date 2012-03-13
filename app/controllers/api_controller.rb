@@ -911,34 +911,13 @@ class ApiController < ApplicationController
           end
           
           Review.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
-            d.friends.split(',').each do |t|
-              if t.to_i == params[:id].to_i
-                if user = User.find_by_id(d.user_id)
-                  data.push({
-                    :date => d.created_at.to_i,
-                    :type => 'tagged',
-                    :review_id => d.id,
-                    :read => 1,
-                    :user => {
-                      :name => user.name,
-                      :id => user.id,
-                      :photo => user.user_photo
-                    },
-                    :text => "tagged you at #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
-                  })
-                end
-              end
-            end
-          end
-          
-          Review.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
-            d.friends.split(',').each do |t|
-              Follower.select(:user_id).where(:follow_user_id => t.id).each do |f|
-                if t.to_i == f.user_id
+            unless d.friends.blank?
+              d.friends.split(',').each do |t|
+                if t.to_i == params[:id].to_i
                   if user = User.find_by_id(d.user_id)
                     data.push({
                       :date => d.created_at.to_i,
-                      :type => 'tagged_by_friend',
+                      :type => 'tagged',
                       :review_id => d.id,
                       :read => 1,
                       :user => {
@@ -946,8 +925,33 @@ class ApiController < ApplicationController
                         :id => user.id,
                         :photo => user.user_photo
                       },
-                      :text => "tagged your friend at #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
+                      :text => "tagged you at #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
                     })
+                  end
+                end
+              end
+            end
+          end
+          
+          Review.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
+            unless d.friends.blank?
+              d.friends.split(',').each do |t|
+                Follower.select(:user_id).where(:follow_user_id => t.id).each do |f|
+                  if t.to_i == f.user_id
+                    if user = User.find_by_id(d.user_id)
+                      data.push({
+                        :date => d.created_at.to_i,
+                        :type => 'tagged_by_friend',
+                        :review_id => d.id,
+                        :read => 1,
+                        :user => {
+                          :name => user.name,
+                          :id => user.id,
+                          :photo => user.user_photo
+                        },
+                        :text => "tagged your friend at #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
+                      })
+                    end
                   end
                 end
               end
