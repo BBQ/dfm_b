@@ -936,8 +936,8 @@ class ApiController < ApplicationController
           Review.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
             unless d.friends.blank?
               d.friends.split(',').each do |t|
-                Follower.select(:user_id).where(:follow_user_id => t).each do |f|
-                  if t.to_i == f.user_id
+                Follower.select(:follow_user_id).where(:user_id => params[:id]).each do |f|
+                  if t.to_i == f.follow_user_id.to_i
                     if user = User.find_by_id(d.user_id)
                       data.push({
                         :date => d.created_at.to_i,
