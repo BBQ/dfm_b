@@ -905,7 +905,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "post a review about #{d.review.home_cooked == true ? d.review.home_cook.name : d.review.dish.name}."
+                :text => "post a review about #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
               })
             end
           end
