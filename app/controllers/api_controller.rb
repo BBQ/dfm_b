@@ -809,7 +809,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "liked your review on #{d.review.dish.name}."
+                :text => "liked your review on #{d.review.home_cooked == 1 ? d.review.home_cook.name : d.review.dish.name}."
               })
               d.read = 1
               d.save
@@ -828,7 +828,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "commented on your review about #{Review.find_by_id(d.review_id).dish.name}."
+                :text => "commented on your review about #{d.review.home_cooked == 1 ? d.review.home_cook.name : d.review.dish.name}."
               })
               d.read = 1
               d.save
@@ -851,6 +851,42 @@ class ApiController < ApplicationController
               })
               f.read = 1
               f.save
+            end
+          end
+          
+          User.select('id, `read`, created_at').where("id = ?", params[:id]).limit("#{limit}").order("id DESC").each do |f|
+            if user = User.find_by_id(f.id)
+              data.push({
+                :date => f.created_at.to_i,
+                :type => 'new_friend',
+                :review_id => 0,
+                :read => 1, # TODO: Make separate db table for all notifications to trace read status
+                :user => {
+                  :name => user.name,
+                  :id => user.id,
+                  :photo => user.user_photo
+                },
+                :text => "joined Dish.FM."
+              })
+            end
+          end
+          
+          Comment.select('id, user_id, review_id, `read`, created_at').where("id IN (SELECT id FROM reviews WHERE user_id = ?)  AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("id DESC").each do |d|
+            if user = User.find_by_id(d.user_id)
+              data.push({
+                :date => d.created_at.to_i,
+                :type => 'comment_on_comment',
+                :review_id => d.review_id,
+                :read => d.read ? 1 : 0,
+                :user => {
+                  :name => user.name,
+                  :id => user.id,
+                  :photo => user.user_photo
+                },
+                :text => "write some on your comment about #{d.review.home_cooked == 1 ? d.review.home_cook.name : d.review.dish.name}."
+              })
+              d.read = 1
+              d.save
             end
           end
           

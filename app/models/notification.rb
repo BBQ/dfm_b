@@ -4,23 +4,23 @@ class Notification < ActiveRecord::Base
     
     if user = User.select(:name).find_by_id(from_user_id)  
       
-      if type == 'like' || type == 'comment'
-        if device = APN::Device.where(:user_id => data.user.id).first   
+      if (type == 'like' || type == 'comment') && user.id != data.user.id 
+        if device = APN::Device.where(:user_id => data.user.id).first
           dish_name = data.home_cooked == true ? data.home_cook.name : data.dish.name
           alert = "#{user.name.split.first} #{user.name.split.second[0]}. #{type} your review #{dish_name}"
           badge = Like.where("user_id = ? and `read` != 1", data.user.id).count(:id)
           badge += Comment.where("user_id = ? and `read` != 1", data.user.id).count(:id)
           badge += Follower.where("user_id = ? and `read` != 1", data.user.id).count(:id)
         end
-      elsif type == 'following'
-        if device = APN::Device.where(:user_id => data).first  
+      elsif type == 'following' && user.id != data 
+        if device = APN::Device.where(:user_id => data).first
           alert = "#{user.name.split.first} #{user.name.split.second[0]}. started #{type} you"
           badge = Like.where("user_id = ? and `read` != 1", data).count(:id)
           badge += Comment.where("user_id = ? and `read` != 1", data).count(:id)
           badge += Follower.where("user_id = ? and `read` != 1", data).count(:id)
         end
-      elsif type == 'new_fb_user'
-        if device = APN::Device.where(:user_id => data).first  
+      elsif type == 'new_fb_user' && user.id != data 
+        if device = APN::Device.where(:user_id => data).first
           alert = "Your facebook friend #{user.name.split.first} #{user.name.split.second[0]}. has joined Dish.fm"
           badge = Like.where("user_id = ? and `read` != 1", data).count(:id)
           badge += Comment.where("user_id = ? and `read` != 1", data).count(:id)
