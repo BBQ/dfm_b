@@ -797,6 +797,7 @@ class ApiController < ApplicationController
           
           limit = 100
           data = []
+          
           Like.select('id, user_id, review_id, `read`, created_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?) AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("id DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
@@ -809,7 +810,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "liked your review on #{d.review.home_cooked == 1 ? d.review.home_cook.name : d.review.dish.name}."
+                :text => "liked your review on #{d.review.home_cooked == true ? d.review.home_cook.name : d.review.dish.name}."
               })
               d.read = 1
               d.save
@@ -828,7 +829,7 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "commented on your review about #{d.review.home_cooked == 1 ? d.review.home_cook.name : d.review.dish.name}."
+                :text => "commented on your review about #{d.review.home_cooked == true ? d.review.home_cook.name : d.review.dish.name}."
               })
               d.read = 1
               d.save
@@ -854,7 +855,7 @@ class ApiController < ApplicationController
             end
           end
           
-          User.select('id, `read`, created_at').where("id = ?", params[:id]).limit("#{limit}").order("id DESC").each do |f|
+          User.select('id, created_at').where("id = ?", params[:id]).limit("#{limit}").order("id DESC").each do |f|
             if user = User.find_by_id(f.id)
               data.push({
                 :date => f.created_at.to_i,
@@ -871,22 +872,41 @@ class ApiController < ApplicationController
             end
           end
           
-          Comment.select('id, user_id, review_id, `read`, created_at').where("id IN (SELECT id FROM reviews WHERE user_id = ?)  AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("id DESC").each do |d|
+          Comment.select('id, user_id, review_id, created_at').where("review_id IN (SELECT review_id FROM comments WHERE user_id = ?) AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("id DESC").each do |d|
+            if user = User.find_by_id(d.user_id)
+              if my_comment = Comment.select(:created_at).find_last_by_review_id_and_user_id(d.review_id, params[:id])
+                if my_comment.created_at.to_i < d.created_at.to_i
+                  data.push({
+                    :date => d.created_at.to_i,
+                    :type => 'comment_on_comment',
+                    :review_id => d.review_id,
+                    :read => 1, # TODO: Make separate db table for all notifications to trace read status
+                    :user => {
+                      :name => user.name,
+                      :id => user.id,
+                      :photo => user.user_photo
+                    },
+                    :text => "write some on your comment about #{d.review.home_cooked == true ? d.review.home_cook.name : d.review.dish.name}."
+                  })
+                end
+              end
+            end
+          end
+          
+          Review.select('id, user_id, created_at').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
                 :date => d.created_at.to_i,
-                :type => 'comment_on_comment',
+                :type => 'review',
                 :review_id => d.review_id,
-                :read => d.read ? 1 : 0,
+                :read => 1,
                 :user => {
                   :name => user.name,
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "write some on your comment about #{d.review.home_cooked == 1 ? d.review.home_cook.name : d.review.dish.name}."
+                :text => "post a review about #{d.review.home_cooked == true ? d.review.home_cook.name : d.review.dish.name}."
               })
-              d.read = 1
-              d.save
             end
           end
           
