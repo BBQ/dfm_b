@@ -148,12 +148,11 @@ class API < ActiveRecord::Base
         when 0..33 then "Above average"
         when 34..66 then "Average"
         when 67..100 then "Below average"
-        else ''
       end
       
-      restaurant_category = []
-      unless restaurant.restaurant_category_id.blank?
-        RestaurantCategory.select(:name).where("id in (#{restaurant.restaurant_category_id})").each {|r| restaurant_category.push(r.name)}
+      restaurant_categories = []
+      unless restaurant.restaurant_categories.blank?
+        RestaurantCategory.select(:name).where("id in (#{restaurant.restaurant_categories})").each {|r| restaurant_categories.push(r.name)}
       end
       
       data = {
@@ -167,7 +166,7 @@ class API < ActiveRecord::Base
           :restaurant => {
               :image_sd => restaurant.find_image && restaurant.find_image.iphone.url != '/images/noimage.jpg' ? restaurant.find_image.iphone.url : '',
               :image_hd => restaurant.find_image && restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
-              :description => "#{restaurant_category.join(',')}, #{restaurant.description ||= ''}"
+              :description => "#{restaurant_categories.join(',')}, #{restaurant.description ||= ''}"
           },
           :restaurants => restaurants,
           :error => {:description => '', :code => ''}
