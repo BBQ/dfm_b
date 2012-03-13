@@ -39,7 +39,7 @@ class Notification < ActiveRecord::Base
           badge += Comment.where("user_id = ? and `read` != 1", data).count(:id)
           badge += Follower.where("user_id = ? and `read` != 1", data).count(:id)
         end
-      elsif type == 'tagged' && user.id != data.user_id
+      elsif type == 'tagged'
         data.friends.split(',').each do |t|
           if device = APN::Device.where(:user_id => t).first
             alert = "tagged you at #{data.restaurant.name}"
@@ -48,7 +48,7 @@ class Notification < ActiveRecord::Base
             badge += Follower.where("user_id = ? and `read` != 1", data).count(:id)
           end
         end
-      elsif type == 'tagged_by_friend' && user.id != data.user_id
+      elsif type == 'tagged_by_friend'
         data.friends.split(',').each do |t|
           if tagged = User.find_by_id(t)
             Follower.select(:user_id).where(:follow_user_id => tagged.id).each do |f|
