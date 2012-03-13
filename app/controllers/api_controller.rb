@@ -898,7 +898,7 @@ class ApiController < ApplicationController
               data.push({
                 :date => d.created_at.to_i,
                 :type => 'review',
-                :review_id => d.review_id,
+                :review_id => d.id,
                 :read => 1,
                 :user => {
                   :name => user.name,
@@ -909,8 +909,7 @@ class ApiController < ApplicationController
               })
             end
           end
-          
-          
+
           data = data.sort_by { |k| k[:data] }.reverse!
         else
           $error = {:description => 'Parameters missing', :code => 8}
