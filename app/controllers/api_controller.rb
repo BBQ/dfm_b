@@ -924,7 +924,7 @@ class ApiController < ApplicationController
                       :id => user.id,
                       :photo => user.user_photo
                     },
-                    :text => "tagged you at #{d.restaurant.name}."
+                    :text => "tagged you at #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
                   })
                 end
               end
@@ -946,7 +946,7 @@ class ApiController < ApplicationController
                         :id => user.id,
                         :photo => user.user_photo
                       },
-                      :text => "tagged your friend at #{d.restaurant.name}."
+                      :text => "tagged your friend at #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
                     })
                   end
                 end
