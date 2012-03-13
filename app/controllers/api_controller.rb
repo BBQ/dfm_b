@@ -910,7 +910,7 @@ class ApiController < ApplicationController
             end
           end
           
-          Reviews.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
+          Review.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
             d.friends.split(',').each do |t|
               if t.to_i == params[:id].to_i
                 if user = User.find_by_id(d.user_id)
@@ -931,7 +931,7 @@ class ApiController < ApplicationController
             end
           end
           
-          Reviews.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
+          Review.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
             d.friends.split(',').each do |t|
               Follower.select(:user_id).where(:follow_user_id => t.id).each do |f|
                 if t.to_i == f.user_id
