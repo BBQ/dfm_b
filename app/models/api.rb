@@ -152,8 +152,8 @@ class API < ActiveRecord::Base
       end
       
       restaurant_category = []
-      unless restaurant.restaurant_category.blank?
-        RestaurantCategory.select(:name).where("id in (#{restaurant.restaurant_category})").each {|r| data.push(r.name)}
+      unless restaurant.restaurant_category_id.blank?
+        RestaurantCategory.select(:name).where("id in (#{restaurant.restaurant_category_id})").each {|r| data.push(r.name)}
       end
       
       data = {
