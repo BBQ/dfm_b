@@ -886,7 +886,7 @@ class ApiController < ApplicationController
                       :id => user.id,
                       :photo => user.user_photo
                     },
-                    :text => "write some on your comment about #{d.review.home_cooked == true ? d.review.home_cook.name : d.review.dish.name}."
+                    :text => "also commented on #{d.review.home_cooked == true ? d.review.home_cook.name : d.review.dish.name}."
                   })
                 end
               end
@@ -897,7 +897,7 @@ class ApiController < ApplicationController
             if user = User.find_by_id(d.user_id)
               data.push({
                 :date => d.created_at.to_i,
-                :type => 'review',
+                :type => 'dishin',
                 :review_id => d.id,
                 :read => 1,
                 :user => {
@@ -905,8 +905,52 @@ class ApiController < ApplicationController
                   :id => user.id,
                   :photo => user.user_photo
                 },
-                :text => "post a review about #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
+                :text => "dished in #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
               })
+            end
+          end
+          
+          Reviews.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
+            d.friends.split(',').each do |t|
+              if t.to_i == params[:id].to_i
+                if user = User.find_by_id(d.user_id)
+                  data.push({
+                    :date => d.created_at.to_i,
+                    :type => 'tagged',
+                    :review_id => d.id,
+                    :read => 1,
+                    :user => {
+                      :name => user.name,
+                      :id => user.id,
+                      :photo => user.user_photo
+                    },
+                    :text => "tagged you at #{data.restaurant.name}."
+                  })
+                end
+              end
+            end
+          end
+          
+          Reviews.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
+            d.friends.split(',').each do |t|
+              Follower.select(:user_id).where(:follow_user_id => t.id).each do |f|
+                if t.to_i == f.user_id
+                  if user = User.find_by_id(d.user_id)
+                    data.push({
+                      :date => d.created_at.to_i,
+                      :type => 'tagged_by_friend',
+                      :review_id => d.id,
+                      :read => 1,
+                      :user => {
+                        :name => user.name,
+                        :id => user.id,
+                        :photo => user.user_photo
+                      },
+                      :text => "tagged your friend at #{data.restaurant.name}."
+                    })
+                  end
+                end
+              end
             end
           end
 
@@ -1077,9 +1121,6 @@ class ApiController < ApplicationController
         
         if params[:review][:user_id]
           r = Review.save_review(params[:review])
-          
-          
-          
         else
           return render :json => {:error => {:description => 'User not found', :code => 8}}
         end
@@ -1240,11 +1281,19 @@ class ApiController < ApplicationController
         
       end
       
-      unless r.photo.iphone_retina.url.blank?
-        if params[:post_on_facebook] == '1'
-          system "rake facebook:dishin REVIEW_ID='#{r.id}' &"
+      unless r.blank?
+        
+        Notification.send_push(params[:review][:user_id], r, 'dishin')        
+        Notification.send_push(params[:review][:user_id], r, 'tagged') if params[:fb_friends]
+
+        unless r.photo.iphone_retina.url.blank?
+          if params[:post_on_facebook] == '1'
+            system "rake facebook:dishin REVIEW_ID='#{r.id}' &"
+          end
         end
+        
       end
+      
       # Invite user
       # graph.put_wall_post("Hey, Welcome to the Web Application!!!!", {:name => "..."}, "682620569")
       

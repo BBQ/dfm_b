@@ -22,6 +22,7 @@ class Comment < ActiveRecord::Base
 
       # Send email
       Notification.send_push(data[:user_id], review, 'comment')
+      Notification.send_push(data[:user_id], review, 'comment_on_comment')
     end  
   end
 

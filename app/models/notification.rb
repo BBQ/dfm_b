@@ -12,6 +12,26 @@ class Notification < ActiveRecord::Base
           badge += Comment.where("user_id = ? and `read` != 1", data.user.id).count(:id)
           badge += Follower.where("user_id = ? and `read` != 1", data.user.id).count(:id)
         end
+      elsif type == 'comment_on_comment' && user.id != data.user.id 
+        Comment.select(:user_id).where(:review_id => data.review_id).each do |c|
+          if device = APN::Device.where(:user_id => c.user_id).first
+            dish_name = data.home_cooked == true ? data.home_cook.name : data.dish.name
+            alert = "#{user.name.split.first} #{user.name.split.second[0]}. #{type} also commented on #{dish_name}"
+            badge = Like.where("user_id = ? and `read` != 1", data.user.id).count(:id)
+            badge += Comment.where("user_id = ? and `read` != 1", data.user.id).count(:id)
+            badge += Follower.where("user_id = ? and `read` != 1", data.user.id).count(:id)
+          end
+        end
+      elsif type == 'dishin'
+        Folower.select(:user_id).where(:follow_user_id => from_user_id).each do |f|
+          if device = APN::Device.where(:user_id => f.user_id).first
+            dish_name = data.home_cooked == true ? data.home_cook.name : data.dish.name
+            alert = "#{user.name.split.first} #{user.name.split.second[0]}. dished in #{dish_name}"
+            badge = Like.where("user_id = ? and `read` != 1", data.user.id).count(:id)
+            badge += Comment.where("user_id = ? and `read` != 1", data.user.id).count(:id)
+            badge += Follower.where("user_id = ? and `read` != 1", data.user.id).count(:id)
+          end
+        end          
       elsif type == 'following' && user.id != data 
         if device = APN::Device.where(:user_id => data).first
           alert = "#{user.name.split.first} #{user.name.split.second[0]}. started #{type} you"
@@ -19,6 +39,28 @@ class Notification < ActiveRecord::Base
           badge += Comment.where("user_id = ? and `read` != 1", data).count(:id)
           badge += Follower.where("user_id = ? and `read` != 1", data).count(:id)
         end
+      elsif type == 'tagged' && user.id != data.user_id
+        data.friends.split(',').each do |t|
+          if device = APN::Device.where(:user_id => t).first
+            alert = "tagged you at #{data.restaurant.name}"
+            badge = Like.where("user_id = ? and `read` != 1", data).count(:id)
+            badge += Comment.where("user_id = ? and `read` != 1", data).count(:id)
+            badge += Follower.where("user_id = ? and `read` != 1", data).count(:id)
+          end
+        end
+      elsif type == 'tagged_by_friend' && user.id != data.user_id
+        data.friends.split(',').each do |t|
+          if tagged = User.find_by_id(t)
+            Follower.select(:user_id).where(:follow_user_id => tagged.id).each do |f|
+              if device = APN::Device.where(:user_id => f.user_id).first
+                alert = "tagged your friend at #{data.restaurant.name}"
+                badge = Like.where("user_id = ? and `read` != 1", data).count(:id)
+                badge += Comment.where("user_id = ? and `read` != 1", data).count(:id)
+                badge += Follower.where("user_id = ? and `read` != 1", data).count(:id)
+              end
+            end
+          end
+        end      
       elsif type == 'new_fb_user' && user.id != data 
         if device = APN::Device.where(:user_id => data).first
           alert = "Your facebook friend #{user.name.split.first} #{user.name.split.second[0]}. has joined Dish.fm"
