@@ -1288,7 +1288,11 @@ class ApiController < ApplicationController
       unless r.blank?
         
         Notification.send_push(params[:review][:user_id], r, 'dishin')        
-        Notification.send_push(params[:review][:user_id], r, 'tagged') if params[:fb_friends]
+        
+        if params[:fb_friends]
+          Notification.send_push(params[:review][:user_id], r, 'tagged')
+          Notification.send_push(params[:review][:user_id], r, 'tagged_by_friend')
+        end
 
         unless r.photo.iphone_retina.url.blank?
           if params[:post_on_facebook] == '1'
