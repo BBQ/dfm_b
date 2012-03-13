@@ -893,7 +893,7 @@ class ApiController < ApplicationController
             end
           end
           
-          Review.select('id, user_id, created_at, home_cooked').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
+          Review.select('id, user_id, created_at, home_cooked, dish_id').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
             if user = User.find_by_id(d.user_id)
               data.push({
                 :date => d.created_at.to_i,
