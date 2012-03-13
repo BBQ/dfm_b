@@ -1098,10 +1098,13 @@ class ApiController < ApplicationController
               params[:review][:network_id] = r.network_id
             else
             
-              if category = RestaurantCategory.find_by_name(venue.categories.first.name)
-                category_id = category.id
-              else
-                category_id = RestaurantCategory.create(:name => venue.categories.first.name).id
+              category_id = []
+              venue.categories.each do |v|
+                if category = RestaurantCategory.find_by_name(v.name)
+                  category_id.push(category.id)
+                else
+                  category_id.push(RestaurantCategory.create(:name => v.name).id)
+                end
               end
             
               if network = Network.find_by_name_and_city(venue.name, venue.location.city)
@@ -1127,7 +1130,7 @@ class ApiController < ApplicationController
                 :source => 'foursquare',
                 :name => venue.name,
                 :phone => venue.contact.formattedPhone,
-                :restaurant_category_id => category_id,
+                :restaurant_category_id => category_id.join(','),
                 :network_id => network_id
               }
               

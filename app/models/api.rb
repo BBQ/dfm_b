@@ -151,6 +151,11 @@ class API < ActiveRecord::Base
         else ''
       end
       
+      restaurant_category = []
+      unless restaurant.restaurant_category.blank?
+        RestaurantCategory.select(:name).where("id in (#{restaurant.restaurant_category})").each {|r| data.push(r.name)}
+      end
+      
       data = {
           :network_ratings => restaurant.network.rating,
           :network_reviews_count => restaurant.network.reviews.count,
@@ -162,7 +167,7 @@ class API < ActiveRecord::Base
           :restaurant => {
               :image_sd => restaurant.find_image && restaurant.find_image.iphone.url != '/images/noimage.jpg' ? restaurant.find_image.iphone.url : '',
               :image_hd => restaurant.find_image && restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
-              :description => "#{restaurant.restaurant_category ? restaurant.restaurant_category.name : ''}, #{restaurant.description ||= ''}"
+              :description => "#{restaurant_category.join(',')}, #{restaurant.description ||= ''}"
           },
           :restaurants => restaurants,
           :error => {:description => '', :code => ''}
