@@ -40,7 +40,7 @@ class Notification < ActiveRecord::Base
           badge += Follower.where("user_id = ? and `read` != 1", data).count(:id)
         end
       elsif type == 'tagged'
-        data.friends.split(',').each do |t|
+        data.friends.split(',').each do |t| #TODO : add all data to array and send push for each element
           if device = APN::Device.where(:user_id => t).first
             alert = "tagged you at #{data.restaurant.name}"
             badge = Like.where("user_id = ? and `read` != 1", data).count(:id)
@@ -49,7 +49,7 @@ class Notification < ActiveRecord::Base
           end
         end
       elsif type == 'tagged_by_friend'
-        data.friends.split(',').each do |t|
+        data.friends.split(',').each do |t| #TODO : add all data to array and send push for each element
           if tagged = User.find_by_id(t)
             Follower.select(:user_id).where(:follow_user_id => tagged.id).each do |f|
               if device = APN::Device.where(:user_id => f.user_id).first
@@ -71,7 +71,6 @@ class Notification < ActiveRecord::Base
       end
 
       if device
-        alert = "#{alert.slice 0 .. 40}..." if alert.length > 40
         notification = APN::Notification.new   
         notification.device = device   
         notification.badge = badge.to_i + 1   

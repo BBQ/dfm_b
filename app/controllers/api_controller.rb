@@ -925,7 +925,7 @@ class ApiController < ApplicationController
                         :id => user.id,
                         :photo => user.user_photo
                       },
-                      :text => "tagged you at #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
+                      :text => "tagged you at #{d.home_cooked == true ? 'Home' : d.restaurant.name}."
                     })
                   end
                 end
@@ -949,7 +949,7 @@ class ApiController < ApplicationController
                           :id => user.id,
                           :photo => user.user_photo
                         },
-                        :text => "tagged your friend at #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
+                        :text => "tagged your friend at #{d.home_cooked == true ? 'Home' : d.restaurant.name}."
                       })
                     end
                   end
@@ -1289,7 +1289,7 @@ class ApiController < ApplicationController
         
         Notification.send_push(params[:review][:user_id], r, 'dishin')        
         
-        unless params[:fb_friends].blank?
+        unless r.friends.blank?
           Notification.send_push(params[:review][:user_id], r, 'tagged')
           Notification.send_push(params[:review][:user_id], r, 'tagged_by_friend')
         end

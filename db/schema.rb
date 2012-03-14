@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120306101041) do
+ActiveRecord::Schema.define(:version => 20120314095229) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -53,6 +53,8 @@ ActiveRecord::Schema.define(:version => 20120306101041) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "mailed_at"
+    t.integer  "user_to",                          :null => false
+    t.integer  "user_from",                        :null => false
   end
 
   add_index "apn_notifications", ["device_id"], :name => "index_apn_notifications_on_device_id"
@@ -446,8 +448,8 @@ ActiveRecord::Schema.define(:version => 20120306101041) do
   create_table "restaurants", :force => true do |t|
     t.string   "name"
     t.string   "city"
-    t.integer  "network_id",                                              :null => false
-    t.float    "rating",                 :limit => 21, :default => 0.0
+    t.integer  "network_id",                                             :null => false
+    t.float    "rating",                :limit => 21, :default => 0.0
     t.string   "name_eng"
     t.float    "lon"
     t.float    "lat"
@@ -461,11 +463,11 @@ ActiveRecord::Schema.define(:version => 20120306101041) do
     t.string   "breakfast"
     t.string   "businesslunch"
     t.string   "photo"
-    t.integer  "votes",                                :default => 0
-    t.string   "wifi",                                 :default => "0"
-    t.boolean  "chillum",                              :default => false
-    t.boolean  "terrace",                              :default => false
-    t.boolean  "cc",                                   :default => false
+    t.integer  "votes",                               :default => 0
+    t.string   "wifi",                                :default => "0"
+    t.boolean  "chillum",                             :default => false
+    t.boolean  "terrace",                             :default => false
+    t.boolean  "cc",                                  :default => false
     t.string   "source"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -484,13 +486,13 @@ ActiveRecord::Schema.define(:version => 20120306101041) do
     t.string   "parking"
     t.string   "menu_url"
     t.string   "bill"
-    t.string   "sun",                                  :default => ""
-    t.string   "mon",                                  :default => ""
-    t.string   "tue",                                  :default => ""
-    t.string   "wed",                                  :default => ""
-    t.string   "thu",                                  :default => ""
-    t.string   "fri",                                  :default => ""
-    t.string   "sat",                                  :default => ""
+    t.string   "sun",                                 :default => ""
+    t.string   "mon",                                 :default => ""
+    t.string   "tue",                                 :default => ""
+    t.string   "wed",                                 :default => ""
+    t.string   "thu",                                 :default => ""
+    t.string   "fri",                                 :default => ""
+    t.string   "sat",                                 :default => ""
     t.integer  "fsq_checkins_count"
     t.integer  "fsq_tip_count"
     t.integer  "fsq_users_count"
@@ -498,8 +500,8 @@ ActiveRecord::Schema.define(:version => 20120306101041) do
     t.string   "fsq_address"
     t.string   "fsq_id"
     t.string   "station"
-    t.integer  "top_user_id",                          :default => 0
-    t.integer  "restaurant_category_id",               :default => 0
+    t.integer  "top_user_id",                         :default => 0
+    t.string   "restaurant_categories",               :default => "0"
     t.boolean  "delivery_only"
   end
 
@@ -585,6 +587,50 @@ ActiveRecord::Schema.define(:version => 20120306101041) do
   add_index "types", ["id"], :name => "index_types_on_id"
   add_index "types", ["name"], :name => "index_types_on_name"
 
+  create_table "user_preferences", :force => true do |t|
+    t.integer  "user_id",                                     :null => false
+    t.boolean  "friends_dishin_email"
+    t.boolean  "friends_from_facebook_joins_email"
+    t.boolean  "start_following_me_email"
+    t.boolean  "comment_my_dishin_email"
+    t.boolean  "add_to_favorites_my_dishin_email"
+    t.boolean  "news_and_updates_email"
+    t.boolean  "weekly_friends_activity_email"
+    t.boolean  "ousted_as_top_expert_email"
+    t.boolean  "unlock_new_level_email"
+    t.boolean  "share_my_dishin_to_facebook_email"
+    t.boolean  "share_my_favorites_to_facebook_email"
+    t.boolean  "share_my_comments_to_facebook_email"
+    t.boolean  "share_my_top_expert_to_facebook_email"
+    t.boolean  "share_my_new_level_badge_to_facebook_email"
+    t.boolean  "share_my_dishin_to_twitter_email"
+    t.boolean  "share_my_favorites_to_twitter_email"
+    t.boolean  "share_my_comments_to_twitter_email"
+    t.boolean  "share_my_top_expert_to_twitter_email"
+    t.boolean  "share_my_new_level_badge_to_twitter_email"
+    t.boolean  "friends_dishin_mobile"
+    t.boolean  "friends_from_facebook_joins_mobile"
+    t.boolean  "start_following_me_mobile"
+    t.boolean  "comment_my_dishin_mobile"
+    t.boolean  "add_to_favorites_my_dishin_mobile"
+    t.boolean  "news_and_updates_mobile"
+    t.boolean  "weekly_friends_activity_mobile"
+    t.boolean  "ousted_as_top_expert_mobile"
+    t.boolean  "unlock_new_level_mobile"
+    t.boolean  "share_my_dishin_to_facebook_mobile"
+    t.boolean  "share_my_favorites_to_facebook_mobile"
+    t.boolean  "share_my_comments_to_facebook_mobile"
+    t.boolean  "share_my_top_expert_to_facebook_mobile"
+    t.boolean  "share_my_new_level_badge_to_facebook_mobile"
+    t.boolean  "share_my_dishin_to_twitter_mobile"
+    t.boolean  "share_my_favorites_to_twitter_mobile"
+    t.boolean  "share_my_comments_to_twitter_mobile"
+    t.boolean  "share_my_top_expert_to_twitter_mobile"
+    t.boolean  "share_my_new_level_badge_to_twitter_mobile"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "users", :force => true do |t|
     t.string   "email"
     t.string   "crypted_password"
@@ -605,6 +651,5 @@ ActiveRecord::Schema.define(:version => 20120306101041) do
 
   add_index "users", ["facebook_id"], :name => "index_users_on_facebook_id"
   add_index "users", ["remember_me_token"], :name => "index_users_on_remember_me_token"
-  add_index "users", ["twitter_id"], :name => "twitter_id"
 
 end
