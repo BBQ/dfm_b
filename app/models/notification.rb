@@ -20,7 +20,7 @@ class Notification < ActiveRecord::Base
             alert = "#{user.name.split.first} #{user.name.split.second[0]}. #{type} also commented on #{dish_name}"
             badge = APN::Notification.where("user_id_to = ? and `read` != 1", data.user.id).count(:id)
             user_id_to.push(data.user.id)
-            review_id = data.review_id
+            review_id = data.id
           end
         end
       elsif type == 'dishin'
