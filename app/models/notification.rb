@@ -14,7 +14,7 @@ class Notification < ActiveRecord::Base
           review_id = data.id
         end
       elsif type == 'comment_on_comment' && user.id != data.user.id 
-        Comment.select(:user_id).where(:review_id => data.review_id).each do |c|
+        Comment.select(:user_id).where(:review_id => data.id).each do |c|
           if device = APN::Device.where(:user_id => c.user_id).first
             dish_name = data.home_cooked == true ? data.home_cook.name : data.dish.name
             alert = "#{user.name.split.first} #{user.name.split.second[0]}. #{type} also commented on #{dish_name}"
