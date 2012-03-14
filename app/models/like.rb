@@ -31,7 +31,7 @@ class Like < ActiveRecord::Base
           review.save
 
           # Send email
-          Notification.send(user_id, review, 'like')
+          Notification.send(user_id, 'like', review.user_id, review.dish.name, nil, nil, review.id)          
         end
       end
     end
