@@ -20,9 +20,9 @@ class Comment < ActiveRecord::Base
         review.save
       end
 
-      # Send email
-      Notification.send_push(data[:user_id], review, 'comment')
-      Notification.send_push(data[:user_id], review, 'comment_on_comment')
+      # Send notifications
+      Notification.send(data[:user_id], 'comment', review.user_id, review.dish.name, nil, nil, review.id)
+      Notification.send(data[:user_id], 'comment_on_comment', review.user_id, review.dish.name, nil, nil, review.id)
     end  
   end
 

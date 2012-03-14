@@ -371,7 +371,7 @@ class ApiController < ApplicationController
               status = 'unfollow'
             elsif user = User.find_by_id(params[:follow_user_id])
               Follower.create({:user_id => params[:user_id], :follow_user_id => params[:follow_user_id]})
-              Notification.send_push(params[:user_id], params[:follow_user_id], 'following')
+              Notification.send(params[:user_id], 'following', params[:follow_user_id])
               status = 'follow'
             else
               $error = {:description => 'user or follower not found', :code => 5}
@@ -1146,11 +1146,12 @@ class ApiController < ApplicationController
       
       unless r.blank?
         
-        Notification.send_push(params[:review][:user_id], r, 'dishin')        
+        dish_name = r.home_cooked == true ? r.home_cook.name : r.dish.name
+        Notification.send(r.user_id, 'dishin', nil, dish_name, nil, nil, r.id)        
         
         unless r.friends.blank?
-          Notification.send_push(params[:review][:user_id], r, 'tagged')
-          Notification.send_push(params[:review][:user_id], r, 'tagged_by_friend')
+          Notification.send(r.user_id, 'tagged', nil, nil, r.restaurant.name, r.friends)
+          Notification.send(r.user_id, 'tagged_by_friend', nil, nil, r.restaurant.name, r.friends)
         end
 
         unless r.photo.iphone_retina.url.blank?
