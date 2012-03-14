@@ -114,7 +114,7 @@ class User < ActiveRecord::Base
       :gender => auth_result["gender"],
       :current_city => auth_result["location"]["name"],
       :facebook_id => auth_result["id"],
-      :fb_access_token => auth_result["access_token"]
+      :fb_access_token => rest.access_token
     })
     
     Authentication.create({
