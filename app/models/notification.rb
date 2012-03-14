@@ -7,7 +7,12 @@ class Notification < ActiveRecord::Base
       user_ids_to_array = []
       if (notification_type == 'like' || notification_type == 'comment') && (user_id_from != user_id_to) && dish_name && review_id
         
-              alert = "#{notification_type} your review #{dish_name}"
+              if notification_type == like
+                alert = "added to favourites your dish-in in #{dish_name} "
+              else
+                alert = "commented on your dish-in in #{dish_name} "
+              end
+                
               badge = APN::Notification.where("user_id_to = ? and `read` != 1", user_id_to).count(:id)
               
               user_ids_to_array.push({:user_id => user_id_to, :badge => badge})
