@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120314122503) do
+ActiveRecord::Schema.define(:version => 20120314195506) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -56,7 +56,7 @@ ActiveRecord::Schema.define(:version => 20120314122503) do
     t.integer  "user_id_to",                       :null => false
     t.integer  "user_id_from",                     :null => false
     t.boolean  "read"
-    t.string   "type"
+    t.string   "notification_type"
     t.integer  "review_id",         :default => 0
   end
 
@@ -117,6 +117,7 @@ ActiveRecord::Schema.define(:version => 20120314122503) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "name_eng"
   end
 
   add_index "dish_categories", ["name"], :name => "name"
