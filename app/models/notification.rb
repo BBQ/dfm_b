@@ -78,7 +78,7 @@ class Notification < ActiveRecord::Base
             notification.notification_type = notification_type
             notification.review_id = review_id ? review_id : 0
             notification.user_id_from = from_user_id
-            notification.user_id_to = user_id_to
+            notification.user_id_to = u
             notification.save
           end
         end
