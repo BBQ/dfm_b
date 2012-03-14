@@ -62,22 +62,28 @@ class Notification < ActiveRecord::Base
               end
         
       elsif notification_type == 'tagged_by_friend' && restaurant_name && friends
-              friends.split(',').each do |t|
-                
-                  if tagged = User.find_by_id(t)
-              
-                      alert = "tagged your friend #{t.name} at #{restaurant_name}"
-                      Follower.select(:user_id).where(:follow_user_id => tagged.id).each do |f|
+        
+              if review = Review.find_by_id(review_id)
+                                
+                  if review.user_id != user_id_from
+                      friends.split(',').each do |t|
+      
+                          if tagged = User.find_by_id(t)
+                              alert = "tagged your friend #{t.name} at #{restaurant_name}"
+                              
+                              Follower.select(:user_id).where(:follow_user_id => tagged.id).each do |f|
 
-                          if user = User.find_by_id(f.user_id)
+                                  if user = User.find_by_id(f.user_id)
 
-                            badge = APN::Notification.where("user_id_to = ? and `read` != 1", f.user_id).count(:id)
-                            user_ids_to_array.push({:user_id => f.user_id, :badge => badge}) if f.user_id.to_i != user_id_from
-                            
+                                    badge = APN::Notification.where("user_id_to = ? and `read` != 1", f.user_id).count(:id)
+                                    user_ids_to_array.push({:user_id => f.user_id, :badge => badge}) if f.user_id.to_i != user_id_from
+                  
+                                  end
+                              end                  
                           end
-                      end                  
-                  end
-              end  
+                      end 
+                  end 
+              end
 
       elsif notification_type == 'new_fb_user' && user_id_from != user_id_to
          
