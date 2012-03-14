@@ -21,8 +21,9 @@ class Comment < ActiveRecord::Base
       end
 
       # Send notifications
-      Notification.send(data[:user_id], 'comment', review.user_id, review.dish.name, nil, nil, review.id)
-      Notification.send(data[:user_id], 'comment_on_comment', review.user_id, review.dish.name, nil, nil, review.id)
+      dish_name = review.home_cooked == true ? review.home_cook.name : review.dish.name
+      Notification.send(data[:user_id], 'comment', review.user_id, dish_name, nil, nil, review.id)
+      Notification.send(data[:user_id], 'comment_on_comment', review.user_id, dish_name, nil, nil, review.id)
     end  
   end
 
