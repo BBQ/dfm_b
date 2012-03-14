@@ -112,7 +112,7 @@ class User < ActiveRecord::Base
       :email => auth_result["email"] , 
       :name => auth_result["name"], 
       :gender => auth_result["gender"],
-      :current_city => auth_result["location"]["name"],
+      :current_city => auth_result["location"] ? auth_result["location"]["name"] : '',
       :facebook_id => auth_result["id"],
       :fb_access_token => rest.access_token
     })
