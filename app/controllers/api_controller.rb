@@ -802,7 +802,7 @@ class ApiController < ApplicationController
             user = User.find_by_id(n.user_id_from)
             data.push({
               :date => n.created_at.to_i,
-              :type => n.type,
+              :type => n.notification_type,
               :review_id => n.review_id,
               :read => n.read,
               :text => n.alert,
