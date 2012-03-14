@@ -83,9 +83,8 @@ class Notification < ActiveRecord::Base
       if user_ids_to_array.count > 0
         user_ids_to_array.each do |u|
 
-            device = APN::Device.find_by_user_id(u[:user_id])
             notification = APN::Notification.new
-            notification.device = device ||= 0
+            notification.device = APN::Device.find_by_user_id(u[:user_id]) ||= 0
             notification.badge = u[:badge].to_i + 1   
             notification.sound = true   
             notification.alert = alert
