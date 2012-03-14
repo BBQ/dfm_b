@@ -84,7 +84,7 @@ class Notification < ActiveRecord::Base
         user_ids_to_array.each do |u|
 
             notification = APN::Notification.new
-            notification.device = APN::Device.find_by_user_id(u[:user_id])
+            notification.device = APN::Device.find_by_user_id(u[:user_id]).to_i
             notification.badge = u[:badge].to_i + 1   
             notification.sound = true   
             notification.alert = alert
