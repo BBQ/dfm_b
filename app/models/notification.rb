@@ -18,7 +18,7 @@ class Notification < ActiveRecord::Base
               Comment.select(:user_id).where(:review_id => review_id).each do |c|
                
                     badge = APN::Notification.where("user_id_to = ? and `read` != 1", c.user_id).count(:id)
-                    user_ids_to_array.push({:user_id => c.user_id, :badge => badge}) if c.user_id != user_id_from
+                    user_ids_to_array.push({:user_id => c.user_id, :badge => badge}) if c.user_id.to_i != user_id_from.to_i
                                     
               end
               
@@ -29,7 +29,7 @@ class Notification < ActiveRecord::Base
             
                   if user = User.find_by_id(f.user_id)
                     badge = APN::Notification.where("user_id_to = ? and `read` != 1", f.user_id).count(:id)
-                    user_ids_to_array.push({:user_id => f.user_id, :badge => badge}) if f.user_id != user_id_from
+                    user_ids_to_array.push({:user_id => f.user_id, :badge => badge}) if f.user_id.to_i != user_id_from.to_i
                   end
                   
               end    
@@ -48,7 +48,7 @@ class Notification < ActiveRecord::Base
                 
                   if user = User.find_by_id(t)
                     badge = APN::Notification.where("user_id_to = ? and `read` != 1", t).count(:id)
-                    user_ids_to_array.push({:user_id => t, :badge => badge}) if t != user_id_from
+                    user_ids_to_array.push({:user_id => t, :badge => badge}) if t.to_i != user_id_from.to_i
                   end
                 
               end
@@ -64,7 +64,7 @@ class Notification < ActiveRecord::Base
                           if user = User.find_by_id(f)
                 
                             badge = APN::Notification.where("user_id_to = ? and `read` != 1", f).count(:id)
-                            user_ids_to_array.push({:user_id => f, :badge => badge}) if f != user_id_from
+                            user_ids_to_array.push({:user_id => f, :badge => badge}) if f.to_i != user_id_from.to_i
                             
                           end
                       end                  
@@ -93,7 +93,7 @@ class Notification < ActiveRecord::Base
 
             notification = APN::Notification.new
             notification.device = device
-            notification.badge = u[:badge].to_i + 1   
+            notification.badge = u[:badge]  
             notification.sound = true   
             notification.alert = alert
             notification.notification_type = notification_type
