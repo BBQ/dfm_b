@@ -70,7 +70,7 @@ class Notification < ActiveRecord::Base
       if user_id_to.count > 0
         user_id_to.each do |u|
           if device = APN::Device.where(:user_id => u).first
-            notification = APN::Notification.new   
+            notification = APN::Notification.new
             notification.device = device   
             notification.badge = badge.to_i + 1   
             notification.sound = true   
@@ -78,6 +78,7 @@ class Notification < ActiveRecord::Base
             notification.type = type
             notification.review_id = review_id ? review_id : 0
             notification.user_id_from = from_user_id
+            notification.user_id_to = user_id_to
             notification.save
           end
         end
