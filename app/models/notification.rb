@@ -66,13 +66,13 @@ class Notification < ActiveRecord::Base
                 
                   if tagged = User.find_by_id(t)
               
-                      alert = "tagged your friend at #{restaurant_name}"
+                      alert = "tagged your friend #{t.name} at #{restaurant_name}"
                       Follower.select(:user_id).where(:follow_user_id => tagged.id).each do |f|
-              
-                          if user = User.find_by_id(f)
-                
-                            badge = APN::Notification.where("user_id_to = ? and `read` != 1", f).count(:id)
-                            user_ids_to_array.push({:user_id => f, :badge => badge}) if f.to_i != user_id_from
+
+                          if user = User.find_by_id(f.user_id)
+
+                            badge = APN::Notification.where("user_id_to = ? and `read` != 1", f.user_id).count(:id)
+                            user_ids_to_array.push({:user_id => f.user_id, :badge => badge}) if f.user_id.to_i != user_id_from
                             
                           end
                       end                  
