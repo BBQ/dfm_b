@@ -11,10 +11,10 @@ class ApiController < ApplicationController
     
     if (params[:restaurant][:address] || (params[:restaurant][:lat] && params[:restaurant][:lon]) || params[:restaurant][:web] || params[:restaurant][:phone]) && params[:restaurant][:name] && params[:restaurant][:category]
       
-      if restaurant_category = RestaurantCategory.find_by_name(params[:restaurant][:category])
-        params[:restaurant][:restaurant_category_id] = restaurant_category.id
+      if restaurant_category = RestaurantCategory.find_by_name(params[:restaurant][:category]) #TODO: make an array with categories not only single one
+        params[:restaurant][:restaurant_categories] = restaurant_category.id
       else
-        params[:restaurant][:restaurant_category_id] = RestaurantCategory.create({:name => params[:restaurant][:category]}).id
+        params[:restaurant][:restaurant_categories] = RestaurantCategory.create({:name => params[:restaurant][:category]}).id
       end
       params[:restaurant].delete(:category)
       
