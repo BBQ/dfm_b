@@ -81,10 +81,19 @@ class Notification < ActiveRecord::Base
       end
 
       if user_ids_to_array.count > 0
+        
+        send = 0
         user_ids_to_array.each do |u|
 
+            if device = APN::Device.find_by_user_id(u[:user_id])
+              send = 1
+            else
+              device = APN::Device.new
+              device.id = 0
+            end
+
             notification = APN::Notification.new
-            notification.device = APN::Device.find_by_user_id(u[:user_id]).to_i
+            notification.device = device
             notification.badge = u[:badge].to_i + 1   
             notification.sound = true   
             notification.alert = alert
@@ -97,8 +106,8 @@ class Notification < ActiveRecord::Base
             
         end
         
-        system "rake apn:notifications:deliver &" if device
-        system "rake email:notifications:deliver &"
+        system "rake apn:notifications:deliver &" if send == 1
+        # system "rake email:notifications:deliver &"
       end
       
     end
