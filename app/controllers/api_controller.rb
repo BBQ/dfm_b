@@ -798,167 +798,26 @@ class ApiController < ApplicationController
           limit = 100
           data = []
           
-          Like.select('id, user_id, review_id, `read`, created_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?) AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("id DESC").each do |d|
-            if user = User.find_by_id(d.user_id)
-              data.push({
-                :date => d.created_at.to_i,
-                :type => 'like',
-                :review_id => d.review_id,
-                :read => d.read ? 1 : 0,
-                :user => {
-                  :name => user.name,
-                  :id => user.id,
-                  :photo => user.user_photo
-                },
-                :text => "liked your review on #{d.review.home_cooked == true ? d.review.home_cook.name : d.review.dish.name}."
-              })
-              d.read = 1
-              d.save
-            end
-          end
-        
-          Comment.select('id, user_id, review_id, `read`, created_at').where("review_id IN (SELECT id FROM reviews WHERE user_id = ?)  AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("id DESC").each do |d|
-            if user = User.find_by_id(d.user_id)
-              data.push({
-                :date => d.created_at.to_i,
-                :type => 'comment',
-                :review_id => d.review_id,
-                :read => d.read ? 1 : 0,
-                :user => {
-                  :name => user.name,
-                  :id => user.id,
-                  :photo => user.user_photo
-                },
-                :text => "commented on your review about #{d.review.home_cooked == true ? d.review.home_cook.name : d.review.dish.name}."
-              })
-              d.read = 1
-              d.save
-            end
-          end
-        
-          Follower.select('id, user_id, `read`, created_at').where("follow_user_id = ?", params[:id]).limit("#{limit}").order("id DESC").each do |f|
-            if user = User.find_by_id(f.user_id)
-              data.push({
-                :date => f.created_at.to_i,
-                :type => 'followed',
-                :review_id => 0,
-                :read => f.read ? 1 : 0,
-                :user => {
-                  :name => user.name,
-                  :id => user.id,
-                  :photo => user.user_photo
-                },
-                :text => "started following you."
-              })
-              f.read = 1
-              f.save
-            end
-          end
+          APN::Notification.where("user_id_to = ? and `read` != 1", params[:id]).limit(limit).order("id DESC").each do |n|
+            user = User.find_by_id(n.user_id_from)
+            data.push({
+              :date => n.created_at.to_i,
+              :type => n.type,
+              :review_id => n.review_id,
+              :read => n.read,
+              :text => n.alert,
+              :user => {
+                :name => user.name,
+                :id => user.id,
+                :photo => user.user_photo
+              }
+            })
+            n.read = 1
+            n.save
+          end 
           
-          User.select('id, created_at').where("id = ?", params[:id]).limit("#{limit}").order("id DESC").each do |f|
-            if user = User.find_by_id(f.id)
-              data.push({
-                :date => f.created_at.to_i,
-                :type => 'new_friend',
-                :review_id => 0,
-                :read => 1, # TODO: Make separate db table for all notifications to trace read status
-                :user => {
-                  :name => user.name,
-                  :id => user.id,
-                  :photo => user.user_photo
-                },
-                :text => "joined Dish.FM."
-              })
-            end
-          end
+          # data = data.sort_by { |k| k[:data] }.reverse!
           
-          Comment.select('id, user_id, review_id, created_at').where("review_id IN (SELECT review_id FROM comments WHERE user_id = ?) AND user_id != ?", params[:id], params[:id]).limit("#{limit}").order("id DESC").each do |d|
-            if user = User.find_by_id(d.user_id)
-              if my_comment = Comment.select(:created_at).find_last_by_review_id_and_user_id(d.review_id, params[:id])
-                if my_comment.created_at.to_i < d.created_at.to_i
-                  data.push({
-                    :date => d.created_at.to_i,
-                    :type => 'comment_on_comment',
-                    :review_id => d.review_id,
-                    :read => 1, # TODO: Make separate db table for all notifications to trace read status
-                    :user => {
-                      :name => user.name,
-                      :id => user.id,
-                      :photo => user.user_photo
-                    },
-                    :text => "also commented on #{d.review.home_cooked == true ? d.review.home_cook.name : d.review.dish.name}."
-                  })
-                end
-              end
-            end
-          end
-          
-          Review.select('id, user_id, created_at, home_cooked, dish_id').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
-            if user = User.find_by_id(d.user_id)
-              data.push({
-                :date => d.created_at.to_i,
-                :type => 'dishin',
-                :review_id => d.id,
-                :read => 1,
-                :user => {
-                  :name => user.name,
-                  :id => user.id,
-                  :photo => user.user_photo
-                },
-                :text => "dished in #{d.home_cooked == true ? d.home_cook.name : d.dish.name}."
-              })
-            end
-          end
-          
-          Review.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
-            unless d.friends.blank?
-              d.friends.split(',').each do |t|
-                if t.to_i == params[:id].to_i
-                  if user = User.find_by_id(d.user_id)
-                    data.push({
-                      :date => d.created_at.to_i,
-                      :type => 'tagged',
-                      :review_id => d.id,
-                      :read => 1,
-                      :user => {
-                        :name => user.name,
-                        :id => user.id,
-                        :photo => user.user_photo
-                      },
-                      :text => "tagged you at #{d.home_cooked == true ? 'Home' : d.restaurant.name}."
-                    })
-                  end
-                end
-              end
-            end
-          end
-          
-          Review.select('id, user_id, created_at, home_cooked, dish_id, friends').where("user_id in (SELECT follow_user_id FROM followers WHERE user_id = ?)", params[:id]).limit("#{limit}").order("id DESC").each do |d|
-            unless d.friends.blank?
-              d.friends.split(',').each do |t|
-                Follower.select(:follow_user_id).where(:user_id => params[:id]).each do |f|
-                  if t.to_i == f.follow_user_id.to_i
-                    if user = User.find_by_id(d.user_id)
-                      data.push({
-                        :date => d.created_at.to_i,
-                        :type => 'tagged_by_friend',
-                        :review_id => d.id,
-                        :read => 1,
-                        :user => {
-                          :name => user.name,
-                          :id => user.id,
-                          :photo => user.user_photo
-                        },
-                        :text => "tagged your friend at #{d.home_cooked == true ? 'Home' : d.restaurant.name}."
-                      })
-                    end
-                  end
-                end
-              end
-            end
-          end
-
-          data = data.sort_by { |k| k[:data] }.reverse!
         else
           $error = {:description => 'Parameters missing', :code => 8}
         end

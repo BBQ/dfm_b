@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120314095229) do
+ActiveRecord::Schema.define(:version => 20120314122503) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -53,8 +53,11 @@ ActiveRecord::Schema.define(:version => 20120314095229) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "mailed_at"
-    t.integer  "user_to",                          :null => false
-    t.integer  "user_from",                        :null => false
+    t.integer  "user_id_to",                       :null => false
+    t.integer  "user_id_from",                     :null => false
+    t.boolean  "read"
+    t.string   "type"
+    t.integer  "review_id",         :default => 0
   end
 
   add_index "apn_notifications", ["device_id"], :name => "index_apn_notifications_on_device_id"
