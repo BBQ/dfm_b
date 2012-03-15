@@ -452,10 +452,13 @@ class ApiController < ApplicationController
       networks = []  
       restaurants.each {|r| networks.push(r.network_id)}
       
-      dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count]).where("network_id IN (#{networks.join(',')})").order("votes DESC, photo DESC, fsq_checkins_count DESC")
-      dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
-      dishes = dishes.search(params[:search]) unless params[:search].blank?
-      
+      if params[:type] == 'home_cooked'
+        dishes = HomeCook.select([:id, :name, :rating, :votes, :photo]).order("votes DESC, photo DESC")
+      else      
+        dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count]).where("network_id IN (#{networks.join(',')})").order("votes DESC, photo DESC, fsq_checkins_count DESC")
+        dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
+        dishes = dishes.search(params[:search]) unless params[:search].blank?
+      end
       if params[:dish_id] && params[:dish_id].to_i > 0 
 
           if dish = Dish.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)
@@ -489,6 +492,49 @@ class ApiController < ApplicationController
                 dishes_between.each do |d|
                   if start == 1
                     if dishes_array.count < limit
+                      network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked'
+                      dishes_array.push({
+                        :id => d.id,
+                        :name => d.name,
+                        :rating => d.rating,
+                        :votes => d.votes,
+                        :image_sd => d.image_sd,
+                        :image_hd => d.image_hd,
+                        :network => params[:type] == 'home_cooked' || params[:type] == 'delivery' ? {} : {
+                          :id => network_data.id,
+                          :name => network_data.name
+                        }
+                      })
+                    else
+                      break
+                    end
+                  end
+                  start = 1 if dish && d.id == dish.id
+                end
+              end
+            end
+        end
+      end
+      
+      if dishes_array.count < limit && params[:type] != 'home_cooked'
+          
+          foursquare_max = Dish.select("max(fsq_checkins_count) as max_fsq").first.max_fsq
+          fsq_checkins_count = foursquare_max if fsq_checkins_count.nil? || fsq_checkins_count == 0
+
+          step_fsq = foursquare_max/2
+          (0..(foursquare_max-step_fsq)).step(step_fsq) do |n|
+        
+            n1 = foursquare_max - n
+            n2 = n1 - step_fsq != 0 ? n1 - step_fsq : 0
+    
+            if (fsq_checkins_count > n2 && fsq_checkins_count <= n1) || (fsq_checkins_count > n2 && fsq_checkins_count > n1 && dishes_array.count < limit)
+      
+              start = 1 if fsq_checkins_count > n2 && fsq_checkins_count > n1 && dishes_array.count < limit
+              if dishes_between = dishes.where("fsq_checkins_count > ? AND fsq_checkins_count <= ? AND rating = 0", n2, n1)
+        
+                dishes_between.each do |d|
+                  if start == 1
+                    if dishes_array.count < limit
                       network_data = Network.select([:id, :name]).find_by_id(d.network_id) 
                       dishes_array.push({
                         :id => d.id,
@@ -510,50 +556,8 @@ class ApiController < ApplicationController
                 end
               end
             end
-        end
-      end
-      
-      if dishes_array.count < limit
-        
-        foursquare_max = Dish.select("max(fsq_checkins_count) as max_fsq").first.max_fsq
-        fsq_checkins_count = foursquare_max if fsq_checkins_count.nil? || fsq_checkins_count == 0
+          end            
 
-        step_fsq = foursquare_max/2
-        (0..(foursquare_max-step_fsq)).step(step_fsq) do |n|
-          
-          n1 = foursquare_max - n
-          n2 = n1 - step_fsq != 0 ? n1 - step_fsq : 0
-      
-          if (fsq_checkins_count > n2 && fsq_checkins_count <= n1) || (fsq_checkins_count > n2 && fsq_checkins_count > n1 && dishes_array.count < limit)
-        
-            start = 1 if fsq_checkins_count > n2 && fsq_checkins_count > n1 && dishes_array.count < limit
-            if dishes_between = dishes.where("fsq_checkins_count > ? AND fsq_checkins_count <= ? AND rating = 0", n2, n1)
-          
-              dishes_between.each do |d|
-                if start == 1
-                  if dishes_array.count < limit
-                    network_data = Network.select([:id, :name]).find_by_id(d.network_id) 
-                    dishes_array.push({
-                      :id => d.id,
-                      :name => d.name,
-                      :rating => d.rating,
-                      :votes => d.votes,
-                      :image_sd => d.image_sd,
-                      :image_hd => d.image_hd,
-                      :network => {
-                        :id => network_data.id,
-                        :name => network_data.name
-                      }
-                    })
-                  else
-                    break
-                  end
-                end
-                start = 1 if dish && d.id == dish.id
-              end
-            end
-          end
-        end
       end
       
       restaurants_array = []

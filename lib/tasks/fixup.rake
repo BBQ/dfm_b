@@ -1,5 +1,14 @@
 # encoding: utf-8
 namespace :fix do
+
+  desc "Copy dishes to dish_delivery"
+  task :cp_dishes_delivery => :environment do
+    Delivery.all.each do |r|
+      Network.find_by_name(r.name).dishes.each do |d|
+        DishDelivery.create(d)
+      end
+    end
+  end  
   
   desc "Fill restaurants with cities"
   task :city => :environment do
