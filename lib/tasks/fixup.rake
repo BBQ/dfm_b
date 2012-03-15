@@ -12,7 +12,7 @@ namespace :fix do
         n.dishes.each do |d|
           data = {
             :name => d.name,
-            :photo => d.photo.url == '/images/noimage.jpg' ? '' : directory + d.photo.url,
+            :photo => d.photo.url == '/images/noimage.jpg' ? '' : File.open(directory + d.photo.url),
             :price =>d.price, 
             :currency => d.currency, 
             :rating => 0, 
