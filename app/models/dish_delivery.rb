@@ -12,6 +12,8 @@ class DishDelivery < ActiveRecord::Base
   has_many :dish_delivery_tags, :dependent => :destroy
   has_many :tags, :through => :dish_tags
   
+  belongs_to :delivery
+  
   mount_uploader :photo, ImageUploader
   
   def find_image
