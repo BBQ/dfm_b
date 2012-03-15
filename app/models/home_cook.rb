@@ -7,6 +7,9 @@ class HomeCook < ActiveRecord::Base
     belongs_to :dish_extratype
     has_many :reviews, :dependent => :destroy, :foreign_key => :dish_id
     
+    has_many :home_cook_tags, :dependent => :destroy
+    has_many :tags, :through => :dish_tags
+    
     def find_image
       if photo.blank?
         if review = Review.where("dish_id = ? AND photo IS NOT NULL", id).order('count_likes DESC').first

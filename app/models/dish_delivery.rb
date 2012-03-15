@@ -9,7 +9,7 @@ class DishDelivery < ActiveRecord::Base
   has_many :dish_delivery_likes, :dependent => :destroy
   has_many :dish_delivery_comments, :dependent => :destroy
   
-  has_many :dish_tags, :dependent => :destroy
+  has_many :dish_delivery_tags, :dependent => :destroy
   has_many :tags, :through => :dish_tags
   
   mount_uploader :photo, ImageUploader

@@ -4,6 +4,12 @@ class Tag < ActiveRecord::Base
   has_many :dish_tags
   has_many :dishes, :through => :dish_tags
   
+  has_many :dish_delivery_tags
+  has_many :dish_deliveries, :through => :dish_delivery_tags
+  
+  has_many :home_cook_tags
+  has_many :home_cooks, :through => :home_cook_tags
+  
   def self.get_all(timestamp = nil)
     all_tags = [] 
     tags = timestamp ? Tag.where('updated_at >= ?', timestamp) : Tag.all
