@@ -492,7 +492,7 @@ class ApiController < ApplicationController
                 dishes_between.each do |d|
                   if start == 1
                     if dishes_array.count < limit
-                      network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked' || params[:type] != 'delivery' 
+                      network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked' && params[:type] != 'delivery' 
                       dishes_array.push({
                         :id => d.id,
                         :name => d.name,
