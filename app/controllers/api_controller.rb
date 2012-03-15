@@ -502,9 +502,9 @@ class ApiController < ApplicationController
                         :votes => d.votes,
                         :image_sd => d.image_sd,
                         :image_hd => d.image_hd,
-                        :network => params[:type] == 'home_cooked' || params[:type] == 'delivery' ? {} : {
-                          :id => network_data.id,
-                          :name => network_data.name
+                        :network => params[:type] == 'home_cooked' ? {} : {
+                          :id => params[:type] == 'delivery' ? d.delivery_id : network_data.id,
+                          :name => params[:type] == 'delivery' ? d.delivery.name : network_data.name
                         }
                       })
                     else
@@ -532,7 +532,10 @@ class ApiController < ApplicationController
                   :votes => d.votes,
                   :image_sd => d.image_sd,
                   :image_hd => d.image_hd,
-                  :network => {}
+                  :network => {
+                    :id => d.delivery_id,
+                    :name => d.delivery.name
+                  }
                 })
               else
                 break
