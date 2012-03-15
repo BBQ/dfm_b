@@ -1034,7 +1034,7 @@ class ApiController < ApplicationController
                 :source => 'foursquare',
                 :name => venue.name,
                 :phone => venue.contact.formattedPhone,
-                :restaurant_category_id => category_id.join(','),
+                :restaurant_categories => category_id.join(','),
                 :network_id => network_id
               }
               
