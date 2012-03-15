@@ -819,7 +819,7 @@ class ApiController < ApplicationController
           # data = data.sort_by { |k| k[:data] }.reverse!
           
         else
-          $error = {:description => 'Parameters missing', :code => 8}
+          $error = {:description => 'Parameters missing', :code => 822}
         end
         
         return render :json => {
@@ -829,7 +829,7 @@ class ApiController < ApplicationController
         
         end   
     else
-      $error = {:description => 'Parameters missing', :code => 8}
+      $error = {:description => 'Parameters missing', :code => 832}
       return render :json => {
             :following_count => following_count,
             :followers_count => followers_count,
