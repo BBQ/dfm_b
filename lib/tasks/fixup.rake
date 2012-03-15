@@ -5,7 +5,7 @@ namespace :fix do
   task :cp_dishes_delivery => :environment do
     Delivery.all.each do |r|
       
-      if n = Network.find_by_name(r.name)
+      if n = Restaurant.find_by_name(r.name).network
         p r.name
         n.dishes.each do |d|
           
