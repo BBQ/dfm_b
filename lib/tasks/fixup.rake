@@ -3,15 +3,16 @@ namespace :fix do
 
   desc "Copy dishes to dish_delivery"
   task :cp_dishes_delivery => :environment do
+    directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/public'
+    
     Delivery.all.each do |r|
       
       if n = Restaurant.find_by_name(r.name).network
         p r.name
         n.dishes.each do |d|
-          
           data = {
             :name => d.name,
-            :remote_photo_url => d.photo.url == '/images/noimage.jpg' ? '' : "http://dev.dish.fm#{d.photo.url}",
+            :photo => d.photo.url == '/images/noimage.jpg' ? '' : directory + d.photo.url,
             :price =>d.price, 
             :currency => d.currency, 
             :rating => 0, 
@@ -28,9 +29,7 @@ namespace :fix do
             :count_likes => 0, 
             :no_rate_order => d.no_rate_order
           }
-          
-          # p data if data[:dish_category_id].blank?
-          DishDelivery.create(data)
+          DishDelivery.create(data) unless DishDelivery.find_by_name_and_delivery_id(data[:name],data[:delivery_id])
         end
       else
         p "#{r.name} not found!"
