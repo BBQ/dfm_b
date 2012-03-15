@@ -9,7 +9,7 @@ class CreateDishDeliveryTags < ActiveRecord::Migration
     end
     add_index :dish_delivery_tags, :id
     add_index :dish_delivery_tags, :tag_id
-    add_index :dish_delivery_tags, :dish_id
+    add_index :dish_delivery_tags, :dish_delivery_id
   end
 
   def self.down

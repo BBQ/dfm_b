@@ -9,7 +9,7 @@ class CreateHomeCookTags < ActiveRecord::Migration
     end
     add_index :home_cook_tags, :id
     add_index :home_cook_tags, :tag_id
-    add_index :home_cook_tags, :dish_id
+    add_index :home_cook_tags, :home_cook_id
   end
 
   def self.down
