@@ -455,7 +455,7 @@ class ApiController < ApplicationController
       if params[:type] == 'home_cooked'
         dishes = HomeCook.select([:id, :name, :rating, :votes, :photo]).order("votes DESC, photo DESC")
       elsif params[:type] == 'delivery'
-        dishes = DishDelivery.select([:id, :name, :rating, :votes, :photo]).order("votes DESC, photo DESC")
+        dishes = DishDelivery.select([:id, :name, :rating, :votes, :photo, :delivery_id]).order("votes DESC, photo DESC")
       else      
         dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count]).where("network_id IN (#{networks.join(',')})").order("votes DESC, photo DESC, fsq_checkins_count DESC")
         dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
