@@ -1,6 +1,4 @@
 class HomeCook < ActiveRecord::Base
-  
-    mount_uploader :photo, ImageUploader
     
     belongs_to :dish_type
     belongs_to :dish_subtype
@@ -9,6 +7,8 @@ class HomeCook < ActiveRecord::Base
     
     has_many :home_cook_tags, :dependent => :destroy
     has_many :tags, :through => :dish_tags
+    
+    mount_uploader :photo, ImageUploader
     
     def find_image
       if photo.blank?

@@ -452,7 +452,7 @@ class ApiController < ApplicationController
       networks = []  
       restaurants.each {|r| networks.push(r.network_id)}
       
-      if params[:type] == 'home_cooked'
+      if params[:type] == 'home_cooked' || params[:type] == 'delivery'
         dishes = HomeCook.select([:id, :name, :rating, :votes, :photo]).order("votes DESC, photo DESC")
       else      
         dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count]).where("network_id IN (#{networks.join(',')})").order("votes DESC, photo DESC, fsq_checkins_count DESC")
@@ -492,7 +492,7 @@ class ApiController < ApplicationController
                 dishes_between.each do |d|
                   if start == 1
                     if dishes_array.count < limit
-                      network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked'
+                      network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked' || params[:type] != 'delivery' 
                       dishes_array.push({
                         :id => d.id,
                         :name => d.name,
@@ -517,6 +517,28 @@ class ApiController < ApplicationController
       end
       
       if dishes_array.count < limit && params[:type] != 'home_cooked'
+        
+        if params[:type] != 'delivery'
+          dishes_between.each do |d|          
+          
+            if dishes_between = dishes.where("rating = 0")
+              if dishes_array.count < limit
+                dishes_array.push({
+                  :id => d.id,
+                  :name => d.name,
+                  :rating => d.rating,
+                  :votes => d.votes,
+                  :image_sd => d.image_sd,
+                  :image_hd => d.image_hd,
+                  :network => {}
+                })
+              else
+                break
+              end
+            end
+            
+          end
+        else
           
           foursquare_max = Dish.select("max(fsq_checkins_count) as max_fsq").first.max_fsq
           fsq_checkins_count = foursquare_max if fsq_checkins_count.nil? || fsq_checkins_count == 0
@@ -556,8 +578,9 @@ class ApiController < ApplicationController
                 end
               end
             end
-          end            
-
+          end   
+                   
+        end
       end
       
       restaurants_array = []

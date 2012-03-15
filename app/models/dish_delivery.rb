@@ -13,4 +13,25 @@ class DishDelivery < ActiveRecord::Base
   has_many :tags, :through => :dish_tags
   
   mount_uploader :photo, ImageUploader
+  
+  def find_image
+    if photo.blank?
+      if review = Review.where("dish_id = ? AND photo IS NOT NULL", id).order('count_likes DESC').first
+        review.photo
+      else
+        dish_type.photo if dish_type
+      end
+    else
+      photo
+    end
+  end
+
+  def image_sd
+    find_image && find_image.iphone.url != '/images/noimage.jpg' ? find_image.iphone.url  : ''
+  end
+
+  def image_hd
+    find_image && find_image.iphone_retina.url != '/images/noimage.jpg' ? find_image.iphone_retina.url  : ''
+  end
+  
 end
