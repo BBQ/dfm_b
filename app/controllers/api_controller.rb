@@ -517,11 +517,11 @@ class ApiController < ApplicationController
       end
       
       if dishes_array.count < limit && params[:type] != 'home_cooked'
-        
         if params[:type] == 'delivery'
-          dishes_between.each do |d|          
           
-            if dishes_between = dishes.where("rating = 0")
+          if dishes_between = dishes.where("rating = 0")
+            dishes_between.each do |d|
+              
               if dishes_array.count < limit
                 dishes_array.push({
                   :id => d.id,
@@ -535,8 +535,8 @@ class ApiController < ApplicationController
               else
                 break
               end
+              
             end
-            
           end
         else
           
