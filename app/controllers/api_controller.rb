@@ -518,7 +518,7 @@ class ApiController < ApplicationController
       
       if dishes_array.count < limit && params[:type] != 'home_cooked'
         
-        if params[:type] != 'delivery'
+        if params[:type] == 'delivery'
           dishes_between.each do |d|          
           
             if dishes_between = dishes.where("rating = 0")
