@@ -961,17 +961,27 @@ class ApiController < ApplicationController
       params[:review][:friends] = friends.join(',')
       
       if params[:home_cooked].to_i == 1
-        if params[:dish] && params[:dish][:name] && params[:dish][:dish_type_id]
-          unless dish = HomeCook.find_by_name(params[:dish][:name])
-            data = {
-              :name => params[:dish][:name], 
-              :dish_type_id => params[:dish][:dish_type_id],
-              :dish_subtype_id => params[:dish][:dish_subtype_id]
-            }
-            dish = HomeCook.create(data)
+        if params[:dish] && ((params[:dish][:name] && params[:dish][:dish_type_id]) || params[:dish][:dish_id])
+          
+          if params[:dish][:dish_id].to_i > 0
+            unless dish = HomeCook.find_by_id(params[:dish][:dish_id]) 
+              return render :json => {:error => {:description => 'Dish not found', :code => 9}}
+            end
+          elsif params[:dish][:name] && params[:dish][:dish_type_id]
+            unless dish = HomeCook.find_by_name(params[:dish][:name])
+              data = {
+                :name => params[:dish][:name], 
+                :dish_type_id => params[:dish][:dish_type_id],
+                :dish_subtype_id => params[:dish][:dish_subtype_id]
+              }
+              dish = HomeCook.create(data)
+            end
+          else
+            return render :json => {:error => {:description => 'Params missing', :code => 9}}
           end
+          
         else
-          return render :json => {:error => {:description => 'Params missing', :code => 9}}
+          return render :json => {:error => {:description => 'Params missing', :code => 10}}
         end
         
         params[:review][:dish_id] = dish.id
