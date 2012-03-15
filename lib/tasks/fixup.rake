@@ -7,7 +7,7 @@ namespace :fix do
       Network.find_by_name(r.name).dishes.each do |d|
         data = {
           :name => d.name,
-          :remote_photo_url => "http://dev.dish.fm#{d.photo.url}"
+          :remote_photo_url => "http://dev.dish.fm#{d.photo.url}",
           :price =>d.price, 
           :currency => d.currency, 
           :rating => 0, 
