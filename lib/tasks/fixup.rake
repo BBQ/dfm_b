@@ -24,7 +24,8 @@ namespace :fix do
           :count_likes => 0, 
           :no_rate_order => d.no_rate_order
         }
-        DishDelivery.create(d)
+        p.data
+        # DishDelivery.create(d)
       end
     end
   end  
