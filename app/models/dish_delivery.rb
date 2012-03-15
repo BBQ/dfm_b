@@ -1,9 +1,9 @@
 class DishDelivery < ActiveRecord::Base
   
-  belongs_to :dish_category
-  belongs_to :dish_type
-  belongs_to :dish_subtype
-  belongs_to :dish_extratype  
+  belongs_to :dish_category, :foreign_key => :dish_id
+  belongs_to :dish_type, :foreign_key => :dish_id
+  belongs_to :dish_subtype, :foreign_key => :dish_id
+  belongs_to :dish_extratype, :foreign_key => :dish_id  
   
   has_many :reviews, :dependent => :destroy, :foreign_key => :dish_id
   has_many :dish_delivery_likes, :dependent => :destroy
