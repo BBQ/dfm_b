@@ -4,9 +4,9 @@ namespace :fix do
   desc "Copy dishes to dish_delivery"
   task :cp_dishes_delivery => :environment do
     Delivery.all.each do |r|
-      p r.name
       
       if n = Network.find_by_name(r.name)
+        p r.name
         n.dishes.each do |d|
           
           data = {
@@ -31,6 +31,8 @@ namespace :fix do
           
           p data if data[:dish_category_id].blank?
           # DishDelivery.create(d)
+        else
+          p "#{r.name} not found!"
         end
       end
     end
