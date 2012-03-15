@@ -31,9 +31,9 @@ namespace :fix do
           
           p data if data[:dish_category_id].blank?
           # DishDelivery.create(d)
-        else
-          p "#{r.name} not found!"
         end
+      else
+        p "#{r.name} not found!"
       end
     end
   end  
