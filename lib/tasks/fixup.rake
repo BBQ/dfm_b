@@ -4,28 +4,34 @@ namespace :fix do
   desc "Copy dishes to dish_delivery"
   task :cp_dishes_delivery => :environment do
     Delivery.all.each do |r|
-      Network.find_by_name(r.name).dishes.each do |d|
-        data = {
-          :name => d.name,
-          :remote_photo_url => d.photo.url == '/images/noimage.jpg' ? '' : "http://dev.dish.fm#{d.photo.url}",
-          :price =>d.price, 
-          :currency => d.currency, 
-          :rating => 0, 
-          :votes => 0, 
-          :description => d.description, 
-          :delivery_id => r.id, 
-          :dish_category_id => d.dish_category_id, 
-          :dish_type_id => d.dish_type_id, 
-          :dish_subtype_id => d.dish_subtype_id, 
-          :top_user_id => 0, 
-          :dish_extratype_id => d.dish_extratype_id, 
-          :created_by_user => 0, 
-          :count_comments => 0, 
-          :count_likes => 0, 
-          :no_rate_order => d.no_rate_order
-        }
-        p data if data[:dish_category_id].blank?
-        # DishDelivery.create(d)
+      p r.name
+      
+      if n = Network.find_by_name(r.name)
+        n.dishes.each do |d|
+          
+          data = {
+            :name => d.name,
+            :remote_photo_url => d.photo.url == '/images/noimage.jpg' ? '' : "http://dev.dish.fm#{d.photo.url}",
+            :price =>d.price, 
+            :currency => d.currency, 
+            :rating => 0, 
+            :votes => 0, 
+            :description => d.description, 
+            :delivery_id => r.id, 
+            :dish_category_id => d.dish_category_id, 
+            :dish_type_id => d.dish_type_id, 
+            :dish_subtype_id => d.dish_subtype_id, 
+            :top_user_id => 0, 
+            :dish_extratype_id => d.dish_extratype_id, 
+            :created_by_user => 0, 
+            :count_comments => 0, 
+            :count_likes => 0, 
+            :no_rate_order => d.no_rate_order
+          }
+          
+          p data if data[:dish_category_id].blank?
+          # DishDelivery.create(d)
+        end
       end
     end
   end  
