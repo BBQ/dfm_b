@@ -7,7 +7,7 @@ namespace :fix do
       Network.find_by_name(r.name).dishes.each do |d|
         data = {
           :name => d.name,
-          :remote_photo_url => "http://dev.dish.fm#{d.photo.url}",
+          :remote_photo_url => d.photo.url == '/images/noimage.jpg' ? '' : "http://dev.dish.fm#{d.photo.url}",
           :price =>d.price, 
           :currency => d.currency, 
           :rating => 0, 
@@ -24,7 +24,7 @@ namespace :fix do
           :count_likes => 0, 
           :no_rate_order => d.no_rate_order
         }
-        p data
+        p data if data[:dish_category_id].blank?
         # DishDelivery.create(d)
       end
     end
