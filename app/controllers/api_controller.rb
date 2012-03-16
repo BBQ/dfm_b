@@ -9,7 +9,10 @@ class ApiController < ApplicationController
   
   def set_user_preferences
     if pref = UserPreference.find_by_user_id(params[:user_id])
-      
+      params.each do |k,v|     
+        pref.send("#{k}=".to_sym, v) if ActiveRecord::Base.connection.column_exists?(:user_preferences, k)
+      end
+      pref.save
     end
   end
   

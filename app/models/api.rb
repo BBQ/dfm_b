@@ -145,9 +145,9 @@ class API < ActiveRecord::Base
       popularity = (100 * better_restaurants / Restaurant.where('restaurants.fsq_checkins_count > 0').count.to_f).round(0)
       
       popularity = case popularity
-        when 0..33 then "Above average"
-        when 34..66 then "Average"
-        when 67..100 then "Below average"
+        when 0..33 then "Very popular"
+        when 34..66 then "Popular"
+        when 67..100 then "Not so popular"
       end
       
       restaurant_categories = []
