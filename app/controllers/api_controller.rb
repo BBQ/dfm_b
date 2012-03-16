@@ -1192,8 +1192,14 @@ class ApiController < ApplicationController
       
       unless r.blank?
         
-        dish_name = r.home_cooked == true ? r.home_cook.name 
-        : r.dish.name
+        # dish_name = r.home_cooked == true ? r.home_cook.name : r.dish.name
+        
+        if r.home_cooked == true
+          dish_name = r.home_cook.name
+        else
+          dish_name = r.dish.name
+        end
+        
         Notification.send(r.user_id, 'dishin', nil, dish_name, nil, nil, r.id)        
         
         unless r.friends.blank?
