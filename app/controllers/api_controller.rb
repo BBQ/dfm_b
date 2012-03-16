@@ -1026,7 +1026,7 @@ class ApiController < ApplicationController
       params[:review][:friends] = friends.join(',')
       
       if params[:home_cooked].to_i == 1
-        if (params[:dish] && params[:dish][:name]) || params[:review][:dish_id]
+        if (params[:dish] && (params[:dish][:name] && params[:dish][:dish_type_id])) || params[:review][:dish_id]
           
           if params[:review][:dish_id].to_i > 0
             unless dish = HomeCook.find_by_id(params[:review][:dish_id]) 
@@ -1181,7 +1181,7 @@ class ApiController < ApplicationController
           image.destroy
         end
     
-        if !params[:review][:dish_id] && params[:dish][:name] && params[:dish][:dish_type_id]
+        if !params[:review][:dish_id] && params[:dish][:name] # && params[:dish][:dish_type_id]
           if dish = Dish.find_by_network_id_and_name(params[:review][:network_id], params[:dish][:name])
             params[:review][:dish_id] = dish.id
           else
@@ -1189,7 +1189,7 @@ class ApiController < ApplicationController
             # return render :json => {:error => {:description => 'Dish type not found', :code => 4}} unless DishType.find_by_id(params[:dish][:dish_type_id])
             # return render :json => {:error => {:description => 'Dish subtype not found', :code => 5}} if params[:dish][:dish_subtype_id] && !DishSubtype.find_by_id(params[:dish][:dish_subtype_id])
         
-            if DishType.find_by_id(params[:dish][:dish_type_id])
+            if !params[:dish][:dish_type_id].blank? && DishType.find_by_id(params[:dish][:dish_type_id])
               dish_category = DishType.find_by_id(params[:dish][:dish_type_id]).name
               params[:dish][:dish_category_id] = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
             else
