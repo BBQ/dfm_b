@@ -8,12 +8,25 @@ class ApiController < ApplicationController
   end
   
   def set_user_preferences
-    if pref = UserPreference.find_by_user_id(params[:user_id])
-      params.each do |k,v|     
-        pref.send("#{k}=".to_sym, v) if ActiveRecord::Base.connection.column_exists?(:user_preferences, k)
+    if Session.check_token(params[:user_id], params[:token])
+      if pref = UserPreference.find_by_user_id(params[:user_id])
+        
+        params.each do |k,v|     
+          pref.send("#{k}=".to_sym, v) if ActiveRecord::Base.connection.column_exists?(:user_preferences, k)
+        end
+        pref.save
+    
+      else  
+        $error = {:description => 'User not found', :code => 21}
       end
-      pref.save
+        
+    else
+      $error = {:description => 'Params missing', :code => 25}
     end
+    
+    return render :json => {
+      :error => $error
+    }
   end
   
   def add_restaurant
