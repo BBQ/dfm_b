@@ -993,7 +993,7 @@ class ApiController < ApplicationController
       params[:review][:friends] = friends.join(',')
       
       if params[:home_cooked].to_i == 1
-        if params[:dish] && ((params[:dish][:name] && params[:dish][:dish_type_id]) || params[:review][:dish_id])
+        if (params[:dish] && (params[:dish][:name] && params[:dish][:dish_type_id])) || params[:review][:dish_id]
           
           if params[:review][:dish_id].to_i > 0
             unless dish = HomeCook.find_by_id(params[:review][:dish_id]) 
