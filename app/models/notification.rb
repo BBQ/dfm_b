@@ -50,7 +50,7 @@ class Notification < ActiveRecord::Base
               user_ids_to_array.push({:user_id => user_id_to, :badge => badge})
               
       elsif notification_type == 'tagged' && friends
-              alert = restaurant_name.nil? "tagged you in dish-in" ? : "tagged you at #{restaurant_name}"
+              alert = restaurant_name.nil? ? "tagged you in dish-in" : "tagged you at #{restaurant_name}"
               
               friends.split(',').each do |t|  
                   if user = User.find_by_id(t)
@@ -69,7 +69,7 @@ class Notification < ActiveRecord::Base
                       friends.split(',').each do |t|
       
                           if tagged = User.find_by_id(t)
-                              alert = restaurant_name.nil? "tagged your friend #{t.name} in dish-in" ? : "tagged your friend #{t.name} at #{restaurant_name}"
+                              alert = restaurant_name.nil? ? "tagged your friend #{t.name} in dish-in" : "tagged your friend #{t.name} at #{restaurant_name}"
                                                             
                               Follower.select(:user_id).where(:follow_user_id => tagged.id).each do |f|
                                   if user = User.find_by_id(f.user_id)
