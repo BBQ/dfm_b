@@ -499,9 +499,10 @@ class ApiController < ApplicationController
           dish = dish.first
           rating = dish.rating
           
-          if dish.fsq_checkins_count > 0 && params[:type] != 'home_cooked' && params[:type] != 'delivery'
-            fsq_checkins_count = dish.fsq_checkins_count
+          if params[:type] != 'home_cooked' && params[:type] != 'delivery'
+            fsq_checkins_count = dish.fsq_checkins_count if dish.fsq_checkins_count > 0
           end
+          
         end        
       end
       
