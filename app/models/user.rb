@@ -124,7 +124,7 @@ class User < ActiveRecord::Base
       :provider => 'facebook',
       :uid => auth_result["id"], 
     })    
-    UserPreferences.create({:user_id => user.id})
+    UserPreferenc.create({:user_id => user.id})
     
     rest.get_connections("me", "friends").each do |f|
       if user_friend = User.find_by_facebook_id(f['id'])

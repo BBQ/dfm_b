@@ -4,7 +4,7 @@ namespace :fix do
   desc "Make user preferences"
   task :make_u_pref => :environment do  
     User.all.each do |user|
-      UserPreferences.create({:user_id => user.id})
+      UserPreference.create({:user_id => user.id})
     end
   end
 
