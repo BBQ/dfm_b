@@ -374,13 +374,14 @@ class ApiController < ApplicationController
           APN::Device.create({:token => params[:push_token], :user_id => session[:user_id]})
         end
       end
-      
+      user_preferences = UserPreference.find_by_user_id session.user_id if session
     else
       $error = {:description => 'Parameters missing', :code => 8}
     end
     
     return render :json => {
-          :session => session ||= nil, 
+          :session => session ||= nil,
+          :user_preferences => user_preferences ||= nil
           :error => $error
     }
   end
@@ -483,16 +484,26 @@ class ApiController < ApplicationController
         dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
         dishes = dishes.search(params[:search]) unless params[:search].blank?
       end
-      if params[:dish_id] && params[:dish_id].to_i > 0 
-
-          if dish = Dish.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)
-                      
-            dish = dish.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
-            rating = dish.first.rating
-            fsq_checkins_count = dish.first.fsq_checkins_count if dish.first.fsq_checkins_count > 0
-            
-          end
+      
+      if params[:dish_id] && params[:dish_id].to_i > 0
+        
+        if params[:type] == 'home_cooked'
+          dish = HomeCook.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)
+        elsif params[:type] == 'delivery'
+          dish = DishDelivery.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)
+        else
+          dish = Dish.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)            
+        end
+        
+        if dish
+          dish = dish.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
           dish = dish.first
+          rating = dish.rating
+          
+          if dish.fsq_checkins_count > 0 && params[:type] != 'home_cooked' && params[:type] != 'delivery'
+            fsq_checkins_count = dish.fsq_checkins_count
+          end
+        end        
       end
       
       if rating.nil?
