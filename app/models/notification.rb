@@ -11,7 +11,7 @@ class Notification < ActiveRecord::Base
       if (notification_type == 'like' || notification_type == 'comment') && (user_id_from != user_id_to) && dish_name && review_id
         
               if notification_type == 'like'
-                alert = "added to favourites your dish-in in #{dish_name} "
+                alert = "liked your dish-in in #{dish_name} "
               elsif notification_type == 'comment'
                 alert = "commented on your dish-in in #{dish_name} "
               end

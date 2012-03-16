@@ -8,7 +8,9 @@ class ApiController < ApplicationController
   end
   
   def set_user_preferences
-    
+    if pref = UserPreference.find_by_user_id(params[:user_id])
+      
+    end
   end
   
   def add_restaurant
@@ -1219,11 +1221,11 @@ class ApiController < ApplicationController
       # graph.put_wall_post("Hey, Welcome to the Web Application!!!!", {:name => "..."}, "682620569")
       
     else
-      $error = {:description => 'Parameters missing', :code => 8}
-  end
-  return render :json => {
-    :error => $error
-  } 
+      $error = {:description => 'Parameters missing', :code => 1224}
+    end
+    return render :json => {
+      :error => $error
+    } 
   end
   
 end
