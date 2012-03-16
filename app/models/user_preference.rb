@@ -1,7 +1,7 @@
 class UserPreference < ActiveRecord::Base
   belongs_to :user
   
-  def for_user
+  def self.for_user
     select([
       :add_to_favorites_my_dishin_email,
       :add_to_favorites_my_dishin_mobile,
@@ -43,4 +43,5 @@ class UserPreference < ActiveRecord::Base
       :weekly_friends_activity_mobile
     ])
   end
+  
 end
