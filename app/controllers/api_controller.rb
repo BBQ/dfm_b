@@ -7,6 +7,10 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def set_user_preferences
+    
+  end
+  
   def add_restaurant
     
     if (params[:restaurant][:address] || (params[:restaurant][:lat] && params[:restaurant][:lon]) || params[:restaurant][:web] || params[:restaurant][:phone]) && params[:restaurant][:name] && params[:restaurant][:category]
@@ -1188,7 +1192,8 @@ class ApiController < ApplicationController
       
       unless r.blank?
         
-        dish_name = r.home_cooked == true ? r.home_cook.name : r.dish.name
+        dish_name = r.home_cooked == true ? r.home_cook.name 
+        : r.dish.name
         Notification.send(r.user_id, 'dishin', nil, dish_name, nil, nil, r.id)        
         
         unless r.friends.blank?
