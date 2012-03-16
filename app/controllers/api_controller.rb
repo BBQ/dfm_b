@@ -487,9 +487,9 @@ class ApiController < ApplicationController
       if params[:dish_id] && params[:dish_id].to_i > 0
         
         if params[:type] == 'home_cooked'
-          dish = HomeCook.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)
+          dish = HomeCook.select([:id, :rating]).where(:id => params[:dish_id].to_i)
         elsif params[:type] == 'delivery'
-          dish = DishDelivery.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)
+          dish = DishDelivery.select([:id, :rating]).where(:id => params[:dish_id].to_i)
         else
           dish = Dish.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)            
         end
