@@ -381,7 +381,7 @@ class ApiController < ApplicationController
     
     return render :json => {
           :session => session ||= nil,
-          :user_preferences => user_preferences ||= nil
+          :user_preferences => user_preferences ||= nil,
           :error => $error
     }
   end
