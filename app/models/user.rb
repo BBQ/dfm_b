@@ -13,6 +13,7 @@ class User < ActiveRecord::Base
   # validates_presence_of :email
   validates_uniqueness_of :email, :allow_nil => true, :allow_blank => true
   
+  has_many :user_preferences
   has_many :reviews
   has_many :comments
   has_many :likes
@@ -80,6 +81,7 @@ class User < ActiveRecord::Base
       :twitter_id => client.user.id,
       :remote_photo_url => client.profile_image
     })
+    UserPreferences.create({:user_id => user.id})
     
     # User.get_user_tw_friends(client.user.id)
     user
@@ -121,7 +123,8 @@ class User < ActiveRecord::Base
       :user_id => id,
       :provider => 'facebook',
       :uid => auth_result["id"], 
-    })
+    })    
+    UserPreferences.create({:user_id => user.id})
     
     rest.get_connections("me", "friends").each do |f|
       if user_friend = User.find_by_facebook_id(f['id'])

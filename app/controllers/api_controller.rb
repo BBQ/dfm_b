@@ -17,7 +17,7 @@ class ApiController < ApplicationController
         pref.save
     
       else  
-        $error = {:description => 'User not found', :code => 21}
+        $error = {:description => 'User Preferences not found', :code => 21}
       end
         
     else

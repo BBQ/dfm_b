@@ -1,6 +1,13 @@
 # encoding: utf-8
 namespace :fix do
 
+  desc "Make user preferences"
+  task :make_u_pref => :environment do  
+    User.all.each do |user|
+      UserPreferences.create({:user_id => user.id})
+    end
+  end
+
   desc "Copy dishes to dish_delivery"
   task :cp_dishes_delivery => :environment do
     directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/public'
