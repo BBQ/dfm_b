@@ -484,7 +484,6 @@ class ApiController < ApplicationController
         dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
         dishes = dishes.search(params[:search]) unless params[:search].blank?
       end
-      
       if params[:dish_id] && params[:dish_id].to_i > 0
         
         if params[:type] == 'home_cooked'
@@ -495,7 +494,7 @@ class ApiController < ApplicationController
           dish = Dish.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)            
         end
         
-        if dish
+        unless dish.nil?
           dish = dish.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
           dish = dish.first
           rating = dish.rating
