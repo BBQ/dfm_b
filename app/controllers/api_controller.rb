@@ -374,7 +374,7 @@ class ApiController < ApplicationController
           APN::Device.create({:token => params[:push_token], :user_id => session[:user_id]})
         end
       end
-      user_preferences = UserPreference.find_by_user_id session[:user_id] if session
+      user_preferences = UserPreference.for_user.find_by_user_id session[:user_id] if session
     else
       $error = {:description => 'Parameters missing', :code => 8}
     end
