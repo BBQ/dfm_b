@@ -216,12 +216,12 @@ namespace :mi do
     
     require 'csv'
     log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/#{Time.new.strftime("%F-%H_%M_%S")}_mi_copy.log"
-    
-    mi_city = 'Saint Petersburg'
-    mi_city_s = 'SPB'
-    
+        
     if args[:file_for_fix].nil?
       mi_restaurants = MiRestaurant.where(:city => mi_city_s)
+      
+      mi_city = 'Saint Petersburg'
+      mi_city_s = 'SPB'
     else
       file = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:file_for_fix]
       parser = Excelx.new(file, false, :ignore)
@@ -230,8 +230,7 @@ namespace :mi do
       2.upto(parser.last_row) do |line|
         r_ids.push(parser.cell(line,'A').to_i) if parser.cell(line,'D') != 'delete'
       end
-      
-      mi_restaurants = MiRestaurant.where("city = ? AND mi_id IN (#{r_ids.join(',')})",mi_city_s)
+      mi_restaurants = MiRestaurant.where("mi_id IN (#{r_ids.join(',')})")
     end
     
     mi_restaurants.each do |mi_r|
@@ -265,20 +264,27 @@ namespace :mi do
         end
         
       else  
-        2.upto(parser.last_row) do |line|
-          
+        mi_city_s = mi_r.city
+        mi_city = "Moscow" if mi_city_s == "MSK"
+        
+        2.upto(parser.last_row) do |line|  
           if mi_r.mi_id.to_i == parser.cell(line,'A').to_i            
+            
             if parser.cell(line,'D') == 'add resto'
+              unless n = Network.find_by_name_and_city(mi_name, mi_city)
+                
+                n = Network.create({
+                  :name => mi_name,
+                  :city => mi_city
+                })
               
-              n = Network.create({
-                :name => mi_name,
-                :city => mi_city
-              })
+              end
               
             elsif parser.cell(line,'D') != 'delete'
               n = Network.find_by_id(parser.cell(line,'D').to_i)
               
             end
+            
           end          
         end
       end
