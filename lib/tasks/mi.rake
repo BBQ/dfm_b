@@ -236,7 +236,7 @@ namespace :mi do
         n.save
       elsif mi_city_s == 'SPB'
         n = Network.create({
-          :name => ,
+          :name => mi_name,
           :city => mi_city
         })
       else
