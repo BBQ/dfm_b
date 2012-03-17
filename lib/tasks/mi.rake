@@ -218,10 +218,11 @@ namespace :mi do
     log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/#{Time.new.strftime("%F-%H_%M_%S")}_mi_copy.log"
         
     if args[:file_for_fix].nil?
-      mi_restaurants = MiRestaurant.where(:city => mi_city_s)
       
       mi_city = 'Saint Petersburg'
       mi_city_s = 'SPB'
+      
+      mi_restaurants = MiRestaurant.where(:city => mi_city_s)
     else
       file = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:file_for_fix]
       parser = Excelx.new(file, false, :ignore)
