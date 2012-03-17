@@ -253,7 +253,7 @@ namespace :mi do
       else  
         file = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:file_for_fix]
         parser = Excelx.new(file, false, :ignore)
-        
+        p file
         2.upto(parser.last_row) do |line|
           if mi_r.mi_id.to_i == parser.cell(line,'A').to_i
             
