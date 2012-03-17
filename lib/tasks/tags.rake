@@ -91,7 +91,7 @@ namespace :tags do
             :restaurant_id => r.id
           }
           
-          p "#{r.name} #{t.name}"
+          p "#{r.name} #{t.tag.name_a}"
           RestaurantTag.create(data)
        end
      end
@@ -115,7 +115,7 @@ namespace :tags do
       names_array.push(t.name_f.downcase) unless t.name_f.blank? 
       names = names_array.join('|').gsub(/\\|'/) { |c| "\\#{c}" }
       
-      p "#{t.id} #{t.name}"
+      p "#{t.id} #{t.name_a}"
       # Dishes      
       ds = Dish.where("
             dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{names}[[:>:]]') 
