@@ -7,9 +7,9 @@ namespace :fix do
     
     Dir.new(dir).entries.each do |f|
       if rest = Restaurant.find_by_id(f.to_i)
-        
         rest.network.restaurants.each do |r|
           r.photo = File.open(dir + '/' + f) 
+          p "#{r.id} #{f}"
           r.save
         end
         
