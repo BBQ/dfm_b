@@ -228,7 +228,7 @@ namespace :mi do
 
       r_ids = []
       2.upto(parser.last_row) do |line|
-        r_ids.push(parser.cell(line,'A').to_id) if parser.cell(line,'D') != 'delete'
+        r_ids.push(parser.cell(line,'A').to_i) if parser.cell(line,'D') != 'delete'
       end
       
       mi_restaurants = MiRestaurant.where("city = ? AND mi_id IN (#{r_ids.join(',')})",mi_city_s)
