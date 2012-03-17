@@ -220,7 +220,21 @@ namespace :mi do
     mi_city = 'Saint Petersburg'
     mi_city_s = 'SPB'
     
-    MiRestaurant.where(:city => mi_city_s).each do |mi_r|
+    if args[:file_for_fix].nil?
+      mi_restaurants = MiRestaurant.where(:city => mi_city_s)
+    else
+      file = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:file_for_fix]
+      parser = Excelx.new(file, false, :ignore)
+
+      r_ids = []
+      2.upto(parser.last_row) do |line|
+        r_ids.push(parser.cell(line,'A').to_id) if parser.cell(line,'D') != 'delete'
+      end
+      
+      mi_restaurants = MiRestaurant.where("city = ? AND mi_id IN (#{r_ids.join(',')})",mi_city_s)
+    end
+    
+    mi_restaurants.each do |mi_r|
       mi_name = mi_r.name.gsub(/^\p{Space}+|\p{Space}+$/, "")
       
       if args[:file_for_fix].nil?
@@ -251,23 +265,18 @@ namespace :mi do
         end
         
       else  
-        file = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:file_for_fix]
-        parser = Excelx.new(file, false, :ignore)
-        p file
         2.upto(parser.last_row) do |line|
-          if mi_r.mi_id.to_i == parser.cell(line,'A').to_i
-            
-            if parser.cell(line,'D') != 'delete'
-              if parser.cell(line,'D') == 'add resto'
-                
-                n = Network.create({
-                  :name => mi_name,
-                  :city => mi_city
-                })
-                
-              else 
-                n = Network.find_by_id(parser.cell(line,'D').to_i)
-              end
+          
+          if mi_r.mi_id.to_i == parser.cell(line,'A').to_i            
+            if parser.cell(line,'D') == 'add resto'
+              
+              n = Network.create({
+                :name => mi_name,
+                :city => mi_city
+              })
+              
+            elsif parser.cell(line,'D') != 'delete'
+              n = Network.find_by_id(parser.cell(line,'D').to_i)
               
             end
           end          
