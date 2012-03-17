@@ -254,7 +254,7 @@ namespace :mi do
         file = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:file_for_fix]
         parser = Excelx.new(file, false, :ignore)
         
-        2.upto(parser.last_row(dish_sheet)) do |line|
+        2.upto(parser.last_row) do |line|
           if mi_r.mi_id.to_i == parser.cell(line,'A').to_i
             
             if parser.cell(line,'D') != 'delete'
