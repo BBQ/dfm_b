@@ -3,7 +3,7 @@ namespace :fix do
 
   desc "Add Images to Restaurant"
   task :add_r_img => :environment do  
-    dir = File.dirname(__FILE__).sub('/lib/tasks', '') + 'import/r_img'
+    dir = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/r_img'
     
     Dir.new(dir).entries.each do |f|
       if rest = Restaurant.find_by_id(f.to_i)
