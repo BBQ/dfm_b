@@ -115,6 +115,7 @@ namespace :tags do
       names_array.push(t.name_f.downcase) unless t.name_f.blank? 
       names = names_array.join('|').gsub(/\\|'/) { |c| "\\#{c}" }
       
+      p "#{t.id} #{t.name}"
       # Dishes      
       ds = Dish.where("
             dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{names}[[:>:]]') 
@@ -126,14 +127,13 @@ namespace :tags do
             LOWER(dishes.`name`) REGEXP '[[:<:]]#{names}[[:>:]]'")
                   
       ds.each do |d|
-
+        p "--- #{d.name}"
+        
         data = {
           :tag_id => tag_id, 
           :dish_id => d.id
         }
-        
         DishTag.create(data)
-        p "#{d.name} #{names}"
         
       end
     end
