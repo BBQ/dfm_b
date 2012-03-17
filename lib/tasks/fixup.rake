@@ -1,7 +1,7 @@
 # encoding: utf-8
 namespace :fix do
 
-  desc "Make user preferences"
+  desc "Make user_preferences records for Users"
   task :make_u_pref => :environment do  
     User.all.each do |user|
       UserPreference.create({:user_id => user.id})

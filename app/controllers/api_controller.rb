@@ -1026,6 +1026,7 @@ class ApiController < ApplicationController
       params[:review][:friends] = friends.join(',')
       
       if params[:home_cooked].to_i == 1
+        
         if (params[:dish] && (params[:dish][:name] && params[:dish][:dish_type_id])) || params[:review][:dish_id]
           
           if params[:review][:dish_id].to_i > 0
@@ -1062,9 +1063,10 @@ class ApiController < ApplicationController
         else
           return render :json => {:error => {:description => 'User not found', :code => 8}}
         end
-            
+      elsif params[:type] == 'delivery'       
+        
       else  
-            
+
         if params[:review][:restaurant_id].blank?
           
           dish_category_id = ''

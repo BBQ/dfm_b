@@ -216,19 +216,21 @@ namespace :mi do
     require 'csv'
     log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/#{Time.new.strftime("%F-%H_%M_%S")}_mi_copy.log"
     
-    MiRestaurant.where(:city => 'MSK').each do |mi_r|
+    mi_city = 'Saint Petersburg'
+    mi_city_s = 'SPB'
+    MiRestaurant.where(:city => mi_city_s).each do |mi_r|
       
       mi_name = mi_r.name.gsub(/^\p{Space}+|\p{Space}+$/, "")
-      if n = Network.find_by_name(mi_name)
+      if n = Network.find_by_name_and_city(mi_name, mi_city)
         n = n
-      elsif r = Restaurant.find_by_name_eng(mi_name)
+      elsif r = Restaurant.find_by_name_and_city(mi_name, mi_city)
         n = r.network
         n.name = r.name
         n.save
-      elsif n = Network.find_by_name(mi_name.gsub('.', ""))
+      elsif n = Network.find_by_name_and_city(mi_name.gsub('.', ""), mi_city)
         n.name = mi_r.name
         n.save
-      elsif r = Restaurant.find_by_name(mi_name)
+      elsif r = Restaurant.find_by_name_and_city(mi_name, mi_city)
         n = r.network
         n.name = r.name
         n.save
