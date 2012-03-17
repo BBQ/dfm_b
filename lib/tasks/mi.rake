@@ -234,6 +234,11 @@ namespace :mi do
         n = r.network
         n.name = r.name
         n.save
+      elsif mi_city_s == 'SPB'
+        n = Network.create({
+          :name => ,
+          :city => mi_city
+        })
       else
         p "#{mi_r.mi_id} #{mi_r.name} NOT FOUND IN DB"
         CSV.open(log_file_path, "a") do |csv|
