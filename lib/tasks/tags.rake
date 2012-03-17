@@ -77,7 +77,8 @@ namespace :tags do
     else
       networks = Network.all
     end
-    Network.all.each do |n|
+    
+    networks.each do |n|
      n.restaurants.each do |r|
        dishes_id = []
        r.network.dishes.each do |d|
@@ -89,21 +90,19 @@ namespace :tags do
             :tag_id => t.tag_id, 
             :restaurant_id => r.id
           }
-          p "#{data}"
+          
+          p "#{r.name} #{t.name}"
           RestaurantTag.create(data)
        end
      end
    end
-     p 'It`s done!'
+     p 'Done!'
    end
   
   desc "Match Dish Tags"
   task :match_dishes => :environment do
-    # tags  = Tag.where("id = 298")
-    tags  = Tag.all
-    # tags = Tag.where('id in(SELECT tags.id, dish_tags.tag_id FROM tags LEFT JOIN dish_tags on tags.id = dish_tags.tag_id GROUP BY tags.name_a HAVING dish_tags.tag_id IS NULL)')
     
-    tags.each do |t|
+    Tag.all.each do |t|
       
       tag_id = t.id
       names_array = []
@@ -125,19 +124,20 @@ namespace :tags do
             dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{names}[[:>:]]')
             OR 
             LOWER(dishes.`name`) REGEXP '[[:<:]]#{names}[[:>:]]'")
-            
-      ds = ds.where(:network_id => ENV["NETWORK_ID"]) if ENV["NETWORK_ID"]
-      
+                  
       ds.each do |d|
+
         data = {
           :tag_id => tag_id, 
           :dish_id => d.id
         }
-        p "#{data}"
+        
         DishTag.create(data)
+        p "#{d.name} #{names}"
+        
       end
     end
-    p 'It`s done!'
+    p 'Done!'
   end
   
   desc "Match Tags"
