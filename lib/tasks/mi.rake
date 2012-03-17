@@ -257,7 +257,7 @@ namespace :mi do
           end
         end
 
-        MiRestaurant.where(:name => mi_r.name).each do |mi_ar|
+        MiRestaurant.where(:name => mi_r.name, :city => mi_city_s).each do |mi_ar|
           restaurant_data = {
             :name => mi_ar.name.capitalize_first_letter,
             :address => mi_ar.address,
@@ -270,7 +270,8 @@ namespace :mi do
             :network_id => n.id,
             :wifi => mi_ar.wifi || 0,
             :station => mi_ar.metro,
-            :source => 'web_mi_u1',
+            :source => 'web_mi_u2',
+            :city => mi_city
           }
           
           r = Restaurant.create(restaurant_data)
