@@ -212,37 +212,65 @@ namespace :mi do
     %x{iconv -t cp1251 #{log_file_path}  > #{log_file_path}.csv} if File.file?(log_file_path)
   end
   
-  task :copy => :environment do
+  task :copy, [:file_for_fix] => :environment do |t, args|
+    
     require 'csv'
     log_file_path = File.dirname(__FILE__).sub('/lib/tasks', '') + "/log/#{Time.new.strftime("%F-%H_%M_%S")}_mi_copy.log"
     
     mi_city = 'Saint Petersburg'
     mi_city_s = 'SPB'
+    
     MiRestaurant.where(:city => mi_city_s).each do |mi_r|
-      
       mi_name = mi_r.name.gsub(/^\p{Space}+|\p{Space}+$/, "")
-      if n = Network.find_by_name_and_city(mi_name, mi_city)
-        n = n
-      elsif r = Restaurant.find_by_name_and_city(mi_name, mi_city)
-        n = r.network
-        n.name = r.name
-        n.save
-      elsif n = Network.find_by_name_and_city(mi_name.gsub('.', ""), mi_city)
-        n.name = mi_r.name
-        n.save
-      elsif r = Restaurant.find_by_name_and_city(mi_name, mi_city)
-        n = r.network
-        n.name = r.name
-        n.save
-      elsif mi_city_s == 'SPB'
-        n = Network.create({
-          :name => mi_name,
-          :city => mi_city
-        })
-      else
-        p "#{mi_r.mi_id} #{mi_r.name} NOT FOUND IN DB"
-        CSV.open(log_file_path, "a") do |csv|
-          csv << ["#{mi_r.mi_id};#{mi_r.name}"]
+      
+      if args[:file_for_fix].nil?
+         
+        if n = Network.find_by_name_and_city(mi_name, mi_city)
+          n = n
+        elsif r = Restaurant.find_by_name_and_city(mi_name, mi_city)
+          n = r.network
+          n.name = r.name
+          n.save
+        elsif n = Network.find_by_name_and_city(mi_name.gsub('.', ""), mi_city)
+          n.name = mi_r.name
+          n.save
+        elsif r = Restaurant.find_by_name_and_city(mi_name, mi_city)
+          n = r.network
+          n.name = r.name
+          n.save
+        elsif mi_city_s == 'SPB'
+          n = Network.create({
+            :name => mi_name,
+            :city => mi_city
+          })
+        else
+          p "#{mi_r.mi_id} #{mi_r.name} NOT FOUND IN DB"
+          CSV.open(log_file_path, "a") do |csv|
+            csv << ["#{mi_r.mi_id};#{mi_r.name}"]
+          end
+        end
+        
+      else  
+        file = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/' + args[:file_for_fix]
+        parser = Excelx.new(file, false, :ignore)
+        
+        2.upto(parser.last_row(dish_sheet)) do |line|
+          if mi_r.mi_id.to_i == parser.cell(line,'A').to_i
+            
+            if parser.cell(line,'D') != 'delete'
+              if parser.cell(line,'D') == 'add resto'
+                
+                n = Network.create({
+                  :name => mi_name,
+                  :city => mi_city
+                })
+                
+              else 
+                n = Network.find_by_id(parser.cell(line,'D').to_i)
+              end
+              
+            end
+          end          
         end
       end
       
