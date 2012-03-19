@@ -117,7 +117,7 @@ namespace :tags do
       
       p "#{t.id} #{t.name_a}"
       # Dishes      
-      ds = Dish.joins(:network).where("
+      ds = Dish.select([:id, :name]).joins(:network).where("
             networks.city != 'Moscow' AND networks.city != 'Saint Petersburg' AND (
             dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{names}[[:>:]]') 
             OR 
