@@ -79,7 +79,7 @@ namespace :fsq do
   end
   
   desc "Get Popularity and location from Foursquare" 
-  task :get_info => :environment do
+  task :update => :environment do
   
     client = Foursquare2::Client.new(:client_id => @client_id, :client_secret => @client_secret)
     i = 0

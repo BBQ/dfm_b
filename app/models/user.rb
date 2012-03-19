@@ -20,6 +20,37 @@ class User < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
+  def self.put_friends(fb_f = nil, tw_f = nil)
+    friends = []
+    
+    if fb_f
+      fb_f.split(',').each do |f|
+        
+        if user = User.find_by_facebook_id(f)
+          friends.push(user.id)
+        else
+          rest = Koala::Facebook::GraphAPI.new
+          friends.push("#{f}@@@#{rest.get_object(f)['name']}")
+        end
+        
+      end
+    end
+    
+    if tw_f
+      tw_f.split(',').each do |f|
+        
+        if user = User.find_by_twitter_id(f) 
+          friends.push(user.id)
+        else
+          friends.push("#{Twitter.user(f).profile_image_url}@@@#{Twitter.user(f).name}")
+        end
+        
+      end
+    end
+    friends.join(',')
+    
+  end
+  
   def user_photo
     if photo.blank?
       ph = "http://graph.facebook.com/#{facebook_id}/picture?type=square" unless facebook_id.blank?

@@ -1,6 +1,6 @@
 # encoding: utf-8
 namespace :fix do
-
+  #TODO: Start rake fix:add_r_img, tags:match_dishes, tags:match_rest on Test Server foursquare check_ins
   desc "Add Images to Restaurant"
   task :add_r_img => :environment do  
     dir = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/r_img'
