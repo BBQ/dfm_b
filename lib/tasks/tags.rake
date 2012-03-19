@@ -78,7 +78,7 @@ namespace :tags do
       networks = Network.all
     end
     
-    networks.each do |n|
+    networks.where("networks.city != 'Moscow' AND networks.city != 'Saint Petersburg'").each do |n|
      n.restaurants.each do |r|
        dishes_id = []
        r.network.dishes.each do |d|
@@ -117,14 +117,16 @@ namespace :tags do
       
       p "#{t.id} #{t.name_a}"
       # Dishes      
-      ds = Dish.where("
+      ds = Dish.joins(:networks).where("
+            networks.city != 'Moscow' AND networks.city != 'Saint Petersburg' AND (
             dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{names}[[:>:]]') 
             OR 
             dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{names}[[:>:]]')
             OR
             dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{names}[[:>:]]')
             OR 
-            LOWER(dishes.`name`) REGEXP '[[:<:]]#{names}[[:>:]]'")
+            LOWER(dishes.`name`) REGEXP '[[:<:]]#{names}[[:>:]]'
+            )")
                   
       ds.each do |d|
         p "--- #{d.name}"
