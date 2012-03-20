@@ -1002,7 +1002,7 @@ class ApiController < ApplicationController
       params[:review][:photo] = Image.review_photo(params[:uuid]) if params[:uuid]
       params[:review][:friends] = User.put_friends(params[:fb_friends], params[:tw_friends]) if params[:fb_friends] || params[:tw_friends]
       
-      if params[:review][:type] == 'home_cooked'
+      if params[:review][:rtype] == 'home_cooked'
           
               if params[:dish] && params[:dish][:name] && params[:dish][:dish_type_id]   
                 unless dish = HomeCook.find_by_name(params[:dish][:name])
@@ -1019,7 +1019,7 @@ class ApiController < ApplicationController
         
             r = Review.save_review(params[:review])
             
-      elsif params[:review][:type] == 'delivery'
+      elsif params[:review][:rtype] == 'delivery'
 
               unless d = Delivery.find_by_id(params[:review][:restaurant_id])
                 return render :json => {:error => {:description => 'Delivery not found', :code => 1}}
