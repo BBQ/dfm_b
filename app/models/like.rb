@@ -30,9 +30,14 @@ class Like < ActiveRecord::Base
           review.count_likes += 1 
           review.save
 
-          # Send email
-          dish_name = review.home_cooked == true ? review.home_cook.name : review.dish.name
+          # Send Notification
+          dish_name = case review.rtype
+            when 'home_cooked' then review.home_cook.name
+            when 'delivery' then review.dish_delivery.name
+            else review.dish.name
+          end
           Notification.send(user_id, 'like', review.user_id, dish_name, nil, nil, review.id)          
+          
         end
       end
     end

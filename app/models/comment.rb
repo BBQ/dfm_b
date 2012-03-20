@@ -21,7 +21,11 @@ class Comment < ActiveRecord::Base
       end
 
       # Send notifications
-      dish_name = review.home_cooked == true ? review.home_cook.name : review.dish.name
+      dish_name = case review.rtype
+        when 'home_cooked' then review.home_cook.name
+        when 'delivery' then review.dish_delivery.name
+        else review.dish.name
+      end
       Notification.send(data[:user_id], 'comment', review.user_id, dish_name, nil, nil, review.id)
       Notification.send(data[:user_id], 'comment_on_comment', review.user_id, dish_name, nil, nil, review.id)
     end  
