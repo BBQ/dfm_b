@@ -170,31 +170,29 @@ class Review < ActiveRecord::Base
         network = Network.find_by_id(restaurant.network_id)
       end
   
-      if fb = review_exist?(user_review[:user_id], user_review[:dish_id]) && user_review[:photo].blank?
-
-        dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - fb.rating) / (dish.votes - 1)
+      if review = review_exist?(user_review[:user_id], user_review[:dish_id]) && user_review[:photo].blank?
+        
+        r = review
+        dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - review.rating) / (dish.votes - 1)
         dish.rating = (dish.rating * (dish.votes - 1) + rating) / dish.votes
         dish.save
         
         if user_review[:rtype] != 'home_cooked'
           if restaurant
-            restaurant.rating = restaurant.votes == 1?0 : (restaurant.rating * restaurant.votes - fb.rating) / (restaurant.votes - 1)
+            restaurant.rating = restaurant.votes == 1?0 : (restaurant.rating * restaurant.votes - review.rating) / (restaurant.votes - 1)
             restaurant.rating = (restaurant.rating * (restaurant.votes - 1) + rating) / restaurant.votes
             restaurant.save
           end
           if user_review[:rtype] != 'delivery'
-            network.rating = network.votes == 1?0 : (network.rating * network.votes - fb.rating) / (network.votes - 1)
+            network.rating = network.votes == 1?0 : (network.rating * network.votes - review.rating) / (network.votes - 1)
             network.rating = (network.rating * (network.votes - 1) + rating) / network.votes
             network.save
           end
         end
           
-        review = find(fb.id)
         review.rating = rating
         review.comment = user_review[:comment] unless user_review[:comment].blank?
-        review.save
-        r = review
-        status = 'updated'
+        review.save        
         
       else
 
