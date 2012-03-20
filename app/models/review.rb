@@ -148,7 +148,7 @@ class Review < ActiveRecord::Base
     dish.photo.iphone.url
   end
   
-  def review_exist?(user_id, dish_id)
+  def is_review_exist(user_id, dish_id)
     where('user_id = ? && dish_id = ? && DATE(created_at) > CURDATE() - INTERVAL 1 DAY', user_id, dish_id).first
   end  
   
@@ -168,7 +168,7 @@ class Review < ActiveRecord::Base
         network = Network.find_by_id(restaurant.network_id)
       end
   
-      if fb = review_exist?(user_review[:user_id], user_review[:dish_id])
+      if fb = is_review_exist(user_review[:user_id], user_review[:dish_id])
 
         dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - fb.rating) / (dish.votes - 1)
         dish.rating = (dish.rating * (dish.votes - 1) + rating) / dish.votes
