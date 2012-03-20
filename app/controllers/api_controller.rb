@@ -1072,10 +1072,10 @@ class ApiController < ApplicationController
        
       unless r.blank?
         
-        if r.type == 'homecooked'
+        if r.rtype == 'homecooked'
           dish_name = r.home_cook.name
           restaurant_name = nil
-        elsif r.type == 'delivery'
+        elsif r.rtype == 'delivery'
           dish_name = r.delivery_dish.name
           restaurant_name = r.delivery.name 
         else
@@ -1121,7 +1121,7 @@ class ApiController < ApplicationController
         params[:review][:friends] = User.put_friends(params[:fb_friends], params[:tw_friends])
       end
       
-      if params[:home_cooked].to_i == 1 || params[:review][:type] == 'home_cooked'
+      if params[:home_cooked].to_i == 1 || params[:review][:rtype] == 'home_cooked'
         
         if (params[:dish] && (params[:dish][:name] && params[:dish][:dish_type_id])) || params[:review][:dish_id]
           
@@ -1159,7 +1159,7 @@ class ApiController < ApplicationController
         else
           return render :json => {:error => {:description => 'User not found', :code => 8}}
         end
-      elsif params[:review][:type] == 'delivery'       
+      elsif params[:review][:rtype] == 'delivery'       
         
       else  
 

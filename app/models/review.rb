@@ -146,16 +146,20 @@ class Review < ActiveRecord::Base
   
   def photo_iphone
     dish.photo.iphone.url
-  end 
+  end
+  
+  def self.review_exist?(user_id, dish_id)
+    where('user_id = ? && dish_id = ? && DATE(created_at) > CURDATE() - INTERVAL 1 DAY', user_id, dish_id).first
+  end  
   
   def self.save_review(user_review)
     rating = user_review[:rating].to_f
     
     if rating > 0
     
-      if user_review[:type] == 'home_cooked'
+      if user_review[:rtype] == 'home_cooked'
         dish = HomeCook.find(user_review[:dish_id])
-      elsif user_review[:type] == 'delivery'
+      elsif user_review[:rtype] == 'delivery'
         dish = DishDelivery.find(user_review[:dish_id])
         restaurant = Delivery.find_by_id(user_review[:restaurant_id])
       else
@@ -164,19 +168,19 @@ class Review < ActiveRecord::Base
         network = Network.find_by_id(restaurant.network_id)
       end
   
-      if fb = Review.where('user_id = ? && dish_id = ? && DATE(created_at) > CURDATE() - INTERVAL 1 DAY', user_review[:user_id], user_review[:dish_id]).first
+      if fb = review_exist?(user_review[:user_id], user_review[:dish_id])
 
         dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - fb.rating) / (dish.votes - 1)
         dish.rating = (dish.rating * (dish.votes - 1) + rating) / dish.votes
         dish.save
         
-        if user_review[:type] != 'home_cooked'
+        if user_review[:rtype] != 'home_cooked'
           if restaurant
             restaurant.rating = restaurant.votes == 1?0 : (restaurant.rating * restaurant.votes - fb.rating) / (restaurant.votes - 1)
             restaurant.rating = (restaurant.rating * (restaurant.votes - 1) + rating) / restaurant.votes
             restaurant.save
           end
-          if user_review[:type] != 'delivery'
+          if user_review[:rtype] != 'delivery'
             network.rating = network.votes == 1?0 : (network.rating * network.votes - fb.rating) / (network.votes - 1)
             network.rating = (network.rating * (network.votes - 1) + rating) / network.votes
             network.save
@@ -196,13 +200,13 @@ class Review < ActiveRecord::Base
         dish.votes += 1
         dish.save
         
-        if user_review[:type] != 'home_cooked'
+        if user_review[:rtype] != 'home_cooked'
           if restaurant
             restaurant.rating = (restaurant.rating * restaurant.votes + rating) / (restaurant.votes + 1)
             restaurant.votes += 1
             restaurant.save
           end
-          if user_review[:type] != 'delivery'
+          if user_review[:rtype] != 'delivery'
             network.rating = (network.rating * network.votes + rating) / (network.votes + 1)
             network.votes += 1
             network.save
