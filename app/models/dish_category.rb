@@ -3,10 +3,10 @@ class DishCategory < ActiveRecord::Base
   has_many :dish_deliveries
   
   def self.get_id(name)
-    unless id = find_by_name(name)
-      id = create(:name => name).id
+    unless category = find_by_name(name)
+      category = create(:name => name)
     end
-    id
+    category.id
   end
   
 end
