@@ -112,6 +112,7 @@ class Restaurant < ActiveRecord::Base
 
        end
      end
+     r
   end
   
   def self.search_by_tag_id(id)
