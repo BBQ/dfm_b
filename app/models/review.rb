@@ -19,7 +19,7 @@ class Review < ActiveRecord::Base
       result = "Something wrong with review #{id} ..."
       data = Hash.new
       
-      if review = Review.find_by_id(id)
+      if review = find_by_id(id)
         
         rating = review.rating
       
@@ -48,8 +48,12 @@ class Review < ActiveRecord::Base
           network.save
           
         end
-      
-        dish = review.home_cooked == true ? HomeCook.find_by_id(dish_id) : Dish.find_by_id(dish_id)
+        
+        dish = case review.rtype
+          when 'home_cooked' then HomeCook.find_by_id(dish_id)
+          when 'delivery' then DishDelivery.find_by_id(dish_id)
+          else Dish.find_by_id(dish_id)
+        end
         
         data[:drb] = dish.rating
         data[:dvb] = dish.votes      
