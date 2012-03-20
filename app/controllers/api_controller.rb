@@ -995,7 +995,7 @@ class ApiController < ApplicationController
     }
   end
   
-  def add_review_new
+  def add_review
     
     if params[:review] && Session.check_token(params[:review][:user_id], params[:token]) && params[:review][:rating].to_i > 5 || params[:review][:rating].to_i < 0
       
@@ -1093,7 +1093,7 @@ class ApiController < ApplicationController
   end
   
   
-  def add_review
+  def add_review_old
     # TODO: On Dish and Restaurant adding create DishTags and RestaurantTags
     
     if params[:review] && params[:review][:rating] && Session.check_token(params[:review][:user_id], params[:token])
