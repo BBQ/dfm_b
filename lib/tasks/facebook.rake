@@ -20,8 +20,15 @@ namespace :facebook do
           else
             dish_text = "#{r.text} -"
           end
-          place = r.home_cooked == true ? "#{r.home_cook.name} (home-cooked)" : "#{r.dish.name} @ #{r.network.name}"
-
+          
+          if r.rtype == 'home_cooked'
+            place = "#{r.home_cook.name} (home-cooked)"
+          elsif r.rtype == 'delivery'
+            place = "#{r.dish_delivery.name} @ #{r.delivery.name}"
+          else
+            place = "#{r.dish.name} @ #{r.network.name}"
+          end
+          
           albuminfo = {}
           graph.get_connections('me', 'albums').each do |alb|
             if alb['name'] == 'Dish.fm Photos'
