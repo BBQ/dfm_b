@@ -1019,7 +1019,7 @@ class ApiController < ApplicationController
         
             r = Review.save_review(params[:review])
             
-      elsif params[:type] == 'delivery'
+      elsif params[:review][:type] == 'delivery'
 
               unless d = Delivery.find_by_id(params[:review][:restaurant_id])
                 return render :json => {:error => {:description => 'Delivery not found', :code => 1}}
