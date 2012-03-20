@@ -11,43 +11,6 @@ class Review < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader 
   
-  def self.save_homecooked(user_review)
-    rating = user_review[:rating].to_f
-    dish = HomeCook.find(user_review[:dish_id])
-  
-    if rating > 0
-      if fb = review_exist?(user_review[:user_id], user_review[:dish_id])
-
-        dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - fb.rating) / (dish.votes - 1)
-        dish.rating = (dish.rating * (dish.votes - 1) + rating) / dish.votes
-        dish.save
-          
-        review = find(fb.id)
-        review.rating = rating
-        review.comment = user_review[:comment] unless user_review[:comment].blank?
-        
-        r = review.save
-        status = 'updated'
-      else
-        if rating > 0
-            r = create(user_review)  
-            dish.rating = (dish.rating * dish.votes + rating) / (dish.votes + 1)
-            dish.votes += 1
-            dish.save
-        end
-        status = 'created'
-      end
-    
-      if top_uid = (where('dish_id = ?', dish.id).group('user_id').count).max[0]
-        dish.top_user_id = top_uid
-        dish.save
-      end
-    end
-    {:status => status, :dish => dish}
-    r
-    
-  end
-  
   def self.following(user_id)
     where("user_id IN (SELECT follow_user_id FROM followers WHERE user_id = ?)", user_id)
   end
@@ -185,7 +148,7 @@ class Review < ActiveRecord::Base
     dish.photo.iphone.url
   end
   
-  def self.review_exist?(user_id, dish_id)
+  def review_exist?(user_id, dish_id)
     where('user_id = ? && dish_id = ? && DATE(created_at) > CURDATE() - INTERVAL 1 DAY', user_id, dish_id).first
   end  
   
