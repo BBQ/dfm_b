@@ -148,7 +148,7 @@ class Review < ActiveRecord::Base
     dish.photo.iphone.url
   end
   
-  def is_review_exist(user_id, dish_id)
+  def self.is_review_exist(user_id, dish_id)
     where('user_id = ? && dish_id = ? && DATE(created_at) > CURDATE() - INTERVAL 1 DAY', user_id, dish_id).first
   end  
   
