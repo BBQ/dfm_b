@@ -196,6 +196,9 @@ class Review < ActiveRecord::Base
     
       if user_review[:type] == 'home_cooked'
         dish = HomeCook.find(user_review[:dish_id])
+      elsif user_review[:type] == 'delivery'
+        dish = DishDelivery.find(user_review[:dish_id])
+        restaurant = Delivery.find_by_id(user_review[:restaurant_id])
       else
         dish = Dish.find(user_review[:dish_id])      
         restaurant = Restaurant.find_by_id(user_review[:restaurant_id])
@@ -214,9 +217,11 @@ class Review < ActiveRecord::Base
             restaurant.rating = (restaurant.rating * (restaurant.votes - 1) + rating) / restaurant.votes
             restaurant.save
           end
-          network.rating = network.votes == 1?0 : (network.rating * network.votes - fb.rating) / (network.votes - 1)
-          network.rating = (network.rating * (network.votes - 1) + rating) / network.votes
-          network.save
+          if user_review[:type] != 'delivery'
+            network.rating = network.votes == 1?0 : (network.rating * network.votes - fb.rating) / (network.votes - 1)
+            network.rating = (network.rating * (network.votes - 1) + rating) / network.votes
+            network.save
+          end
         end
           
         review = find(fb.id)
@@ -238,9 +243,11 @@ class Review < ActiveRecord::Base
             restaurant.votes += 1
             restaurant.save
           end
-          network.rating = (network.rating * network.votes + rating) / (network.votes + 1)
-          network.votes += 1
-          network.save
+          if user_review[:type] != 'delivery'
+            network.rating = (network.rating * network.votes + rating) / (network.votes + 1)
+            network.votes += 1
+            network.save
+          end
         end
         status = 'created'
         

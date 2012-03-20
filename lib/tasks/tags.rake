@@ -72,37 +72,41 @@ namespace :tags do
   
   desc "Match Restaurant Tags"
   task :match_rest => :environment do
-    if ENV["NETWORK_ID"]
-      networks = Network.where(:id => ENV["NETWORK_ID"])
-    else
-      networks = Network.all
-    end
+    restaurants = ENV["TYPE"] == 'Delivery' ? Delivery : Restaurant
     
-    networks.where("networks.city != 'Moscow' AND networks.city != 'Saint Petersburg'").each do |n|
-     n.restaurants.each do |r|
+    if ENV["NETWORK_ID"]
+      restaurants = restaurants.where(:network_id => ENV["NETWORK_ID"])
+    else
+      restaurants = restaurants.all
+    end
+          
+    restaurants.each do |r|
+ 
+     unless dishes_id = ENV["DISH_ID"]
        dishes_id = []
        r.network.dishes.each do |d|
          dishes_id.push(d.id)
        end
        dishes_id.join(',')
-       DishTag.select("DISTINCT tag_id").where("dish_id IN (?)", dishes_id).each do |t|
-          data = {
-            :tag_id => t.tag_id, 
-            :restaurant_id => r.id
-          }
-          
-          p "#{r.name} #{t.tag.name_a}"
-          RestaurantTag.create(data)
-       end
      end
-   end
-     p 'Done!'
+ 
+     DishTag.select("DISTINCT tag_id").where("dish_id IN (?)", dishes_id).each do |t|
+        data = {
+          :tag_id => t.tag_id, 
+          :restaurant_id => r.id
+        }
+        p "#{data}"
+        RestaurantTag.create(data)
+     end
+    end
+     p 'It`s done!'
    end
   
   desc "Match Dish Tags"
   task :match_dishes => :environment do
-    
-    Tag.all.each do |t|
+    tags  = Tag.all
+        
+    tags.each do |t|
       
       tag_id = t.id
       names_array = []
@@ -115,31 +119,30 @@ namespace :tags do
       names_array.push(t.name_f.downcase) unless t.name_f.blank? 
       names = names_array.join('|').gsub(/\\|'/) { |c| "\\#{c}" }
       
-      p "#{t.id} #{t.name_a}"
-      # Dishes      
-      ds = Dish.select("dishes.id, dishes.name").joins(:network).where("
-            networks.city != 'Moscow' AND networks.city != 'Saint Petersburg' AND (
+      # Dishes
+      ds = ENV["TYPE"] == 'Delivery' ? DishDelivery : Dish
+      ds = ds.where("
             dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{names}[[:>:]]') 
             OR 
             dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{names}[[:>:]]')
             OR
             dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{names}[[:>:]]')
             OR 
-            LOWER(dishes.`name`) REGEXP '[[:<:]]#{names}[[:>:]]'
-            )")
-                  
+            LOWER(dishes.`name`) REGEXP '[[:<:]]#{names}[[:>:]]'")
+            
+      ds = ds.where(:network_id => ENV["NETWORK_ID"]) if ENV["NETWORK_ID"]
+      ds = ds.where(:id => ENV["DISH_ID"]) if ENV["DISH_ID"]
+      
       ds.each do |d|
-        p "--- #{d.name}"
-        
         data = {
           :tag_id => tag_id, 
           :dish_id => d.id
         }
+        p "#{data}"
         DishTag.create(data)
-        
       end
     end
-    p 'Done!'
+    p 'It`s done!'
   end
   
   desc "Match Tags"

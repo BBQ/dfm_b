@@ -10,17 +10,6 @@ class HomeCook < ActiveRecord::Base
     
     mount_uploader :photo, ImageUploader
     
-    def self.get_dish(dish_id = nil, data = nil)
-
-      if dish_id.to_i > 0
-        dish = find_by_id(dish_id) 
-      elsif data
-        dish = create(data) unless dish = find_by_name(data[:name])
-      end
-      dish
-      
-    end
-    
     def find_image
       if photo.blank?
         if review = Review.where("dish_id = ? AND photo IS NOT NULL", id).order('count_likes DESC').first

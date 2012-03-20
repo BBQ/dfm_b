@@ -997,210 +997,97 @@ class ApiController < ApplicationController
   
   def add_review_new
     
-    if params[:review] && params[:review][:rating] && Session.check_token(params[:review][:user_id], params[:token])
+    if params[:review] && Session.check_token(params[:review][:user_id], params[:token]) && params[:review][:rating].to_i > 5 || params[:review][:rating].to_i < 0
       
       params[:review][:photo] = Image.review_photo if params[:uuid]
       params[:review][:friends] = User.put_friends(params[:fb_friends], params[:tw_friends]) if params[:fb_friends] || params[:tw_friends]
       
       if params[:review][:type] == 'home_cooked'
-        if params[:review][:dish_id]  
-          dish = HomeCook.get_dish(params[:review][:dish_id])
+        unless dish = HomeCook.find_by_id(params[:review][:dish_id])
           
-        elsif params[:dish] && params[:dish][:name] && params[:dish][:dish_type_id]
+          if params[:dish] && params[:dish][:name] && params[:dish][:dish_type_id]   
+            unless dish = HomeCook.find_by_name(params[:review][:name])
+              
+              unless dish = HomeCook.create(params[:dish])
+                return render :json => {:error => {:description => 'Dish create error', :code => 6}}
+              end
+
+            end
+            params[:review][:dish_id] = dish.id
+          else
+            return render :json => {:error => {:description => 'Home Cooked is Missing', :code => 1015}}
+          end
           
-          dish = HomeCook.get_dish(nil,{
-            :name => params[:dish][:name], 
-            :dish_type_id => params[:dish][:dish_type_id],
-            :dish_subtype_id => params[:dish][:dish_subtype_id]
-          })
-          params[:review][:dish_id] = dish.id  
-          
-        else
-          return render :json => {:error => {:description => 'Home Cooked is Missing', :code => 1020}}
         end
         r = Review.save_review(params[:review])
             
       elsif params[:type] == 'delivery'
+
+        unless d = Delivery.find_by_id(params[:review][:restaurant_id])
+          return render :json => {:error => {:description => 'Delivery not found', :code => 1}}
+        end
         
+        unless dish = DishDelivery.find_by_id(params[:review][:dish_id])
+          if params[:dish] && params[:dish][:name]  
+
+            unless dish = DishDelivery.create(params[:dish], d.id)
+              return render :json => {:error => {:description => 'Dish create error', :code => 6}}
+            end
+
+          else
+            return render :json => {:error => {:description => 'Dish create error', :code => 6}}
+          end
+        end
+        
+        params[:review][:dish_id] = dish.id
+        r = Review.save_review(params[:review])
+      
       else
         
-         if params[:review][:restaurant_id].blank?
+        if r = Restaurant.find_by_id(params[:review][:restaurant_id])
+          params[:review][:network_id] = r.network_id
+        elsif r = Restaurant.add_from_4sq_with_menu(params[:foursquare_venue_id])        
+          params[:review][:restaurant_id] = r.id
+          params[:review][:network_id] = r.network_id
+        else
+          return render :json => {:error => {:description => 'Restaurant not found', :code => 1}}
+        end
+        
+        unless dish = Dish.find_by_id(params[:review][:dish_id])
+          if params[:dish] && params[:dish][:name]  
 
-             dish_category_id = ''
-             if !params[:foursquare_venue_id].blank?
-               client = Foursquare2::Client.new(:client_id => 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV', :client_secret => '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX')
-               venue = client.venue(params[:foursquare_venue_id])
+            params[:dish][:network_id] = r.network_id
+            params[:dish][:created_by_user] = params[:review][:user_id]
 
-               if r = Restaurant.find_by_fsq_id(params[:foursquare_venue_id])
-                 params[:review][:restaurant_id] = r.id
-                 params[:review][:network_id] = r.network_id
-               else
+            unless dish = Dish.create(params[:dish], r.network_id)
+              return render :json => {:error => {:description => 'Dish create error', :code => 6}}
+            end
+            
+          else
+            return render :json => {:error => {:description => 'Dish create error', :code => 6}}
+          end
+        end
+        
+        params[:review][:dish_id] = dish.id
+        r = Review.save_review(params[:review])
+      end  
+       
+       
+      unless r.blank?
+        dish_name = r.home_cooked == true ? r.home_cook.name : r.dish.name
+        Notification.send(r.user_id, 'dishin', nil, dish_name, nil, nil, r.id)        
 
-                 category_id = []
-                 venue.categories.each do |v|
-                   if category = RestaurantCategory.find_by_name(v.name)
-                     category_id.push(category.id)
-                   else
-                     category_id.push(RestaurantCategory.create(:name => v.name).id)
-                   end
-                 end
+        unless r.friends.blank?
+          Notification.send(r.user_id, 'tagged', nil, nil, r.restaurant ? r.restaurant.name : nil, r.friends)
+          Notification.send(r.user_id, 'tagged_by_friend', nil, nil, r.restaurant ? r.restaurant.name : nil, r.friends, r.id)
+        end
 
-                 if network = Network.find_by_name_and_city(venue.name, venue.location.city)
-                   network_id = network.id
-                 else
-                   network_id = Network.create({:name => venue.name, :city =>venue.location.city}).id
-                 end
-
-                 data = {
-                   :name => venue.name,
-                   :address => venue.location.address,
-                   :city => venue.location.city,
-                   :lat => venue.location.lat.to_f,
-                   :lon => venue.location.lng.to_f,
-                   :fsq_id => venue.id,
-                   :fsq_lng => venue.location.lng,
-                   :fsq_lat => venue.location.lat,
-                   :fsq_checkins_count => venue.stats.checkinsCount,
-                   :fsq_tip_count => venue.stats.tipCount,
-                   :fsq_users_count => venue.stats.usersCount,
-                   :fsq_name => venue.name,
-                   :fsq_address => venue.location.address,
-                   :source => 'foursquare',
-                   :name => venue.name,
-                   :phone => venue.contact.formattedPhone,
-                   :restaurant_categories => category_id.join(','),
-                   :network_id => network_id
-                 }
-
-                 if r = Restaurant.create(data)
-                   params[:review][:restaurant_id] = r.id
-                   params[:review][:network_id] = r.network_id
-
-                   client.venue_menu(params[:foursquare_venue_id]).each do |m|
-                     cat_ord = 0
-                     m.entries.fourth.second.items.each do |i|
-
-                       if dish_category = DishCategory.find_by_name(i.name)
-                         dish_category_id = dish_category.id
-                       else
-                         dish_category_id = DishCategory.create({:name => i.name}).id
-                       end
-
-                       cat_ord += 1
-                       DishCategoryOrder.create({
-                         :restaurant_id => params[:review][:restaurant_id], 
-                         :network_id =>  params[:review][:network_id],
-                         :dish_category_id => dish_category_id,
-                         :order => cat_ord
-                       })
-
-                       i.entries.third.second.items.each do |d|  
-
-                         if d.prices 
-                           price = /(.)(\d+\.\d+)/.match(d.prices.first)[2]
-                           currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
-                         end
-
-                         data = {
-                           :network_id => r.network_id,
-                           :name => d.name,
-                           :price => price ||= 0,
-                           :currency => currency ||= '',
-                           :description => d.description,
-                           :dish_category_id => dish_category_id,
-                         }
-                         Dish.create(data)
-
-                       end
-                     end
-                   end
-
-                   system "rake tags:match_dishes NETWORK_ID='#{params[:review][:network_id]}' &"
-                   system "rake tags:match_rest NETWORK_ID='#{params[:review][:network_id]}' &"
-
-                 else
-                   return render :json => {:error => {:description => 'Error on creat restaurant', :code => 1}}
-                 end
-               end
-             else
-               return render :json => {:error => {:description => 'Restaurant not found', :code => 1}}
-             end
-           else
-             if r = Restaurant.find_by_id(params[:review][:restaurant_id])
-               params[:review][:network_id] = r.network_id
-             else
-               return render :json => {:error => {:description => 'Restaurant not found', :code => 1}} 
-             end
-           end
-
-           return render :json => {:error => {:description => "Rating '#{params[:review][:rating]}' is not in range", :code => 2}} if params[:review][:rating].to_i > 5 || params[:review][:rating].to_i < 0
-
-           if params[:uuid] && image = Image.find_by_uuid(params[:uuid])
-             params[:review][:photo] = File.open(image.photo.file.file)  
-             image.destroy
-           end
-
-           if !params[:review][:dish_id] && params[:dish][:name] # && params[:dish][:dish_type_id]
-             if dish = Dish.find_by_network_id_and_name(params[:review][:network_id], params[:dish][:name])
-               params[:review][:dish_id] = dish.id
-             else
-               params[:dish][:network_id] = params[:review][:network_id]
-               # return render :json => {:error => {:description => 'Dish type not found', :code => 4}} unless DishType.find_by_id(params[:dish][:dish_type_id])
-               # return render :json => {:error => {:description => 'Dish subtype not found', :code => 5}} if params[:dish][:dish_subtype_id] && !DishSubtype.find_by_id(params[:dish][:dish_subtype_id])
-
-               if !params[:dish][:dish_type_id].blank? && DishType.find_by_id(params[:dish][:dish_type_id])
-                 dish_category = DishType.find_by_id(params[:dish][:dish_type_id]).name
-                 params[:dish][:dish_category_id] = DishCategory.find_by_name(dish_category) ? DishCategory.find_by_name(dish_category).id : DishCategory.create(:name => dish_category).id
-               else
-                 params[:dish][:dish_category_id] = dish_category_id
-               end
-
-               return render :json => {:error => {:description => 'Dish category not found', :code => 4}} unless params[:dish][:dish_category_id]
-
-               params[:dish][:created_by_user] = params[:review][:user_id]
-
-               if dish_new = Dish.create(params[:dish])
-                 dish_new.match_tags
-                 params[:review][:dish_id] = dish_new.id
-               else
-                 return render :json => {:error => {:description => 'Dish create error', :code => 6}}        
-               end
-             end
-           end
-
-           return render :json => {:error => {:description => 'Dish not found', :code => 7}} unless dfc = Dish.find_by_id(params[:review][:dish_id])
-
-           if params[:review][:user_id]
-             r = Review.save_review(params[:review])
-           else
-             return render :json => {:error => {:description => 'User not found', :code => 69}}
-           end
-
-         end
-
-         unless r.blank?
-
-           # dish_name = r.home_cooked == true ? r.home_cook.name : r.dish.name
-
-           if r.home_cooked == true
-             dish_name = r.home_cook.name
-           else
-             dish_name = r.dish.name
-           end
-
-           Notification.send(r.user_id, 'dishin', nil, dish_name, nil, nil, r.id)        
-
-           unless r.friends.blank?
-             Notification.send(r.user_id, 'tagged', nil, nil, r.restaurant ? r.restaurant.name : nil, r.friends)
-             Notification.send(r.user_id, 'tagged_by_friend', nil, nil, r.restaurant ? r.restaurant.name : nil, r.friends, r.id)
-           end
-
-           unless r.photo.iphone_retina.url.blank?
-             if params[:post_on_facebook] == '1'
-               system "rake facebook:dishin REVIEW_ID='#{r.id}' &"
-             end
-           end
-         end
+        unless r.photo.iphone_retina.url.blank?
+          if params[:post_on_facebook] == '1'
+            system "rake facebook:dishin REVIEW_ID='#{r.id}' &"
+          end
+        end  
+      end
       
     end
   end

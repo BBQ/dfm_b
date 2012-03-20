@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120314195506) do
+ActiveRecord::Schema.define(:version => 20120319171920) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -113,6 +113,16 @@ ActiveRecord::Schema.define(:version => 20120314195506) do
   add_index "deliveries", ["id"], :name => "index_deliveries_on_id"
   add_index "deliveries", ["name"], :name => "index_deliveries_on_name"
 
+  create_table "delivery_tags", :force => true do |t|
+    t.integer  "tag_id",      :null => false
+    t.integer  "delivery_id", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "delivery_tags", ["delivery_id"], :name => "index_delivery_tags_on_delivery_id"
+  add_index "delivery_tags", ["tag_id"], :name => "index_delivery_tags_on_tag_id"
+
   create_table "dish_categories", :force => true do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -165,6 +175,32 @@ ActiveRecord::Schema.define(:version => 20120314195506) do
     t.integer  "count_likes",       :default => 0
     t.integer  "no_rate_order",     :default => 0
   end
+
+  create_table "dish_delivery_comments", :force => true do |t|
+    t.integer  "user_id",    :null => false
+    t.integer  "dish_id",    :null => false
+    t.text     "text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "dish_delivery_likes", :force => true do |t|
+    t.integer  "user_id",    :null => false
+    t.integer  "dish_id",    :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "dish_delivery_tags", :force => true do |t|
+    t.integer  "tag_id",           :null => false
+    t.integer  "dish_delivery_id", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "dish_delivery_tags", ["dish_delivery_id"], :name => "index_dish_delivery_tags_on_dish_delivery_id"
+  add_index "dish_delivery_tags", ["id"], :name => "index_dish_delivery_tags_on_id"
+  add_index "dish_delivery_tags", ["tag_id"], :name => "index_dish_delivery_tags_on_tag_id"
 
   create_table "dish_extratypes", :force => true do |t|
     t.string   "name"
@@ -220,7 +256,7 @@ ActiveRecord::Schema.define(:version => 20120314195506) do
     t.float    "rating",                  :limit => 21,                                :default => 0.0
     t.integer  "votes",                                                                :default => 0
     t.text     "description"
-    t.integer  "dish_category_id",                                                                      :null => false
+    t.integer  "dish_category_id"
     t.integer  "dish_type_id"
     t.integer  "dish_subtype_id"
     t.datetime "created_at"
@@ -269,6 +305,17 @@ ActiveRecord::Schema.define(:version => 20120314195506) do
 
   add_index "friends", ["friend_id", "user_id"], :name => "index_friends_on_friend_id_and_user_id"
   add_index "friends", ["user_id", "friend_id"], :name => "index_friends_on_user_id_and_friend_id"
+
+  create_table "home_cook_tags", :force => true do |t|
+    t.integer  "tag_id",       :null => false
+    t.integer  "home_cook_id", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "home_cook_tags", ["home_cook_id"], :name => "index_home_cook_tags_on_home_cook_id"
+  add_index "home_cook_tags", ["id"], :name => "index_home_cook_tags_on_id"
+  add_index "home_cook_tags", ["tag_id"], :name => "index_home_cook_tags_on_tag_id"
 
   create_table "home_cooks", :force => true do |t|
     t.string   "name"
