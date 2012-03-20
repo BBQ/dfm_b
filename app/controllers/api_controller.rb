@@ -430,7 +430,7 @@ class ApiController < ApplicationController
     return render :json => {
           :types => DishType.format_for_api(timestamp),
           :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords.all,
-          :networks => timestamp ? networks.where('updated_at >= ?', timestamp) : networks.all,
+          # :networks => timestamp ? networks.where('updated_at >= ?', timestamp) : networks.all,
           :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
           :tags => Tag.get_all(timestamp),
           :error => $error
