@@ -1003,24 +1003,21 @@ class ApiController < ApplicationController
       params[:review][:friends] = User.put_friends(params[:fb_friends], params[:tw_friends]) if params[:fb_friends] || params[:tw_friends]
       
       if params[:review][:type] == 'home_cooked'
-
-              unless dish = HomeCook.find_by_id(params[:review][:dish_id])
           
-                if params[:dish] && params[:dish][:name] && params[:dish][:dish_type_id]   
-                  unless dish = HomeCook.find_by_name(params[:review][:name])
-              
-                    unless dish = HomeCook.create(params[:dish])
-                      return render :json => {:error => {:description => 'Dish create error', :code => 6}}
-                    end
-
+              if params[:dish] && params[:dish][:name] && params[:dish][:dish_type_id]   
+                unless dish = HomeCook.find_by_name(params[:dish][:name])
+            
+                  unless dish = HomeCook.create(params[:dish])
+                    return render :json => {:error => {:description => 'Dish create error', :code => 6}}
                   end
-                  params[:review][:dish_id] = dish.id
-                else
-                  return render :json => {:error => {:description => 'Home Cooked is Missing', :code => 1015}}
+
                 end
-          
+                params[:review][:dish_id] = dish.id
+              else
+                return render :json => {:error => {:description => 'Home Cooked is Missing', :code => 1015}}
               end
-              r = Review.save_review(params[:review])
+        
+            r = Review.save_review(params[:review])
             
       elsif params[:type] == 'delivery'
 
