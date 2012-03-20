@@ -61,15 +61,16 @@ class Dish < ActiveRecord::Base
       if dtype = DishType.select(:name).find_by_id(data[:dish_type_id])
         data[:dish_category_id] = DishCategory.get_id(dtype.name)
       end
-      
-      if dish = super(data)    
-        system "rake tags:match_dishes NETWORK_ID='#{network_id} DISH_ID='#{id}' &"
-        system "rake tags:match_rest NETWORK_ID='#{network_id} DISH_ID='#{id}' &"
-      end
+      dish.match_tags if dish = super(data)    
       
     end
     dish
     
+  end
+  
+  def match_tags
+    system "rake tags:match_dishes NETWORK_ID='#{network_id} DISH_ID='#{id}' &"
+    system "rake tags:match_rest NETWORK_ID='#{network_id} DISH_ID='#{id}' &"
   end
   
   def find_image
