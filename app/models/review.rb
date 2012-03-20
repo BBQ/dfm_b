@@ -19,7 +19,7 @@ class Review < ActiveRecord::Base
       result = "Something wrong with review #{id} ..."
       data = Hash.new
       
-      if review = find_by_id(id)
+      if review = Review.find_by_id(id)
         
         rating = review.rating
       
