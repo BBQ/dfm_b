@@ -16,7 +16,7 @@ class DishDelivery < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
-  def create(data, delivery_id)
+  def self.create(data, delivery_id)
     unless dish = find_by_name_and_delivery_id(data[:name], delivery_id)
       
       if type = DishType.find_by_id(data[:dish_type_id])

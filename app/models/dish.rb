@@ -55,7 +55,7 @@ class Dish < ActiveRecord::Base
     }
   end
   
-  def create(data, network_id)
+  def self.create(data, network_id)
     unless dish = find_by_name_and_network_id(data[:name], network_id)
       
       if type = DishType.find_by_id(data[:dish_type_id])
