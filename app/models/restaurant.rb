@@ -21,7 +21,7 @@ class Restaurant < ActiveRecord::Base
   # geocoded_by :geo_address, :latitude  => :lat, :longitude => :lon
   # after_validation :geocode, :if => :address_changed?
   
-  def add_from_4sq_with_menu(foursquare_venue_id)
+  def self.add_from_4sq_with_menu(foursquare_venue_id)
     
      dish_category_id = ''
      client = Foursquare2::Client.new(:client_id => @client_id, :client_secret => @client_secret)
