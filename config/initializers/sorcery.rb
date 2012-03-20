@@ -48,8 +48,8 @@ Rails.application.config.sorcery.configure do |config|
   require 'socket'
   if Socket.gethostname == 'MacBook-Pro-Mac.local'
     # foursquare
-    @client_id = 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV'
-    @client_secret = '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX'
+    $client_id = 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV'
+    $client_secret = '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX'
     
     # facebook
     app_id_or_api_key = '133629496729663'
@@ -58,8 +58,8 @@ Rails.application.config.sorcery.configure do |config|
 
   else
     # foursquare
-    @client_id = '0JWDGVS0JRP4TTDORCLGXDTEHHIM5ENWZSNJMA11EYNCLR2C'
-    @client_secret = 'MB2DWZR0VLPM4M1M4XY5SJGGY3IJBCP0MRLNGHIVDBXLNZOD'
+    $client_id = '0JWDGVS0JRP4TTDORCLGXDTEHHIM5ENWZSNJMA11EYNCLR2C'
+    $client_secret = 'MB2DWZR0VLPM4M1M4XY5SJGGY3IJBCP0MRLNGHIVDBXLNZOD'
     
     # facebook
     app_id_or_api_key = '304688586223462'

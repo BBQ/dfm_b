@@ -38,7 +38,7 @@ namespace :fsq do
     step_lng_x = (((lng_x2).abs - (lng_x1).abs)).abs / n
     step_lon_y = (((lat_y1).abs - (lat_y2).abs)).abs / n
     
-    client = Foursquare2::Client.new(:client_id => @client_id, :client_secret => @client_secret)
+    client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
     
     (0..n).step(step_lng_x) do |k|
       sw_x = lng_x1 + step_lng_x * k
@@ -81,7 +81,7 @@ namespace :fsq do
   desc "Get Popularity and location from Foursquare" 
   task :update => :environment do
   
-    client = Foursquare2::Client.new(:client_id => @client_id, :client_secret => @client_secret)
+    client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
     i = 0
     Restaurant.order(:id).each do |r|
       i+= 1

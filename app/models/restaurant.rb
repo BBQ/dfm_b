@@ -24,7 +24,7 @@ class Restaurant < ActiveRecord::Base
   def self.add_from_4sq_with_menu(foursquare_venue_id)
     
      dish_category_id = ''
-     client = Foursquare2::Client.new(:client_id => @client_id, :client_secret => @client_secret)
+     client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
      # client = Foursquare2::Client.new(:client_id => 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV', :client_secret => '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX')
      venue = client.venue(foursquare_venue_id)
 
