@@ -170,7 +170,7 @@ class Review < ActiveRecord::Base
         network = Network.find_by_id(restaurant.network_id)
       end
   
-      if review = review_exist?(user_review[:user_id], user_review[:dish_id]) && user_review[:photo].blank?
+      if user_review[:photo].blank? && review = review_exist?(user_review[:user_id], user_review[:dish_id])
         
         r = review
         dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - review.rating) / (dish.votes - 1)
