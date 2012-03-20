@@ -112,7 +112,7 @@ class Review < ActiveRecord::Base
       end
     end
     
-    if rtype == 'homecooked'
+    if rtype == 'home_cooked'
       review_dish = HomeCook.find_by_id(dish_id) 
     elsif rtype == 'delivery'
       review_dish = DishDelivery.find_by_id(dish_id) 

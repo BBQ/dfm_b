@@ -1072,7 +1072,7 @@ class ApiController < ApplicationController
        
       unless r.blank?
         
-        if r.rtype == 'homecooked'
+        if r.rtype == 'home_cooked'
           dish_name = r.home_cook.name
           restaurant_name = nil
         elsif r.rtype == 'delivery'
