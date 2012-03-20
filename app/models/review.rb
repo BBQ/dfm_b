@@ -141,7 +141,7 @@ class Review < ActiveRecord::Base
       :image_hd => photo.iphone_retina.url != '/images/noimage.jpg' ? photo.iphone_retina.url : '',
       :liked => user_id && Like.find_by_user_id_and_review_id(user_id, id) ? 1 : 0,
       :self_review => 0,
-      :home_cooked => home_cooked ? 1 : 0,
+      :rtype => rtype,
       :friends => friends_with
     }
   end
