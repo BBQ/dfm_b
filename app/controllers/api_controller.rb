@@ -1067,24 +1067,35 @@ class ApiController < ApplicationController
         
               params[:review][:dish_id] = dish.id
               r = Review.save_review(params[:review])
-            end  
+      end  
        
        
-            unless r.blank?
-              dish_name = r.home_cooked == true ? r.home_cook.name : r.dish.name
-              Notification.send(r.user_id, 'dishin', nil, dish_name, nil, nil, r.id)        
+      unless r.blank?
+        
+        if r.type == 'homecooked'
+          dish_name = r.home_cook.name
+          restaurant_name = nil
+        elsif r.type == 'delivery'
+          dish_name = r.delivery_dish.name
+          restaurant_name = r.delivery.name 
+        else
+          dish_name = r.dish.name
+          restaurant_name = r.restaurant.name
+        end
+                   
+        Notification.send(r.user_id, 'dishin', nil, dish_name, nil, nil, r.id)        
 
-              unless r.friends.blank?
-                Notification.send(r.user_id, 'tagged', nil, nil, r.restaurant ? r.restaurant.name : nil, r.friends)
-                Notification.send(r.user_id, 'tagged_by_friend', nil, nil, r.restaurant ? r.restaurant.name : nil, r.friends, r.id)
-              end
+        unless r.friends.blank?
+          Notification.send(r.user_id, 'tagged', nil, nil, restaurant_name, r.friends)
+          Notification.send(r.user_id, 'tagged_by_friend', nil, nil, restaurant_name, r.friends, r.id)
+        end
 
-              unless r.photo.iphone_retina.url.blank?
-                if params[:post_on_facebook] == '1'
-                  system "rake facebook:dishin REVIEW_ID='#{r.id}' &"
-                end
-              end  
-            end
+        unless r.photo.iphone_retina.url.blank?
+          if params[:post_on_facebook] == '1'
+            system "rake facebook:dishin REVIEW_ID='#{r.id}' &"
+          end
+        end  
+      end
             
     else
       $error = {:description => 'Parameters missing', :code => 8}  
