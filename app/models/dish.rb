@@ -61,32 +61,14 @@ class Dish < ActiveRecord::Base
       if type = DishType.find_by_id(data[:dish_type_id])
         data[:dish_category_id] = DishCategory.get_id(type.name)
       end
-      dish.match_tags if dish = create(data)    
+      
+      if dish = create(data)    
+        system "rake tags:match_dishes NETWORK_ID='#{network_id} DISH_ID='#{id}' &"
+        system "rake tags:match_rest NETWORK_ID='#{network_id} DISH_ID='#{id}' &"
+      end
       
     end
     dish
-    
-  end
-  
-  def match_tags
-    # Tag.all.each do |t|
-    # 
-    #   tags_array = []      
-    #   tags_array.push("\\b#{t.name_a}\\b") unless t.name_a.blank? 
-    #   tags_array.push("\\b#{t.name_b}\\b") unless t.name_b.blank? 
-    #   tags_array.push("\\b#{t.name_c}\\b") unless t.name_c.blank? 
-    #   tags_array.push("\\b#{t.name_d}\\b") unless t.name_d.blank? 
-    #   tags_array.push("\\b#{t.name_e}\\b") unless t.name_e.blank? 
-    #   tags_array.push("\\b#{t.name_f}\\b") unless t.name_f.blank? 
-    #   tags = tags_array.join('|')
-    #   
-    #   if !name.scan(/#{tags}/i).blank? || (dish_category && !dish_category.name.scan(/#{tags}/i).blank?) || (dish_type && !dish_type.name.scan(/#{tags}/i).blank?) || (dish_subtype && !dish_subtype.name.scan(/#{tags}/i).blank?)
-    #     DishTag.create({:tag_id => t.id, :dish_id => id})
-    #   end  
-    # end
-    
-    system "rake tags:match_dishes NETWORK_ID='#{network_id} DISH_ID='#{id}' &"
-    system "rake tags:match_rest NETWORK_ID='#{network_id} DISH_ID='#{id}' &"
     
   end
   
