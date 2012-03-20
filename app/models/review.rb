@@ -164,7 +164,7 @@ class Review < ActiveRecord::Base
         network = Network.find_by_id(restaurant.network_id)
       end
   
-      if fb = where('user_id = ? && dish_id = ? && DATE(created_at) > CURDATE() - INTERVAL 1 DAY', user_review[:user_id], user_review[:dish_id]).first
+      if fb = Review.where('user_id = ? && dish_id = ? && DATE(created_at) > CURDATE() - INTERVAL 1 DAY', user_review[:user_id], user_review[:dish_id]).first
 
         dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - fb.rating) / (dish.votes - 1)
         dish.rating = (dish.rating * (dish.votes - 1) + rating) / dish.votes
