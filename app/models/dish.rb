@@ -58,8 +58,8 @@ class Dish < ActiveRecord::Base
   def self.create(data)
     unless dish = find_by_name_and_network_id(data[:name], data[:network_id])
       
-      if type = DishType.find_by_id(data[:dish_type_id])
-        data[:dish_category_id] = DishCategory.get_id(type.name)
+      if dishtype = DishType.find_by_id(data[:dish_type_id])
+        data[:dish_category_id] = DishCategory.get_id(dishtype.name)
       end
       
       if dish = create(data)    
