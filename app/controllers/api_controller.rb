@@ -1056,7 +1056,7 @@ class ApiController < ApplicationController
                   params[:dish][:network_id] = r.network_id
                   params[:dish][:created_by_user] = params[:review][:user_id]
 
-                  unless dish = Dish.create(params[:dish], r.network_id)
+                  unless dish = Dish.create(params[:dish])
                     return render :json => {:error => {:description => 'Dish create error', :code => 6}}
                   end
             
