@@ -1072,10 +1072,6 @@ class ApiController < ApplicationController
        
       unless r.blank?
         
-        return render :json => {
-          :error => r
-        }
-        
         if r.rtype == 'home_cooked'
           dish_name = r.home_cook.name
           restaurant_name = nil
