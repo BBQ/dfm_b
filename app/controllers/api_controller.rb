@@ -883,8 +883,8 @@ class ApiController < ApplicationController
             :votes => d.votes, 
             :photo => d.photo, 
             :network => {
-              :id => d.network.id,
-              :name => d.network.name
+              :id => d.network_id,
+              # :name => d.network.name
           }
         })
         end
