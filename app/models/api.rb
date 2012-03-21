@@ -5,10 +5,12 @@ class API < ActiveRecord::Base
     # Coming soon
   end
   
-  def self.get_dish(user_id, dish_id, home_cooked)
+  def self.get_dish(user_id, dish_id, type)
     
-    if home_cooked == '1'
+    if type == 'home_cooked'
       dish = HomeCook.select([:id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
+    elsif type == 'delivery'
+      dish = DishDelivery.select([:id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)      
     else
       dish = Dish.select([:id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
     end
@@ -56,7 +58,7 @@ class API < ActiveRecord::Base
       dish.reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}  
           
      
-      if home_cooked.to_i != 1
+      if type != 'home_cooked' && type != 'delivery'
         restaurants = []
         dish.network.restaurants.each do |restaurant|
           restaurants.push({
@@ -66,7 +68,22 @@ class API < ActiveRecord::Base
             :working_hours => restaurant.time,
             :lat => restaurant.lat,
             :lon => restaurant.lon,
-            :description => restaurant.description.to_s
+            :description => restaurant.description.to_s,
+            :type => nil
+          })
+        end
+      elsif type == 'delivery'
+        restaurants = []
+        dish_delivery.delivery.each do |restaurant|
+          restaurants.push({
+            :id => restaurant.id,
+            :address => restaurant.address,
+            :phone => restaurant.phone.to_s,
+            :working_hours => restaurant.time,
+            :lat => restaurant.lat,
+            :lon => restaurant.lon,
+            :description => restaurant.description.to_s,
+            :type => 'delivery'
           })
         end
       end
@@ -79,10 +96,10 @@ class API < ActiveRecord::Base
         :votes => dish.votes,
         :type_name => dish.dish_type ? dish.dish_type.name : '',
         :subtype_name => dish.dish_subtype ? dish.dish_subtype.name : '',
-        :restaurant_name => home_cooked.to_i == 1 ? '' : dish.network.name, 
-        :restaurant_id => home_cooked.to_i == 1 ? 0 : dish.network.restaurants.first.id, 
+        :restaurant_name => type == 'home_cooked' ? '' : dish.network.name, 
+        :restaurant_id => type == 'home_cooked' ? 0 : dish.network.restaurants.first.id, 
         :description => dish.description.to_s,
-        :price => home_cooked.to_i == 1 ? 0 : dish.price,
+        :price => type == 'home_cooked' ? 0 : dish.price,
         :reviews => review_data,
         :top_expert => top_expert ||= nil,
         :restaurants => restaurants,
