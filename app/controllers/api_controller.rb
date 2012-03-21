@@ -981,10 +981,17 @@ class ApiController < ApplicationController
   def get_restaurant_menu
     if params[:restaurant_id]
       
-      if restaurant = Restaurant.find_by_id(params[:restaurant_id])
+      if params[:type] = 'delivery'
+        if restaurant = Delivery.find_by_id(params[:restaurant_id])
+          dishes = DishDelivery.where('delivery_id = ?', restaurant.id)
+        end
+      else
+        if restaurant = Restaurant.find_by_id(params[:restaurant_id])
+          dishes = Dish.where('network_id = ?', restaurant.network_id)
+        end
+      end
       
-        network_id = restaurant.network.id
-        dishes = Dish.where('network_id = ?', network_id)
+      if dishes.count > 0
       
         categories = []
         types = []
