@@ -7,11 +7,11 @@ class Delivery < ActiveRecord::Base
   def find_image
     unless photo
       
-      if dish = DishDelivery.select([:id, :photo]).where("photo IS NOT NULL AND delivery_id = ?", delivery_id).order('rating DESC, votes DESC')
-        photo = dish.first.photo
+      if dish = DishDelivery.select([:id, :photo]).where("photo IS NOT NULL AND delivery_id = ?", delivery_id).order('rating DESC, votes DESC').first
+        photo = dish.photo
       
-      elsif review = Review.select([:id, :photo]).where("restaurant_id = ? AND rtype = 'delivery'", delivery_id).order('count_likes DESC')
-        photo = review.first.photo
+      elsif review = Review.select([:id, :photo]).where("restaurant_id = ? AND rtype = 'delivery'", delivery_id).order('count_likes DESC').first
+        photo = review.photo
       
       end
     end
