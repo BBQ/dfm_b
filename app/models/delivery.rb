@@ -71,8 +71,8 @@ class Delivery < ActiveRecord::Base
              end
            end
 
-           system "rake tags:match_dishes NETWORK_ID='#{r.delivery_id}' TYPE='delivery' &"
-           system "rake tags:match_rest NETWORK_ID='#{r.delivery_id} TYPE='delivery' &"
+           system "rake tags:match_dishes NETWORK_ID='#{r.id}' TYPE='delivery' &"
+           system "rake tags:match_rest NETWORK_ID='#{r.id} TYPE='delivery' &"
 
          end
        end
