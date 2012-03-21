@@ -16,6 +16,10 @@ class DishDelivery < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
+  def self.search_by_tag_id(id)
+    where("dish_deliveries.id IN (SELECT dish_id FROM dish_tags WHERE tag_id = ?)", id)
+  end
+  
   def self.create(data)
     unless dish = find_by_name_and_network_id(data[:name], data[:network_id])
 
