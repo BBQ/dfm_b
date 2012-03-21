@@ -852,7 +852,7 @@ class ApiController < ApplicationController
         likes_a.each do |l|
           likes[:data].push({
             :id => l.id,
-            :photo => l.image_sd
+            :photo => l.photo.iphone.url
           })
         end
         likes[:count] = count
@@ -865,7 +865,7 @@ class ApiController < ApplicationController
         reviews_a.each do |r|
           reviews[:data].push({
             :id => r.id,
-            :photo => r.image_sd
+            :photo => r.photo.iphone.url
           })
         end
         reviews[:count] = count
