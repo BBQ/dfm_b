@@ -839,6 +839,122 @@ class ApiController < ApplicationController
     }
   end
   
+  def get_user_stats
+    if user = User.find_by_id(params[:user_id])
+      
+      following_count = Follower.select(:id).where(:user_id => user.id).count(:id) rescue 0 
+      followers_count = Follower.select(:id).where(:follow_user_id => user.id).count(:id) rescue 0
+            
+      if likes_a = Review.select([:id, :photo]).where('id IN (SELECT review_id FROM likes WHERE user_id = ?)', user.id)
+        count = likes_a.count
+        likes = {}
+        
+        likes_a.each do |l|
+          likes[:data].push({
+            :id => l.id,
+            :photo => l.image_sd
+          })
+        end
+        likes[:count] = count
+      end
+      
+      if reviews_a = Review.select([:id, :photo]).where('user_id = ?', user.id)
+        count = reviews_a.count
+        reviews = {}
+        
+        reviews_a.each do |r|
+          reviews[:data].push({
+            :id => r.id,
+            :photo => r.image_sd
+          })
+        end
+        reviews[:count] = count
+      end
+      
+      top_in_restaurants = {}
+      count = 0
+      if restaurants = Restaurant.select([:id, :photo]).where(:top_user_id => user.id)
+        count += restaurants.count
+        
+        restaurants.each do |d|
+          top_in_restaurants[:data].push({
+            :id => d.id,
+            :photo => d.image_sd,
+            :type => nil
+          })
+        end
+        reviews[:count] = count
+      end
+      
+      if restaurants = Delivery.select([:id, :photo]).where(:top_user_id => user.id)
+        count += restaurants.count
+        
+        restaurants.each do |d|
+          top_in_restaurants[:data].push({
+            :id => d.id,
+            :photo => d.image_sd,
+            :type => 'delivery'
+          })
+        end
+        reviews[:count] = count
+      end
+      
+      top_in_dishes = {}
+      count = 0
+      if dishes = Dishes.select([:id, :photo]).where(:top_user_id => user.id)
+        count += dishes.count
+        
+        dishes.each do |d|
+          top_in_dishes[:data].push({
+            :id => d.id,
+            :photo => d.image_sd,
+            :type => nil
+          })
+        end
+        reviews[:count] = count
+      end
+      
+      if dishes = DishDelivery.select([:id, :photo]).where(:top_user_id => user.id)
+        count += dishes.count
+        
+        dishes.each do |d|
+          top_in_dishes[:data].push({
+            :id => d.id,
+            :photo => d.image_sd,
+            :type => 'delivery'
+          })
+        end
+        reviews[:count] = count
+      end
+      
+      if dishes = HomeCook.select([:id, :photo]).where(:top_user_id => user.id)
+        count += dishes.count
+        
+        dishes.each do |d|
+          top_in_dishes[:data].push({
+            :id => d.id,
+            :photo => d.image_sd,
+            :type => 'home_cooked'
+          })
+        end
+        reviews[:count] = count
+      end
+      
+    else
+      $error = {:description => 'Parameters missing', :code => 941}
+    end
+    return render :json => {
+          :likes => likes,
+          :dish_in => dish_in,
+          :top_in_dishes => top_in_dishes,
+          :top_in_restaurants => top_in_restaurants,
+          :following_count => following_count,
+          :followers_count => followers_count,
+          :error => $error
+    }
+      
+  end
+  
   def get_user_profile
     if params[:id]
       
@@ -867,32 +983,6 @@ class ApiController < ApplicationController
               :reviews => review_data, 
               :following_count => following_count,
               :followers_count => followers_count,              
-              :error => $error
-        }
-      end
-      
-      if params[:type] == 'expert'          
-        restaurants = Restaurant.select([:id, :name, :photo, :address, :city, :rating, :votes, :lat, :lon, :network_id, :fsq_id]).where(:top_user_id => params[:id])
-
-        dishes = []
-        Dish.select([:id, :name, :rating, :votes, :photo, :network_id]).where(:top_user_id => params[:id]).each do |d|
-          dishes.push({
-            :id => d.id, 
-            :name => d.name, 
-            :rating => d.rating, 
-            :votes => d.votes, 
-            :image_hd => d.image_hd,
-            :image_sd => d.image_sd, 
-            :network => {
-              :id => d.network_id,
-              :name => d.network.name
-          }
-        })
-        end
-       
-        return render :json => {
-              :restaurants => restaurants ||= [],
-              :dishes => dishes ||= [], 
               :error => $error
         }
       end
