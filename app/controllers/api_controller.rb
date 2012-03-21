@@ -747,9 +747,9 @@ class ApiController < ApplicationController
         dishes = []
       
         if params[:tag_id].to_i > 0
-          dishes_w_img = r.dish_delivery.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images).search_by_tag_id(params[:tag_id])
+          dishes_w_img = r.dish_deliveries.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images).search_by_tag_id(params[:tag_id])
         else
-          dishes_w_img = r.dish_delivery.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
+          dishes_w_img = r.dish_deliveries.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
         end
       
         dishes_w_img.each do |dish|
