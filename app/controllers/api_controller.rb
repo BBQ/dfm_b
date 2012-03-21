@@ -1186,6 +1186,15 @@ class ApiController < ApplicationController
               unless d = Delivery.find_by_id(params[:review][:restaurant_id])
                 return render :json => {:error => {:description => 'Delivery not found', :code => 1}}
               end
+              
+              if r = Delivery.find_by_id(params[:review][:restaurant_id])
+                params[:review][:delivery_id] = r.network_id
+              elsif r = Delivery.add_from_4sq_with_menu(params[:foursquare_venue_id])        
+                params[:review][:restaurant_id] = r.id
+                params[:review][:network_id] = r.network_id
+              else
+                return render :json => {:error => {:description => 'Restaurant not found', :code => 1}}
+              end
         
               unless dish = DishDelivery.find_by_id(params[:review][:dish_id])
                 if params[:dish] && params[:dish][:name]
