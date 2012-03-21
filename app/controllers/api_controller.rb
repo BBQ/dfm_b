@@ -1103,7 +1103,7 @@ class ApiController < ApplicationController
           dish_name = r.home_cook.name
           restaurant_name = nil
         elsif r.rtype == 'delivery'
-          dish_name = r.delivery_dish.name
+          dish_name = r.dish_delivery.name
           restaurant_name = r.delivery.name 
         else
           dish_name = r.dish.name
