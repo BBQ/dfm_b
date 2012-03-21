@@ -40,7 +40,7 @@ namespace :facebook do
           caption = "#{dish_text} #{place} http://dish.fm/reviews/#{r.id}"
           albuminfo = graph.put_object('me','albums', :name => 'Dish.fm Photos') if albuminfo["id"].blank?
 
-          picture = graph.put_picture("http://dev.dish.fm/#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
+          picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
 
           tags = []
           if r.friends
