@@ -30,40 +30,36 @@ class API < ActiveRecord::Base
       end
     
       review_data = []
-      user = User.select([:id, :name, :photo, :facebook_id]).find_by_id(1)
-      unless dish.photo.blank?
-        
-        restaurant = case type
-          when 'home_cooked' then nil
-          when 'delivery' then dish.delivery
-          else dish.network.restaurants.first
+      
+      if type != 'home_cooked'
+        user = User.select([:id, :name, :photo, :facebook_id]).find_by_id(1)
+        unless dish.photo.blank?
+          data = {
+            :review_id => dish.id,
+            :created_at => dish.created_at.to_time.to_i,
+            :text => 'фото предоставлено рестораном',
+            :dish_id => dish.id,
+            :dish_name => dish.name,
+            :dish_votes => dish.votes,
+            :restaurant_id => dish.network.restaurants.first.id,    
+            :restaurant_name => dish.network.name,
+            :user_id => user.id,
+            :user_name => user.name,
+            :user_photo => user.user_photo,
+            :likes => dish.count_likes ||= 0,
+            :comments => dish.count_comments ||= 0,
+            :review_rating => dish.rating ||= 0,
+            :dish_rating => dish.rating ||= 0,
+            :image_sd => dish.photo.iphone.url,
+            :image_hd => dish.photo.iphone_retina.url,
+            :liked => user_id && DishLike.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0,
+            :self_review => 1
+          }
+          review_data.push(data)
         end
-        
-        data = {
-          :review_id => dish.id,
-          :created_at => dish.created_at.to_time.to_i,
-          :text => 'фото предоставлено рестораном',
-          :dish_id => dish.id,
-          :dish_name => dish.name,
-          :dish_votes => dish.votes,
-          :restaurant_id => restaurant.id,    
-          :restaurant_name => restaurant.name,
-          :user_id => user.id,
-          :user_name => user.name,
-          :user_photo => user.user_photo,
-          :likes => dish.count_likes ||= 0,
-          :comments => dish.count_comments ||= 0,
-          :review_rating => dish.rating ||= 0,
-          :dish_rating => dish.rating ||= 0,
-          :image_sd => dish.photo.iphone.url,
-          :image_hd => dish.photo.iphone_retina.url,
-          :liked => user_id && DishLike.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0,
-          :self_review => 1
-        }
-        review_data.push(data)
       end
+      
       dish.reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}  
-          
      
       if type != 'home_cooked' && type != 'delivery'
         restaurants = []
@@ -94,6 +90,12 @@ class API < ActiveRecord::Base
           })
         end
       end
+      
+      if type = 'delivery'
+        restaurant = dish.delivery
+      else
+        restaurant = dish.network.restaurants.first
+      end
     
       data = {
         :name => dish.name,
@@ -103,8 +105,8 @@ class API < ActiveRecord::Base
         :votes => dish.votes,
         :type_name => dish.dish_type ? dish.dish_type.name : '',
         :subtype_name => dish.dish_subtype ? dish.dish_subtype.name : '',
-        :restaurant_name => type == 'home_cooked' ? '' : dish.network.name, 
-        :restaurant_id => type == 'home_cooked' ? 0 : dish.network.restaurants.first.id, 
+        :restaurant_name => type == 'home_cooked' ? '' : restaurant.name, 
+        :restaurant_id => type == 'home_cooked' ? 0 : restaurant.id, 
         :description => dish.description.to_s,
         :price => type == 'home_cooked' ? 0 : dish.price,
         :reviews => review_data,
