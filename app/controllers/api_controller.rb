@@ -739,8 +739,9 @@ class ApiController < ApplicationController
     restaurants = restaurants.select([:network_id, :fsq_id]) if params[:type] != 'delivery'
     restaurants = restaurants.select([:id, :name, :address, :city, :lat, :lon, :rating, :votes]).limit("#{offset}, #{limit}")    
     
-
+    networks = []
     num_images = 20    
+    
     if params[:type] == 'delivery'
       
       restaurants.each do |r|
@@ -767,7 +768,6 @@ class ApiController < ApplicationController
       
     else  
       
-      networks = []
       restaurants.each do |r|
         dont_add = 0
         networks.each do |n|
