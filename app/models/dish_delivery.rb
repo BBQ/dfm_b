@@ -1,6 +1,6 @@
 class DishDelivery < ActiveRecord::Base
   
-  belongs_to :dish_category, :foreign_key => :dish_id
+  belongs_to :dish_category, :foreign_key => :id
   belongs_to :dish_type, :foreign_key => :dish_id
   belongs_to :dish_subtype, :foreign_key => :dish_id
   belongs_to :dish_extratype, :foreign_key => :dish_id  
