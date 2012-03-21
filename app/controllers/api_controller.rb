@@ -871,14 +871,27 @@ class ApiController < ApplicationController
         }
       end
       
-      if params[:type] == 'expert'   
-       
-       r = Restaurant.select([:id, :name, :photo, :address, :city, :rating, :votes, :lat, :lon, :network_id, :fsq_id]).where(:top_user_id => params[:id])
-       d = Dish.select([:id, :name, :rating, :votes, :image_sd]).where(:top_user_id => params[:id])
+      if params[:type] == 'expert'          
+       restaurants = Restaurant.select([:id, :name, :photo, :address, :city, :rating, :votes, :lat, :lon, :network_id, :fsq_id]).where(:top_user_id => params[:id])
+
+        dishes = []
+        Dish.select([:id, :name, :rating, :votes, :photo, :network_id]).where(:top_user_id => params[:id]).each |d|
+        dishes.push({
+          :id => d.id, 
+          :name => d.name, 
+          :rating => d.rating, 
+          :votes => d.votes, 
+          :photo => d.photo, 
+          :network => {
+            :id => d.network.id,
+            :name => d.network.name
+          }
+        })
+       end
        
         return render :json => {
-              :restaurants => r ||= [],
-              :dishes => d ||= [], 
+              :restaurants => restaurants ||= [],
+              :dishes => dishes ||= [], 
               :error => $error
         }
       end
