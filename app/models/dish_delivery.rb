@@ -16,22 +16,38 @@ class DishDelivery < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
-  def self.create(data, delivery_id)
-    unless dish = find_by_name_and_delivery_id(data[:name], delivery_id)
-      
-      if type = DishType.find_by_id(data[:dish_type_id])
-        data[:dish_category_id] = DishCategory.get_id(type.name)
+  def self.create(data)
+    unless dish = find_by_name_and_network_id(data[:name], data[:network_id])
+
+      if dtype = DishType.select(:name).find_by_id(data[:dish_type_id])
+        data[:dish_category_id] = DishCategory.get_id(dtype.name)
       end
-      dish.match_tags if dish = super(data)   
+      dish.match_tags if dish = super(data)    
       
     end
+    dish
+    
   end
   
   def match_tags
+    Tag.all.each do |t|
     
-    system "rake tags:match_dishes NETWORK_ID='#{network_id} DISH_ID='#{id}' TYPE='delivery' &"
+      tags_array = []      
+      tags_array.push("\\b#{t.name_a}\\b") unless t.name_a.blank? 
+      tags_array.push("\\b#{t.name_b}\\b") unless t.name_b.blank? 
+      tags_array.push("\\b#{t.name_c}\\b") unless t.name_c.blank? 
+      tags_array.push("\\b#{t.name_d}\\b") unless t.name_d.blank? 
+      tags_array.push("\\b#{t.name_e}\\b") unless t.name_e.blank? 
+      tags_array.push("\\b#{t.name_f}\\b") unless t.name_f.blank? 
+      tags = tags_array.join('|')
+      
+      if !name.scan(/#{tags}/i).blank? || (dish_category && !dish_category.name.scan(/#{tags}/i).blank?) || (dish_type && !dish_type.name.scan(/#{tags}/i).blank?) || (dish_subtype && !dish_subtype.name.scan(/#{tags}/i).blank?)
+        DishTag.create({:tag_id => t.id, :dish_id => id})
+      end  
+    end
+    
     system "rake tags:match_rest NETWORK_ID='#{network_id} DISH_ID='#{id}' TYPE='delivery' &"
-
+    
   end
   
   def find_image
