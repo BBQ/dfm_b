@@ -762,7 +762,7 @@ class ApiController < ApplicationController
             })
         end
           
-        networks.push({:network_id => r.network_id, :dishes => dishes})
+        networks.push({:network_id => r.id, :dishes => dishes})
       end
       
     else  
