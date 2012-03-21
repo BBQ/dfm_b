@@ -32,6 +32,13 @@ class API < ActiveRecord::Base
       review_data = []
       user = User.select([:id, :name, :photo, :facebook_id]).find_by_id(1)
       unless dish.photo.blank?
+        
+        restaurant = case type
+          when 'home_cooked' then nil
+          when 'delivery' then dish.delivery
+          else dish.network.restaurants.first
+        end
+        
         data = {
           :review_id => dish.id,
           :created_at => dish.created_at.to_time.to_i,
@@ -39,8 +46,8 @@ class API < ActiveRecord::Base
           :dish_id => dish.id,
           :dish_name => dish.name,
           :dish_votes => dish.votes,
-          :restaurant_id => dish.network.restaurants.first.id,    
-          :restaurant_name => dish.network.name,
+          :restaurant_id => restaurant.id,    
+          :restaurant_name => restaurant.name,
           :user_id => user.id,
           :user_name => user.name,
           :user_photo => user.user_photo,
