@@ -50,7 +50,7 @@ class DishDelivery < ActiveRecord::Base
       end  
     end
     
-    system "rake tags:match_rest NETWORK_ID='#{network_id} DISH_ID='#{id}' TYPE='delivery' &"
+    system "rake tags:match_rest NETWORK_ID='#{delivery_id} DISH_ID='#{id}' TYPE='delivery' &"
     
   end
   
