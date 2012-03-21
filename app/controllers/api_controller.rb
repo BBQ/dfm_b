@@ -704,7 +704,7 @@ class ApiController < ApplicationController
     
     
     if params[:type] == 'delivery'
-      restaurants = Delivery.select('deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes, deliveries.network_id, deliveries.fsq_id').order("rating DESC, votes DESC")
+      restaurants = Delivery.select('deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').order("rating DESC, votes DESC")
     else
       if params[:sort] == 'distance'
         if radius
