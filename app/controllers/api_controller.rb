@@ -881,7 +881,8 @@ class ApiController < ApplicationController
             :name => d.name, 
             :rating => d.rating, 
             :votes => d.votes, 
-            :photo => d.photo, 
+            :image_hd => d.image_hd,
+            :image_sd => d.image_sd, 
             :network => {
               :id => d.network_id,
               :name => d.network.name
