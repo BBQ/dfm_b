@@ -981,7 +981,7 @@ class ApiController < ApplicationController
   def get_restaurant_menu
     if params[:restaurant_id]
       
-      if params[:type] = 'delivery'
+      if params[:type] == 'delivery'
         if restaurant = Delivery.find_by_id(params[:restaurant_id])
           dishes = DishDelivery.where('delivery_id = ?', restaurant.id)
         else
@@ -1013,10 +1013,17 @@ class ApiController < ApplicationController
         dishes.group(:dish_type_id).each do |dish|
           types.push({:id => dish.dish_type.id, :name => dish.dish_type.name_eng, :order => dish.dish_type.order}) if dish.dish_type
         end
-        types.sort_by!{|k| k[:order] }
+
+        types.sort_by!{|k| k[:order] }        
+        dishes = dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes], :methods => [:image_sd, :image_hd, :price])
+        
+        if params[:type] == 'delivery'  
+          mappings = {"dish_delivery" => "dish"}
+          Hash[dishes.map {|k, v| [mappings[k], v] }]
+        end
       
         return render :json => {
-          :dishes => dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes], :methods => [:image_sd, :image_hd, :price]), 
+          :dishes => dishes, 
           :categories => categories.as_json(),
           :types => types.as_json,
           :error => $error
