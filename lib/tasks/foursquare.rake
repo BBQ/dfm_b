@@ -85,10 +85,20 @@ namespace :fsq do
     i = 0
     Restaurant.order(:id).each do |r|
       i+= 1
-      if r.fsq_id.blank?
+      category_id = []
+      if r.fsq_id.blank? && r.created_at.to_i > Time.parse('2012-02-07 16:30:23').to_i
+        
         fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lon}", :query => r.name) if r.lat && r.lon && r.name
-    
         if fsq_hash && fsq_hash.groups[0].items.count > 0
+
+          fsq_hash.categories.each do |v|
+            if category = RestaurantCategory.find_by_name(v.name)
+              category_id.push(category.id)
+            else
+              category_id.push(RestaurantCategory.create(:name => v.name).id)
+            end
+          end
+
           r.fsq_name = fsq_hash.groups[0].items.first.name
           r.fsq_address = fsq_hash.groups[0].items.first.location.address
           r.fsq_lat = fsq_hash.groups[0].items.first.location.lat
@@ -97,11 +107,21 @@ namespace :fsq do
           r.fsq_users_count = fsq_hash.groups[0].items.first.stats.usersCount
           r.fsq_tip_count = fsq_hash.groups[0].items.first.stats.tipCount
           r.fsq_id = fsq_hash.groups[0].items.first.id
+          r.restaurant_categories = category_id.join(','),
           r.save
           p "#{i} #{r.fsq_id} #{r.name} #{r.address}"
         else
           fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lon}", :query => r.name_eng) if r.lat && r.lon && r.name_eng
           if fsq_hash && fsq_hash.groups[0].items.count > 0
+            
+            fsq_hash.categories.each do |v|
+              if category = RestaurantCategory.find_by_name(v.name)
+                category_id.push(category.id)
+              else
+                category_id.push(RestaurantCategory.create(:name => v.name).id)
+              end
+            end
+            
             r.fsq_name = fsq_hash.groups[0].items.first.name
             r.fsq_address = fsq_hash.groups[0].items.first.location.address
             r.fsq_lat = fsq_hash.groups[0].items.first.location.lat
@@ -110,6 +130,7 @@ namespace :fsq do
             r.fsq_users_count = fsq_hash.groups[0].items.first.stats.usersCount
             r.fsq_tip_count = fsq_hash.groups[0].items.first.stats.tipCount
             r.fsq_id = fsq_hash.groups[0].items.first.id
+            r.restaurant_categories = category_id.join(','),
             r.save
             p "#{i} #{r.fsq_id} #{r.name} #{r.address}"
           else
@@ -119,6 +140,14 @@ namespace :fsq do
       else
         venue = client.venue(r.fsq_id)
         
+        venue.categories.each do |v|
+          if category = RestaurantCategory.find_by_name(v.name)
+            category_id.push(category.id)
+          else
+            category_id.push(RestaurantCategory.create(:name => v.name).id)
+          end
+        end
+        
         r.fsq_name = venue.name
         r.fsq_address = venue.location.address
         r.fsq_lat = venue.location.lat
@@ -126,6 +155,7 @@ namespace :fsq do
         r.fsq_checkins_count = venue.stats.checkinsCount
         r.fsq_users_count = venue.stats.usersCount
         r.fsq_tip_count = venue.stats.tipCount
+        r.restaurant_categories = category_id.join(','),
         
         r.save
         p "Update: #{i} #{r.fsq_id} #{r.name} #{r.address}"
