@@ -1015,11 +1015,27 @@ class ApiController < ApplicationController
         end
 
         types.sort_by!{|k| k[:order] }        
-        dishes = dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes], :methods => [:image_sd, :image_hd, :price])
         
         if params[:type] == 'delivery'  
-          mappings = {"dish_delivery" => "dish"}
-          dishes = Hash[dishes.map {|k, v| [mappings[k], v] }]
+          dish_delivery = []
+          dishes.each do |d|
+            dish_delivery.push {
+              :dish => { 
+                :id => d.id, 
+                :name => d.name, 
+                :dish_category_id => d.dish_category_id, 
+                :dish_type_id => d.dish_type_id, 
+                :description => d.description, 
+                :rating => d.rating, 
+                :votes => d.votes,
+                :image_sd => d.image_sd, 
+                :image_hd => d.image_hd, 
+                :price => d.price
+            }}
+          end
+          dishes = dish_delivery.as_json
+        else
+          dishes = dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes], :methods => [:image_sd, :image_hd, :price])          
         end
       
         return render :json => {
