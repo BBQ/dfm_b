@@ -879,7 +879,7 @@ class ApiController < ApplicationController
         restaurants.each do |d|
           top_in_restaurants[:data].push({
             :id => d.id,
-            :photo => d.image_sd,
+            :photo => d.thumb,
             :type => nil
           })
         end
@@ -892,7 +892,7 @@ class ApiController < ApplicationController
         restaurants.each do |d|
           top_in_restaurants[:data].push({
             :id => d.id,
-            :photo => d.image_sd,
+            :photo => d.thumb,
             :type => 'delivery'
           })
         end

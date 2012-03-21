@@ -191,17 +191,18 @@ class Restaurant < ActiveRecord::Base
   end
   
   def find_image
-    if restaurant_image = RestaurantImage.select(:photo).find_by_restaurant_id(:id)
-      restaurant_image.photo
-    else 
-      dish = Dish.select([:id, :photo]).where("photo IS NOT NULL AND network_id = ?", network_id).order('rating DESC, votes DESC')
-      unless dish.blank?
-        dish.first.photo 
-      else
-        review = Review.select([:id, :photo]).where("network_id = ?", network_id).order('count_likes DESC')
-        review.first.photo unless review.blank?
-      end
+    
+    if restaurant_image = RestaurantImage.select([:id, :photo]).find_by_restaurant_id(:id)
+      photo = restaurant_image.photo
+            
+    elsif dish = Dish.select([:id, :photo]).where("photo IS NOT NULL AND network_id = ?", network_id).order('rating DESC, votes DESC')
+      photo = dish.first.photo
+    
+    elsif review = Review.select([:id, :photo]).where("network_id = ?", delivery_id).order('count_likes DESC')
+      photo = review.first.photo
+    
     end
+    photo
   end
   
   def thumb
