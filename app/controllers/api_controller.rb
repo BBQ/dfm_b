@@ -847,7 +847,7 @@ class ApiController < ApplicationController
             
       if likes_a = Review.select([:id, :photo]).where('id IN (SELECT review_id FROM likes WHERE user_id = ?)', user.id)
         count = likes_a.count
-        likes = {}
+        likes = {:data => [], :count => 0}
         
         likes_a.each do |l|
           likes[:data].push({
@@ -860,7 +860,7 @@ class ApiController < ApplicationController
       
       if reviews_a = Review.select([:id, :photo]).where('user_id = ?', user.id)
         count = reviews_a.count
-        reviews = {}
+        reviews = {:data => [], :count => 0}
         
         reviews_a.each do |r|
           reviews[:data].push({
@@ -871,7 +871,7 @@ class ApiController < ApplicationController
         reviews[:count] = count
       end
       
-      top_in_restaurants = {}
+      top_in_restaurants = {:data => [], :count => 0}
       count = 0
       if restaurants = Restaurant.select([:id, :photo]).where(:top_user_id => user.id)
         count += restaurants.count
@@ -899,7 +899,7 @@ class ApiController < ApplicationController
         reviews[:count] = count
       end
       
-      top_in_dishes = {}
+      top_in_dishes = {:data => [], :count => 0}
       count = 0
       if dishes = Dishes.select([:id, :photo]).where(:top_user_id => user.id)
         count += dishes.count
