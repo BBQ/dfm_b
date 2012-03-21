@@ -4,7 +4,7 @@ class Review < ActiveRecord::Base
   belongs_to :dish_delivery, :foreign_key => :dish_id
   belongs_to :restaurant
   belongs_to :network
-  belongs_to :delivery  
+  belongs_to :delivery, :foreign_key => :restaurant_id 
   belongs_to :user
   
   has_many :comments, :dependent => :destroy
