@@ -901,7 +901,7 @@ class ApiController < ApplicationController
       
       top_in_dishes = {:data => [], :count => 0}
       count = 0
-      if dishes = Dishes.select([:id, :photo]).where(:top_user_id => user.id)
+      if dishes = Dish.select([:id, :photo]).where(:top_user_id => user.id)
         count += dishes.count
         
         dishes.each do |d|
