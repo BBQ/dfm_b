@@ -1052,9 +1052,10 @@ class ApiController < ApplicationController
               end
         
               unless dish = DishDelivery.find_by_id(params[:review][:dish_id])
-                if params[:dish] && params[:dish][:name]  
+                if params[:dish] && params[:dish][:name]
+                  params[:dish][:delivery_id] = d.id  
 
-                  unless dish = DishDelivery.create(params[:dish], d.id)
+                  unless dish = DishDelivery.create(params[:dish])
                     return render :json => {:error => {:description => 'Dish create error', :code => 6}}
                   end
 
