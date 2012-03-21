@@ -766,7 +766,7 @@ class ApiController < ApplicationController
         networks.push({:network_id => r.id, :dishes => dishes})
       end
       
-      mappings = {'delivery' => 'restaurants'}
+      mappings = {:delivery => :restaurants}
       Hash[restaurants.map {|k, v| [mappings[k], v] }]
     else  
       
