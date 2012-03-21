@@ -195,8 +195,8 @@ class Restaurant < ActiveRecord::Base
     if restaurant_image = RestaurantImage.select([:id, :photo]).find_by_restaurant_id(:id)
       photo = restaurant_image.photo
             
-    elsif dish = Dish.select([:id, :photo]).where("photo IS NOT NULL AND network_id = ?", network_id).order('rating DESC, votes DESC')
-      photo = dish.first.photo
+    elsif dish = Dish.select([:id, :photo]).where("photo IS NOT NULL AND network_id = ?", network_id).order('rating DESC, votes DESC').first
+      photo = dish.photo
     
     elsif review = Review.select([:id, :photo]).where("network_id = ?", delivery_id).order('count_likes DESC')
       photo = review.first.photo
