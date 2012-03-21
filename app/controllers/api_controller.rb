@@ -704,7 +704,7 @@ class ApiController < ApplicationController
     
     
     if params[:type] == 'delivery'
-      restaurants = Delivery
+      restaurants = Delivery.order("rating DESC, votes DESC")
     else
       if params[:sort] == 'distance'
         if radius
