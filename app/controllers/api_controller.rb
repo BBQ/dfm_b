@@ -1019,7 +1019,7 @@ class ApiController < ApplicationController
         
         if params[:type] == 'delivery'  
           mappings = {"dish_delivery" => "dish"}
-          Hash[dishes.map {|k, v| [mappings[k], v] }]
+          dishes = Hash[dishes.map {|k, v| [mappings[k], v] }]
         end
       
         return render :json => {
