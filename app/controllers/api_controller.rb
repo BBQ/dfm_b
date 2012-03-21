@@ -874,7 +874,7 @@ class ApiController < ApplicationController
       if params[:type] == 'expert'   
        
        r = Restaurant.select([:id, :name, :photo, :address, :city, :rating, :votes, :lat, :lon, :network_id, :fsq_id]).where(:top_user_id => params[:id])
-       d = Dish.select([:id, :name, :photo]).where(:top_user_id => params[:id])
+       d = Dish.select([:id, :name, :rating, :votes, :image_sd]).where(:top_user_id => params[:id])
        
         return render :json => {
               :restaurants => r ||= [],
