@@ -873,7 +873,7 @@ class ApiController < ApplicationController
       
       if params[:type] == 'expert'   
        
-       r = Restaurant.select([:id, :name, :address, :photo]).where(:top_user_id => params[:id])
+       r = Restaurant.select([:id, :name, :address, :photo, :city]).where(:top_user_id => params[:id])
        d = Dish.select([:id, :name, :photo]).where(:top_user_id => params[:id])
        
         return render :json => {
