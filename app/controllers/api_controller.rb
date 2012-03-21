@@ -736,9 +736,11 @@ class ApiController < ApplicationController
     restaurants = restaurants.where(all_filters) unless all_filters.blank?
     restaurants = restaurants.where("network_id IN (#{params[:network_id]})") unless params[:network_id].blank?
     
-    restaurants = restaurants.select('id, name, address, city, lat, lon, network_id, rating, votes, fsq_id').limit("#{offset}, #{limit}")    
-    num_images = 20
+    restaurants = restaurants.select([:network_id, :fsq_id]) if params[:type] != 'delivery'
+    restaurants = restaurants.select([:id, :name, :address, :city, :lat, :lon, :rating, :votes]).limit("#{offset}, #{limit}")    
     
+
+    num_images = 20    
     if params[:type] == 'delivery'
       
       restaurants.each do |r|
