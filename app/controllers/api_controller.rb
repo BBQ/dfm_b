@@ -884,7 +884,7 @@ class ApiController < ApplicationController
             :photo => d.photo, 
             :network => {
               :id => d.network_id,
-              # :name => d.network.name
+              :name => d.network.name
           }
         })
         end
