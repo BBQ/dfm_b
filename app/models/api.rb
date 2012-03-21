@@ -77,7 +77,7 @@ class API < ActiveRecord::Base
         end
       elsif type == 'delivery'
         restaurants = []
-        dish_delivery.delivery.each do |restaurant|
+        dish.delivery.each do |restaurant|
           restaurants.push({
             :id => restaurant.id,
             :address => restaurant.address,
