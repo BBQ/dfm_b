@@ -945,7 +945,7 @@ class ApiController < ApplicationController
     end
     return render :json => {
           :likes => likes,
-          :dish_in => dish_in,
+          :dish_ins => reviews,
           :top_in_dishes => top_in_dishes,
           :top_in_restaurants => top_in_restaurants,
           :following_count => following_count,
