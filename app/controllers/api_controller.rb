@@ -984,10 +984,14 @@ class ApiController < ApplicationController
       if params[:type] = 'delivery'
         if restaurant = Delivery.find_by_id(params[:restaurant_id])
           dishes = DishDelivery.where('delivery_id = ?', restaurant.id)
+        else
+          $error = {:description => 'Restaurant not found', :code => 357}
         end
       else
         if restaurant = Restaurant.find_by_id(params[:restaurant_id])
           dishes = Dish.where('network_id = ?', restaurant.network_id)
+        else
+          $error = {:description => 'Restaurant not found', :code => 357}
         end
       end
       
@@ -1018,10 +1022,8 @@ class ApiController < ApplicationController
           :error => $error
         }
       else
-        $error = {:description => 'Restaurant not found', :code => 357}
+        
       end
-    else
-      $error = {:description => 'Parameters missing', :code => 8}  
     end
     return render :json => {
       :error => $error
