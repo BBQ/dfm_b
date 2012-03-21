@@ -137,7 +137,7 @@ namespace :fsq do
             p "#{i} FAIL!!! #{r.name} #{r.address}"
           end
         end
-      else
+      elsif !r.fsq_id.blank?
         venue = client.venue(r.fsq_id)
         
         venue.categories.each do |v|
