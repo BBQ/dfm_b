@@ -11,7 +11,6 @@ class CreateDishDeliveryCategoryOrders < ActiveRecord::Migration
     add_index :dish_delivery_category_orders, :delivery_id
     add_index :dish_delivery_category_orders, :dish_delivery_category_id
   end
-  end
 
   def self.down
     drop_table :dish_delivery_category_orders
