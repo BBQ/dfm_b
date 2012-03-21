@@ -10,8 +10,8 @@ class CreateDishDeliveries < ActiveRecord::Migration
       t.column :votes, INT_UNSIGNED      
       t.text :description
       t.column :delivery_id, INT_UNSIGNED
-      t.column :dish_category_id, LINKED_ID_COLUMN
-      t.column :dish_type_id, LINKED_ID_COLUMN
+      t.column :dish_category_id, INT_UNSIGNED
+      t.column :dish_type_id, INT_UNSIGNED
       t.column :dish_subtype_id, INT_UNSIGNED
 
       t.timestamps
