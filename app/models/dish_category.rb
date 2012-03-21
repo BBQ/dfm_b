@@ -1,6 +1,6 @@
 class DishCategory < ActiveRecord::Base
   has_many :dishes
-  has_many :dish_deliveries
+  has_many :dish_deliveries, :foreign_key => :dish_id
   
   def self.get_id(name)
     unless category = find_by_name(name)

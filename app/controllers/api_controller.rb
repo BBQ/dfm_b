@@ -1003,7 +1003,7 @@ class ApiController < ApplicationController
         dishes.group(:dish_category_id).each do |dish|
           sort = DishCategoryOrder.find_by_restaurant_id_and_dish_category_id(restaurant.id, dish.dish_category_id)
           categories.push({
-            :id => dish.dish_category.id, 
+            :id => dish.dish_category_id, 
             :name => dish.dish_category.name_eng.nil? ? dish.dish_category.name : dish.dish_category.name_eng, 
             :order => sort ? sort.order : 9999
           })
