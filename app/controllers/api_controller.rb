@@ -1019,7 +1019,7 @@ class ApiController < ApplicationController
         if params[:type] == 'delivery'  
           dish_delivery = []
           dishes.each do |d|
-            dish_delivery.push {
+            dish_delivery.push({
               :dish => { 
                 :id => d.id, 
                 :name => d.name, 
@@ -1031,7 +1031,7 @@ class ApiController < ApplicationController
                 :image_sd => d.image_sd, 
                 :image_hd => d.image_hd, 
                 :price => d.price
-            }}
+            }})
           end
           dishes = dish_delivery.as_json
         else
