@@ -704,7 +704,7 @@ class ApiController < ApplicationController
     
     
     if params[:type] == 'delivery'
-      restaurants = Delivery.order("rating DESC, votes DESC")
+      restaurants = Delivery.select('deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes, deliveries.network_id, deliveries.fsq_id').order("rating DESC, votes DESC")
     else
       if params[:sort] == 'distance'
         if radius
@@ -736,8 +736,10 @@ class ApiController < ApplicationController
     restaurants = restaurants.where(all_filters) unless all_filters.blank?
     restaurants = restaurants.where("network_id IN (#{params[:network_id]})") unless params[:network_id].blank?
     
-    restaurants = restaurants.select([:network_id, :fsq_id]) if params[:type] != 'delivery'
-    restaurants = restaurants.select([:id, :name, :address, :city, :lat, :lon, :rating, :votes]).limit("#{offset}, #{limit}")    
+    if params[:type] != 'delivery'
+      restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')    
+    end
+    restaurants = restaurants.limit("#{offset}, #{limit}")
     
     networks = []
     num_images = 20    
