@@ -121,34 +121,44 @@ class API < ActiveRecord::Base
     end
   end
   
-  def self.get_restaurant(id, type, user_id)
-    restaurant = type == 'restaurant' ? Restaurant.find_by_id(id) : Restaurant.find_by_network_id(id)   
+  def self.get_restaurant(id, data_type, user_id, type = nil)
+    
+    if type == 'delivery'
+      restaurant = Delivery.find_by_id(id)
+    else
+      restaurant = data_type == 'restaurant' ? Restaurant.find_by_id(id) : Restaurant.find_by_network_id(id)   
+    end
+    
     if restaurant        
       
       review_data = []
-      restaurant.network.reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}  
+      data_r = type == 'delivery' ? restaurant : restaurant.network
+      data_d = type == 'delivery' ? restaurant.dish_deliveries : restaurant.network.dishes
+      data_r.reviews.each {|r| review_data.push(r.format_review_for_api(user_id))}  
       
-      restaurants = []
-      
-      restaurant.network.restaurants.each do |restaurant|
-          restaurants.push({
-            :id => restaurant.id,
-            :address => restaurant.address,
-            :phone => restaurant.phone.to_s,
-            :working_hours => restaurant.time,
-            :wifi => restaurant.wifi.to_i,
-            :cc => restaurant.cc == false ? 0 : 1,
-            :cuisines => restaurant.cuisines.map{|k| k.name}.join(', '),
-            :terrace => restaurant.terrace == false ? 0 : 1,
-            :lat => restaurant.lat,
-            :lon => restaurant.lon,
-            :description => restaurant.description.to_s
-          })
+      if type != 'delivery'
+        restaurants = []
+        restaurant.network.restaurants.each do |restaurant|
+            restaurants.push({
+              :id => restaurant.id,
+              :address => restaurant.address,
+              :phone => restaurant.phone.to_s,
+              :working_hours => restaurant.time,
+              :wifi => restaurant.wifi.to_i,
+              :cc => restaurant.cc == false ? 0 : 1,
+              :cuisines => restaurant.cuisines.map{|k| k.name}.join(', '),
+              :terrace => restaurant.terrace == false ? 0 : 1,
+              :lat => restaurant.lat,
+              :lon => restaurant.lon,
+              :description => restaurant.description.to_s
+            })
+        end
       end
       
       best_dishes = []
       
-      restaurant.network.dishes.select('DISTINCT id, name, photo, rating, votes, dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").where("photo IS NOT NULL OR rating > 0").each do |dish|
+      
+      data_d.select('DISTINCT id, name, photo, rating, votes, dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").where("photo IS NOT NULL OR rating > 0").each do |dish|
           best_dishes.push({
             :id => dish.id,
             :name => dish.name,
@@ -158,7 +168,8 @@ class API < ActiveRecord::Base
           })
       end
       
-      top_expert_id = Review.where('network_id = ?', restaurant.network_id).group('user_id').count.max_by{|k,v| v}[0] if restaurant.network.reviews.count > 0
+      top_where = type == 'delivery' ? "restaurant_id = '#{restaurant.id}'" : "network_id = '#{restaurant.network.id}'"
+      top_expert_id = Review.where(top_where).group('user_id').count.max_by{|k,v| v}[0] if data_r.reviews.count > 0
       if user = User.find_by_id(top_expert_id)
         top_expert = {
           :user_name => user.name,
@@ -167,23 +178,33 @@ class API < ActiveRecord::Base
         }
       end
             
-      better_restaurants = Restaurant.where('restaurants.fsq_checkins_count >= ?', restaurant.fsq_checkins_count).count.to_f
-      popularity = (100 * better_restaurants / Restaurant.where('restaurants.fsq_checkins_count > 0').count.to_f).round(0)
       
+      if type == 'delivery'
+        better_restaurants = Delivery.where('rating >= ?', restaurant.rating).count.to_f
+        popularity = (100 * better_restaurants / Delivery.where('rating > 0').count.to_f).round(0)
+        
+      else
+        better_restaurants = Restaurant.where('restaurants.fsq_checkins_count >= ?', restaurant.fsq_checkins_count).count.to_f
+        popularity = (100 * better_restaurants / Restaurant.where('restaurants.fsq_checkins_count > 0').count.to_f).round(0)
+        
+      end
+
       popularity = case popularity
         when 0..33 then "Very popular"
         when 34..66 then "Popular"
         when 67..100 then "Not so popular"
       end
-      
-      restaurant_categories = []
-      unless restaurant.restaurant_categories.blank?
-        RestaurantCategory.select(:name).where("id in (#{restaurant.restaurant_categories})").each {|r| restaurant_categories.push(r.name)}
+            
+      if type != 'delivery'
+        restaurant_categories = []
+        unless restaurant.restaurant_categories.blank?
+          RestaurantCategory.select(:name).where("id in (#{restaurant.restaurant_categories})").each {|r| restaurant_categories.push(r.name)}
+        end
       end
       
       data = {
-          :network_ratings => restaurant.network.rating,
-          :network_reviews_count => restaurant.network.reviews.count,
+          :network_ratings => data_r.rating,
+          :network_reviews_count => data_r.reviews.count,
           :popularity => popularity,
           :restaurant_name => restaurant.name,
           :reviews => review_data,

@@ -441,12 +441,12 @@ class ApiController < ApplicationController
     if params[:restaurant_id] || params[:network_id]
       if params[:restaurant_id]
         id = params[:restaurant_id]
-        type = 'restaurant'
+        data_type = 'restaurant'
       else
         id = params[:network_id]
-        type = 'network'
+        data_type = 'network'
       end     
-      return render :json => API.get_restaurant(id, type, params[:user_id])
+      return render :json => API.get_restaurant(id, data_type, params[:user_id], params[:type])
     else
       return render :json => {:error => $error}
     end
