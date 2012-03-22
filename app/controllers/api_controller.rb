@@ -455,8 +455,10 @@ class ApiController < ApplicationController
   def get_dishes
     
     top_user_id = params[:top_user_id].to_i    
+    
     if top_user_id > 0
-
+      dishes_array = []
+      
       home_cooked = HomeCook.select([:id, :name, :rating, :votes, :photo]).where("top_user_id = ?",top_user_id).order("votes DESC, photo DESC")
       home_cooked.each do |d|
         dishes_array.push({
