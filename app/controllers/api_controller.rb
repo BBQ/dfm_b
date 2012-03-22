@@ -879,11 +879,9 @@ class ApiController < ApplicationController
             :type => nil
           })
         end
-        reviews[:count] = restaurants.count
       end
       
       if restaurants = Delivery.select([:id, :photo]).where(:top_user_id => user.id)
-        
         restaurants.each do |d|
           top_in_restaurants[:data].push({
             :id => d.id,
@@ -891,8 +889,8 @@ class ApiController < ApplicationController
             :type => 'delivery'
           })
         end
-        reviews[:count] += restaurants.count
       end
+      top_in_restaurants[:count] = top_in_restaurants[:data].count
       
       top_in_dishes = {:data => [], :count => 0}
       if dishes = Dish.select([:id, :photo]).where(:top_user_id => user.id)
@@ -904,7 +902,6 @@ class ApiController < ApplicationController
             :type => nil
           })
         end
-        reviews[:count] = dishes.count
       end
       
       if dishes = DishDelivery.select([:id, :photo]).where(:top_user_id => user.id)
@@ -916,7 +913,6 @@ class ApiController < ApplicationController
             :type => 'delivery'
           })
         end
-        reviews[:count] += dishes.count
       end
       
       if dishes = HomeCook.select([:id, :photo]).where(:top_user_id => user.id)
@@ -928,8 +924,8 @@ class ApiController < ApplicationController
             :type => 'home_cooked'
           })
         end
-        reviews[:count] += dishes.count
       end
+      top_in_dishes[:count] = top_in_dishes[:data].count
       
     else
       $error = {:description => 'Parameters missing', :code => 941}
