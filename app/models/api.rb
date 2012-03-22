@@ -93,7 +93,7 @@ class API < ActiveRecord::Base
       
       if type == 'delivery'
         restaurant = dish.delivery
-      else
+      elsif type != 'home_cooked'
         restaurant = dish.network.restaurants.first
       end
     
