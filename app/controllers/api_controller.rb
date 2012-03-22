@@ -653,8 +653,10 @@ class ApiController < ApplicationController
     limit = params[:limit] ||= 25
     offset = params[:offset] ||= 0
     top_user_id = params[:top_user_id].to_i
+    num_images = 20   
     
     if top_user_id > 0
+      
       delivery = Delivery.select('deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("top_user_id = ?",top_user_id).order("rating DESC, votes DESC")
       
       delivery.each do |r|
@@ -812,7 +814,6 @@ class ApiController < ApplicationController
       restaurants = restaurants.limit("#{offset}, #{limit}")
     
       networks = []
-      num_images = 20    
     
       if params[:type] == 'delivery'
       
