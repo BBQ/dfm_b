@@ -713,7 +713,7 @@ class ApiController < ApplicationController
           restaurants = Restaurant.by_distance(lat, lon)
         end     
         restaurants = restaurants.joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').where('lat IS NOT NULL AND lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
-      if params[:sort] == 'popularity'
+      elsif params[:sort] == 'popularity'
         if radius
           restaurants = Restaurant.near(lat, lon, radius)
         else
