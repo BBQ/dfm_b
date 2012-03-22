@@ -896,7 +896,7 @@ class ApiController < ApplicationController
             :type => 'delivery'
           })
         end
-        reviews[:count] = count
+        reviews[:count] += count
       end
       
       top_in_dishes = {:data => [], :count => 0}
@@ -924,7 +924,7 @@ class ApiController < ApplicationController
             :type => 'delivery'
           })
         end
-        reviews[:count] = count
+        reviews[:count] += count
       end
       
       if dishes = HomeCook.select([:id, :photo]).where(:top_user_id => user.id)
@@ -937,7 +937,7 @@ class ApiController < ApplicationController
             :type => 'home_cooked'
           })
         end
-        reviews[:count] = count
+        reviews[:count] += count
       end
       
     else
