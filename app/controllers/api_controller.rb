@@ -475,7 +475,6 @@ class ApiController < ApplicationController
 
       dish_delivery = DishDelivery.select([:id, :name, :rating, :votes, :photo, :delivery_id]).where("top_user_id = ?",top_user_id).order("votes DESC, photo DESC")
       dish_delivery.each do |d|
-        network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked' && params[:type] != 'delivery' 
         dishes_array.push({
           :id => d.id,
           :name => d.name,
@@ -513,6 +512,7 @@ class ApiController < ApplicationController
       dishes_array.index_by {|r| r[:network][:id]}.values.each do |dish|
         
         if dish[:type] == 'delivery' && dish[:type] != 'home_cooked'          
+
           Restaurant.select([:id, :name, :lat, :lon, :address, :network_id]).where(:network_id => dish[:network][:id]).by_distance(lat, lon).take(3).each do |r|
             restaurants_array.push({
               :id => r.id,
