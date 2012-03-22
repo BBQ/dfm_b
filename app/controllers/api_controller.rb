@@ -675,7 +675,7 @@ class ApiController < ApplicationController
         end
         networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery'})
       end    
-      delivery_hash = delivery.attributes       
+      delivery_hash = delivery.as_json       
       
       restaurants = Restaurant.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
       #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
@@ -705,7 +705,7 @@ class ApiController < ApplicationController
         end
       end
       
-      restaurants_hash = restaurants.attributes 
+      restaurants_hash = restaurants.as_json 
       restaurants = restaurants_hash.merge(delivery_hash)
       
     else  
