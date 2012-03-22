@@ -124,7 +124,7 @@ class Review < ActiveRecord::Base
       restaurant = review_dish.delivery
     else
       review_dish = Dish.find_by_id(dish_id) 
-      restaurant = review_dish.restaurant
+      restaurant = Restaurant.find_by_id(restaurant_id)
     end
     
     data = {
