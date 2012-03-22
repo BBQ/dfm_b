@@ -474,7 +474,7 @@ class ApiController < ApplicationController
       end
 
       dish_delivery = DishDelivery.select([:id, :name, :rating, :votes, :photo, :delivery_id]).where("top_user_id = ?",top_user_id).order("votes DESC, photo DESC")
-      dishes.each do |d|
+      dish_delivery.each do |d|
         network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked' && params[:type] != 'delivery' 
         dishes_array.push({
           :id => d.id,
