@@ -706,7 +706,7 @@ class ApiController < ApplicationController
       end
       
       restaurants_hash = restaurants.as_json 
-      restaurants = restaurants_hash.merge(delivery_hash)
+      restaurants = restaurants_hash|delivery_hash
       
     else  
     
