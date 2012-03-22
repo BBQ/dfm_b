@@ -657,6 +657,7 @@ class ApiController < ApplicationController
     
     if top_user_id > 0
       
+      networks = []
       delivery = Delivery.select('deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("top_user_id = ?",top_user_id).order("rating DESC, votes DESC")
       
       delivery.each do |r|
@@ -814,7 +815,6 @@ class ApiController < ApplicationController
       restaurants = restaurants.limit("#{offset}, #{limit}")
     
       networks = []
-    
       if params[:type] == 'delivery'
       
         restaurants.each do |r|
