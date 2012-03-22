@@ -164,7 +164,8 @@ class API < ActiveRecord::Base
             :name => dish.name,
             :photo => dish.image_sd,
             :rating => dish.rating,
-            :votes => dish.votes
+            :votes => dish.votes,
+            :type => type
           })
       end
       
@@ -179,6 +180,7 @@ class API < ActiveRecord::Base
       end
             
       
+      popularity = 0
       if type == 'delivery'
         better_restaurants = Delivery.where('rating >= ?', restaurant.rating).count.to_f
         popularity = (100 * better_restaurants / Delivery.where('rating > 0').count.to_f).round(0)
@@ -216,6 +218,7 @@ class API < ActiveRecord::Base
               :description => "#{restaurant_categories.join(', ')}" + "#{"\n" if restaurant_categories.count > 0}" + "#{restaurant.description ||= ''}"
           },
           :restaurants => restaurants,
+          :type => type,
           :error => {:description => '', :code => ''}
       }
     else
