@@ -16,17 +16,19 @@ namespace :ylp do
     consumer = OAuth::Consumer.new(consumer_key, consumer_secret, {:site => "http://#{api_host}"})
     access_token = OAuth::AccessToken.new(consumer, token, token_secret)
     
-    n = 100 # number of parts devided
+    n = 2 # number of parts devided
     limit = 1000 # places limit
     offset = 0
     
-        # get sw and ne from google maps api
+    # get sw and ne bounds from google maps api or type it in 
+    # New York
+    # http://maps.googleapis.com/maps/api/geocode/json?address=New%20York%20city&sensor=true
     
-    x1 = sw_longitude 
-    x2 = ne_longitude
+    x1 = '-74.2590879' # sw_longitude 
+    x2 = '-73.700272' # ne_longitude
     
-    y1 = sw_latitude
-    y2 = ne_latitude
+    y1 = '40.495908' # sw_latitude
+    y2 = '40.9152413'# ne_latitude
     
     nX = (x2 - x1)/n
     nY = (y2 - y1)/n 

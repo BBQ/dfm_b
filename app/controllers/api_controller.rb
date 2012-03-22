@@ -453,6 +453,7 @@ class ApiController < ApplicationController
   end
   
   def get_dishes
+    # TODO: add user_expert_id
     
     if params[:radius].to_f != 0 
       radius = params[:radius].to_f
@@ -647,7 +648,7 @@ class ApiController < ApplicationController
   end
   
   def get_restaurants
-    
+    # TODO: add user_expert_id
     limit = params[:limit] ||= 25
     offset = params[:offset] ||= 0
     
