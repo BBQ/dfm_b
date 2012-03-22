@@ -713,7 +713,7 @@ class ApiController < ApplicationController
           restaurants = Restaurant.by_distance(lat, lon)
         end     
         restaurants = restaurants.joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').where('lat IS NOT NULL AND lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
-      else
+      if params[:sort] == 'popularity'
         if radius
           restaurants = Restaurant.near(lat, lon, radius)
         else
@@ -722,6 +722,15 @@ class ApiController < ApplicationController
         restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
         #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
         ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
+      else
+        if radius
+          restaurants = Restaurant.near(lat, lon, radius)
+        else
+          restaurants = Restaurant
+        end
+        restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
+        #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.rating DESC').to_sql}) r1
+        ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
       end
       
     end
