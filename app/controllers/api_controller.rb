@@ -846,7 +846,6 @@ class ApiController < ApplicationController
       followers_count = Follower.select(:id).where(:follow_user_id => user.id).count(:id) rescue 0
             
       if likes_a = Review.select([:id, :photo]).where('id IN (SELECT review_id FROM likes WHERE user_id = ?)', user.id)
-        count = likes_a.count
         likes = {:data => [], :count => 0}
         
         likes_a.each do |l|
@@ -855,11 +854,10 @@ class ApiController < ApplicationController
             :photo => l.photo.iphone.url
           })
         end
-        likes[:count] = count
+        likes[:count] = likes_a.count
       end
       
       if reviews_a = Review.select([:id, :photo]).where('user_id = ?', user.id)
-        count = reviews_a.count
         reviews = {:data => [], :count => 0}
         
         reviews_a.each do |r|
@@ -868,13 +866,11 @@ class ApiController < ApplicationController
             :photo => r.photo.iphone.url
           })
         end
-        reviews[:count] = count
+        reviews[:count] = reviews_a.count
       end
       
       top_in_restaurants = {:data => [], :count => 0}
-      count = 0
       if restaurants = Restaurant.select([:id, :photo, :network_id]).where(:top_user_id => user.id)
-        count += restaurants.count
         
         restaurants.each do |d|
           top_in_restaurants[:data].push({
@@ -883,11 +879,10 @@ class ApiController < ApplicationController
             :type => nil
           })
         end
-        reviews[:count] = count
+        reviews[:count] = restaurants.count
       end
       
       if restaurants = Delivery.select([:id, :photo]).where(:top_user_id => user.id)
-        count += restaurants.count
         
         restaurants.each do |d|
           top_in_restaurants[:data].push({
@@ -896,13 +891,11 @@ class ApiController < ApplicationController
             :type => 'delivery'
           })
         end
-        reviews[:count] += count
+        reviews[:count] += restaurants.count
       end
       
       top_in_dishes = {:data => [], :count => 0}
-      count = 0
       if dishes = Dish.select([:id, :photo]).where(:top_user_id => user.id)
-        count += dishes.count
         
         dishes.each do |d|
           top_in_dishes[:data].push({
@@ -911,11 +904,10 @@ class ApiController < ApplicationController
             :type => nil
           })
         end
-        reviews[:count] = count
+        reviews[:count] = dishes.count
       end
       
       if dishes = DishDelivery.select([:id, :photo]).where(:top_user_id => user.id)
-        count += dishes.count
         
         dishes.each do |d|
           top_in_dishes[:data].push({
@@ -924,11 +916,10 @@ class ApiController < ApplicationController
             :type => 'delivery'
           })
         end
-        reviews[:count] += count
+        reviews[:count] += dishes.count
       end
       
       if dishes = HomeCook.select([:id, :photo]).where(:top_user_id => user.id)
-        count += dishes.count
         
         dishes.each do |d|
           top_in_dishes[:data].push({
@@ -937,7 +928,7 @@ class ApiController < ApplicationController
             :type => 'home_cooked'
           })
         end
-        reviews[:count] += count
+        reviews[:count] += dishes.count
       end
       
     else
