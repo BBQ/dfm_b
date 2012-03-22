@@ -749,7 +749,7 @@ class ApiController < ApplicationController
               :votes => dish.votes
             })
         end
-        networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery', :venues => [r.fsq_id]})
+        networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery', :venues => [r.fsq_id ||= nil]})
       end    
       
       restaurants = Restaurant.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
@@ -776,7 +776,7 @@ class ApiController < ApplicationController
                 :votes => dish.votes
               })
           end
-          networks.push({:network_id => r.id, :dishes => dishes, :type => nil, :venues => [r.fsq_id]}) 
+          networks.push({:network_id => r.id, :dishes => dishes, :type => nil, :venues => [r.fsq_id ||= nil]}) 
         end
       end
       
@@ -903,7 +903,7 @@ class ApiController < ApplicationController
               })
           end
           
-          networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery', :venues => [r.fsq_id]})
+          networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery', :venues => [r.fsq_id ||= nil]})
         end
       else  
       
@@ -934,7 +934,7 @@ class ApiController < ApplicationController
             r.network.restaurants.each do |fsq|
               fsq_id_arr.push(fsq.fsq_id)
             end
-            networks.push({:network_id => r.id, :dishes => dishes, :type => nil, :venues => fsq_id_arr})
+            networks.push({:network_id => r.id, :dishes => dishes, :type => nil, :venues => fsq_id_arr ||= []})
           end
         end
       
