@@ -83,7 +83,7 @@ namespace :fsq do
   
     client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
     i = 0
-    Restaurant.order(:id).where('id > 14840').each do |r|
+    Restaurant.order(:id).where('id > 16086').each do |r|
       i+= 1
       category_id = []
       if r.fsq_id.blank? && r.created_at.to_i > Time.parse('2012-02-07 16:30:23').to_i
