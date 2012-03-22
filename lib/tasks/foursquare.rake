@@ -83,7 +83,7 @@ namespace :fsq do
   
     client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
     i = 0
-    Restaurant.order(:id).where('id > 13490').each do |r|
+    Restaurant.order(:id).where('id > 14840').each do |r|
       i+= 1
       category_id = []
       if r.fsq_id.blank? && r.created_at.to_i > Time.parse('2012-02-07 16:30:23').to_i
@@ -91,14 +91,16 @@ namespace :fsq do
         fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lon}", :query => r.name) if r.lat && r.lon && r.name
         if fsq_hash && fsq_hash.groups[0].items.count > 0
 
-          fsq_hash.categories.each do |v|
-            if category = RestaurantCategory.find_by_name(v.name)
-              category_id.push(category.id)
-            else
-              category_id.push(RestaurantCategory.create(:name => v.name).id)
+          if fsq_hash.categories.count > 0
+            fsq_hash.categories.each do |v|
+              if category = RestaurantCategory.find_by_name(v.name)
+                category_id.push(category.id)
+              else
+                category_id.push(RestaurantCategory.create(:name => v.name).id)
+              end
             end
           end
-
+          
           r.fsq_name = fsq_hash.groups[0].items.first.name
           r.fsq_address = fsq_hash.groups[0].items.first.location.address
           r.fsq_lat = fsq_hash.groups[0].items.first.location.lat
@@ -107,18 +109,20 @@ namespace :fsq do
           r.fsq_users_count = fsq_hash.groups[0].items.first.stats.usersCount
           r.fsq_tip_count = fsq_hash.groups[0].items.first.stats.tipCount
           r.fsq_id = fsq_hash.groups[0].items.first.id
-          r.restaurant_categories = category_id.join(','),
+          r.restaurant_categories = category_id ? category_id.join(',') : '',
           r.save
-          p "#{i} #{r.fsq_id} #{r.name} #{r.address}"
+          p "#{i} #{r.id}: #{r.fsq_id} #{r.name} #{r.address}"
         else
           fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lon}", :query => r.name_eng) if r.lat && r.lon && r.name_eng
           if fsq_hash && fsq_hash.groups[0].items.count > 0
             
-            fsq_hash.categories.each do |v|
-              if category = RestaurantCategory.find_by_name(v.name)
-                category_id.push(category.id)
-              else
-                category_id.push(RestaurantCategory.create(:name => v.name).id)
+            if fsq_hash.categories.count > 0
+              fsq_hash.categories.each do |v|
+                if category = RestaurantCategory.find_by_name(v.name)
+                  category_id.push(category.id)
+                else
+                  category_id.push(RestaurantCategory.create(:name => v.name).id)
+                end
               end
             end
             
@@ -130,24 +134,26 @@ namespace :fsq do
             r.fsq_users_count = fsq_hash.groups[0].items.first.stats.usersCount
             r.fsq_tip_count = fsq_hash.groups[0].items.first.stats.tipCount
             r.fsq_id = fsq_hash.groups[0].items.first.id
-            r.restaurant_categories = category_id.join(','),
+            r.restaurant_categories = category_id ? category_id.join(',') : '',
             r.save
-            p "#{i} #{r.fsq_id} #{r.name} #{r.address}"
+            p "#{i} #{r.id}: #{r.fsq_id} #{r.name} #{r.address}"
           else
-            p "#{i} FAIL!!! #{r.name} #{r.address}"
+            p "#{i} #{r.id}: FAIL!!! #{r.name} #{r.address}"
           end
         end
       elsif !r.fsq_id.blank?
         if venue = client.venue(r.fsq_id)
         
-          venue.categories.each do |v|
-            if category = RestaurantCategory.find_by_name(v.name)
-              category_id.push(category.id)
-            else
-              category_id.push(RestaurantCategory.create(:name => v.name).id)
+          if fsq_hash.categories.count > 0
+            venue.categories.each do |v|
+              if category = RestaurantCategory.find_by_name(v.name)
+                category_id.push(category.id)
+              else
+                category_id.push(RestaurantCategory.create(:name => v.name).id)
+              end
             end
           end
-        
+          
           r.fsq_name = venue.name
           r.fsq_address = venue.location.address
           r.fsq_lat = venue.location.lat
@@ -155,10 +161,10 @@ namespace :fsq do
           r.fsq_checkins_count = venue.stats.checkinsCount
           r.fsq_users_count = venue.stats.usersCount
           r.fsq_tip_count = venue.stats.tipCount
-          r.restaurant_categories = category_id.join(','),
+          r.restaurant_categories = category_id ? category_id.join(',') : '',
         
           r.save
-          p "Update: #{i} #{r.fsq_id} #{r.name} #{r.address}"
+          p "Update: #{i} #{r.id}: #{r.fsq_id} #{r.name} #{r.address}"
         end
       end
     end
