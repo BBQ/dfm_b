@@ -677,7 +677,7 @@ class ApiController < ApplicationController
       end    
       
       delivery_hash = {}
-      delivery.instance_variables.each {|var| delivery_hash[var[1..-1].to_sym] = gift.instance_variable_get(var) }
+      delivery.instance_variables.each {|var| delivery_hash[var[1..-1].to_sym] = delivery_hash.instance_variable_get(var) }
        
       
       restaurants = Restaurant.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
@@ -709,7 +709,7 @@ class ApiController < ApplicationController
       end
       
       restaurants_hash = {}
-      restaurants.instance_variables.each {|var| restaurants_hash[var[1..-1].to_sym] = gift.instance_variable_get(var) }
+      restaurants.instance_variables.each {|var| restaurants_hash[var[1..-1].to_sym] = restaurants_hash.instance_variable_get(var) }
       
       restaurants = restaurants_hash.merge(delivery_hash)
       
