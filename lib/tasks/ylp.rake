@@ -17,7 +17,7 @@ namespace :ylp do
     access_token = OAuth::AccessToken.new(consumer, token, token_secret)
     
     n = 2 # number of parts devided
-    limit = 1000 # places limit
+    limit = 20 # places limit
     offset = 0
     
     # get sw and ne bounds from google maps api or type it in 
