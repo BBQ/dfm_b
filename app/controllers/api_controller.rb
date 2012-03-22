@@ -482,8 +482,8 @@ class ApiController < ApplicationController
           :image_sd => d.image_sd,
           :image_hd => d.image_hd,
           :network => {
-            :id => d.delivery_id
-            :name => d.delivery.name
+            :id => d.delivery_id,
+            :name => d.delivery.name,
           },
           :type => 'delivery'
         })
@@ -501,7 +501,7 @@ class ApiController < ApplicationController
           :image_hd => d.image_hd,
           :network => {
             :id => network_data.id,
-            :name => network_data.name
+            :name => network_data.name,
           },
           :type => nil
         })
