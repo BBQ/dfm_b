@@ -40,7 +40,7 @@ namespace :ylp do
       sw_n_latitude = y2
       ne_n_latitude = sw_n_latitude - nY
     
-      bounds = "#{sw_n_latitude},#{sw_n_longitude}|#{ne_n_latitude},#{ne_n_longitude}"
+      bounds = "#{sw_n_latitude},#{sw_n_longitude}%7C#{ne_n_latitude},#{ne_n_longitude}"
       path = args[:path] ||= "/v2/search?term=restaurants&limit=#{limit}&offset=#{offset}&bounds=#{bounds}"
       p access_token.get(path).body
         
