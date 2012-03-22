@@ -24,11 +24,11 @@ namespace :ylp do
     # New York
     # http://maps.googleapis.com/maps/api/geocode/json?address=New%20York%20city&sensor=true
     
-    x1 = '-74.2590879' # sw_longitude 
-    x2 = '-73.700272' # ne_longitude
+    x1 = -74.2590879 # sw_longitude 
+    x2 = -73.700272 # ne_longitude
     
-    y1 = '40.495908' # sw_latitude
-    y2 = '40.9152413'# ne_latitude
+    y1 = 40.495908 # sw_latitude
+    y2 = 40.9152413 # ne_latitude
     
     nX = (x2 - x1)/n
     nY = (y2 - y1)/n 
