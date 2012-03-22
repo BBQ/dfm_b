@@ -886,7 +886,7 @@ class ApiController < ApplicationController
         reviews[:count] = count
       end
       
-      if restaurants = Delivery.select([:id, :photo, :id]).where(:top_user_id => user.id)
+      if restaurants = Delivery.select([:id, :photo]).where(:top_user_id => user.id)
         count += restaurants.count
         
         restaurants.each do |d|
