@@ -91,7 +91,7 @@ class API < ActiveRecord::Base
         })
       end
       
-      if type = 'delivery'
+      if type == 'delivery'
         restaurant = dish.delivery
       else
         restaurant = dish.network.restaurants.first
