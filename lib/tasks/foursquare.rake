@@ -144,7 +144,7 @@ namespace :fsq do
       elsif !r.fsq_id.blank?
         if venue = client.venue(r.fsq_id)
         
-          if fsq_hash.categories.count > 0
+          if venue.categories.count > 0
             venue.categories.each do |v|
               if category = RestaurantCategory.find_by_name(v.name)
                 category_id.push(category.id)
