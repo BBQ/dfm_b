@@ -107,7 +107,7 @@ class Delivery < ActiveRecord::Base
   end
   
   def has_menu
-    self.dishes.count > 0 ? 1 : 0
+    self.dish_deliveries.count > 0 ? 1 : 0
   end
   
 end
