@@ -675,10 +675,7 @@ class ApiController < ApplicationController
         end
         networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery'})
       end    
-      
-      delivery_hash = {}
-      delivery.instance_variables.each {|var| delivery_hash[var[1..-1].to_sym] = delivery_hash.instance_variable_get(var) }
-       
+      delivery_hash = delivery.attributes       
       
       restaurants = Restaurant.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
       #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
@@ -708,9 +705,7 @@ class ApiController < ApplicationController
         end
       end
       
-      restaurants_hash = {}
-      restaurants.instance_variables.each {|var| restaurants_hash[var[1..-1].to_sym] = restaurants_hash.instance_variable_get(var) }
-      
+      restaurants_hash = restaurants.attributes 
       restaurants = restaurants_hash.merge(delivery_hash)
       
     else  
@@ -836,7 +831,7 @@ class ApiController < ApplicationController
               })
           end
           
-          networks.push({:network_id => r.id, :dishes => dishes})
+          networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery'})
         end
       else  
       
@@ -863,7 +858,7 @@ class ApiController < ApplicationController
                   :votes => dish.votes
                 })
             end
-            networks.push({:network_id => r.network_id, :dishes => dishes}) 
+            networks.push({:network_id => r.id, :dishes => dishes, :type => nil})
           end
         end
       
