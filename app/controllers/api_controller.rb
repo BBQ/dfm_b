@@ -612,7 +612,8 @@ class ApiController < ApplicationController
                           :network => params[:type] == 'home_cooked' ? {} : {
                             :id => params[:type] == 'delivery' ? d.delivery_id : network_data.id,
                             :name => params[:type] == 'delivery' ? d.delivery.name : network_data.name
-                          }
+                          },
+                          :type => params[:type] ||= nil
                         })
                       else
                         break
@@ -642,7 +643,8 @@ class ApiController < ApplicationController
                     :network => {
                       :id => d.delivery_id,
                       :name => d.delivery.name
-                    }
+                    },
+                    :type => params[:type] ||= nil
                   })
                 else
                   break
@@ -680,7 +682,8 @@ class ApiController < ApplicationController
                           :network => {
                             :id => network_data.id,
                             :name => network_data.name
-                          }
+                          },
+                          :type => params[:type] ||= nil
                         })
                       else
                         break
