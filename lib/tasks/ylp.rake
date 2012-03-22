@@ -16,7 +16,7 @@ namespace :ylp do
     consumer = OAuth::Consumer.new(consumer_key, consumer_secret, {:site => "http://#{api_host}"})
     access_token = OAuth::AccessToken.new(consumer, token, token_secret)
     
-    n = 2000 # number of parts devided
+    n = 20 # number of parts devided
     limit = 20 # places limit
     offset = 0
     
@@ -43,7 +43,7 @@ namespace :ylp do
       bounds = "#{sw_n_latitude},#{sw_n_longitude}%7C#{ne_n_latitude},#{ne_n_longitude}"
       path = args[:path] ||= "/v2/search?term=restaurants,bars&offset=#{offset}&bounds=#{bounds}"
       p access_token.get(path).body
-      sleep 1
+      # sleep 1
         
       x1 = ne_n_longitude
       y1 = ne_n_latitude
