@@ -83,7 +83,7 @@ namespace :fsq do
   
     client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
     i = 0
-    Restaurant.order(:id).each do |r|
+    Restaurant.order(:id).where('id > 13490').each do |r|
       i+= 1
       category_id = []
       if r.fsq_id.blank? && r.created_at.to_i > Time.parse('2012-02-07 16:30:23').to_i
@@ -138,27 +138,28 @@ namespace :fsq do
           end
         end
       elsif !r.fsq_id.blank?
-        venue = client.venue(r.fsq_id)
+        if venue = client.venue(r.fsq_id)
         
-        venue.categories.each do |v|
-          if category = RestaurantCategory.find_by_name(v.name)
-            category_id.push(category.id)
-          else
-            category_id.push(RestaurantCategory.create(:name => v.name).id)
+          venue.categories.each do |v|
+            if category = RestaurantCategory.find_by_name(v.name)
+              category_id.push(category.id)
+            else
+              category_id.push(RestaurantCategory.create(:name => v.name).id)
+            end
           end
+        
+          r.fsq_name = venue.name
+          r.fsq_address = venue.location.address
+          r.fsq_lat = venue.location.lat
+          r.fsq_lng = venue.location.lng
+          r.fsq_checkins_count = venue.stats.checkinsCount
+          r.fsq_users_count = venue.stats.usersCount
+          r.fsq_tip_count = venue.stats.tipCount
+          r.restaurant_categories = category_id.join(','),
+        
+          r.save
+          p "Update: #{i} #{r.fsq_id} #{r.name} #{r.address}"
         end
-        
-        r.fsq_name = venue.name
-        r.fsq_address = venue.location.address
-        r.fsq_lat = venue.location.lat
-        r.fsq_lng = venue.location.lng
-        r.fsq_checkins_count = venue.stats.checkinsCount
-        r.fsq_users_count = venue.stats.usersCount
-        r.fsq_tip_count = venue.stats.tipCount
-        r.restaurant_categories = category_id.join(','),
-        
-        r.save
-        p "Update: #{i} #{r.fsq_id} #{r.name} #{r.address}"
       end
     end
   end

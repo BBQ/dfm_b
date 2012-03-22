@@ -950,6 +950,7 @@ class ApiController < ApplicationController
           :top_in_restaurants => top_in_restaurants,
           :following_count => following_count,
           :followers_count => followers_count,
+          :photo => user.user_photo,
           :error => $error
     }
       
