@@ -195,8 +195,8 @@ class API < ActiveRecord::Base
         when 67..100 then "Not so popular"
       end
             
+      restaurant_categories = []
       if type != 'delivery'
-        restaurant_categories = []
         unless restaurant.restaurant_categories.blank?
           RestaurantCategory.select(:name).where("id in (#{restaurant.restaurant_categories})").each {|r| restaurant_categories.push(r.name)}
         end
