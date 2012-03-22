@@ -867,8 +867,15 @@ class ApiController < ApplicationController
       end
     
       unless params[:search].blank?
+        if params[:type] == 'delivery' 
+          name = "deliveries.`name`"
+          name_eng = "deliveries.`name_eng`"
+        else
+          name = "restaurants.`name`"
+          name_eng = "restaurants.`name_eng`"
+        end
         search = params[:search].gsub(/[']/) { |x| '\\' + x }
-        restaurants = restaurants.where("restaurants.`name` LIKE ? OR restaurants.`name_eng` LIKE ?", "%#{search}%", "%#{search}%")
+        restaurants = restaurants.where("#{name} LIKE ? OR #{name_eng} LIKE ?", "%#{search}%", "%#{search}%")
       end
     
       restaurants = restaurants.search_by_word(params[:keyword]) unless params[:keyword].blank?
