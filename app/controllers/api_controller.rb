@@ -454,6 +454,9 @@ class ApiController < ApplicationController
   
   def get_dishes
     
+    lat = params[:lat] ||= '55.753548'
+    lon = params[:lon] ||= '37.609239'
+    
     top_user_id = params[:top_user_id].to_i    
     
     if top_user_id > 0
@@ -539,9 +542,6 @@ class ApiController < ApplicationController
       
         limit = params[:limit] ? params[:limit].to_i : 25
         offset = params[:offset] ? params[:offset].to_i : 0
-    
-        lat = params[:lat] ||= '55.753548'
-        lon = params[:lon] ||= '37.609239'
     
         restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).group(:network_id)
         restaurants = restaurants.bill(params[:bill]) if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
