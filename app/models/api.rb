@@ -158,7 +158,7 @@ class API < ActiveRecord::Base
       best_dishes = []
       
       
-      data_d.select('DISTINCT id, name, photo, rating, votes, dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").where("photo IS NOT NULL OR rating > 0").each do |dish|
+      data_d.select('DISTINCT id, name, photo, rating, votes, dish_type_id').order("(rating - 3)*votes DESC, dishes.photo DESC").where("photo IS NOT NULL OR rating > 0").each do |dish|
           best_dishes.push({
             :id => dish.id,
             :name => dish.name,
