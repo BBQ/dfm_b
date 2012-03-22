@@ -91,7 +91,7 @@ namespace :fsq do
         fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lon}", :query => r.name) if r.lat && r.lon && r.name
         if fsq_hash && fsq_hash.groups[0].items.count > 0
 
-          if fsq_hash.categories.count > 0
+          unless fsq_hash.categories.blank?
             fsq_hash.categories.each do |v|
               if category = RestaurantCategory.find_by_name(v.name)
                 category_id.push(category.id)
@@ -116,7 +116,7 @@ namespace :fsq do
           fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lon}", :query => r.name_eng) if r.lat && r.lon && r.name_eng
           if fsq_hash && fsq_hash.groups[0].items.count > 0
             
-            if fsq_hash.categories.count > 0
+            unless fsq_hash.categories.blank?
               fsq_hash.categories.each do |v|
                 if category = RestaurantCategory.find_by_name(v.name)
                   category_id.push(category.id)
@@ -144,7 +144,7 @@ namespace :fsq do
       elsif !r.fsq_id.blank?
         if venue = client.venue(r.fsq_id)
         
-          if venue.categories.count > 0
+          unless venue.categories.blank?
             venue.categories.each do |v|
               if category = RestaurantCategory.find_by_name(v.name)
                 category_id.push(category.id)
