@@ -658,7 +658,7 @@ class ApiController < ApplicationController
     if top_user_id > 0
       
       networks = []
-      delivery = Delivery.select('deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("top_user_id = ?",top_user_id).order("rating DESC, votes DESC")
+      delivery = Delivery.select('deliveries.fsq_id, deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("top_user_id = ?",top_user_id).order("rating DESC, votes DESC")
       
       delivery.each do |r|
         dishes = []    
@@ -675,7 +675,6 @@ class ApiController < ApplicationController
         end
         networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery'})
       end    
-      delivery_hash = delivery.as_json       
       
       restaurants = Restaurant.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
       #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
@@ -704,9 +703,6 @@ class ApiController < ApplicationController
           networks.push({:network_id => r.id, :dishes => dishes, :type => nil}) 
         end
       end
-      
-      restaurants_hash = restaurants.as_json 
-      restaurants = restaurants_hash|delivery_hash
       
     else  
     
@@ -864,10 +860,16 @@ class ApiController < ApplicationController
       
       end
     end
-
+    
+    if restaurants.class.name == 'Delivery'
+      delivery = restaurants
+      restaurants = nil
+    end
+      
     return render :json => {
           :load_additional => load_additional ||= 0,
-          :restaurants => restaurants.as_json({:keyword => params[:keyword] ||= nil}),
+          :restaurants => restaurants.as_json({:keyword => params[:keyword] ||= nil}) ||= [],
+          :delivery => delivery.as_json ||= [],
           :networks => networks,
           :error => $error
     }
