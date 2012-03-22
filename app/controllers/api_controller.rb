@@ -783,13 +783,12 @@ class ApiController < ApplicationController
     else  
     
       filters = []
-      if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
+      if params[:bill] && params[:bill].length == 5 && params[:bill] != '0000' && params[:bill] != '1111'
         bill = []
-        bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
-        bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
-        bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
-        bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
-        bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
+        bill.push('bill = 1') if params[:bill][0] == '1'
+        bill.push('bill = 2') if params[:bill][1] == '1'
+        bill.push('bill = 3') if params[:bill][2] == '1'
+        bill.push('bill = 4') if params[:bill][3] == '1'
         filters.push(bill.join(' OR ')) if bill.count > 0
       end
     
