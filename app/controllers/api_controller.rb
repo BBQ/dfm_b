@@ -868,8 +868,8 @@ class ApiController < ApplicationController
       
     return render :json => {
           :load_additional => load_additional ||= 0,
-          :restaurants => restaurants.as_json({:keyword => params[:keyword] ||= nil}) ||= [],
-          :delivery => delivery.as_json ||= [],
+          :restaurants => restaurants ? restaurants.as_json({:keyword => params[:keyword] ||= nil}) : [],
+          :delivery => delivery ? delivery.as_json : [],
           :networks => networks,
           :error => $error
     }
