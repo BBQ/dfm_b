@@ -861,7 +861,7 @@ class ApiController < ApplicationController
       end
     end
     
-    if restaurants.class.name == 'Delivery'
+    if restaurants.first.class.name == 'Delivery'
       delivery = restaurants
       restaurants = nil
     end
