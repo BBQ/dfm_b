@@ -453,191 +453,263 @@ class ApiController < ApplicationController
   end
   
   def get_dishes
-    # TODO: add user_expert_id
     
-    if params[:radius].to_f != 0 
-      radius = params[:radius].to_f
-    else
-      radius = 30 if params[:radius] == 'city'
-      radius = 40075 if params[:radius] == 'global'
-    end
-    
-    if radius
-      
-      limit = params[:limit] ? params[:limit].to_i : 25
-      offset = params[:offset] ? params[:offset].to_i : 0
-    
-      lat = params[:lat] ||= '55.753548'
-      lon = params[:lon] ||= '37.609239'
-    
-      restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).group(:network_id)
-      restaurants = restaurants.bill(params[:bill]) if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
-    
-      networks = []  
-      restaurants.each {|r| networks.push(r.network_id)}
-      
-      if params[:type] == 'home_cooked'
-        dishes = HomeCook.select([:id, :name, :rating, :votes, :photo]).order("votes DESC, photo DESC")
-      elsif params[:type] == 'delivery'
-        dishes = DishDelivery.select([:id, :name, :rating, :votes, :photo, :delivery_id]).order("votes DESC, photo DESC")
-      else      
-        dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count]).where("network_id IN (#{networks.join(',')})").order("votes DESC, photo DESC, fsq_checkins_count DESC")
-        dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
-        dishes = dishes.search(params[:search]) unless params[:search].blank?
-      end
-      if params[:dish_id] && params[:dish_id].to_i > 0
-        
-        if params[:type] == 'home_cooked'
-          dish = HomeCook.select([:id, :rating]).where(:id => params[:dish_id].to_i)
-        elsif params[:type] == 'delivery'
-          dish = DishDelivery.select([:id, :rating]).where(:id => params[:dish_id].to_i)
-        else
-          dish = Dish.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)            
-        end
-        
-        unless dish.nil?
-          dish = dish.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
-          dish = dish.first
-          rating = dish.rating
-          
-          if params[:type] != 'home_cooked' && params[:type] != 'delivery'
-            fsq_checkins_count = dish.fsq_checkins_count if dish.fsq_checkins_count > 0
-          end
-          
-        end        
-      end
-      
-      if rating.nil?
-        start = 1
-        rating = 5
-      else
-        start = 0
-      end
-      dishes_array = []
-      
-      if rating && rating > 0
-        step = 0.25  
-        (0..(5-step)).step(step) do |n|
-            n1 = 5 - n
-            n2 = n1 - step != 0 ? n1 - step : 0
-            if (rating > n2 && rating <= n1) || (rating > n2 && rating > n1 && dishes_array.count < limit)
-            
-              start = 1 if rating > n2 && rating > n1 && dishes_array.count < limit
-              if dishes_between = dishes.where("rating > ? AND rating <= ?", n2, n1)
-              
-                dishes_between.each do |d|
-                  if start == 1
-                    if dishes_array.count < limit
-                      network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked' && params[:type] != 'delivery' 
-                      dishes_array.push({
-                        :id => d.id,
-                        :name => d.name,
-                        :rating => d.rating,
-                        :votes => d.votes,
-                        :image_sd => d.image_sd,
-                        :image_hd => d.image_hd,
-                        :network => params[:type] == 'home_cooked' ? {} : {
-                          :id => params[:type] == 'delivery' ? d.delivery_id : network_data.id,
-                          :name => params[:type] == 'delivery' ? d.delivery.name : network_data.name
-                        }
-                      })
-                    else
-                      break
-                    end
-                  end
-                  start = 1 if dish && d.id == dish.id
-                end
-              end
-            end
-        end
-      end
-      
-      if dishes_array.count < limit && params[:type] != 'home_cooked'
-        if params[:type] == 'delivery'
-          
-          if dishes_between = dishes.where("rating = 0")
-            dishes_between.each do |d|
-              
-              if dishes_array.count < limit
-                dishes_array.push({
-                  :id => d.id,
-                  :name => d.name,
-                  :rating => d.rating,
-                  :votes => d.votes,
-                  :image_sd => d.image_sd,
-                  :image_hd => d.image_hd,
-                  :network => {
-                    :id => d.delivery_id,
-                    :name => d.delivery.name
-                  }
-                })
-              else
-                break
-              end
-              
-            end
-          end
-        else
-          
-          foursquare_max = Dish.select("max(fsq_checkins_count) as max_fsq").first.max_fsq
-          fsq_checkins_count = foursquare_max if fsq_checkins_count.nil? || fsq_checkins_count == 0
+    top_user_id = params[:top_user_id].to_i    
+    if top_user_id > 0
 
-          step_fsq = foursquare_max/2
-          (0..(foursquare_max-step_fsq)).step(step_fsq) do |n|
-        
-            n1 = foursquare_max - n
-            n2 = n1 - step_fsq != 0 ? n1 - step_fsq : 0
-    
-            if (fsq_checkins_count > n2 && fsq_checkins_count <= n1) || (fsq_checkins_count > n2 && fsq_checkins_count > n1 && dishes_array.count < limit)
-      
-              start = 1 if fsq_checkins_count > n2 && fsq_checkins_count > n1 && dishes_array.count < limit
-              if dishes_between = dishes.where("fsq_checkins_count > ? AND fsq_checkins_count <= ? AND rating = 0", n2, n1)
-        
-                dishes_between.each do |d|
-                  if start == 1
-                    if dishes_array.count < limit
-                      network_data = Network.select([:id, :name]).find_by_id(d.network_id) 
-                      dishes_array.push({
-                        :id => d.id,
-                        :name => d.name,
-                        :rating => d.rating,
-                        :votes => d.votes,
-                        :image_sd => d.image_sd,
-                        :image_hd => d.image_hd,
-                        :network => {
-                          :id => network_data.id,
-                          :name => network_data.name
-                        }
-                      })
-                    else
-                      break
-                    end
-                  end
-                  start = 1 if dish && d.id == dish.id
-                end
-              end
-            end
-          end   
-                   
-        end
+      home_cooked = HomeCook.select([:id, :name, :rating, :votes, :photo]).where("top_user_id = ?",top_user_id).order("votes DESC, photo DESC")
+      dishes.each do |d|
+        dishes_array.push({
+          :id => d.id,
+          :name => d.name,
+          :rating => d.rating,
+          :votes => d.votes,
+          :image_sd => d.image_sd,
+          :image_hd => d.image_hd,
+          :network => {},
+          :type => 'home_cooked'
+        })
+      end
+
+      dish_delivery = DishDelivery.select([:id, :name, :rating, :votes, :photo, :delivery_id]).where("top_user_id = ?",top_user_id).order("votes DESC, photo DESC")
+      dishes.each do |d|
+        network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked' && params[:type] != 'delivery' 
+        dishes_array.push({
+          :id => d.id,
+          :name => d.name,
+          :rating => d.rating,
+          :votes => d.votes,
+          :image_sd => d.image_sd,
+          :image_hd => d.image_hd,
+          :network => {
+            :id => d.delivery_id
+            :name => d.delivery.name
+          },
+          :type => 'delivery'
+        })
+      end
+
+      dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count]).where("top_user_id = ?",top_user_id).order("votes DESC, photo DESC, fsq_checkins_count DESC")
+      dishes.each do |d|
+        network_data = Network.select([:id, :name]).find_by_id(d.network_id)
+        dishes_array.push({
+          :id => d.id,
+          :name => d.name,
+          :rating => d.rating,
+          :votes => d.votes,
+          :image_sd => d.image_sd,
+          :image_hd => d.image_hd,
+          :network => {
+            :id => network_data.id,
+            :name => network_data.name
+          },
+          :type => nil
+        })
       end
       
       restaurants_array = []
       dishes_array.index_by {|r| r[:network][:id]}.values.each do |dish|
-        Restaurant.select([:id, :name, :lat, :lon, :address, :network_id]).where(:network_id => dish[:network][:id]).by_distance(lat, lon).take(3).each do |r|
-          restaurants_array.push({
-            :id => r.id,
-            :name => r.name,
-            :lat => r.lat,
-            :lon => r.lon,
-            :address => r.address,
-            :network_id => r.network_id,
-          })
+        
+        if dish[:type] == 'delivery' && dish[:type] != 'home_cooked'          
+          Restaurant.select([:id, :name, :lat, :lon, :address, :network_id]).where(:network_id => dish[:network][:id]).by_distance(lat, lon).take(3).each do |r|
+            restaurants_array.push({
+              :id => r.id,
+              :name => r.name,
+              :lat => r.lat,
+              :lon => r.lon,
+              :address => r.address,
+              :network_id => r.network_id,
+            })
+          end
         end
-      end      
+      end
+      
+
+    else    
+      if params[:radius].to_f != 0 
+        radius = params[:radius].to_f
+      else
+        radius = 30 if params[:radius] == 'city'
+        radius = 40075 if params[:radius] == 'global'
+      end
     
-    else
-      $error = {:description => 'Parameters missing', :code => 8}    
+      if radius
+      
+        limit = params[:limit] ? params[:limit].to_i : 25
+        offset = params[:offset] ? params[:offset].to_i : 0
+    
+        lat = params[:lat] ||= '55.753548'
+        lon = params[:lon] ||= '37.609239'
+    
+        restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).group(:network_id)
+        restaurants = restaurants.bill(params[:bill]) if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
+    
+        networks = []  
+        restaurants.each {|r| networks.push(r.network_id)}
+      
+        if params[:type] == 'home_cooked'
+          dishes = HomeCook.select([:id, :name, :rating, :votes, :photo]).order("votes DESC, photo DESC")
+        elsif params[:type] == 'delivery'
+          dishes = DishDelivery.select([:id, :name, :rating, :votes, :photo, :delivery_id]).order("votes DESC, photo DESC")
+        else      
+          dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count]).where("network_id IN (#{networks.join(',')})").order("votes DESC, photo DESC, fsq_checkins_count DESC")
+          dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
+          dishes = dishes.search(params[:search]) unless params[:search].blank?
+        end
+        if params[:dish_id] && params[:dish_id].to_i > 0
+        
+          if params[:type] == 'home_cooked'
+            dish = HomeCook.select([:id, :rating]).where(:id => params[:dish_id].to_i)
+          elsif params[:type] == 'delivery'
+            dish = DishDelivery.select([:id, :rating]).where(:id => params[:dish_id].to_i)
+          else
+            dish = Dish.select([:id, :rating, :fsq_checkins_count]).where(:id => params[:dish_id].to_i)            
+          end
+        
+          unless dish.nil?
+            dish = dish.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
+            dish = dish.first
+            rating = dish.rating
+          
+            if params[:type] != 'home_cooked' && params[:type] != 'delivery'
+              fsq_checkins_count = dish.fsq_checkins_count if dish.fsq_checkins_count > 0
+            end
+          
+          end        
+        end
+      
+        if rating.nil?
+          start = 1
+          rating = 5
+        else
+          start = 0
+        end
+        dishes_array = []
+      
+        if rating && rating > 0
+          step = 0.25  
+          (0..(5-step)).step(step) do |n|
+              n1 = 5 - n
+              n2 = n1 - step != 0 ? n1 - step : 0
+              if (rating > n2 && rating <= n1) || (rating > n2 && rating > n1 && dishes_array.count < limit)
+            
+                start = 1 if rating > n2 && rating > n1 && dishes_array.count < limit
+                if dishes_between = dishes.where("rating > ? AND rating <= ?", n2, n1)
+              
+                  dishes_between.each do |d|
+                    if start == 1
+                      if dishes_array.count < limit
+                        network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked' && params[:type] != 'delivery' 
+                        dishes_array.push({
+                          :id => d.id,
+                          :name => d.name,
+                          :rating => d.rating,
+                          :votes => d.votes,
+                          :image_sd => d.image_sd,
+                          :image_hd => d.image_hd,
+                          :network => params[:type] == 'home_cooked' ? {} : {
+                            :id => params[:type] == 'delivery' ? d.delivery_id : network_data.id,
+                            :name => params[:type] == 'delivery' ? d.delivery.name : network_data.name
+                          }
+                        })
+                      else
+                        break
+                      end
+                    end
+                    start = 1 if dish && d.id == dish.id
+                  end
+                end
+              end
+          end
+        end
+      
+        if dishes_array.count < limit && params[:type] != 'home_cooked'
+          if params[:type] == 'delivery'
+          
+            if dishes_between = dishes.where("rating = 0")
+              dishes_between.each do |d|
+              
+                if dishes_array.count < limit
+                  dishes_array.push({
+                    :id => d.id,
+                    :name => d.name,
+                    :rating => d.rating,
+                    :votes => d.votes,
+                    :image_sd => d.image_sd,
+                    :image_hd => d.image_hd,
+                    :network => {
+                      :id => d.delivery_id,
+                      :name => d.delivery.name
+                    }
+                  })
+                else
+                  break
+                end
+              
+              end
+            end
+          else
+          
+            foursquare_max = Dish.select("max(fsq_checkins_count) as max_fsq").first.max_fsq
+            fsq_checkins_count = foursquare_max if fsq_checkins_count.nil? || fsq_checkins_count == 0
+
+            step_fsq = foursquare_max/2
+            (0..(foursquare_max-step_fsq)).step(step_fsq) do |n|
+        
+              n1 = foursquare_max - n
+              n2 = n1 - step_fsq != 0 ? n1 - step_fsq : 0
+    
+              if (fsq_checkins_count > n2 && fsq_checkins_count <= n1) || (fsq_checkins_count > n2 && fsq_checkins_count > n1 && dishes_array.count < limit)
+      
+                start = 1 if fsq_checkins_count > n2 && fsq_checkins_count > n1 && dishes_array.count < limit
+                if dishes_between = dishes.where("fsq_checkins_count > ? AND fsq_checkins_count <= ? AND rating = 0", n2, n1)
+        
+                  dishes_between.each do |d|
+                    if start == 1
+                      if dishes_array.count < limit
+                        network_data = Network.select([:id, :name]).find_by_id(d.network_id) 
+                        dishes_array.push({
+                          :id => d.id,
+                          :name => d.name,
+                          :rating => d.rating,
+                          :votes => d.votes,
+                          :image_sd => d.image_sd,
+                          :image_hd => d.image_hd,
+                          :network => {
+                            :id => network_data.id,
+                            :name => network_data.name
+                          }
+                        })
+                      else
+                        break
+                      end
+                    end
+                    start = 1 if dish && d.id == dish.id
+                  end
+                end
+              end
+            end   
+                   
+          end
+        end
+      
+        restaurants_array = []
+        dishes_array.index_by {|r| r[:network][:id]}.values.each do |dish|
+          Restaurant.select([:id, :name, :lat, :lon, :address, :network_id]).where(:network_id => dish[:network][:id]).by_distance(lat, lon).take(3).each do |r|
+            restaurants_array.push({
+              :id => r.id,
+              :name => r.name,
+              :lat => r.lat,
+              :lon => r.lon,
+              :address => r.address,
+              :network_id => r.network_id,
+            })
+          end
+        end      
+    
+      else
+        $error = {:description => 'Parameters missing', :code => 8}    
+      end
     end
     
     return render :json => {
