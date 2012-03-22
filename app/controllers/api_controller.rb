@@ -648,123 +648,19 @@ class ApiController < ApplicationController
   end
   
   def get_restaurants
+    
     # TODO: add user_expert_id
     limit = params[:limit] ||= 25
     offset = params[:offset] ||= 0
+    top_user_id = params[:top_user_id].to_i
     
-    filters = []
-    if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
-      bill = []
-      bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
-      bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
-      bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
-      bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
-      bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
-      filters.push(bill.join(' OR ')) if bill.count > 0
-    end
-    
-    etc = []
-    etc.push('wifi != 0 OR wifi != "нет"') if params[:wifi] == '1'
-    etc.push('terrace = 1') if params[:terrace] == '1'
-    etc.push('cc = 1') if params[:accept_bank_cards] == '1'
-    
-    filters.push(etc.join(' AND ')) if etc.count > 0
-    all_filters = filters.join(' AND ')
-    
-    if params[:open_now]
-      wday = Date.today.strftime("%a").downcase
-      now = Time.now.strftime("%H%M")
-      open_now = "#{now} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+    if top_user_id > 0
+      delivery = Delivery.select('deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("top_user_id = ?",top_user_id).order("rating DESC, votes DESC")
       
-      if now.to_i < 1000
-        now24 = now.to_i + 2400
-        open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
-      end    
-      all_filters = all_filters ? all_filters + open_now : open_now
-    end      
+      delivery.each do |r|
+        dishes = []    
+        dishes_w_img = r.dish_deliveries.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
     
-    city_radius = 30
-
-    city_lat = 55.753548
-    city_lon = 37.609239
-    pi = Math::PI
-    
-    load_additional = 1 if !params[:lat].blank? && params[:lon] && ((Math.acos(
-    	Math.sin(city_lat * pi / 180) * Math.sin(params[:lat].to_f * pi / 180) + 
-    	Math.cos(city_lat * pi / 180) * Math.cos(params[:lat].to_f * pi / 180) * 
-    	Math.cos((params[:lon].to_f - city_lon) * pi / 180)) * 180 / pi) * 60 * 1.1515) * 1.609344 >= city_radius
-    
-    lat = !params[:lat].blank? ? params[:lat] : '55.753548'
-    lon = !params[:lon].blank? ? params[:lon] : '37.609239'
-    
-    if params[:radius] == 'city'
-      radius = 30
-    else
-      radius = params[:radius].to_f != 0 ? params[:radius].to_f : nil
-    end
-    
-    
-    if params[:type] == 'delivery'
-      restaurants = Delivery.select('deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').order("rating DESC, votes DESC")
-    else
-      if params[:sort] == 'distance'
-        if radius
-          restaurants = Restaurant.near(lat, lon, radius).by_distance(lat, lon)
-        else
-          restaurants = Restaurant.by_distance(lat, lon)
-        end     
-        restaurants = restaurants.joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').where('lat IS NOT NULL AND lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
-      elsif params[:sort] == 'popularity'
-        if radius
-          restaurants = Restaurant.near(lat, lon, radius)
-        else
-          restaurants = Restaurant
-        end
-        restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
-        #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
-        ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
-      else
-        if radius
-          restaurants = Restaurant.near(lat, lon, radius)
-        else
-          restaurants = Restaurant
-        end
-        restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
-        #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.rating DESC').to_sql}) r1
-        ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
-      end
-      
-    end
-    
-    unless params[:search].blank?
-      search = params[:search].gsub(/[']/) { |x| '\\' + x }
-      restaurants = restaurants.where("restaurants.`name` LIKE ? OR restaurants.`name_eng` LIKE ?", "%#{search}%", "%#{search}%")
-    end
-    
-    restaurants = restaurants.search_by_word(params[:keyword]) unless params[:keyword].blank?
-    restaurants = restaurants.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
-    restaurants = restaurants.where(all_filters) unless all_filters.blank?
-    restaurants = restaurants.where("network_id IN (#{params[:network_id]})") unless params[:network_id].blank?
-    
-    if params[:type] != 'delivery'
-      restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')    
-    end
-    restaurants = restaurants.limit("#{offset}, #{limit}")
-    
-    networks = []
-    num_images = 20    
-    
-    if params[:type] == 'delivery'
-      
-      restaurants.each do |r|
-        dishes = []
-      
-        if params[:tag_id].to_i > 0
-          dishes_w_img = r.dish_deliveries.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images).search_by_tag_id(params[:tag_id])
-        else
-          dishes_w_img = r.dish_deliveries.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
-        end
-      
         dishes_w_img.each do |dish|
             dishes.push({
               :id => dish.id,
@@ -774,11 +670,19 @@ class ApiController < ApplicationController
               :votes => dish.votes
             })
         end
-          
-        networks.push({:network_id => r.id, :dishes => dishes})
-      end
-    else  
+        networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery'})
+      end    
       
+      delivery_hash = {}
+      delivery.instance_variables.each {|var| delivery_hash[var[1..-1].to_sym] = gift.instance_variable_get(var) }
+       
+      
+      restaurants = Restaurant.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
+      #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
+      ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL AND top_user_id = ?',top_user_id).order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
+
+      restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')  
+
       restaurants.each do |r|
         dont_add = 0
         networks.each do |n|
@@ -786,13 +690,8 @@ class ApiController < ApplicationController
         end
         if dont_add == 0
           dishes = []
-        
-          if params[:tag_id].to_i > 0
-            dishes_w_img = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images).search_by_tag_id(params[:tag_id])
-          else
-            dishes_w_img = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
-          end
-        
+          dishes_w_img = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
+
           dishes_w_img.each do |dish|
               dishes.push({
                 :id => dish.id,
@@ -802,10 +701,172 @@ class ApiController < ApplicationController
                 :votes => dish.votes
               })
           end
-          networks.push({:network_id => r.network_id, :dishes => dishes}) 
+          networks.push({:network_id => r.id, :dishes => dishes, :type => nil}) 
         end
       end
       
+      restaurants_hash = {}
+      restaurants.instance_variables.each {|var| restaurants_hash[var[1..-1].to_sym] = gift.instance_variable_get(var) }
+      
+      restaurants = restaurants_hash.merge(delivery_hash)
+      
+    else  
+    
+      filters = []
+      if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
+        bill = []
+        bill.push('bill = "до 500 руб"') if params[:bill][0] == '1'
+        bill.push('bill = "500 - 1000 руб"') if params[:bill][1] == '1'
+        bill.push('bill = "1000 - 2000 руб"') if params[:bill][2] == '1'
+        bill.push('bill = "2000 - 5000 руб"') if params[:bill][3] == '1'
+        bill.push('bill = "более 5000 руб"') if params[:bill][4] == '1'
+        filters.push(bill.join(' OR ')) if bill.count > 0
+      end
+    
+      etc = []
+      etc.push('wifi != 0 OR wifi != "нет"') if params[:wifi] == '1'
+      etc.push('terrace = 1') if params[:terrace] == '1'
+      etc.push('cc = 1') if params[:accept_bank_cards] == '1'
+    
+      filters.push(etc.join(' AND ')) if etc.count > 0
+      all_filters = filters.join(' AND ')
+    
+      if params[:open_now]
+        wday = Date.today.strftime("%a").downcase
+        now = Time.now.strftime("%H%M")
+        open_now = "#{now} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+      
+        if now.to_i < 1000
+          now24 = now.to_i + 2400
+          open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+        end    
+        all_filters = all_filters ? all_filters + open_now : open_now
+      end      
+    
+      city_radius = 30
+
+      city_lat = 55.753548
+      city_lon = 37.609239
+      pi = Math::PI
+    
+      load_additional = 1 if !params[:lat].blank? && params[:lon] && ((Math.acos(
+      	Math.sin(city_lat * pi / 180) * Math.sin(params[:lat].to_f * pi / 180) + 
+      	Math.cos(city_lat * pi / 180) * Math.cos(params[:lat].to_f * pi / 180) * 
+      	Math.cos((params[:lon].to_f - city_lon) * pi / 180)) * 180 / pi) * 60 * 1.1515) * 1.609344 >= city_radius
+    
+      lat = !params[:lat].blank? ? params[:lat] : '55.753548'
+      lon = !params[:lon].blank? ? params[:lon] : '37.609239'
+    
+      if params[:radius] == 'city'
+        radius = 30
+      else
+        radius = params[:radius].to_f != 0 ? params[:radius].to_f : nil
+      end
+    
+    
+      if params[:type] == 'delivery'
+        restaurants = Delivery.select('deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').order("rating DESC, votes DESC")
+      else
+        if params[:sort] == 'distance'
+          if radius
+            restaurants = Restaurant.near(lat, lon, radius).by_distance(lat, lon)
+          else
+            restaurants = Restaurant.by_distance(lat, lon)
+          end     
+          restaurants = restaurants.joins('LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id`').where('lat IS NOT NULL AND lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC")
+        elsif params[:sort] == 'popularity'
+          if radius
+            restaurants = Restaurant.near(lat, lon, radius)
+          else
+            restaurants = Restaurant
+          end
+          restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
+          #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
+          ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
+        else
+          if radius
+            restaurants = Restaurant.near(lat, lon, radius)
+          else
+            restaurants = Restaurant
+          end
+          restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
+          #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.rating DESC').to_sql}) r1
+          ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
+        end
+      
+      end
+    
+      unless params[:search].blank?
+        search = params[:search].gsub(/[']/) { |x| '\\' + x }
+        restaurants = restaurants.where("restaurants.`name` LIKE ? OR restaurants.`name_eng` LIKE ?", "%#{search}%", "%#{search}%")
+      end
+    
+      restaurants = restaurants.search_by_word(params[:keyword]) unless params[:keyword].blank?
+      restaurants = restaurants.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
+      restaurants = restaurants.where(all_filters) unless all_filters.blank?
+      restaurants = restaurants.where("network_id IN (#{params[:network_id]})") unless params[:network_id].blank?
+    
+      if params[:type] != 'delivery'
+        restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')    
+      end
+      restaurants = restaurants.limit("#{offset}, #{limit}")
+    
+      networks = []
+      num_images = 20    
+    
+      if params[:type] == 'delivery'
+      
+        restaurants.each do |r|
+          dishes = []
+      
+          if params[:tag_id].to_i > 0
+            dishes_w_img = r.dish_deliveries.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images).search_by_tag_id(params[:tag_id])
+          else
+            dishes_w_img = r.dish_deliveries.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
+          end
+      
+          dishes_w_img.each do |dish|
+              dishes.push({
+                :id => dish.id,
+                :name => dish.name,
+                :photo => dish.image_sd,
+                :rating => dish.rating,
+                :votes => dish.votes
+              })
+          end
+          
+          networks.push({:network_id => r.id, :dishes => dishes})
+        end
+      else  
+      
+        restaurants.each do |r|
+          dont_add = 0
+          networks.each do |n|
+            dont_add = 1 && break if r.network_id == n[:network_id]
+          end
+          if dont_add == 0
+            dishes = []
+        
+            if params[:tag_id].to_i > 0
+              dishes_w_img = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images).search_by_tag_id(params[:tag_id])
+            else
+              dishes_w_img = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
+            end
+        
+            dishes_w_img.each do |dish|
+                dishes.push({
+                  :id => dish.id,
+                  :name => dish.name,
+                  :photo => dish.image_sd,
+                  :rating => dish.rating,
+                  :votes => dish.votes
+                })
+            end
+            networks.push({:network_id => r.network_id, :dishes => dishes}) 
+          end
+        end
+      
+      end
     end
 
     return render :json => {
