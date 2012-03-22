@@ -83,7 +83,7 @@ namespace :fsq do
   
     client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
     i = 0
-    Restaurant.order(:id).each do |r|
+    Restaurant.where('id > 13251')order(:id).each do |r|
       i+= 1
       category_id = []
       if r.fsq_id.blank? && r.created_at.to_i > Time.parse('2012-02-07 16:30:23').to_i
@@ -91,13 +91,11 @@ namespace :fsq do
         fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lon}", :query => r.name) if r.lat && r.lon && r.name
         if fsq_hash && fsq_hash.groups[0].items.count > 0
 
-          unless fsq_hash.categories.blank?
-            fsq_hash.categories.each do |v|
-              if category = RestaurantCategory.find_by_name(v.name)
-                category_id.push(category.id)
-              else
-                category_id.push(RestaurantCategory.create(:name => v.name).id)
-              end
+          fsq_hash.categories.each do |v|
+            if category = RestaurantCategory.find_by_name(v.name)
+              category_id.push(category.id)
+            else
+              category_id.push(RestaurantCategory.create(:name => v.name).id)
             end
           end
           
@@ -116,13 +114,11 @@ namespace :fsq do
           fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lon}", :query => r.name_eng) if r.lat && r.lon && r.name_eng
           if fsq_hash && fsq_hash.groups[0].items.count > 0
             
-            unless fsq_hash.categories.blank?
-              fsq_hash.categories.each do |v|
-                if category = RestaurantCategory.find_by_name(v.name)
-                  category_id.push(category.id)
-                else
-                  category_id.push(RestaurantCategory.create(:name => v.name).id)
-                end
+            fsq_hash.categories.each do |v|
+              if category = RestaurantCategory.find_by_name(v.name)
+                category_id.push(category.id)
+              else
+                category_id.push(RestaurantCategory.create(:name => v.name).id)
               end
             end
             
@@ -144,13 +140,11 @@ namespace :fsq do
       elsif !r.fsq_id.blank?
         if venue = client.venue(r.fsq_id)
         
-          unless venue.categories.blank?
-            venue.categories.each do |v|
-              if category = RestaurantCategory.find_by_name(v.name)
-                category_id.push(category.id)
-              else
-                category_id.push(RestaurantCategory.create(:name => v.name).id)
-              end
+          venue.categories.each do |v|
+            if category = RestaurantCategory.find_by_name(v.name)
+              category_id.push(category.id)
+            else
+              category_id.push(RestaurantCategory.create(:name => v.name).id)
             end
           end
           
