@@ -112,7 +112,7 @@ class User < ActiveRecord::Base
       :twitter_id => client.user.id,
       :remote_photo_url => client.profile_image
     })
-    user_preference.create({:user_id => user.id})
+    UserPreference.create({:user_id => user.id})
     
     # User.get_user_tw_friends(client.user.id)
     user
@@ -152,7 +152,8 @@ class User < ActiveRecord::Base
       :provider => 'facebook',
       :uid => auth_result["id"], 
     })    
-    user_preference.create({:user_id => user.id})
+    
+    UserPreference.create({:user_id => user.id})
     
     rest.get_connections("me", "friends").each do |f|
       if user_friend = User.find_by_facebook_id(f['id'])
