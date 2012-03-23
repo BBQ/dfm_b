@@ -119,7 +119,6 @@ class User < ActiveRecord::Base
   end
   
   def self.authenticate_by_facebook(access_token)
-    begin
       
       rest = Koala::Facebook::GraphAndRestAPI.new(access_token) # pre-1.2beta
       result = rest.get_object("me")
@@ -132,9 +131,7 @@ class User < ActiveRecord::Base
         user = create_user_from_facebook(rest)
         token = Session.get_token(user)        
       end
-    rescue
-      nil
-    end
+
     {:name => user.name, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id, :twitter_id => user.twitter_id} unless token.nil? 
   end
   
