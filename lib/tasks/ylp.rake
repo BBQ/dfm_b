@@ -17,7 +17,7 @@ namespace :ylp do
     consumer = OAuth::Consumer.new(consumer_key, consumer_secret, {:site => "http://#{api_host}"})
     access_token = OAuth::AccessToken.new(consumer, token, token_secret)
     
-    n = 60 # number of parts devided
+    n = 10 # number of parts devided
     offset = 0
     
     # get sw and ne bounds from google maps api or type it in 
