@@ -22,7 +22,7 @@ class Notification < ActiveRecord::Base
       elsif notification_type == 'comment_on_comment' && user_id_to && review_id 
               alert = "also commented on #{dish_name}"              
               
-              Comment.select(:user_id).where(:review_id => review_id).group(:user_id).each do |c|
+              Comment.select([:user_id, :review_id]).where(:review_id => review_id).group(:user_id).each do |c|
                   if c.user_id != c.review.user_id
                     badge = APN::Notification.where("user_id_to = ? and `read` != 1", c.user_id).count(:id)
                     user_ids_to_array.push({:user_id => c.user_id, :badge => badge}) if c.user_id.to_i != user_id_from
