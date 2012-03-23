@@ -8,11 +8,11 @@ class API < ActiveRecord::Base
   def self.get_dish(user_id, dish_id, type)
     
     if type == 'home_cooked'
-      dish = HomeCook.select([:id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
+      dish = HomeCook.select([:top_user_id, :id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
     elsif type == 'delivery'
-      dish = DishDelivery.select([:id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo, :delivery_id, :price]).find_by_id(dish_id)      
+      dish = DishDelivery.select([:top_user_id, :id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo, :delivery_id, :price]).find_by_id(dish_id)      
     else
-      dish = Dish.select([:id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
+      dish = Dish.select([:top_user_id, :id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
     end
     
     if !dish.nil?
@@ -20,8 +20,7 @@ class API < ActiveRecord::Base
       user_review = Review.select(:rating).find_by_dish_id_and_user_id(dish.id,user_id) if user_id
       subtype = DishSubtype.find_by_id(dish.dish_subtype_id)
       
-      top_expert_id = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0] if Review.find_by_dish_id(dish.id)
-      if user = User.select([:id, :name, :facebook_id]).find_by_id(top_expert_id)
+      if user = User.select([:id, :name, :facebook_id]).find_by_id(dish.top_user_id)
         top_expert = {
           :user_name => user.name,
           :user_photo => user.user_photo,
@@ -169,9 +168,7 @@ class API < ActiveRecord::Base
           })
       end
       
-      top_where = type == 'delivery' ? "restaurant_id = '#{restaurant.id}'" : "network_id = '#{restaurant.network.id}'"
-      top_expert_id = Review.where(top_where).group('user_id').count.max_by{|k,v| v}[0] if data_r.reviews.count > 0
-      if user = User.find_by_id(top_expert_id)
+      if user = User.find_by_id(restaurant.top_user_id)
         top_expert = {
           :user_name => user.name,
           :user_photo => user.user_photo,
