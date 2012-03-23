@@ -940,7 +940,7 @@ class ApiController < ApplicationController
             r.network.restaurants.each do |fsq|
               fsq_id_arr.push(fsq.fsq_id) unless fsq.fsq_id.nil?
             end
-            networks.push({:network_id => r.id, :dishes => dishes, :type => nil, :venues => fsq_id_arr ||= []})
+            networks.push({:network_id => r.network_id, :dishes => dishes, :type => nil, :venues => fsq_id_arr ||= []})
           end
         end
       
