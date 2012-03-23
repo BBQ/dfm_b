@@ -225,7 +225,7 @@ class ApiController < ApplicationController
         if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])
 
           client.follower_ids.ids.each do |id|
-            if user = User.select([:id, :name, :photo, :facebook_id]).find_by_twitter_id(id)
+            if user = User.select([:id, :name, :photo, :twitter_id]).find_by_twitter_id(id)
               data.each do |d|
                 if d[:id] == user.id
                   d[:twitter] = user.twitter_id.to_s
