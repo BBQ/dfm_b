@@ -800,7 +800,7 @@ class ApiController < ApplicationController
       filters.push(etc.join(' AND ')) if etc.count > 0
       all_filters = filters.join(' AND ')
     
-      if params[:open_now]
+      if params[:open_now].to_i == 1
         wday = Date.today.strftime("%a").downcase
         now = Time.now.strftime("%H%M")
         open_now = "#{now} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
