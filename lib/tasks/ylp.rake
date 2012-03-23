@@ -24,21 +24,24 @@ namespace :ylp do
     # New York
     # http://maps.googleapis.com/maps/api/geocode/json?address=New%20York%20city&sensor=true
     
-    x1 = -74.259087 # sw_longitude
-    x2 = -73.700272 # ne_longitude
+    sw_longitude = -74.259087 # sw_longitude
+    sw_latitude = 40.495908 # sw_latitude
+
+    ne_longitude = -73.700272 # ne_longitude  
+    ne_latitude = 40.915241 # ne_latitude
     
-    y1 = 40.495908 # sw_latitude
-    y2 = 40.915241 # ne_latitude
-    
-    nX = (x2 - x1)/n
-    nY = (y2 - y1)/n 
+    nY = (ne_longitude - sw_longitude)/n
+    nX = (ne_latitude - sw_latitude)/n 
     
     n.times do
-      sw_n_longitude = x1
-      ne_n_longitude = sw_n_longitude + nX
+      # sw_n_longitude = x1
+      #    ne_n_longitude = sw_n_longitude + nX
       
-      sw_n_latitude = y1
-      ne_n_latitude = sw_n_latitude + nY
+      sw_n_latitude = sw_latitude
+      ne_n_latitude = sw_n_latitude + nX
+      
+      ne_n_longitude = ne_longitude
+      sw_n_longitude = sw_longitude - nY
     
       # string = Net::HTTP.get("www.yelp.com", "/search/snippet?attrs=&cflt=&cut=1&find_desc=restaurants&find_loc=New+York,+NY&l=g:#{sw_n_longitude},#{sw_n_latitude},#{ne_n_longitude},#{ne_n_latitude}&mapsize=large&parent_request_id=1336b66ac168282e&rpp=40&show_filters=1&sortby=best_match&start=0")
     # '  http://www.yelp.com/search?attrs=&cflt=&find_desc=restaurants&find_loc=New+York%2C+NY&l=g%3A-74.35066223144531%2C40.79613778833378%2C-74.21333312988281%2C40.90001986856228&parent_request_id=1336b66ac168282e&rpp=40&sortby=best_match&start=40"'
@@ -47,8 +50,8 @@ namespace :ylp do
       path = args[:path] ||= "/v2/search?term=restaurants&offset=#{offset}&bounds=#{bounds}"
       p access_token.get(path).body
         
-      x1 = ne_n_longitude
-      y1 = ne_n_latitude
+      sw_latitude = ne_n_latitude
+      ne_longitude = sw_n_longitude
     end
     
   end
