@@ -175,23 +175,25 @@ class API < ActiveRecord::Base
           :user_id => user.id
         }
       end
-            
-      
-      popularity = 0
+
       if type == 'delivery'
         better_restaurants = Delivery.where('rating >= ?', restaurant.rating).count.to_f
-        popularity = (100 * better_restaurants / Delivery.where('rating > 0').count.to_f).round(0)
-        
+        rating_restaurants = Delivery.where('rating > 0').count.to_f
       else
         better_restaurants = Restaurant.where('restaurants.fsq_checkins_count >= ?', restaurant.fsq_checkins_count).count.to_f
-        popularity = (100 * better_restaurants / Restaurant.where('restaurants.fsq_checkins_count > 0').count.to_f).round(0)
-        
+        rating_restaurants = Restaurant.where('restaurants.fsq_checkins_count > 0').count.to_f
       end
-
-      popularity = case popularity
-        when 0..33 then "Very popular"
-        when 34..66 then "Popular"
-        when 67..100 then "Not so popular"
+      
+      if rating_restaurants != 0
+        popularity = case (100 * better_restaurants / rating_restaurants).round(0)  
+          
+          when 0..33 then "Very popular"
+          when 34..66 then "Popular"
+          when 67..100 then "Not so popular"
+        end        
+      else
+        popularity = "Not so popular"
+        
       end
             
       restaurant_categories = []
