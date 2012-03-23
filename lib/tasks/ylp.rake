@@ -18,6 +18,7 @@ namespace :ylp do
     access_token = OAuth::AccessToken.new(consumer, token, token_secret)
     
     n = 60 # number of parts devided
+    offset = 0
     
     # get sw and ne bounds from google maps api or type it in 
     # New York
