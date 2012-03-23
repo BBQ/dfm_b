@@ -157,7 +157,7 @@ class User < ActiveRecord::Base
     
     rest.get_connections("me", "friends").each do |f|
       if user_friend = User.find_by_facebook_id(f['id'])
-        Notification.push(user.id, 'new_fb_user', user_friend.id)
+        Notification.send(user.id, 'new_fb_user', user_friend.id)
       end
     end
     
