@@ -148,7 +148,7 @@ class User < ActiveRecord::Base
     })
     
     Authentication.create({
-      :user_id => id,
+      :user_id => user.id,
       :provider => 'facebook',
       :uid => auth_result["id"], 
     })    
