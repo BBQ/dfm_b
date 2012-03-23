@@ -214,7 +214,7 @@ class API < ActiveRecord::Base
               :image_hd => restaurant.find_image && restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
               :description => restaurant.description ||= ''
           },
-          :restaurant_categories => restaurant_categories ? restaurant_categories.join(', ') : []
+          :restaurant_categories => restaurant_categories ? restaurant_categories.join(', ') : [],
           :restaurants => restaurants,
           :type => type,
           :error => {:description => '', :code => ''}
