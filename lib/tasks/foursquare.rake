@@ -83,7 +83,7 @@ namespace :fsq do
   
     client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
     i = 0
-    Restaurant.where('id > 13251').order(:id).each do |r|
+    Restaurant.order(:id).each do |r|
       i+= 1
       category_id = []
       if r.fsq_id.blank? && r.created_at.to_i > Time.parse('2012-02-07 16:30:23').to_i
@@ -107,7 +107,7 @@ namespace :fsq do
           r.fsq_users_count = fsq_hash.groups[0].items.first.stats.usersCount
           r.fsq_tip_count = fsq_hash.groups[0].items.first.stats.tipCount
           r.fsq_id = fsq_hash.groups[0].items.first.id
-          r.restaurant_categories = category_id ? category_id.join(',') : '',
+          r.restaurant_categories = category_id.count > 0 ? category_id.join(',') : 0
           r.save
           p "#{i} #{r.id}: #{r.fsq_id} #{r.name} #{r.address}"
         else
@@ -130,7 +130,7 @@ namespace :fsq do
             r.fsq_users_count = fsq_hash.groups[0].items.first.stats.usersCount
             r.fsq_tip_count = fsq_hash.groups[0].items.first.stats.tipCount
             r.fsq_id = fsq_hash.groups[0].items.first.id
-            r.restaurant_categories = category_id ? category_id.join(',') : '',
+            r.restaurant_categories = category_id.count > 0 ? category_id.join(',') : 0
             r.save
             p "#{i} #{r.id}: #{r.fsq_id} #{r.name} #{r.address}"
           else
@@ -155,10 +155,10 @@ namespace :fsq do
           r.fsq_checkins_count = venue.stats.checkinsCount
           r.fsq_users_count = venue.stats.usersCount
           r.fsq_tip_count = venue.stats.tipCount
-          r.restaurant_categories = category_id ? category_id.join(',') : '',
+          r.restaurant_categories = category_id.count > 0 ? category_id.join(',') : 0
         
           r.save
-          p "Update: #{i} #{r.id}: #{r.fsq_id} #{r.name} #{r.address}"
+          p "Update: #{i} #{r.id}: #{r.fsq_id} #{r.name} - #{r.fsq_checkins_count} #{r.address}"
         end
       end
     end
