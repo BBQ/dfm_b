@@ -781,9 +781,9 @@ class ApiController < ApplicationController
       end
       
     else  
-    
+      # TODO: merge to 4 bit mask
       filters = []
-      if params[:bill] && params[:bill].length == 5 && params[:bill] != '0000' && params[:bill] != '1111'
+      if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
         bill = []
         bill.push('bill = 1') if params[:bill][0] == '1'
         bill.push('bill = 2') if params[:bill][1] == '1'
