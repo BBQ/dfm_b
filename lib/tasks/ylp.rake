@@ -1,8 +1,9 @@
 # encoding: utf-8
 namespace :ylp do
   
-  # require 'rubygems'
   require 'oauth'
+  require 'json'
+  require 'net/http'
   
   task :parse, [:path] => :environment do |t, args|
     
@@ -16,9 +17,7 @@ namespace :ylp do
     consumer = OAuth::Consumer.new(consumer_key, consumer_secret, {:site => "http://#{api_host}"})
     access_token = OAuth::AccessToken.new(consumer, token, token_secret)
     
-    n = 20 # number of parts devided
-    limit = 20 # places limit
-    offset = 0
+    n = 60 # number of parts devided
     
     # get sw and ne bounds from google maps api or type it in 
     # New York
@@ -40,10 +39,12 @@ namespace :ylp do
       sw_n_latitude = y2
       ne_n_latitude = sw_n_latitude - nY
     
-      bounds = "#{sw_n_latitude},#{sw_n_longitude}%7C#{ne_n_latitude},#{ne_n_longitude}"
-      path = args[:path] ||= "/v2/search?term=restaurants,bars&offset=#{offset}&bounds=#{bounds}"
-      p access_token.get(path).body
-      # sleep 1
+    #   string = Net::HTTP.get('www.yelp.com', '/search/snippet?attrs=&cflt=&cut=1&find_desc=&find_loc=Hastings-on-Hudson,+NY+10706&l=g%3A-73.84273767471313,40.97358006004789,-73.8384461402893,40.97682014054761&mapsize=large&parent_request_id=1336b66ac168282e&rpp=10&show_filters=0&sortby=best_match&start=0')
+    # '  http://www.yelp.com/search?attrs=&cflt=&find_desc=restaurants&find_loc=New+York%2C+NY&l=g%3A-74.35066223144531%2C40.79613778833378%2C-74.21333312988281%2C40.90001986856228&parent_request_id=1336b66ac168282e&rpp=40&sortby=best_match&start=40"'
+    # 
+      bounds = "#{sw_n_longitude},#{sw_n_latitude}%7C#{ne_n_longitude},#{ne_n_latitude}"
+      path = args[:path] ||= "/v2/search?term=restaurants&offset=#{offset}&bounds=#{bounds}"
+      # p access_token.get(path).body
         
       x1 = ne_n_longitude
       y1 = ne_n_latitude
