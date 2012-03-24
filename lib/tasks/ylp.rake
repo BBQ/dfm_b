@@ -17,7 +17,7 @@ namespace :ylp do
     consumer = OAuth::Consumer.new(consumer_key, consumer_secret, {:site => "http://#{api_host}"})
     access_token = OAuth::AccessToken.new(consumer, token, token_secret)
     
-    n = 10 # number of parts devided
+    n = 2 # number of parts devided
     offset = 0
     
     # get sw and ne bounds from google maps api or type it in 
@@ -41,7 +41,7 @@ namespace :ylp do
       ne_n_latitude = sw_n_latitude + nX
       
       ne_n_longitude = ne_longitude
-      sw_n_longitude = sw_longitude - nY
+      sw_n_longitude = ne_n_longitude - nY
     
       # string = Net::HTTP.get("www.yelp.com", "/search/snippet?attrs=&cflt=&cut=1&find_desc=restaurants&find_loc=New+York,+NY&l=g:#{sw_n_longitude},#{sw_n_latitude},#{ne_n_longitude},#{ne_n_latitude}&mapsize=large&parent_request_id=1336b66ac168282e&rpp=40&show_filters=1&sortby=best_match&start=0")
     # '  http://www.yelp.com/search?attrs=&cflt=&find_desc=restaurants&find_loc=New+York%2C+NY&l=g%3A-74.35066223144531%2C40.79613778833378%2C-74.21333312988281%2C40.90001986856228&parent_request_id=1336b66ac168282e&rpp=40&sortby=best_match&start=40"'
