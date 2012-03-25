@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120320130605) do
+ActiveRecord::Schema.define(:version => 20120325182025) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -106,6 +106,7 @@ ActiveRecord::Schema.define(:version => 20120320130605) do
     t.datetime "updated_at"
     t.string   "name_eng"
     t.integer  "top_user_id", :default => 0
+    t.string   "fsq_id"
   end
 
   add_index "deliveries", ["address"], :name => "index_deliveries_on_address"
@@ -175,6 +176,18 @@ ActiveRecord::Schema.define(:version => 20120320130605) do
     t.integer  "count_likes",       :default => 0
     t.integer  "no_rate_order",     :default => 0
   end
+
+  create_table "dish_delivery_category_orders", :force => true do |t|
+    t.integer  "delivery_id",                     :null => false
+    t.integer  "dish_category_id",                :null => false
+    t.integer  "order",            :default => 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "dish_delivery_category_orders", ["delivery_id"], :name => "index_dish_delivery_category_orders_on_delivery_id"
+  add_index "dish_delivery_category_orders", ["dish_category_id"], :name => "index_dish_delivery_category_orders_on_dish_category_id"
+  add_index "dish_delivery_category_orders", ["id"], :name => "index_dish_delivery_category_orders_on_id"
 
   create_table "dish_delivery_comments", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -702,5 +715,70 @@ ActiveRecord::Schema.define(:version => 20120320130605) do
 
   add_index "users", ["facebook_id"], :name => "index_users_on_facebook_id"
   add_index "users", ["remember_me_token"], :name => "index_users_on_remember_me_token"
+
+  create_table "ylp_dishes", :force => true do |t|
+    t.string   "ylp_restaurant_id"
+    t.string   "name"
+    t.string   "price"
+    t.string   "currency"
+    t.string   "description"
+    t.string   "dish_category"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "ylp_dishes", ["id"], :name => "index_ylp_dishes_on_id"
+  add_index "ylp_dishes", ["name"], :name => "index_ylp_dishes_on_name"
+  add_index "ylp_dishes", ["ylp_restaurant_id"], :name => "index_ylp_dishes_on_ylp_restaurant_id"
+
+  create_table "ylp_restaurants", :force => true do |t|
+    t.string   "name"
+    t.string   "ylp_uri"
+    t.string   "lat"
+    t.string   "lng"
+    t.string   "rating"
+    t.string   "review_count"
+    t.string   "category"
+    t.string   "address"
+    t.string   "phone"
+    t.string   "web"
+    t.string   "transit"
+    t.string   "hours"
+    t.string   "parking"
+    t.string   "cc"
+    t.string   "price"
+    t.string   "attire"
+    t.string   "groups"
+    t.string   "kids"
+    t.string   "reservation"
+    t.string   "delivery"
+    t.string   "takeout"
+    t.string   "table_service"
+    t.string   "outdoor_seating"
+    t.string   "wifi"
+    t.string   "meal"
+    t.string   "alcohol"
+    t.string   "noise"
+    t.string   "ambience"
+    t.string   "tv"
+    t.string   "caters"
+    t.string   "wheelchair_accessible"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "fsq_id"
+    t.string   "fsq_name"
+    t.string   "fsq_address"
+    t.string   "fsq_lat"
+    t.string   "fsq_lng"
+    t.string   "fsq_checkins_count"
+    t.string   "fsq_users_count"
+    t.string   "fsq_tip_count"
+    t.string   "restaurant_categories"
+    t.string   "city"
+    t.boolean  "has_menu"
+  end
+
+  add_index "ylp_restaurants", ["fsq_id"], :name => "index_ylp_restaurants_on_fsq_id"
+  add_index "ylp_restaurants", ["ylp_uri"], :name => "index_ylp_restaurants_on_ylp_uri"
 
 end

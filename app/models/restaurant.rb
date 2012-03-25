@@ -60,7 +60,6 @@ class Restaurant < ActiveRecord::Base
          :fsq_name => venue.name,
          :fsq_address => venue.location.address,
          :source => 'foursquare',
-         :name => venue.name,
          :phone => venue.contact.formattedPhone,
          :restaurant_categories => category_id.join(','),
          :network_id => network_id
