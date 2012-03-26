@@ -7,58 +7,192 @@ namespace :ylp do
   require 'open-uri'
   require 'nokogiri'
   
+  task :copy => :environment do
+    YlpRestaurant.select([:id, :name, :city, :db_status, :ylp_uri]).group(:name).where('db_status = 0').order(:id).each do |r|
+      
+      if n = Network.find_by_name_and_city(r.name, r.city)
+        network_id = n.id
+      elsif n = Network.create(:name => r.name, :city => r.city)
+        network_id = n.id
+      end
+      
+      p "Network #{network_id} #{n.name}"
+      
+      YlpRestaurant.where(:name => r.name).each do |d|
+        category_id = []  
+        cat = d.category unless cat = d.restaurant_categories
+        
+        cat.split(',').each do |name|
+          if category = RestaurantCategory.find_by_name(name)
+            category_id.push(category.id)
+          else
+            category_id.push(RestaurantCategory.create(:name => name).id)
+          end
+        end
+        
+        p " Restaurant #{d.name} #{d.address}"
+        p " Categoties #{category_id.join(',')}"
+        
+        data = {}  
+        data[:transit] = d.transit
+        data[:attire] = d.attire
+        data[:caters] = d.caters
+        data[:ambience] = d.ambience
+
+        data[:name] = d.name
+        data[:city] = d.city
+        data[:network_id] = network_id
+
+        data[:lon] = d.lng
+        data[:lat] = d.lat
+        data[:fsq_lng] = d.fsq_lng unless d.fsq_lng.blank?
+        data[:fsq_lat] = d.fsq_lat  unless d.fsq_lat.blank?
+        data[:address] = d.address? ? d.address : d.fsq_address ||= nil
+        data[:phone] = d.phone
+        data[:web] = d.web
+
+        data[:wifi] = d.wifi
+        data[:terrace] = d.outdoor_seating
+        data[:cc] = d.cc
+        data[:source] = 'ylp'
+        data[:time] = d.hours
+
+        data[:reservation] = d.reservation
+        data[:delivery] = d.delivery
+        data[:takeaway] = d.takeout
+        data[:service] = d.table_service
+        data[:good_for_kids] = d.kids
+        data[:good_for_meal] = d.meal
+        data[:good_for_groups] = d.groups
+        data[:alcohol] = d.alcohol
+        data[:noise] = d.noise
+        data[:tv] = d.tv
+        data[:disabled] = d.wheelchair_accessible
+        data[:parking] = d.parking
+        data[:bill] = d.price
+        data[:fsq_checkins_count] = d.fsq_checkins_count
+        data[:fsq_tip_count] = d.fsq_tip_count
+        data[:fsq_users_count] = d.fsq_users_count
+        data[:fsq_name] = d.fsq_name
+        data[:fsq_address] = d.fsq_address
+        data[:fsq_id] = d.fsq_id
+        data[:restaurant_categories] = category_id.join(',')
+      
+        if nr = Restaurant.find_by_address_and_network_id(data[:address],data[:network_id])
+          p "  Existed!"
+        else
+          nr = Restaurant.create(data)
+          p "  Created!"
+        end
+        
+      end
+      
+      if r_menu = YlpRestaurant.where("name = ? AND has_menu = 1", r.name).first
+        i = 0
+        dish_category_id_new = 0
+        r_menu.ylp_dishes.each do |yd|
+          unless Dish.find_by_name_and_network_id(yd.name, network_id)
+            
+            if dish_category = DishCategory.find_by_name(yd.name)
+              dish_category_id = dish_category.id
+            else
+              dish_category_id = DishCategory.create({:name => yd.name}).id
+            end
+           
+            if dish_category_id_new != dish_category_id
+              i += 1
+              Restaurant.where(:network_id => network_id).each do |cr|
+                dish_category_order_data = {
+                  :restaurant_id => cr.id,
+                  :network_id => network_id,
+                  :dish_category_id => dish_category_id,
+                  :order => i
+                }
+
+                DishCategoryOrder.create(dish_category_order_data)
+                dish_category_id_new = dish_category_id
+              end
+            end
+          
+            data = {
+              :network_id => network_id,
+              :name => yd.name,
+              :price => yd.price ||= 0,
+              :currency => yd.currency ||= '',
+              :description => yd.description,
+              :dish_category_id => dish_category_id
+            }
+            Dish.create(data)
+            
+          end
+        end
+        p "  menu copied to #{network_id}"
+      end
+      
+    end
+  end  
+  
+  #3873, 18435, 18536!, 6736, 5769, 13250
   task :get_fsq  => :environment do
     YlpRestaurant.where('has_menu IS NULL').order(:id).each do |r|
-      
-      client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
-      fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lng}", :query => r.name) if r.lat && r.lng && r.name
-      
-      if fsq_hash && fsq_hash.groups[0].items.count > 0
+      p r.id
+      if r.has_menu.nil?
+        client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
+        fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lng}", :query => r.name) if r.lat && r.lng && r.name
+    
+        if fsq_hash && fsq_hash.groups[0].items.count > 0
 
-        category = []
-        fsq_hash.categories.each do |v|
-          category.push(v.name)
+          category = []
+          fsq_hash.groups[0].items.first.categories.each do |v|
+            category.push(v.name)
+          end
+
+          r.fsq_id = fsq_hash.groups[0].items.first.id        
+          r.fsq_name = fsq_hash.groups[0].items.first.name
+          r.fsq_address = fsq_hash.groups[0].items.first.location.address
+          r.fsq_lat = fsq_hash.groups[0].items.first.location.lat
+          r.fsq_lng = fsq_hash.groups[0].items.first.location.lng
+          r.fsq_checkins_count = fsq_hash.groups[0].items.first.stats.checkinsCount
+          r.fsq_users_count = fsq_hash.groups[0].items.first.stats.usersCount
+          r.fsq_tip_count = fsq_hash.groups[0].items.first.stats.tipCount
+          r.restaurant_categories = category.count > 0 ? category.join(',') : 0
+          r.save  
+          p "#{r.id}:#{r.fsq_id} #{r.name} #{r.address}"
+    
+          r.has_menu = 0
+          client.venue_menu(r.fsq_id).each do |m|           
+            m.entries.fourth.second.items.each do |i|
+              i.entries.third.second.items.each do |d|  
+
+                if d.prices
+                  if price = /(.)(\d+\.\d+)/.match(d.prices.first)
+                    price = price[2]
+                    currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
+                  else
+                    price = /(.)(\d+\.\d+)/.match(d.prices.second)[2]
+                    currency = /(.)(\d+\.\d+)/.match(d.prices.second)[1]
+                  end
+                end
+
+                data = {
+                :ylp_restaurant_id => r.id,
+                :name => d.name,
+                :price => price ||= 0,
+                :currency => currency ||= '',
+                :description => d.description,
+                :dish_category => i.name,
+                }
+                YlpDish.create(data) unless YlpDish.find_by_name_and_ylp_restaurant_id(d.name, r.id)
+
+              end
+            end
+            r.has_menu = 1
+            p "   --- menu found! #{r.id}"
+          end
+          r.save
         end
-
-        r.fsq_id = fsq_hash.groups[0].items.first.id        
-        r.fsq_name = fsq_hash.groups[0].items.first.name
-        r.fsq_address = fsq_hash.groups[0].items.first.location.address
-        r.fsq_lat = fsq_hash.groups[0].items.first.location.lat
-        r.fsq_lng = fsq_hash.groups[0].items.first.location.lng
-        r.fsq_checkins_count = fsq_hash.groups[0].items.first.stats.checkinsCount
-        r.fsq_users_count = fsq_hash.groups[0].items.first.stats.usersCount
-        r.fsq_tip_count = fsq_hash.groups[0].items.first.stats.tipCount
-        r.restaurant_categories = category.count > 0 ? category.join(',') : 0
-        r.save
-        p "#{r.id}:#{r.fsq_id} #{r.name} #{r.address}"
-        
-        client.venue_menu(r.fsq_id).each do |m|           
-           m.entries.fourth.second.items.each do |i|
-             i.entries.third.second.items.each do |d|  
-
-               if d.prices 
-                 price = /(.)(\d+\.\d+)/.match(d.prices.first)[2]
-                 currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
-               end
-
-               data = {
-                 :ylp_restaurant_id => r.id,
-                 :name => d.name,
-                 :price => price ||= 0,
-                 :currency => currency ||= '',
-                 :description => d.description,
-                 :dish_category => i.name,
-               }
-               YlpDish.create(data) unless YlpDish.find_by_name_and_ylp_restaurant_id(d.name, r.id)
-
-           end
-         end
-         r.has_menu = 1
-         r.save
-         p "   --- menu found! #{r.id}"
-        end
-         
       end
+        
     end
   end
   
@@ -97,8 +231,9 @@ namespace :ylp do
         headers['Cookie'] = f.meta['set-cookie']
       end
     end
-    
+  
   end
+  
 end
 
 def go_sub(url, headers)
@@ -155,7 +290,7 @@ def go_sub(url, headers)
           YlpRestaurant.create(data)
           p "Created: #{ds['respos']}: #{ds['url']}"
         end
-end
+      end
     end
     go_sub(json['seoPaginationUrls']['relNextUrl'], headers) unless json['seoPaginationUrls']['relNextUrl'].blank?
   end

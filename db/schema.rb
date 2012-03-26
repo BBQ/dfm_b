@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120325182025) do
+ActiveRecord::Schema.define(:version => 20120326121720) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -535,7 +535,7 @@ ActiveRecord::Schema.define(:version => 20120325182025) do
     t.string   "source"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "children"
+    t.string   "good_for_kids"
     t.string   "banquet"
     t.string   "reservation"
     t.string   "delivery"
@@ -567,6 +567,12 @@ ActiveRecord::Schema.define(:version => 20120325182025) do
     t.integer  "top_user_id",                         :default => 0
     t.string   "restaurant_categories",               :default => "0"
     t.boolean  "delivery_only"
+    t.string   "attire"
+    t.string   "transit"
+    t.string   "caters"
+    t.string   "ambience"
+    t.string   "good_for_groups"
+    t.string   "good_for_meal"
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"
@@ -776,6 +782,7 @@ ActiveRecord::Schema.define(:version => 20120325182025) do
     t.string   "restaurant_categories"
     t.string   "city"
     t.boolean  "has_menu"
+    t.integer  "our_network_id"
   end
 
   add_index "ylp_restaurants", ["fsq_id"], :name => "index_ylp_restaurants_on_fsq_id"

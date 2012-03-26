@@ -87,9 +87,14 @@ class Restaurant < ActiveRecord::Base
 
              i.entries.third.second.items.each do |d|  
 
-               if d.prices 
-                 price = /(.)(\d+\.\d+)/.match(d.prices.first)[2]
-                 currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
+               if d.prices
+                 if price = /(.)(\d+\.\d+)/.match(d.prices.first)
+                   price = price[2]
+                   currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
+                 else
+                   price = /(.)(\d+\.\d+)/.match(d.prices.second)[2]
+                   currency = /(.)(\d+\.\d+)/.match(d.prices.second)[1]
+                 end
                end
 
                data = {
