@@ -176,25 +176,25 @@ class API < ActiveRecord::Base
         }
       end
 
-      if type == 'delivery'
-        better_restaurants = Delivery.where('rating >= ?', restaurant.rating).count.to_f
-        rating_restaurants = Delivery.where('rating > 0').count.to_f
-      else
-        better_restaurants = Restaurant.where('restaurants.fsq_checkins_count >= ?', restaurant.fsq_checkins_count).count.to_f
-        rating_restaurants = Restaurant.where('restaurants.fsq_checkins_count > 0').count.to_f
-      end
-      
-      if rating_restaurants != 0
-        popularity = case (100 * better_restaurants / rating_restaurants).round(0)  
-          
-          when 0..33 then "Very popular"
-          when 34..66 then "Popular"
-          when 67..100 then "Not so popular"
-        end        
-      else
-        popularity = "Not so popular"
-        
-      end
+      # if type == 'delivery'
+      #   better_restaurants = Delivery.where('rating >= ?', restaurant.rating).count.to_f
+      #   rating_restaurants = Delivery.where('rating > 0').count.to_f
+      # else
+      #   better_restaurants = Restaurant.where('restaurants.fsq_checkins_count >= ?', restaurant.fsq_checkins_count).count.to_f
+      #   rating_restaurants = Restaurant.where('restaurants.fsq_checkins_count > 0').count.to_f
+      # end
+      # 
+      # if rating_restaurants != 0
+      #   popularity = case (100 * better_restaurants / rating_restaurants).round(0)  
+      #     
+      #     when 0..33 then "Very popular"
+      #     when 34..66 then "Popular"
+      #     when 67..100 then "Not so popular"
+      #   end        
+      # else
+      #   popularity = "Not so popular"
+      #   
+      # end
             
       restaurant_categories = []
       if type != 'delivery'
@@ -206,7 +206,7 @@ class API < ActiveRecord::Base
       data = {
           :network_ratings => data_r.rating,
           :network_reviews_count => data_r.reviews.count,
-          :popularity => popularity,
+          :popularity => restaurant.fsq_checkins_count ||= 0,
           :restaurant_name => restaurant.name,
           :reviews => review_data,
           :best_dishes => best_dishes ||= '',

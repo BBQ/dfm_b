@@ -187,11 +187,22 @@ class Restaurant < ActiveRecord::Base
     self[:votes] = self.network.votes
     self[:fsq_id] = self.fsq_id || ''
         
-    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon, :network_id, :fsq_id], :methods => [:has_menu, :thumb])
+    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon, :network_id, :fsq_id], :methods => [:has_menu, :thumb, :categories])
   end
   
   def has_menu
     self.dishes.count > 0 ? 1 : 0
+  end
+  
+  def categories
+    c = []
+    restaurant_categories.split(',').each do |cid|
+      if rc = RestaurantCategory.find_by_id(cid)
+        c.push(rc.name)
+      end
+    end
+    
+    c.join(', ')
   end
   
   def find_image

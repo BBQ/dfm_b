@@ -783,7 +783,7 @@ class ApiController < ApplicationController
     else  
       # TODO: merge to 4 bit mask
       filters = []
-      if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
+      if params[:bill] && params[:bill].length == 4 && params[:bill] != '0000' && params[:bill] != '1111'
         bill = []
         bill.push('bill = 1') if params[:bill][0] == '1'
         bill.push('bill = 2') if params[:bill][1] == '1'
@@ -883,7 +883,7 @@ class ApiController < ApplicationController
       restaurants = restaurants.where("network_id IN (#{params[:network_id]})") unless params[:network_id].blank?
     
       if params[:type] != 'delivery'
-        restaurants = restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')    
+        restaurants = restaurants.select('restaurant_categories, restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')    
       end
       restaurants = restaurants.limit("#{offset}, #{limit}")
     
@@ -1396,7 +1396,7 @@ class ApiController < ApplicationController
         Notification.send(r.user_id, 'dishin', nil, dish_name, nil, nil, r.id)        
 
         unless r.friends.blank?
-          Notification.send(r.user_id, 'tagged', nil, nil, restaurant_name, r.friends)
+          Notification.send(r.user_id, 'tagged', nil, nil, restaurant_name, r.friends, r.id)
           Notification.send(r.user_id, 'tagged_by_friend', nil, nil, restaurant_name, r.friends, r.id)
         end
 

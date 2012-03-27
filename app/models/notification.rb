@@ -49,17 +49,19 @@ class Notification < ActiveRecord::Base
               
               user_ids_to_array.push({:user_id => user_id_to, :badge => badge})
               
-      elsif notification_type == 'tagged' && friends
-              alert = restaurant_name.nil? ? "tagged you in dish-in" : "tagged you at #{restaurant_name}"
+      elsif notification_type == 'tagged' && friends && review_id
+              if d = Dish.find_by_review_id(review_id)
+                alert = restaurant_name.nil? ? "tagged you in dish-in #{d.name}" : "tagged you at #{restaurant_name}"
               
-              friends.split(',').each do |t|  
-                  if user = User.find_by_id(t)
+                friends.split(',').each do |t|  
+                    if user = User.find_by_id(t)
                     
-                    badge = APN::Notification.where("user_id_to = ? and `read` != 1", t).count(:id)
-                    user_ids_to_array.push({:user_id => t, :badge => badge}) if t.to_i != user_id_from
+                      badge = APN::Notification.where("user_id_to = ? and `read` != 1", t).count(:id)
+                      user_ids_to_array.push({:user_id => t, :badge => badge}) if t.to_i != user_id_from
                     
-                  end
+                    end
                 
+                end
               end
         
       elsif notification_type == 'tagged_by_friend' && restaurant_name && friends
