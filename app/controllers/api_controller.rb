@@ -562,7 +562,7 @@ class ApiController < ApplicationController
           dishes = DishDelivery.select([:id, :name, :rating, :votes, :photo, :delivery_id]).order("votes DESC, photo DESC")
         else      
           dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count]).order("votes DESC, photo DESC, fsq_checkins_count DESC")
-          dishes = dishes..where("network_id IN (#{networks.join(',')})") if networks.count > 0
+          dishes = dishes.where("network_id IN (#{networks.join(',')})") if networks.count > 0
           dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
           dishes = dishes.search(params[:search]) unless params[:search].blank?
         end
