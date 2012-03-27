@@ -35,6 +35,10 @@ class Comment < ActiveRecord::Base
     if comment = Comment.find_by_id(id)
       comment.review.count_comments -= 1 
       comment.review.save
+      
+      APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(comment.user_id,comment.review_id,'comment').destroy
+      APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(comment.user_id,comment.review_id,'comment_on_comment').destroy
+      
       comment.destroy
       1
     else

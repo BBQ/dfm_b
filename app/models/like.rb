@@ -3,6 +3,9 @@ class Like < ActiveRecord::Base
   belongs_to :review
   belongs_to :user
   
+  
+  
+  
   def self.save(user_id, review_id, self_review)
     unless self_review.blank?
       dish_id = review_id
@@ -25,6 +28,7 @@ class Like < ActiveRecord::Base
           review.count_likes -= 1 
           review.save
           like.destroy
+          APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(user_id,review_id,'like').destroy
         else
           Like.create({:user_id => user_id, :review_id => review_id})
           review.count_likes += 1 

@@ -742,7 +742,7 @@ class ApiController < ApplicationController
     if top_user_id > 0
       
       networks = []
-      delivery = Delivery.select('deliveries.photo, deliveries.fsq_id, deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("top_user_id = ?",top_user_id).order("rating DESC, votes DESC")
+      delivery = Delivery.select('deliveries.photo, deliveries.fsq_id, deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("top_user_id = ?",top_user_id).order("(rating - 3.5)*votes DESC")
       
       delivery.each do |r|
         dishes = []    
@@ -789,7 +789,7 @@ class ApiController < ApplicationController
       end
       
     else  
-      # TODO: merge to 4 bit mask
+      
       if params[:type] != 'delivery'
         filters = []
         if params[:bill] && params[:bill].length == 4 && params[:bill] != '0000' && params[:bill] != '1111'
@@ -844,7 +844,7 @@ class ApiController < ApplicationController
     
     
       if params[:type] == 'delivery'
-        restaurants = Delivery.select('deliveries.photo, deliveries.fsq_id, deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("top_user_id = ?",top_user_id).order("rating DESC, votes DESC")
+        restaurants = Delivery.select('deliveries.photo, deliveries.fsq_id, deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("top_user_id = ?",top_user_id).order("(rating - 3.5)*votes DESC")
       else
         if params[:sort] == 'distance'
           if radius
@@ -861,7 +861,7 @@ class ApiController < ApplicationController
           end
           restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
           #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
-          ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
+          ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("restaurants.fsq_checkins_count DESC, (networks.rating - 3.5)*networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
         else
          if radius
            restaurants = Restaurant.near(lat, lon, radius)
@@ -870,7 +870,7 @@ class ApiController < ApplicationController
          end
          restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
          #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.rating DESC').to_sql}) r1
-         ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("networks.rating DESC, networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
+         ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("(rating - 3.5)*votes DESC").by_distance(lat, lon).group('restaurants.name')
         end
       
       end
@@ -1010,7 +1010,7 @@ class ApiController < ApplicationController
       following_count = Follower.select(:id).where(:user_id => user.id).count(:id) rescue 0 
       followers_count = Follower.select(:id).where(:follow_user_id => user.id).count(:id) rescue 0
             
-      if likes_a = Review.select([:id, :photo]).where('id IN (SELECT review_id FROM likes WHERE user_id = ?)', user.id)
+      if likes_a = Review.select([:id, :photo]).where('id IN (SELECT review_id FROM likes WHERE user_id = ?)', user.id).order('id DESC')
         likes = {:data => [], :count => 0}
         
         likes_a.each do |l|
@@ -1022,7 +1022,7 @@ class ApiController < ApplicationController
         likes[:count] = likes_a.count
       end
       
-      if reviews_a = Review.select([:id, :photo]).where('user_id = ?', user.id)
+      if reviews_a = Review.select([:id, :photo]).where('user_id = ?', user.id).order('id DESC')
         reviews = {:data => [], :count => 0}
         
         reviews_a.each do |r|
@@ -1035,7 +1035,7 @@ class ApiController < ApplicationController
       end
       
       top_in_restaurants = {:data => [], :count => 0}
-      if restaurants = Restaurant.select([:id, :photo, :network_id]).where(:top_user_id => user.id)
+      if restaurants = Restaurant.select([:id, :photo, :network_id]).where(:top_user_id => user.id).order('id DESC')
         
         restaurants.each do |d|
           top_in_restaurants[:data].push({
@@ -1046,7 +1046,7 @@ class ApiController < ApplicationController
         end
       end
       
-      if restaurants = Delivery.select([:id, :photo]).where(:top_user_id => user.id)
+      if restaurants = Delivery.select([:id, :photo]).where(:top_user_id => user.id).order('id DESC')
         restaurants.each do |d|
           top_in_restaurants[:data].push({
             :id => d.id,
@@ -1058,8 +1058,7 @@ class ApiController < ApplicationController
       top_in_restaurants[:count] = top_in_restaurants[:data].count
       
       top_in_dishes = {:data => [], :count => 0}
-      if dishes = Dish.select([:id, :photo]).where(:top_user_id => user.id)
-        
+      if dishes = Dish.select([:id, :photo]).where(:top_user_id => user.id).order('id DESC')
         dishes.each do |d|
           top_in_dishes[:data].push({
             :id => d.id,
@@ -1069,8 +1068,7 @@ class ApiController < ApplicationController
         end
       end
       
-      if dishes = DishDelivery.select([:id, :photo]).where(:top_user_id => user.id)
-        
+      if dishes = DishDelivery.select([:id, :photo]).where(:top_user_id => user.id).order('id DESC')
         dishes.each do |d|
           top_in_dishes[:data].push({
             :id => d.id,
@@ -1080,8 +1078,7 @@ class ApiController < ApplicationController
         end
       end
       
-      if dishes = HomeCook.select([:id, :photo]).where(:top_user_id => user.id)
-        
+      if dishes = HomeCook.select([:id, :photo]).where(:top_user_id => user.id).order('id DESC')
         dishes.each do |d|
           top_in_dishes[:data].push({
             :id => d.id,
