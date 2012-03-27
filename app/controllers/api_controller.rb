@@ -870,7 +870,7 @@ class ApiController < ApplicationController
          end
          restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
          #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.rating DESC').to_sql}) r1
-         ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("(rating - 3.5)*votes DESC").by_distance(lat, lon).group('restaurants.name')
+         ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("(networks.rating - 3.5)*networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
         end
       
       end
