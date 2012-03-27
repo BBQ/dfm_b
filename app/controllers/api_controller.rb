@@ -783,25 +783,24 @@ class ApiController < ApplicationController
       
     else  
       # TODO: merge to 4 bit mask
-      filters = []
-      if params[:bill] && params[:bill].length == 4 && params[:bill] != '0000' && params[:bill] != '1111'
-        bill = []
-        bill.push('bill = 1') if params[:bill][0] == '1'
-        bill.push('bill = 2') if params[:bill][1] == '1'
-        bill.push('bill = 3') if params[:bill][2] == '1'
-        bill.push('bill = 4') if params[:bill][3] == '1'
-        filters.push(bill.join(' OR ')) if bill.count > 0
-      end
-      
       if params[:type] != 'delivery'
+        filters = []
+        if params[:bill] && params[:bill].length == 4 && params[:bill] != '0000' && params[:bill] != '1111'
+          bill = []
+          bill.push('bill = 1') if params[:bill][0] == '1'
+          bill.push('bill = 2') if params[:bill][1] == '1'
+          bill.push('bill = 3') if params[:bill][2] == '1'
+          bill.push('bill = 4') if params[:bill][3] == '1'
+          filters.push(bill.join(' OR ')) if bill.count > 0
+        end
+      
         etc = []
         etc.push('wifi != 0 OR wifi != "нет"') if params[:wifi] == '1'
         etc.push('terrace = 1') if params[:terrace] == '1'
         etc.push('cc = 1') if params[:accept_bank_cards] == '1'
         filters.push(etc.join(' AND ')) if etc.count > 0
+        all_filters = filters.join(' AND ')
       end
-      
-      all_filters = filters.join(' AND ')
     
       if params[:open_now].to_i == 1
         wday = Date.today.strftime("%a").downcase
