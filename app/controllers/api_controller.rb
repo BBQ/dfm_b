@@ -792,11 +792,13 @@ class ApiController < ApplicationController
         bill.push('bill = 4') if params[:bill][3] == '1'
         filters.push(bill.join(' OR ')) if bill.count > 0
       end
-    
-      etc = []
-      etc.push('wifi != 0 OR wifi != "нет"') if params[:wifi] == '1'
-      etc.push('terrace = 1') if params[:terrace] == '1'
-      etc.push('cc = 1') if params[:accept_bank_cards] == '1'
+      
+      if params[:type] != 'delivery'
+        etc = []
+        etc.push('wifi != 0 OR wifi != "нет"') if params[:wifi] == '1'
+        etc.push('terrace = 1') if params[:terrace] == '1'
+        etc.push('cc = 1') if params[:accept_bank_cards] == '1'
+      end
     
       filters.push(etc.join(' AND ')) if etc.count > 0
       all_filters = filters.join(' AND ')
