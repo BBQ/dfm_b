@@ -800,19 +800,20 @@ class ApiController < ApplicationController
         etc.push('cc = 1') if params[:accept_bank_cards] == '1'
         filters.push(etc.join(' AND ')) if etc.count > 0
         all_filters = filters.join(' AND ')
-      end
-    
-      if params[:open_now].to_i == 1
-        wday = Date.today.strftime("%a").downcase
-        now = Time.now.strftime("%H%M")
-        open_now = "#{now} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
       
-        if now.to_i < 1000
-          now24 = now.to_i + 2400
-          open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
-        end    
-        all_filters = all_filters ? all_filters + open_now : open_now
-      end      
+    
+        if params[:open_now].to_i == 1
+          wday = Date.today.strftime("%a").downcase
+          now = Time.now.strftime("%H%M")
+          open_now = "#{now} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+      
+          if now.to_i < 1000
+            now24 = now.to_i + 2400
+            open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+          end    
+          all_filters = all_filters ? all_filters + open_now : open_now
+        end  
+      end    
     
       city_radius = 30
 
