@@ -71,7 +71,9 @@ class Review < ActiveRecord::Base
           else
              dish.save
           end
-          APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(review.user_id,review.id,'dishin').destroy
+          n = APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(review.user_id,review.id,'dishin')
+            n.destroy
+          end
           review.destroy
           
           result = "review with id #{id} gone forever!"

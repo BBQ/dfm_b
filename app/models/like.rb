@@ -28,7 +28,9 @@ class Like < ActiveRecord::Base
           review.count_likes -= 1 
           review.save
           like.destroy
-          APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(user_id,review_id,'like').destroy
+          if n = APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(user_id,review_id,'like')
+            n.destroy
+          end
         else
           Like.create({:user_id => user_id, :review_id => review_id})
           review.count_likes += 1 

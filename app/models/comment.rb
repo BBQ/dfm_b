@@ -36,8 +36,13 @@ class Comment < ActiveRecord::Base
       comment.review.count_comments -= 1 
       comment.review.save
       
-      APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(comment.user_id,comment.review_id,'comment').destroy
-      APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(comment.user_id,comment.review_id,'comment_on_comment').destroy
+      if nc = APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(comment.user_id,comment.review_id,'comment')
+        nc.destroy
+      end
+      
+      if ncc = APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(comment.user_id,comment.review_id,'comment_on_comment')
+        ncc.destroy
+      end
       
       comment.destroy
       1
