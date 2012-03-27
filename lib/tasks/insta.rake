@@ -9,6 +9,9 @@ namespace :inst do
   require 'nokogiri'
   require "uri"
   
+  # Google Capture link
+  # https://www.google.com/recaptcha/api/noscript?k=6Ld8RcESAAAAAEo6_M9BjluesU7nWtdKmhIeU-jD
+  
   task :reg => :environment do
     url = 'http://instagr.am/developer/register/'
     https = 'https://instagr.am'

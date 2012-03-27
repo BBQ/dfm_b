@@ -389,15 +389,22 @@ class ApiController < ApplicationController
   def follow_user
     if !params[:user_id].blank? && !params[:token].blank? && !params[:follow_user_id].blank?
         if Session.check_token(params[:user_id], params[:token]) && params[:user_id] != params[:follow_user_id]
-            if follower = Follower.find_by_user_id_and_follow_user_id(params[:user_id], params[:follow_user_id])
+            follow_user_ids = params[:follow_user_id].split(',')
+          
+            if follow_user_ids.count == 1 && follower = Follower.find_by_user_id_and_follow_user_id(params[:user_id], params[:follow_user_id])
               follower.destroy
               status = 'unfollow'
-            elsif user = User.find_by_id(params[:follow_user_id])
-              Follower.create({:user_id => params[:user_id], :follow_user_id => params[:follow_user_id]})
-              Notification.send(params[:user_id], 'following', params[:follow_user_id])
-              status = 'follow'
             else
-              $error = {:description => 'user or follower not found', :code => 5}
+              follow_user_ids.each do |fu|
+                if user = User.find_by_id(fu)
+                  Follower.create({:user_id => params[:user_id], :follow_user_id => fu})
+                  Notification.send(params[:user_id], 'following', fu)
+                  status = 'follow'
+                else
+                  $error = {:description => 'user or follower not found', :code => 5}
+                end
+              end
+
             end
         end
     else
