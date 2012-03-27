@@ -71,7 +71,7 @@ class Review < ActiveRecord::Base
           else
              dish.save
           end
-          n = APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(review.user_id,review.id,'dishin')
+          if n = APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(review.user_id,review.id,'dishin')
             n.destroy
           end
           review.destroy
