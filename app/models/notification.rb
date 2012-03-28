@@ -50,6 +50,7 @@ class Notification < ActiveRecord::Base
               user_ids_to_array.push({:user_id => user_id_to, :badge => badge})
               
       elsif notification_type == 'tagged' && friends && review_id
+        
               if r = Review.find_by_id(review_id)
 
                 if r.rtype == 'home_cooked'
