@@ -1037,7 +1037,7 @@ class ApiController < ApplicationController
       end
       
       top_in_restaurants = {:data => [], :count => 0}
-      if restaurants = Restaurant.select([:id, :photo, :network_id]).where(:top_user_id => user.id).order('id DESC')
+      if restaurants = Restaurant.select([:id, :photo, :network_id]).where(:top_user_id => user.id).order("(rating - 3.5)*votes DESC")
         
         restaurants.each do |d|
           top_in_restaurants[:data].push({
@@ -1048,7 +1048,7 @@ class ApiController < ApplicationController
         end
       end
       
-      if restaurants = Delivery.select([:id, :photo]).where(:top_user_id => user.id).order('id DESC')
+      if restaurants = Delivery.select([:id, :photo]).where(:top_user_id => user.id).order("(rating - 3.5)*votes DESC")
         restaurants.each do |d|
           top_in_restaurants[:data].push({
             :id => d.id,
