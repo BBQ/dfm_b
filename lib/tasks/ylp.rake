@@ -198,12 +198,17 @@ namespace :ylp do
   
   task :parse => :environment do
     
-    manhattan = "Alphabet_City,Battery_Park,Chelsea,Chinatown,Civic_Center,East_Harlem,East_Village,Financial_District,Flatiron,Gramercy,Greenwich_Village,Harlem,Hell's_Kitchen,Inwood,Kips_Bay,Koreatown,Little_Italy,Lower_East_Side,Manhattan_Valley,Marble_Hill,Meatpacking_District,Midtown_East,Midtown_West,Morningside_Heights,Murray_Hill,NoHo,Nolita,Roosevelt_Island,SoHo,South_Street_Seaport,South_Village,Stuyvesant_Town,Theater_District,TriBeCa,Two_Bridges,Union_Square,Upper_East_Side,Upper_West_Side,Washington_Heights,West_Village,Yorkville"
-    brooklyn = "Bath_Beach,Bay_Ridge,Bedford_Stuyvesant,Bensonhurst,Boerum_Hill,Borough_Park,Brighton_Beach,Brooklyn_Heights,Brownsville,Bushwick,Canarsie,Carroll_Gardens,City_Line,Clinton_Hill,Cobble_Hill,Columbia_Street_Waterfront_District,Coney_Island,Crown_Heights,Cypress_Hills,DUMBO,Ditmas_Park,Downtown_Brooklyn,Dyker_Heights,East_Flatbush,East_New_York,East_Williamsburg,Flatbush,Flatlands,Fort_Greene,Fort_Hamilton,Georgetown,Gerritson_Beach,Gowanus,Gravesend,Greenpoint,Highland_Park,Kensington,Manhattan_Beach,Marine_Park,Midwood,Mill_Basin,Mill_Island,New_Lots,Ocean_Hill,Ocean_Parkway,Paedergat_Basin,Park_Slope,Prospect_Heights,Prospect_Lefferts_Gardens,Prospect_Park_South,Red_Hook,Remsen_Village,Sea_Gate,Sheepshead_Bay,South_Williamsburg,Spring_Creek,Starret_City,Sunset_Park,Vinegar_Hill,Weeksville,Williamsburg_-_North_Side,Williamsburg_-_South_Side,Windsor_Terrace,Wingate"
-    queens = "Arverne,Astoria,Astoria_Heights,Auburndale,Bay_Terrace,Bayside,Beechurst,Bellaire,Belle_Harbor,Bellerose,Breezy_Point,Briarwood,Cambria_Heights,College_Point,Douglaston,Downtown_Flushing,East_Elmhurst,Edgemere,Elmhurst,Far_Rockaway,Floral_Park,Flushing,Flushing_Meadows,Forest_Hills,Fresh_Meadows,Glen_Oaks,Glendale,Hillcrest,Hollis,Holliswood,Howard_Beach,Hunters_Point,JFK_Airport,Jackson_Heights,Jamaica,Jamaica_Estates,Jamaica_Hills,Kew_Gardens,Kew_Gardens_Hills,LaGuardia_Airport,Laurelton,LeFrak_City,Lindenwood,Little_Neck,Long_Island_City,Malba,Maspeth,Middle_Village,Murray_Hill,North_Corona,Oakland_Gardens,Ozone_Park,Pomonok,Queens_Village,Queensborough_Hill,Rego_Park,Richmond_Hill,Ridgewood,Rochdale,Rockaway_Park,Rosedale,Seaside,Somerville,Springfield_Gardens,Steinway,Sunnyside,Utopia,Whitestone,Woodhaven,Woodside"
-    bronx = "Baychester,Bedford_Park,Belmont,Castle_Hill,City_Island,Claremont_Village,Clason_Point,Co-op_City,Concourse,Concourse_Village,Country_Club,East_Tremont,Eastchester,Edenwald,Edgewater_Park,Fieldston,Fordham,High_Bridge,Hunts_Point,Kingsbridge,Longwood,Melrose,Morris_Heights,Morris_Park,Morrisania,Mott_Haven,Mount_Eden,Mount_Hope,North_Riverdale,Norwood,Olinville,Parkchester,Pelham_Bay,Pelham_Gardens,Port_Morris,Riverdale,Schuylerville,Soundview,Spuyten_Duyvil,Throgs_Neck,Unionport,University_Heights,Van_Nest,Wakefield,West_Farms,Westchester_Square,Williamsbridge,Woodlawn"
-    staten_island = "Annadale,Arden_Heights,Arlington,Arrochar,Bay_Terrace,Bloomfield,Bullshead,Castleton_Corners,Charleston,Chelsea,Clifton,Concord,Dongan_Hills,Elm_Park,Eltingville,Emerson_Hill,Graniteville,Grant_City,Grasmere,Great_Kills,Grymes_Hill,Heartland_Village,Howland_Hook,Huguenot,Lighthouse_Hill,Mariner,Midland_Beach,New_Brighton,New_Dorp,New_Dorp_Beach,New_Springville,Oakwood,Old_Town,Park_Hill,Pleasant_Plains,Port_Richmond,Princes_Bay,Randall_Manor,Richmond_Town,Richmond_Valley,Rosebank,Rossville,Shore_Acres,Silver_Lake,St._George,Stapleton,Sunnyside,Todt_Hill,Tompkinsville,Tottenville,West_Brighton,Westerleigh,Woodrow"
-    other = "Bayonne::,Belleville::,Bergenfield::,Bloomfield::,Bogota::,Carlstadt::,Cliffside_Park::,Clifton::,Cresskill::,Dumont::,East_Newark::,East_Rutherford::,Edgewater::,Elizabeth::,Elmwood_Park::,Englewood::,Englewood_Cliffs::,Fair_Lawn::,Fairview::,Fort_Lee::,Garfield::,Guttenberg::,Hackensack::,Harrison::,Hasbrouck_Heights::,Hawthorne::,Hoboken::,Jersey_City::,Kearny::,Leonia::,Little_Ferry::,Lodi::,Lyndhurst::,Maywood::,Moonachie::,New_Milford::,Newark::,North_Arlington::,North_Bergen::,Nutley::,Palisades_Park::,Paramus::,Passaic::,Paterson::,Ridgefield::,Ridgefield_Park::,River_Edge::,Rochelle_Park::,Rutherford::,Saddle_Brook::,Secaucus::,South_Hackensack::,Teaneck::,Tenafly::,Union_City::,Wallington::,Weehawken::,West_New_York::,Wood-Ridge::,Wood_Ridge::%5D,NY:%5BBronxville::,Corona::,Farmingville::,Larchmont::,Mount_Vernon::,Mt_Vernon::,New_Rochelle::,New_York_City::,Pelham::,Ronkonkoma::,Saint_Albans::,South_Ozone_Park::,South_Richmond_Hill::,Yonkers::"
+    # manhattan = "Alphabet_City,Battery_Park,Chelsea,Chinatown,Civic_Center,East_Harlem,East_Village,Financial_District,Flatiron,Gramercy,Greenwich_Village,Harlem,Hell's_Kitchen,Inwood,Kips_Bay,Koreatown,Little_Italy,Lower_East_Side,Manhattan_Valley,Marble_Hill,Meatpacking_District,Midtown_East,Midtown_West,Morningside_Heights,Murray_Hill,NoHo,Nolita,Roosevelt_Island,SoHo,South_Street_Seaport,South_Village,Stuyvesant_Town,Theater_District,TriBeCa,Two_Bridges,Union_Square,Upper_East_Side,Upper_West_Side,Washington_Heights,West_Village,Yorkville"
+    # brooklyn = "Bath_Beach,Bay_Ridge,Bedford_Stuyvesant,Bensonhurst,Boerum_Hill,Borough_Park,Brighton_Beach,Brooklyn_Heights,Brownsville,Bushwick,Canarsie,Carroll_Gardens,City_Line,Clinton_Hill,Cobble_Hill,Columbia_Street_Waterfront_District,Coney_Island,Crown_Heights,Cypress_Hills,DUMBO,Ditmas_Park,Downtown_Brooklyn,Dyker_Heights,East_Flatbush,East_New_York,East_Williamsburg,Flatbush,Flatlands,Fort_Greene,Fort_Hamilton,Georgetown,Gerritson_Beach,Gowanus,Gravesend,Greenpoint,Highland_Park,Kensington,Manhattan_Beach,Marine_Park,Midwood,Mill_Basin,Mill_Island,New_Lots,Ocean_Hill,Ocean_Parkway,Paedergat_Basin,Park_Slope,Prospect_Heights,Prospect_Lefferts_Gardens,Prospect_Park_South,Red_Hook,Remsen_Village,Sea_Gate,Sheepshead_Bay,South_Williamsburg,Spring_Creek,Starret_City,Sunset_Park,Vinegar_Hill,Weeksville,Williamsburg_-_North_Side,Williamsburg_-_South_Side,Windsor_Terrace,Wingate"
+    # queens = "Arverne,Astoria,Astoria_Heights,Auburndale,Bay_Terrace,Bayside,Beechurst,Bellaire,Belle_Harbor,Bellerose,Breezy_Point,Briarwood,Cambria_Heights,College_Point,Douglaston,Downtown_Flushing,East_Elmhurst,Edgemere,Elmhurst,Far_Rockaway,Floral_Park,Flushing,Flushing_Meadows,Forest_Hills,Fresh_Meadows,Glen_Oaks,Glendale,Hillcrest,Hollis,Holliswood,Howard_Beach,Hunters_Point,JFK_Airport,Jackson_Heights,Jamaica,Jamaica_Estates,Jamaica_Hills,Kew_Gardens,Kew_Gardens_Hills,LaGuardia_Airport,Laurelton,LeFrak_City,Lindenwood,Little_Neck,Long_Island_City,Malba,Maspeth,Middle_Village,Murray_Hill,North_Corona,Oakland_Gardens,Ozone_Park,Pomonok,Queens_Village,Queensborough_Hill,Rego_Park,Richmond_Hill,Ridgewood,Rochdale,Rockaway_Park,Rosedale,Seaside,Somerville,Springfield_Gardens,Steinway,Sunnyside,Utopia,Whitestone,Woodhaven,Woodside"
+    # bronx = "Baychester,Bedford_Park,Belmont,Castle_Hill,City_Island,Claremont_Village,Clason_Point,Co-op_City,Concourse,Concourse_Village,Country_Club,East_Tremont,Eastchester,Edenwald,Edgewater_Park,Fieldston,Fordham,High_Bridge,Hunts_Point,Kingsbridge,Longwood,Melrose,Morris_Heights,Morris_Park,Morrisania,Mott_Haven,Mount_Eden,Mount_Hope,North_Riverdale,Norwood,Olinville,Parkchester,Pelham_Bay,Pelham_Gardens,Port_Morris,Riverdale,Schuylerville,Soundview,Spuyten_Duyvil,Throgs_Neck,Unionport,University_Heights,Van_Nest,Wakefield,West_Farms,Westchester_Square,Williamsbridge,Woodlawn"
+    # staten_island = "Annadale,Arden_Heights,Arlington,Arrochar,Bay_Terrace,Bloomfield,Bullshead,Castleton_Corners,Charleston,Chelsea,Clifton,Concord,Dongan_Hills,Elm_Park,Eltingville,Emerson_Hill,Graniteville,Grant_City,Grasmere,Great_Kills,Grymes_Hill,Heartland_Village,Howland_Hook,Huguenot,Lighthouse_Hill,Mariner,Midland_Beach,New_Brighton,New_Dorp,New_Dorp_Beach,New_Springville,Oakwood,Old_Town,Park_Hill,Pleasant_Plains,Port_Richmond,Princes_Bay,Randall_Manor,Richmond_Town,Richmond_Valley,Rosebank,Rossville,Shore_Acres,Silver_Lake,St._George,Stapleton,Sunnyside,Todt_Hill,Tompkinsville,Tottenville,West_Brighton,Westerleigh,Woodrow"
+    # other = "Bayonne::,Belleville::,Bergenfield::,Bloomfield::,Bogota::,Carlstadt::,Cliffside_Park::,Clifton::,Cresskill::,Dumont::,East_Newark::,East_Rutherford::,Edgewater::,Elizabeth::,Elmwood_Park::,Englewood::,Englewood_Cliffs::,Fair_Lawn::,Fairview::,Fort_Lee::,Garfield::,Guttenberg::,Hackensack::,Harrison::,Hasbrouck_Heights::,Hawthorne::,Hoboken::,Jersey_City::,Kearny::,Leonia::,Little_Ferry::,Lodi::,Lyndhurst::,Maywood::,Moonachie::,New_Milford::,Newark::,North_Arlington::,North_Bergen::,Nutley::,Palisades_Park::,Paramus::,Passaic::,Paterson::,Ridgefield::,Ridgefield_Park::,River_Edge::,Rochelle_Park::,Rutherford::,Saddle_Brook::,Secaucus::,South_Hackensack::,Teaneck::,Tenafly::,Union_City::,Wallington::,Weehawken::,West_New_York::,Wood-Ridge::,Wood_Ridge::%5D,NY:%5BBronxville::,Corona::,Farmingville::,Larchmont::,Mount_Vernon::,Mt_Vernon::,New_Rochelle::,New_York_City::,Pelham::,Ronkonkoma::,Saint_Albans::,South_Ozone_Park::,South_Richmond_Hill::,Yonkers::"
+    # san_francisco = "Bayview/Hunters_Point,Bernal_Heights,Castro,Chinatown,Civic_Center/Tenderloin,Cole_Valley,Crocker-Amazon,Diamond_Heights,Dogpatch,Embarcadero,Excelsior,Financial_District,Fisherman's_Wharf,Glen_Park,Haight-Ashbury,Hayes_Valley,Ingleside,Inner_Richmond,Inner_Sunset,Japantown,Lakeside,Laurel_Heights,Lower_Haight,Lower_Pac_Heights,Marina/Cow_Hollow,Miraloma,Mission,Mission_Terrace,Nob_Hill,Noe_Valley,North_Beach/Telegraph_Hill,Outer_Richmond,Outer_Sunset,Pacific_Heights,Parkside,Portola,Potrero_Hill,Russian_Hill,SOMA,Twin_Peaks,Union_Square,Visitacion_Valley,West_Portal,Western_Addition/NOPA"
+
+    other = "San_Leandro::,Alameda::,San_Lorenzo::,Hayward::,Union_city::,Fremont::,Santa_Clara::,San_Jose::,Cupertino::,Campbell::,Sunnyvale::,Palo_Alto::,Los_Altos::,North_Fair_Oaks::,Menlo_Park::,Redwood_city::,San_Carlos::,Belmont::,San_Mateo::,San_Bruno::,Los_Gatos::,Milpitas::,Newark::,Castro_Valley::,Richmond::,East_Palo_Alto::,Saratoga::,Alviso::,Belmont::,Burlingame::,Campbell::,Cupertino::,East_Palo_Alto::,Foster_City::,Fremont::,La_Honda::,Los_Altos::,Menlo_Park::,Newark::,Palo_Alto::,Portola_Valley::,Redwood_Shores::,San_Carlos::,San_Jose::,San_Mateo::,Santa_Clara::,Saratoga::,Stanford::,Union_City::,Woodside::"
+    oakland = "Dimond_District,Downtown_Oakland,East_Oakland,Fruitvale,Glenview,Grand_Lake,Jack_London_Square,Lake_Merritt,Lakeshore,Laurel_District,Lower_Hills,Montclair_Village,North_Oakland,Oakland_Chinatown,Oakland_Hills,Old_Oakland,Piedmont,Piedmont_Ave,Rockridge,Temescal,Uptown,West_Oakland"
+    berkeley = "Claremont,Downtown_Berkeley,East_Solano_Ave,Elmwood,Fourth_Street,Gourmet_Ghetto,North_Berkeley,North_Berkeley_Hills,South_Berkeley,Telegraph_Ave,UC_Campus_Area%5D,Oakland::%5BDimond_District,Downtown_Oakland,East_Oakland,Fruitvale,Glenview,Grand_Lake,Jack_London_Square,Lake_Merritt,Lakeshore,Laurel_District,Lower_Hills,Montclair_Village,North_Oakland,Oakland_Chinatown,Oakland_Hills,Old_Oakland,Piedmont,Piedmont_Ave,Rockridge,Temescal,Uptown,West_Oakland"
     
     neighborhoods = {
       # :Manhattan => manhattan.split(','),
@@ -211,23 +216,45 @@ namespace :ylp do
       # :Queens => queens.split(','),
       # :Bronx => bronx.split(','),
       # :Staten_Island => staten_island.split(',')
+
+      :City => other.split(','),
+      :Oakland => oakland.split(','),
+      :Berkeley => berkeley.split(',')
     }
+    state = "CA"
     
+    if neighborhoods.keys.first.to_s == 'City'
+      find_loc = "#{neighborhoods.first[1][0].gsub(/ |_/, '+')}+#{state}" # {city+with+pluses}+state
+      filters = "#{state}:#{neighborhoods.first[1][0].gsub(' ', '_')}" # state:{city_with_unerscores}::district
+    else
+      find_loc = "#{neighborhoods.keys.first.to_s.gsub('_', '+')}+#{state}" # {city+with+pluses}+state
+      filters = "#{state}:#{neighborhoods.keys.first}::#{neighborhoods.first[1][0]}" # state:{city_with_unerscores}::district
+    end
+        
     headers = {
       "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       "Accept-Charset" => "windows-1251,utf-8;q=0.7,*;q=0.3",
       "Accept-Language" => "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4",
       "Cache-Control" => "max-age=0",
       "Connection" => "keep-alive",
-      "Cookie" => open("http://www.yelp.com/search?rpp=40&find_desc=restaurants&ns=1&l=p:NY:New_York:Manhattan:Alphabet_City&find_loc=Alphabet_City,+New+York%2C+NY").meta['set-cookie'],
+      "Cookie" => open("http://www.yelp.com/search?rpp=40&find_desc=restaurants&ns=1&l=p:#{filters}&find_loc=#{find_loc}").meta['set-cookie'],
       "Host" => "www.yelp.com",
       "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30"
     }
-    url = "http://www.yelp.com/search/snippet?rpp=40&find_desc=restaurants&ns=1&l=p:NY:New_York:"  
-      
+        
     neighborhoods.each do |k,v|
-      v.each do |n|          
-        f = go_sub("#{url}#{k}:#{n}&find_loc=#{n},+New+York%2C+NY", headers)
+      v.each do |n| 
+        
+        if k.to_s == 'City'
+          find_loc = "#{n.gsub(/ |_/, '+')}+#{state}" # {city+with+pluses}+state
+          filters = "#{state}:#{n.gsub(' ', '_')}" # state:{city_with_unerscores}::district
+        else
+          find_loc = "#{k.to_s.gsub('_', '+')}+#{state}" # {city+with+pluses}+state
+          filters = "#{state}:#{k}::#{n}" # state:{city_with_unerscores}::district
+        end
+        url = "http://www.yelp.com/search?rpp=40&find_desc=restaurants&ns=1&l=p:#{filters}&find_loc=#{find_loc}"  
+        
+        f = go_sub(url, headers)
         headers['Cookie'] = f.meta['set-cookie']
       end
     end
@@ -237,6 +264,7 @@ namespace :ylp do
 end
 
 def go_sub(url, headers)
+  p url
   if src = open(url.gsub("/search?", "/search/snippet?"), headers)
     json = JSON.parse(src.read)
   
@@ -249,6 +277,13 @@ def go_sub(url, headers)
         else
           doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}"))
           data = {}  
+          category = []
+          
+          unless doc.css('span#cat_display a').blank? 
+            doc.css('span#cat_display a').each do |c|
+              category.push(c.text.strip)
+            end
+          end
 
           data[:name] = doc.css('h1.fn.org')[0].text unless doc.css('h1.fn.org').blank?
           data[:ylp_uri] = ds['url']
@@ -257,7 +292,8 @@ def go_sub(url, headers)
           data[:rating] = doc.css('img.rating.average')[0]["title"][0..2] unless doc.css('img.rating.average').blank? 
       
           data[:review_count] = doc.css('span.review-count')[0].text.to_i unless doc.css('span.review-count').blank? 
-          data[:category] = doc.css('span#cat_display a')[0].text.strip unless doc.css('span#cat_display a').blank? 
+          data[:category] = category.join(',') if category.count > 0 
+          data[:city] = doc.css('span.locality')[0].text if !doc.css('span.locality').blank?
           data[:address] = "#{doc.css('span.street-address')[0].text}, #{doc.css('span.locality')[0].text}, #{doc.css('span.region')[0].text}" if !doc.css('span.street-address').blank? && !doc.css('span.locality').blank? && !doc.css('span.region').blank?
       
           data[:phone] = doc.css('span#bizPhone')[0].text unless doc.css('span#bizPhone').blank?
