@@ -997,7 +997,6 @@ class ApiController < ApplicationController
     end
     
     review = review.format_review_for_api(params[:user_id]) if review && params[:info].to_i == 1
-    
     return render :json => {
       :review => review,
       :error => $error
