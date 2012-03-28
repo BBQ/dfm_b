@@ -30,8 +30,11 @@ class ApiController < ApplicationController
   end
   
   def add_restaurant
-    
-    if (params[:restaurant][:address] || (params[:restaurant][:lat] && params[:restaurant][:lon]) || params[:restaurant][:web] || params[:restaurant][:phone]) && params[:restaurant][:name] && params[:restaurant][:category]
+    if params[:restaurant][:delivery_only].to_i == 1 && (params[:restaurant][:phone] || params[:restaurant][:web])
+        if delivery = Delivery.create(params[:restaurant])
+          r_id = delivery.id 
+        end
+    elsif (params[:restaurant][:address] || (params[:restaurant][:lat] && params[:restaurant][:lon]) || params[:restaurant][:web] || params[:restaurant][:phone]) && params[:restaurant][:name] && params[:restaurant][:category]
       
       if restaurant_category = RestaurantCategory.find_by_name(params[:restaurant][:category]) #TODO: make an array with categories not only single one
         params[:restaurant][:restaurant_categories] = restaurant_category.id
@@ -1334,10 +1337,12 @@ class ApiController < ApplicationController
               
               if r = Delivery.find_by_id(params[:review][:restaurant_id])
                 params[:review][:restaurant_id] = r.id
-              elsif r = Delivery.add_from_4sq_with_menu(params[:foursquare_venue_id])        
-                params[:review][:restaurant_id] = r.id
+              elsif params[:foursquare_venue_id]
+                if r = Delivery.add_from_4sq_with_menu(params[:foursquare_venue_id])        
+                  params[:review][:restaurant_id] = r.id
+                end
               else
-                return render :json => {:error => {:description => 'Restaurant not found', :code => 1}}
+                return render :json => {:error => {:description => 'Delivery not found', :code => 1}}
               end
         
               unless dish = DishDelivery.find_by_id(params[:review][:dish_id])
@@ -1345,7 +1350,7 @@ class ApiController < ApplicationController
                   params[:dish][:delivery_id] = r.id  
 
                   unless dish = DishDelivery.create(params[:dish])
-                    return render :json => {:error => {:description => 'Dish create error', :code => 6}}
+                    return render :json => {:error => {:description => 'DishDelivery create error', :code => 6}}
                   end
 
                 else
