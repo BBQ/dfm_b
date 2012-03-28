@@ -30,10 +30,10 @@ class ApiController < ApplicationController
   end
   
   def add_restaurant
-    if params[:restaurant][:delivery_only].to_i == 1 && (params[:restaurant][:phone] || params[:restaurant][:web])
-        if delivery = Delivery.create(params[:restaurant])
-          r_id = delivery.id 
-        end
+    if params[:delivery].to_i == 1 && (params[:restaurant][:phone] || params[:restaurant][:web])
+      if delivery = Delivery.create(params[:restaurant])
+        r_id = delivery.id 
+      end
     elsif (params[:restaurant][:address] || (params[:restaurant][:lat] && params[:restaurant][:lon]) || params[:restaurant][:web] || params[:restaurant][:phone]) && params[:restaurant][:name] && params[:restaurant][:category]
       
       if restaurant_category = RestaurantCategory.find_by_name(params[:restaurant][:category]) #TODO: make an array with categories not only single one
