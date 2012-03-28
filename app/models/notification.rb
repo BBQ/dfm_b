@@ -54,11 +54,11 @@ class Notification < ActiveRecord::Base
               if r = Review.find_by_id(review_id)
 
                 if r.rtype == 'home_cooked'
-                  d = HomeCooke.find_by_review_id(review_id) 
+                  d = HomeCooke.find_by_id(r.dish_id) 
                 elsif r.rtype == 'delivery'
-                  d = DishDelivery.find_by_review_id(review_id) 
+                  d = DishDelivery.find_by_id(r.dish_id) 
                 else  
-                  d = Dish.find_by_review_id(review_id)
+                  d = Dish.find_by_id(r.dish_id)
                 end
                 
                 unless d.nil?
