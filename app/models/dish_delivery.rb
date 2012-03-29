@@ -16,6 +16,11 @@ class DishDelivery < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
+  def as_json(options={})
+    self[:price] = "#{self.price}#{self.currency}"
+    super
+  end
+  
   def self.search_by_tag_id(id)
     where("dish_deliveries.id IN (SELECT dish_id FROM dish_tags WHERE tag_id = ?)", id)
   end
