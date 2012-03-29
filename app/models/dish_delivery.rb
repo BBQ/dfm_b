@@ -74,4 +74,8 @@ class DishDelivery < ActiveRecord::Base
     find_image && find_image.iphone_retina.url != '/images/noimage.jpg' ? find_image.iphone_retina.url  : ''
   end
   
+  def image_p120
+    find_image && find_image.p120.url != '/images/noimage.jpg' ? find_image.p120.url  : ''
+  end
+  
 end
