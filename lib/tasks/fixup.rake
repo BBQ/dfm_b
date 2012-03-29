@@ -219,7 +219,9 @@ namespace :fix do
   end
   
   task :likes => :environment do
+    Review.update_all({:count_likes => 0})
     Review.all.each do |r|
+      p r
       r.count_likes = r.likes.count
       r.save
     end
