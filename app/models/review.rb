@@ -13,7 +13,7 @@ class Review < ActiveRecord::Base
   mount_uploader :photo, ImageUploader 
   
   def self.following(user_id)
-    where("user_id = ? AND user_id IN (SELECT follow_user_id FROM followers WHERE user_id = ?)", user_id, user_id)
+    where("user_id = ? || user_id IN (SELECT follow_user_id FROM followers WHERE user_id = ?)", user_id, user_id)
   end
   
   def delete
