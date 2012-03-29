@@ -18,10 +18,6 @@ class Dish < ActiveRecord::Base
       
   mount_uploader :photo, ImageUploader
   
-  def price
-    "#{self.price} #{self.currency}"
-  end
-  
   def self_review
     
     get_likes = []
