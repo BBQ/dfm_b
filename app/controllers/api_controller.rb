@@ -472,8 +472,9 @@ class ApiController < ApplicationController
     if top_user_id > 0
       dishes_array = []
       
-      home_cooked = HomeCook.select([:id, :name, :rating, :votes, :photo, :created_at]).where("top_user_id = ?",top_user_id).order('id DESC')
-      home_cooked.each do |d|
+      dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count, :created_at]).where("top_user_id = ?",top_user_id).order('id DESC')
+      dishes.each do |d|
+        network_data = Network.select([:id, :name]).find_by_id(d.network_id)
         dishes_array.push({
           :id => d.id,
           :name => d.name,
@@ -481,9 +482,12 @@ class ApiController < ApplicationController
           :votes => d.votes,
           :image_sd => d.image_sd,
           :image_hd => d.image_hd,
-          :network => {},
+          :network => {
+            :id => network_data.id,
+            :name => network_data.name,
+          },
           :created_at => d.created_at,
-          :type => 'home_cooked'
+          :type => nil
         })
       end
 
@@ -504,10 +508,9 @@ class ApiController < ApplicationController
           :type => 'delivery'
         })
       end
-
-      dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count, :created_at]).where("top_user_id = ?",top_user_id).order('id DESC')
-      dishes.each do |d|
-        network_data = Network.select([:id, :name]).find_by_id(d.network_id)
+      
+      home_cooked = HomeCook.select([:id, :name, :rating, :votes, :photo, :created_at]).where("top_user_id = ?",top_user_id).order('id DESC')
+      home_cooked.each do |d|
         dishes_array.push({
           :id => d.id,
           :name => d.name,
@@ -515,14 +518,12 @@ class ApiController < ApplicationController
           :votes => d.votes,
           :image_sd => d.image_sd,
           :image_hd => d.image_hd,
-          :network => {
-            :id => network_data.id,
-            :name => network_data.name,
-          },
+          :network => {},
           :created_at => d.created_at,
-          :type => nil
+          :type => 'home_cooked'
         })
       end
+      
       dishes_array.sort_by { |k| k[:created_at] }.reverse!
       
       restaurants_array = []
@@ -1097,7 +1098,7 @@ class ApiController < ApplicationController
         end
       end
       top_in_dishes[:count] = top_in_dishes[:data].count
-      top_in_dishes.sort_by { |k| k[:data][:created_at] }.reverse!
+      top_in_dishes[:data].sort_by { |k| k[:created_at] }.reverse!
       
     else
       $error = {:description => 'Parameters missing', :code => 941}
