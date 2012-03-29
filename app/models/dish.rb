@@ -18,6 +18,11 @@ class Dish < ActiveRecord::Base
       
   mount_uploader :photo, ImageUploader
   
+  def as_json(options={})
+    self[:price] = self.price + self.currency
+    super
+  end
+  
   def self_review
     
     get_likes = []

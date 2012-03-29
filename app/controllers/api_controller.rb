@@ -1300,7 +1300,7 @@ class ApiController < ApplicationController
           end
           dishes = dish_delivery.as_json
         else
-          dishes = dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes], :methods => [:image_sd, :image_hd, :price])          
+          dishes = dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes, :price], :methods => [:image_sd, :image_hd])          
         end
       
         return render :json => {

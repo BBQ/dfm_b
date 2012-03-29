@@ -206,7 +206,7 @@ class API < ActiveRecord::Base
       data = {
           :network_ratings => data_r.rating,
           :network_reviews_count => data_r.reviews.count,
-          :popularity => type == 'delivery' ? 0 : restaurant.fsq_checkins_count,
+          :popularity => type == 'delivery' ? 0 : restaurant.fsq_checkins_count + restaurant.fsq_checkins_count > 1 ? "Checkins" : "Checkin",
           :restaurant_name => restaurant.name,
           :reviews => review_data,
           :best_dishes => best_dishes ||= '',
