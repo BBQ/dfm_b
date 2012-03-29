@@ -524,7 +524,7 @@ class ApiController < ApplicationController
         })
       end
       
-      dishes_array.sort_by { |k| k[:created_at] }.reverse!
+      dishes_array = dishes_array.sort_by { |k| k[:created_at] }.reverse
       
       restaurants_array = []
       dishes_array.index_by {|r| r[:network][:id]}.values.each do |dish|
@@ -1098,7 +1098,7 @@ class ApiController < ApplicationController
         end
       end
       top_in_dishes[:count] = top_in_dishes[:data].count
-      top_in_dishes[:data].sort_by { |k| k[:created_at] }.reverse!
+      top_in_dishes[:data] = top_in_dishes[:data].sort_by { |k| k[:created_at] }.reverse
       
     else
       $error = {:description => 'Parameters missing', :code => 941}
