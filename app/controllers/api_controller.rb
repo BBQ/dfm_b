@@ -765,7 +765,7 @@ class ApiController < ApplicationController
       
       restaurants = Restaurant.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
       #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
-      ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL AND top_user_id = ?',top_user_id).order("restaurants.fsq_checkins_count DESC, networks.rating DESC, networks.votes DESC").group('restaurants.name')
+      ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL AND top_user_id = ?',top_user_id).order("(rating - 3.5)*votes DESC").group('restaurants.name')
 
       restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')  
 
