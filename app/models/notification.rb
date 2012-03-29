@@ -11,7 +11,7 @@ class Notification < ActiveRecord::Base
     if user = User.select(:name).find_by_id(user_id_from) && notification_type
       user_ids_to_array = []
       
-      if (notification_type == 'like' &&  || notification_type == 'comment') && (user_id_from != user_id_to) && dish_name && review_id
+      if (notification_type == 'like' || notification_type == 'comment') && (user_id_from != user_id_to) && dish_name && review_id
         
               if notification_type == 'like'
                 alert = "Liked your dish-in in #{dish_name} "
