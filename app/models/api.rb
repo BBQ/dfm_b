@@ -107,7 +107,7 @@ class API < ActiveRecord::Base
         :restaurant_name => type == 'home_cooked' ? '' : restaurant.name, 
         :restaurant_id => type == 'home_cooked' ? 0 : restaurant.id, 
         :description => dish.description.to_s,
-        :price => type == 'home_cooked' ? 0 : dish.price,
+        :price => type == 'home_cooked' ? 0 : dish.price + dish.currency,
         :reviews => review_data,
         :top_expert => top_expert ||= nil,
         :restaurants => restaurants,
