@@ -482,6 +482,7 @@ class ApiController < ApplicationController
           :image_sd => d.image_sd,
           :image_hd => d.image_hd,
           :network => {},
+          :created_at => d.created_at,
           :type => 'home_cooked'
         })
       end
@@ -499,6 +500,7 @@ class ApiController < ApplicationController
             :id => d.delivery_id,
             :name => d.delivery.name,
           },
+          :created_at => d.created_at,
           :type => 'delivery'
         })
       end
@@ -517,6 +519,7 @@ class ApiController < ApplicationController
             :id => network_data.id,
             :name => network_data.name,
           },
+          :created_at => d.created_at,
           :type => nil
         })
       end
@@ -1066,7 +1069,8 @@ class ApiController < ApplicationController
           top_in_dishes[:data].push({
             :id => d.id,
             :photo => d.image_sd,
-            :type => nil
+            :type => nil,
+            :created_at => d.created_at,
           })
         end
       end
@@ -1076,7 +1080,8 @@ class ApiController < ApplicationController
           top_in_dishes[:data].push({
             :id => d.id,
             :photo => d.image_sd,
-            :type => 'delivery'
+            :type => 'delivery',
+            :created_at => d.created_at,
           })
         end
       end
@@ -1086,12 +1091,13 @@ class ApiController < ApplicationController
           top_in_dishes[:data].push({
             :id => d.id,
             :photo => d.image_sd,
-            :type => 'home_cooked'
+            :type => 'home_cooked',
+            :created_at => d.created_at,
           })
         end
       end
       top_in_dishes[:count] = top_in_dishes[:data].count
-      top_in_dishes.sort_by { |k| k[:created_at] }.reverse!
+      top_in_dishes[:data].sort_by { |k| k[:created_at] }.reverse!
       
     else
       $error = {:description => 'Parameters missing', :code => 941}
