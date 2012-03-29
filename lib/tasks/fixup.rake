@@ -1,5 +1,5 @@
 # encoding: utf-8
-namespace :fix do
+namespace :fixup do
   #TODO: Start rake fix:add_r_img, tags:match_dishes, tags:match_rest on Test Server foursquare check_ins
   desc "Add Images to Restaurant"
   task :add_r_img => :environment do  
@@ -218,6 +218,7 @@ namespace :fix do
     puts 'done!'
   end
   
+  desc "Recheck review likes"
   task :likes => :environment do
     Review.update_all({:count_likes => 0})
     Review.all.each do |r|
