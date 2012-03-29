@@ -10,9 +10,9 @@ class API < ActiveRecord::Base
     if type == 'home_cooked'
       dish = HomeCook.select([:top_user_id, :id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
     elsif type == 'delivery'
-      dish = DishDelivery.select([:top_user_id, :id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo, :delivery_id, :price]).find_by_id(dish_id)      
+      dish = DishDelivery.select([:top_user_id, :id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo, :delivery_id, :price, :currency]).find_by_id(dish_id)      
     else
-      dish = Dish.select([:top_user_id, :id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
+      dish = Dish.select([:top_user_id, :id, :dish_subtype_id, :rating, :network_id, :votes, :dish_type_id, :name, :description, :price, :currency, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
     end
     
     if !dish.nil?
