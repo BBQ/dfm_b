@@ -1295,12 +1295,12 @@ class ApiController < ApplicationController
                 :votes => d.votes,
                 :image_sd => d.image_sd, 
                 :image_hd => d.image_hd, 
-                :price => "#{d.price}#{d.currency}"
+                :price => "#{d.price} #{d.currency}"
             }})
           end
           dishes = dish_delivery.as_json
         else
-          dishes = dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes, :price], :methods => [:image_sd, :image_hd])          
+          dishes = dishes.as_json(:only => [:id, :name, :dish_category_id, :dish_type_id, :description, :rating, :votes], :methods => [:image_sd, :image_hd, :price])          
         end
       
         return render :json => {
