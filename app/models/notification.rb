@@ -11,16 +11,16 @@ class Notification < ActiveRecord::Base
       if (notification_type == 'like' || notification_type == 'comment') && (user_id_from != user_id_to) && dish_name && review_id
         
               if notification_type == 'like'
-                alert = "liked your dish-in in #{dish_name} "
+                alert = "Liked your dish-in in #{dish_name} "
               elsif notification_type == 'comment'
-                alert = "commented on your dish-in in #{dish_name} "
+                alert = "Commented on your dish-in in #{dish_name} "
               end
                 
               badge = APN::Notification.where("user_id_to = ? and `read` != 1", user_id_to).count(:id)
               user_ids_to_array.push({:user_id => user_id_to, :badge => badge})
               
       elsif notification_type == 'comment_on_comment' && user_id_to && review_id 
-              alert = "also commented on #{dish_name}"              
+              alert = "Also commented on #{dish_name}"              
               
               Comment.select([:user_id, :review_id]).where(:review_id => review_id).group(:user_id).each do |c|
                   if c.user_id != c.review.user_id
@@ -30,7 +30,7 @@ class Notification < ActiveRecord::Base
               end
               
       elsif notification_type == 'dishin' && dish_name
-              alert = "dished in #{dish_name}"        
+              alert = "Dished in #{dish_name}"        
                     
               Follower.select(:user_id).where(:follow_user_id => user_id_from).each do |f|
                   if user = User.find_by_id(f.user_id)
@@ -44,7 +44,7 @@ class Notification < ActiveRecord::Base
            
       elsif notification_type == 'following' && user_id_to && user_id_from != user_id_to 
         
-              alert = "started following you"
+              alert = "Started following you"
               badge = APN::Notification.where("user_id_to = ? AND `read` != 1", user_id_to).count(:id)
               
               user_ids_to_array.push({:user_id => user_id_to, :badge => badge})
@@ -62,7 +62,7 @@ class Notification < ActiveRecord::Base
                 end
                 
                 unless d.nil?
-                  alert = restaurant_name.nil? ? "tagged you in dish-in #{d.name}" : "tagged you at #{restaurant_name}"
+                  alert = restaurant_name.nil? ? "Tagged you in dish-in #{d.name}" : "Tagged you at #{restaurant_name}"
               
                   friends.split(',').each do |t|  
                       if user = User.find_by_id(t)
@@ -82,7 +82,7 @@ class Notification < ActiveRecord::Base
                       friends.split(',').each do |t|
       
                           if tagged = User.find_by_id(t)
-                              alert = restaurant_name.nil? ? "tagged your friend #{t.name} in dish-in" : "tagged your friend #{t.name} at #{restaurant_name}"
+                              alert = restaurant_name.nil? ? "Tagged your friend #{t.name} in dish-in" : "Tagged your friend #{t.name} at #{restaurant_name}"
                                                             
                               Follower.select(:user_id).where(:follow_user_id => tagged.id).each do |f|
                                   if user = User.find_by_id(f.user_id)
@@ -99,7 +99,7 @@ class Notification < ActiveRecord::Base
 
       elsif notification_type == 'new_fb_user' && user_id_from != user_id_to
          
-              alert = "(your friend from facebook) has joined Dish.fm"
+              alert = "Your friend from facebook has joined Dish.fm"
               badge = APN::Notification.where("user_id_to = ? and `read` != 1", user_id_to).count(:id)
               user_ids_to_array.push({:user_id => user_id_to, :badge => badge})
         

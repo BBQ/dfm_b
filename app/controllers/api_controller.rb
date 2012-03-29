@@ -787,7 +787,7 @@ class ApiController < ApplicationController
                 :votes => dish.votes
               })
           end
-          networks.push({:network_id => r.id, :dishes => dishes, :type => nil, :venues => r.fsq_id ? ["#{r.fsq_id}"] : []}) 
+          networks.push({:network_id => r.network_id, :dishes => dishes, :type => nil, :venues => r.fsq_id ? ["#{r.fsq_id}"] : []}) 
         end
       end
       
@@ -873,7 +873,7 @@ class ApiController < ApplicationController
          end
          restaurants = restaurants.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
          #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.rating DESC').to_sql}) r1
-         ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("(networks.rating - 3.5)*networks.votes DESC").by_distance(lat, lon).group('restaurants.name')
+         ON `restaurants`.`id` = `r1`.`id`").where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order("(networks.rating - 3.5)*networks.votes DESC, restaurants.fsq_checkins_count DESC").by_distance(lat, lon).group('restaurants.name')
         end
       
       end
@@ -916,7 +916,7 @@ class ApiController < ApplicationController
               dishes.push({
                 :id => dish.id,
                 :name => dish.name,
-                :photo => dish.image_sd,
+                :photo => dish.image_p120,
                 :rating => dish.rating,
                 :votes => dish.votes
               })
@@ -944,7 +944,7 @@ class ApiController < ApplicationController
                 dishes.push({
                   :id => dish.id,
                   :name => dish.name,
-                  :photo => dish.image_sd,
+                  :photo => dish.image_p120,
                   :rating => dish.rating,
                   :votes => dish.votes
                 })
