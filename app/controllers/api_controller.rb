@@ -1097,7 +1097,7 @@ class ApiController < ApplicationController
         end
       end
       top_in_dishes[:count] = top_in_dishes[:data].count
-      top_in_dishes[:data].sort_by { |k| k[:created_at] }.reverse!
+      top_in_dishes.sort_by { |k| k[:data][:created_at] }.reverse!
       
     else
       $error = {:description => 'Parameters missing', :code => 941}
