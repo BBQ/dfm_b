@@ -134,7 +134,7 @@ namespace :ylp do
   
   #3873, 18435, 18536!, 6736, 5769, 13250
   task :get_fsq  => :environment do
-    YlpRestaurant.where('has_menu IS NULL').order(:id).each do |r|
+    YlpRestaurant.where('has_menu IS NULL AND city != "New York"').order(:id).each do |r|
       p r.id
       if r.has_menu.nil?
         client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
@@ -153,7 +153,7 @@ namespace :ylp do
             end
           end
           
-          if fsq_rest
+          unless fsq_rest.nil?
             category = []
             
             fsq_rest.categories.each do |v|
