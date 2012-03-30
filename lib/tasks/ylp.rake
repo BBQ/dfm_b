@@ -140,20 +140,21 @@ namespace :ylp do
         client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
         fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lng}", :query => r.name, :intent => 'match') if r.lat && r.lng && r.name
     
+        fsq_rest = nil
         if fsq_hash && fsq_hash.groups[0].items.count > 0
           fsq_hash.groups[0].items.each do |i|
             if i.contact.formattedPhone.to_s == r.phone.to_s
               fsq_rest = i
             elsif i.name == r.name
               fsq_rest = i
-            elsif i.categories[0].name =~ /Afghan|African|American|Argentine|Asian Fusion|Bagels|Bakeries|Barbeque|Bars|Basque|Beer|Wine|Spirits|Belgian|Bowling|Brasseries|Brazilian|Breakfast|Brunch|Breweries|British|Buffets|Burgers|Burmese|Butcher|Cafes|Cajun|Creole|Cambodian|Candy|Caribbean|Caterers|Cheese|Cheesesteaks|Chicken|Chinese|Chocolatiers|Coffee|Tea|Creperies|Cuban|Delis|Desserts|Dim Sum|Diners|Doctors|Donuts|Employment Agencies|Ethiopian|Farmers Market|Filipino|Fish|Fondue|Food|French|Fruits & Veggies|Gastropubs|German|Gluten-Free|Greek|Grocery|Halal|Hawaiian|Himalayan|Nepalese|Hookah Bars|Hot|Hungarian|Ice Cream|Indian|Indonesian|Irish|Italian|Japanese|Juice|Karaoke|Korean|Kosher|Lawyers|Magicians|Malaysian|Meat|Mediterranean|Mexican|Eastern|European|Mongolian|Moroccan|Nightlife|Pakistani|Peruvian|Pizza|Polish|Portuguese|Pubs|Restaurant|Restaurants|Russian|Salad|Sandwiches|Scandinavian|Seafood|Singaporean|Soul Food|Soup|Southern|Spanish|Specialty Food|Steakhouses|Sushi|Taiwanese|Tapas|Tea|Thai|Tobacco Shops|Turkish|Ukrainian|Vegan|Vegetarian|Vietnamese|/
+            elsif i.categories.count > 0 && i.categories[0].name =~ /Afghan|African|American|Argentine|Asian Fusion|Bagels|Bakeries|Barbeque|Bars|Basque|Beer|Wine|Spirits|Belgian|Bowling|Brasseries|Brazilian|Breakfast|Brunch|Breweries|British|Buffets|Burgers|Burmese|Butcher|Cafes|Cajun|Creole|Cambodian|Candy|Caribbean|Caterers|Cheese|Cheesesteaks|Chicken|Chinese|Chocolatiers|Coffee|Tea|Creperies|Cuban|Delis|Desserts|Dim Sum|Diners|Doctors|Donuts|Employment Agencies|Ethiopian|Farmers Market|Filipino|Fish|Fondue|Food|French|Fruits & Veggies|Gastropubs|German|Gluten-Free|Greek|Grocery|Halal|Hawaiian|Himalayan|Nepalese|Hookah Bars|Hot|Hungarian|Ice Cream|Indian|Indonesian|Irish|Italian|Japanese|Juice|Karaoke|Korean|Kosher|Lawyers|Magicians|Malaysian|Meat|Mediterranean|Mexican|Eastern|European|Mongolian|Moroccan|Nightlife|Pakistani|Peruvian|Pizza|Polish|Portuguese|Pubs|Restaurant|Restaurants|Russian|Salad|Sandwiches|Scandinavian|Seafood|Singaporean|Soul Food|Soup|Southern|Spanish|Specialty Food|Steakhouses|Sushi|Taiwanese|Tapas|Tea|Thai|Tobacco Shops|Turkish|Ukrainian|Vegan|Vegetarian|Vietnamese|/
               fsq_rest = i
             elsif i.name.to_s =~ /#{r.name}/
               fsq_rest = i
             end
           end
           
-          unless fsq_rest.nil?
+          if !fsq_rest.nil?
             category = []
             
             fsq_rest.categories.each do |v|
