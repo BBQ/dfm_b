@@ -12,7 +12,6 @@ class UserMailer < ActionMailer::Base
         if email = user.email
           @user = user.name
           @text = n.alert
-          
           mail(:to => email, :subject => subject)
           
           n.mailed_at = Time.now
