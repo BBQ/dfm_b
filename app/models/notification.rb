@@ -16,8 +16,8 @@ class Notification < ActiveRecord::Base
     # :fb_friend_mobile,
     # :following_email,
     # :following_mobile, 
-    # :tagged_mobile
-    # tagged_email
+    # :tagged_mobile,
+    # :tagged_email,
     # :unlock_new_level_email,
     # :unlock_new_level_mobile,
     # :weekly_friends_activity_email,   
@@ -36,19 +36,6 @@ class Notification < ActiveRecord::Base
     # :share_my_new_level_badge_to_twitter,
     # :share_my_top_expert_to_facebook,
     # :share_my_top_expert_to_twitter,
-    
-    (pref.like_mobile == true && notification_type == 'like') ||
-       (pref.comment_mobile == true && notification_type == 'comment') ||
-       (pref.dishin_mobile == true && notification_type == 'dishin') ||
-       (pref.fb_friend_mobile == true && notification_type == 'fb_friend') ||
-       (pref.following_mobile == true && notification_type == 'following') ||
-       (pref.tagged_mobile == true && (notification_type == 'tagged' || notification_type == 'tagged_by_friend')) ||
-       (pref.unlock_new_level_mobile == true && notification_type == 'unlock_new_level') ||
-       (pref.weekly_friends_activity_mobile == true && notification_type == 'weekly_friends_activity') ||
-       (pref.news_and_updates_mobile == true && notification_type == 'news_and_updates') ||
-       (pref.top_expert_mobile == true && notification_type == 'top_expert') ||
-       (pref.ousted_as_top_expert_mobile == true && notification_type == 'ousted_as_top_expert')
-
     
     pref = UserPreference.find_by_user_id(user_id_to)
     
