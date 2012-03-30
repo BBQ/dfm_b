@@ -18,7 +18,7 @@ class UserPreference < ActiveRecord::Base
       :unlock_new_level_email,
       :unlock_new_level_mobile,
       :weekly_friends_activity_email,
-      :weekly_friends_activity_mobile   
+      :weekly_friends_activity_mobile,   
       :news_and_updates_email,
       :news_and_updates_mobile,
       :ousted_as_top_expert_email,
