@@ -7,10 +7,11 @@ class UserMailer < ActionMailer::Base
     subject = "Dish.fm Notifications"
     
     APN::Notification.where("mailed_at IS NULL").each do |n|
-      @user = n.devise.user.name
-      mail(:to => n.devise.user.email, :subject => subject)
+      user = User.find_by_id(n.user_id_to)
+      @user = user.name
+      mail(:to => user.email, :subject => subject)
       @text = n.alert
-      n.emailed_at = Time.now
+      n.mailed_at = Time.now
       n.save
     end
     
