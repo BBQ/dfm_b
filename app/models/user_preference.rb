@@ -13,8 +13,8 @@ class UserPreference < ActiveRecord::Base
       :fb_friend_mobile,
       :following_email,
       :following_mobile, 
-      :tagged_mobile
-      :tagged_email
+      :tagged_mobile,
+      :tagged_email,
       :unlock_new_level_email,
       :unlock_new_level_mobile,
       :weekly_friends_activity_email,
