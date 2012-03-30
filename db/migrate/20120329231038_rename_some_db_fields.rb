@@ -14,8 +14,8 @@ class RenameSomeDbFields < ActiveRecord::Migration
     rename_column :user_preferences, :news_and_updates_email, :following_email
     rename_column :user_preferences, :news_and_updates_mobile, :following_mobile
     
-    add_column :user_preferences, :tagged_email, :boolean
-    add_column :user_preferences, :tagged_mobile, :boolean
+    add_column :user_preferences, :tagged_email, :boolean, :default => true
+    add_column :user_preferences, :tagged_mobile, :boolean, :default => true
   end
   
   def self.down

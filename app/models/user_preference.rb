@@ -1,6 +1,8 @@
 class UserPreference < ActiveRecord::Base
   belongs_to :user
   
+  validates :user_id, :uniqueness => true 
+  
   def self.for_user
     select([
       :like_email,

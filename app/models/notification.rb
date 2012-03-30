@@ -6,37 +6,6 @@ class Notification < ActiveRecord::Base
     user_id_to = user_id_to.to_i
     review_id = review_id.to_i
     
-    # :like_email,
-    # :like_mobile,
-    # :comment_email,
-    # :comment_mobile,
-    # :dishin_email,
-    # :dishin_mobile,
-    # :fb_friend_email,
-    # :fb_friend_mobile,
-    # :following_email,
-    # :following_mobile, 
-    # :tagged_mobile,
-    # :tagged_email,
-    # :unlock_new_level_email,
-    # :unlock_new_level_mobile,
-    # :weekly_friends_activity_email,   
-    # :news_and_updates_email,
-    # :news_and_updates_mobile,
-    # :ousted_as_top_expert_email,
-    # :ousted_as_top_expert_mobile,
-    # :share_my_comments_to_facebook,
-    # :share_my_comments_to_twitter,
-    # :share_my_dishin_to_facebook,
-    # :share_my_dishin_to_twitter,
-    # :share_my_dishin_to_twitter,
-    # :share_my_like_to_facebook,
-    # :share_my_like_to_twitter,
-    # :share_my_new_level_badge_to_facebook,
-    # :share_my_new_level_badge_to_twitter,
-    # :share_my_top_expert_to_facebook,
-    # :share_my_top_expert_to_twitter,
-    
     pref = UserPreference.find_by_user_id(user_id_to)
     
     if user = User.select(:name).find_by_id(user_id_from) && notification_type
@@ -74,7 +43,6 @@ class Notification < ActiveRecord::Base
                     user_ids_to_array.push({:user_id => f.user_id, :badge => badge}) if f.user_id.to_i != user_id_from
                     
                   end
-                  
               end    
            
       elsif notification_type == 'following' && pref.following_mobile == true && user_id_to && user_id_from != user_id_to 
