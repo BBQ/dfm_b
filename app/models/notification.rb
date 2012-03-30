@@ -6,14 +6,22 @@ class Notification < ActiveRecord::Base
     user_id_to = user_id_to.to_i
     review_id = review_id.to_i
     
-    # :add_to_favorites_my_dishin_email,
-    # :add_to_favorites_my_dishin_mobile,
-    # :comment_my_dishin_email,
-    # :comment_my_dishin_mobile,
-    # :friends_dishin_email,
-    # :friends_dishin_mobile,
-    # :friends_from_facebook_joins_email,
-    # :friends_from_facebook_joins_mobile,
+    # :like_email,
+    # :like_mobile,
+    # :comment_email,
+    # :comment_mobile,
+    # :dishin_email,
+    # :dishin_mobile,
+    # :fb_friend_email,
+    # :fb_friend_mobile,
+    # :following_email,
+    # :following_mobile, 
+    # :tagged_mobile
+    # tagged_email
+    # :unlock_new_level_email,
+    # :unlock_new_level_mobile,
+    # :weekly_friends_activity_email,
+    # :weekly_friends_activity_mobile   
     # :news_and_updates_email,
     # :news_and_updates_mobile,
     # :ousted_as_top_expert_email,
@@ -23,25 +31,33 @@ class Notification < ActiveRecord::Base
     # :share_my_dishin_to_facebook,
     # :share_my_dishin_to_twitter,
     # :share_my_dishin_to_twitter,
-    # :share_my_favorites_to_facebook,
-    # :share_my_favorites_to_twitter,
+    # :share_my_like_to_facebook,
+    # :share_my_like_to_twitter,
     # :share_my_new_level_badge_to_facebook,
     # :share_my_new_level_badge_to_twitter,
     # :share_my_top_expert_to_facebook,
     # :share_my_top_expert_to_twitter,
-    # :start_following_me_email,
-    # :start_following_me_mobile,
-    # :unlock_new_level_email,
-    # :unlock_new_level_mobile,
-    # :weekly_friends_activity_email,
-    # :weekly_friends_activity_mobile
+    
+    (pref.like_mobile == true && notification_type == 'like') ||
+       (pref.comment_mobile == true && notification_type == 'comment') ||
+       (pref.dishin_mobile == true && notification_type == 'dishin') ||
+       (pref.fb_friend_mobile == true && notification_type == 'fb_friend') ||
+       (pref.following_mobile == true && notification_type == 'following') ||
+       (pref.tagged_mobile == true && (notification_type == 'tagged' || notification_type == 'tagged_by_friend')) ||
+       (pref.unlock_new_level_mobile == true && notification_type == 'unlock_new_level') ||
+       (pref.weekly_friends_activity_mobile == true && notification_type == 'weekly_friends_activity') ||
+       (pref.news_and_updates_mobile == true && notification_type == 'news_and_updates') ||
+       (pref.top_expert_mobile == true && notification_type == 'top_expert') ||
+       (pref.ousted_as_top_expert_mobile == true && notification_type == 'ousted_as_top_expert')
+
     
     pref = UserPreference.find_by_user_id(user_id_to)
     
     if user = User.select(:name).find_by_id(user_id_from) && notification_type
       user_ids_to_array = []
       
-      if (notification_type == 'like' || notification_type == 'comment') && (user_id_from != user_id_to) && dish_name && review_id
+      if (notification_type == 'like' && pref.like_mobile == true) || (pref.comment_mobile == true && notification_type == 'comment')
+        if (user_id_from != user_id_to) && dish_name && review_id
         
               if notification_type == 'like'
                 alert = "Liked your dish-in in #{dish_name} "
@@ -51,8 +67,8 @@ class Notification < ActiveRecord::Base
                 
               badge = APN::Notification.where("user_id_to = ? and `read` != 1", user_id_to).count(:id)
               user_ids_to_array.push({:user_id => user_id_to, :badge => badge})
-              
-      elsif notification_type == 'comment_on_comment' && user_id_to && review_id 
+        end
+      elsif notification_type == 'comment_on_comment' && pref.comment_mobile == true && user_id_to && review_id 
               alert = "Also commented on #{dish_name}"              
               
               Comment.select([:user_id, :review_id]).where(:review_id => review_id).group(:user_id).each do |c|
@@ -62,7 +78,7 @@ class Notification < ActiveRecord::Base
                   end               
               end
               
-      elsif notification_type == 'dishin' && dish_name
+      elsif notification_type == 'dishin' && pref.dishin_mobile == true && dish_name
               alert = "Dished in #{dish_name}"        
                     
               Follower.select(:user_id).where(:follow_user_id => user_id_from).each do |f|
@@ -75,14 +91,14 @@ class Notification < ActiveRecord::Base
                   
               end    
            
-      elsif notification_type == 'following' && user_id_to && user_id_from != user_id_to 
+      elsif notification_type == 'following' && pref.following_mobile == true && user_id_to && user_id_from != user_id_to 
         
               alert = "Started following you"
               badge = APN::Notification.where("user_id_to = ? AND `read` != 1", user_id_to).count(:id)
               
               user_ids_to_array.push({:user_id => user_id_to, :badge => badge})
               
-      elsif notification_type == 'tagged' && friends && review_id
+      elsif notification_type == 'tagged' && pref.tagged_mobile == true && friends && review_id
         
               if r = Review.find_by_id(review_id)
 
@@ -108,7 +124,7 @@ class Notification < ActiveRecord::Base
                   end
                 end
               end
-      elsif notification_type == 'tagged_by_friend' && restaurant_name && friends
+      elsif notification_type == 'tagged_by_friend' && pref.tagged_mobile == true && restaurant_name && friends
               if review = Review.find_by_id(review_id)
                                 
                   if review.user_id != user_id_from
@@ -130,7 +146,7 @@ class Notification < ActiveRecord::Base
                   end 
               end
 
-      elsif notification_type == 'new_fb_user' && user_id_from != user_id_to
+      elsif notification_type == 'fb_friend' && pref.fb_friend_mobile == true && user_id_from != user_id_to
          
               alert = "Your friend from facebook has joined Dish.fm"
               badge = APN::Notification.where("user_id_to = ? and `read` != 1", user_id_to).count(:id)
@@ -164,8 +180,29 @@ class Notification < ActiveRecord::Base
             
         end
         
-        system "rake apn:notifications:deliver &" if send == 1
-        # system "rake email:notifications:deliver &"
+        if send == 1
+          system "rake apn:notifications:deliver &" if (pref.like_mobile == true && notification_type == 'like') ||
+             (pref.comment_mobile == true && notification_type == 'comment') ||
+             (pref.dishin_mobile == true && notification_type == 'dishin') ||
+             (pref.fb_friend_mobile == true && notification_type == 'fb_friend') ||
+             (pref.following_mobile == true && notification_type == 'following') ||
+             (pref.unlock_new_level_mobile == true && notification_type == 'unlock_new_level') ||
+             (pref.weekly_friends_activity_mobile == true && notification_type == 'weekly_friends_activity') ||
+             (pref.news_and_updates_mobile == true && notification_type == 'news_and_updates') ||
+             (pref.top_expert_mobile == true && notification_type == 'top_expert') ||
+             (pref.ousted_as_top_expert_mobile == true && notification_type == 'ousted_as_top_expert')
+             
+          system "rake email:notifications:deliver &" if (pref.like_email == true && notification_type == 'like') ||
+            (pref.comment_email == true && notification_type == 'comment') ||
+            (pref.dishin_email == true && notification_type == 'dishin') ||
+            (pref.fb_friend_email == true && notification_type == 'fb_friend') ||
+            (pref.following_email == true && notification_type == 'following') ||
+            (pref.unlock_new_level_email == true && notification_type == 'unlock_new_level') ||
+            (pref.weekly_friends_activity_email == true && notification_type == 'weekly_friends_activity') ||
+            (pref.news_and_updates_email == true && notification_type == 'news_and_updates') ||
+            (pref.top_expert_email == true && notification_type == 'top_expert') ||
+            (pref.ousted_as_top_expert_email == true && notification_type == 'ousted_as_top_expert')
+        end
       end
       
     end

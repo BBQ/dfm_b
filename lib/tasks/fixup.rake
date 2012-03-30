@@ -1,5 +1,6 @@
 # encoding: utf-8
 namespace :fixup do
+  
   #TODO: Start rake fix:add_r_img, tags:match_dishes, tags:match_rest on Test Server foursquare check_ins
   desc "Add Images to Restaurant"
   task :add_r_img => :environment do  
