@@ -11,6 +11,6 @@ end
 desc "Create preferences for users"
 task :cr_user_refs => :environment do
   User.all.each do |u|
-    p r.id if UserPreference.create(:user_id => u.id)
+    p u.id if UserPreference.create(:user_id => u.id)
   end
 end
