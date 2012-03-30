@@ -11,7 +11,7 @@ class UserMailer < ActionMailer::Base
 
         if email = user_to.email
           @user = user_to.name
-          @text = "#{User.find_by_id(n.user_id_from).name} #{n.alert}"
+          @text = "#{User.find_by_id(n.user_id_from).name} #{n.alert.downcase}"
           mail(:to => email, :subject => subject)
           
           n.mailed_at = Time.now
