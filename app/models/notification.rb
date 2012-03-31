@@ -141,7 +141,6 @@ class Notification < ActiveRecord::Base
                  (pref.following_mobile == true && notification_type == 'following') ||
                  (pref.unlock_new_level_mobile == true && notification_type == 'unlock_new_level') ||
                  (pref.news_and_updates_mobile == true && notification_type == 'news_and_updates') ||
-                 (pref.top_expert_mobile == true && notification_type == 'top_expert') ||
                  (pref.ousted_as_top_expert_mobile == true && notification_type == 'ousted_as_top_expert')
              
               system "rake email:notifications:deliver &" if (pref.like_email == true && notification_type == 'like') ||
