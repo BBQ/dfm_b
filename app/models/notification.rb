@@ -140,7 +140,6 @@ class Notification < ActiveRecord::Base
                  (pref.fb_friend_mobile == true && notification_type == 'fb_friend') ||
                  (pref.following_mobile == true && notification_type == 'following') ||
                  (pref.unlock_new_level_mobile == true && notification_type == 'unlock_new_level') ||
-                 (pref.weekly_friends_activity_mobile == true && notification_type == 'weekly_friends_activity') ||
                  (pref.news_and_updates_mobile == true && notification_type == 'news_and_updates') ||
                  (pref.top_expert_mobile == true && notification_type == 'top_expert') ||
                  (pref.ousted_as_top_expert_mobile == true && notification_type == 'ousted_as_top_expert')
