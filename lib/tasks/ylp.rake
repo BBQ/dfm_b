@@ -31,7 +31,19 @@ namespace :ylp do
         end
         
         p " Restaurant #{d.name} #{d.address}"
-        p " Categoties #{category_id.join(',')}"
+        
+        hours_data = []
+        week = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+        d.hours.split(' ').each do |h|
+          week.each do |wd|
+            if h =~ /#{wd}/
+              hours_data.push(h => [])
+            else
+              hours_data.last.push(h)
+            end
+          end
+        end
+        
         
         data = {}  
         data[:transit] = d.transit

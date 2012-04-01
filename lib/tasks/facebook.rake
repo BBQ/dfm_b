@@ -52,7 +52,7 @@ namespace :facebook do
               end
             end
           end
-          graph.put_object(picture['id'],'tags', :tags => "[#{tags.join(',')}]")
+          graph.put_object(picture['id'],'tags', :tags => "[#{tags.join(',')}]") if tags.count > 0
         end
       end
     end
