@@ -9,7 +9,7 @@ namespace :ylp do
   require 'time'
   
   task :copy => :environment do
-    YlpRestaurant.select([:id, :name, :city, :db_status, :ylp_uri]).group(:name).where('db_status = 0').order(:id).each do |r|
+    YlpRestaurant.select([:id, :name, :city, :ylp_uri]).group(:name).where("city != 'New York' AND id >= 24000 AND id < 26000").order(:id).each do |r|
       
       if n = Network.find_by_name_and_city(r.name, r.city)
         network_id = n.id
