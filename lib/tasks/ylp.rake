@@ -391,7 +391,7 @@ def f_hours(restarant_hours)
         t_from = Time.parse(hours[0..hours.index('-')-1]).strftime("%H:%M")
         t_to = Time.parse(hours[hours.index('-')+1..10]).strftime("%H:%M")
         t_to.gsub!(/^\d{2}/, "#{t_to.to_i+24}") if t_from.to_i > t_to.to_i
-        data[:"#{dd}"] = "#{t_from}-#{t_to}"
+        data[:"#{dd.downcase}"] = "#{t_from}-#{t_to}"
       end
       days_data = []
       hours_data = []
