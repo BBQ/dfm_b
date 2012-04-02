@@ -6,6 +6,7 @@ namespace :ylp do
   require 'net/http'
   require 'open-uri'
   require 'nokogiri'
+  require 'time'
   
   task :copy => :environment do
     YlpRestaurant.select([:id, :name, :city, :db_status, :ylp_uri]).group(:name).where('db_status = 0').order(:id).each do |r|
@@ -32,20 +33,9 @@ namespace :ylp do
         
         p " Restaurant #{d.name} #{d.address}"
         
-        hours_data = []
-        week = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
-        d.hours.split(' ').each do |h|
-          week.each do |wd|
-            if h =~ /#{wd}/
-              hours_data.push(h => [])
-            else
-              hours_data.last.push(h)
-            end
-          end
-        end
+        data = {}
+        data = f_hours(d.hours) if d.hours
         
-        
-        data = {}  
         data[:transit] = d.transit
         data[:attire] = d.attire
         data[:caters] = d.caters
@@ -359,4 +349,48 @@ def go_sub(url, headers)
     go_sub(json['seoPaginationUrls']['relNextUrl'], headers) unless json['seoPaginationUrls']['relNextUrl'].blank?
   end
   src
+end
+
+def f_hours(restarant_hours)   
+  days_data = []
+  hours_data = []
+  
+  data = {}
+  week = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+  
+  restarant_hours.split(' ').each do |h|
+    dd = 0
+    
+    week.each do |wd|
+      if h =~ /#{wd}/
+        if h.count('-') > 0
+          from = week.index(h[0..2])
+          to = week.index(h[4..6])
+          week[from..to].each do |wdc|
+            days_data.push(wdc)
+          end
+        else
+          days_data.push(h)
+        end
+        dd =1
+        break
+      end
+    end
+    
+    hours_data.push(h) if dd == 0
+    hours = hours_data.join('')
+    
+    if hours =~ /\d{1,2}(:\d{2})?(pm|am)-\d{1,2}(:\d{2})?(pm|am)/
+      days_data.each do |dd|
+        t_from = Time.parse(hours[0..hours.index('-')-1]).strftime("%H:%M")
+        t_to = Time.parse(hours[hours.index('-')+1..10]).strftime("%H:%M")
+        t_to.gsub!(/^\d{2}/, "#{t_to.to_i+24}") if t_from.to_i > t_to.to_i
+        data[:"#{dd}"] = "#{t_from}-#{t_to}"
+      end
+      days_data = []
+      hours_data = []
+    end
+    
+  end
+  data
 end
