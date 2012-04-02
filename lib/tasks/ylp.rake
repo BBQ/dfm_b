@@ -12,7 +12,7 @@ namespace :ylp do
     id_start = 24000
     id_end = 26000
     
-    restaurants = YlpRestaurant.select([:id, :name, :city, :ylp_uri]).group(:name).where("city != 'New York'").order(:id)
+    restaurants = YlpRestaurant.select([:id, :name, :city, :ylp_uri]).group(:name).where("city != 'New York'").order('id DESC')
     restaurants = restaurants.where("id BETWEEN ? AND ?",id_start,id_end) if id_start > 0 && id_end > 0
     
     restaurants.each do |r|
@@ -29,15 +29,17 @@ namespace :ylp do
         category_id = []  
         cat = d.category unless cat = d.restaurant_categories
         
-        cat.split(',').each do |name|
-          if category = RestaurantCategory.find_by_name(name)
-            category_id.push(category.id)
-          else
-            category_id.push(RestaurantCategory.create(:name => name).id)
+        if cat 
+          cat.split(',').each do |name|
+            if category = RestaurantCategory.find_by_name(name)
+              category_id.push(category.id)
+            else
+              category_id.push(RestaurantCategory.create(:name => name).id)
+            end
           end
         end
         
-        p " Restaurant #{d.name} #{d.address}"
+        p "#{d.id} #{d.name} #{d.address}"
         
         data = {}
         data = f_hours(d.hours) if d.hours

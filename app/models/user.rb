@@ -95,6 +95,9 @@ class User < ActiveRecord::Base
       client = Twitter::Client.new(:oauth_token => oauth_token, :oauth_token_secret => oauth_token_secret)
       if user = User.find_by_twitter_id(client.user.id)
         token = Session.get_token(user)
+        user.oauth_token = oauth_token
+        user.oauth_token_secret = oauth_token_secret
+        user.save
       else
         user = create_user_from_twitter(client, email)
         token = Session.get_token(user)        
@@ -102,7 +105,7 @@ class User < ActiveRecord::Base
     rescue
       nil
     end
-    {:name => user.name, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
+    {:name => user.name, :fb_access_token =>user.fb_access_token, :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
   end
   
   def self.create_user_from_twitter(client, email)
@@ -110,7 +113,9 @@ class User < ActiveRecord::Base
       :name => client.user.name,
       :email => email,  
       :twitter_id => client.user.id,
-      :remote_photo_url => client.profile_image
+      :remote_photo_url => client.profile_image,
+      :oauth_token => client.oauth_token,
+      :oauth_token_secret => client.oauth_token_secret
     })
     UserPreference.create({:user_id => user.id})
     
@@ -131,8 +136,7 @@ class User < ActiveRecord::Base
         user = create_user_from_facebook(rest)
         token = Session.get_token(user)        
       end
-
-    {:name => user.name, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id, :twitter_id => user.twitter_id} unless token.nil? 
+      {:name => user.name, :fb_access_token =>user.fb_access_token, :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
   end
   
   def self.create_user_from_facebook(rest)
