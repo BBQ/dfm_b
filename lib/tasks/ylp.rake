@@ -25,7 +25,7 @@ namespace :ylp do
       
       p "Network #{network_id} #{n.name}"
       
-      YlpRestaurant.where(:name => r.name).each do |d|
+      YlpRestaurant.where("name = ? AND city = ? ",r.name,r.city).each do |d|
         category_id = []  
         cat = d.category unless cat = d.restaurant_categories
         
@@ -376,7 +376,7 @@ def f_hours(restarant_hours)
             days_data.push(wdc)
           end
         else
-          days_data.push(h)
+          days_data.push(wd)
         end
         dd =1
         break
