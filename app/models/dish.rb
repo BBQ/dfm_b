@@ -106,8 +106,7 @@ class Dish < ActiveRecord::Base
   end
   
   def image_p120
-    image = find_image && find_image.p120.url != '/images/noimage.jpg' ? find_image.p120.url  : nil
-    image = find_image.thumb.url if image.nil?
+    image = find_image && find_image.p120.url != '/images/noimage.jpg' ? find_image.p120.url
   end
   
   def image_hd
