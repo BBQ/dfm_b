@@ -125,6 +125,11 @@ namespace :ylp do
         data[:address] = d.address? ? d.address : d.fsq_address ||= nil
         data[:phone] = d.phone
         data[:web] = d.web
+        
+        d.cc = 1 if d.cc == 'Yes'
+        d.cc = 0 if d.cc == 'No'
+        d.outdoor_seating = 1 if d.outdoor_seating == 'Yes'
+        d.outdoor_seating = 0 if d.outdoor_seating == 'No'               
 
         data[:wifi] = d.wifi
         data[:terrace] = d.outdoor_seating

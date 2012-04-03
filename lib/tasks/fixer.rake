@@ -5,9 +5,10 @@ task :rev_rest_fix => :environment do
       if r = Restaurant.select([:id, :name, :votes, :rating]).find_by_network_id(rw.network_id)
         rw.restaurant_id = r.id
         rw.save
-      
-        r.votes = r.votes + 1
-        r.rating = ((r.rating*r.votes) + rw.rating)/r.votes
+        
+        reviews = Review.where(:restaurant_id => r.id)
+        r.votes = reviews.count
+        r.rating = reviews.sum(:rating)/reviews.count
         r.save
         p "#{rw.id}: #{r.id} #{r.name} #{r.votes}/#{r.rating}"
       else
