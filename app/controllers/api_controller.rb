@@ -800,6 +800,7 @@ class ApiController < ApplicationController
       
       if params[:type] != 'delivery'
         xs = []
+        filters = []
         if params[:bill] && params[:bill].length == 4 && params[:bill] != '0000' && params[:bill] != '1111'
           bill = []
           bill.push('bill = 1') if params[:bill][0] == '1'
@@ -814,7 +815,7 @@ class ApiController < ApplicationController
         etc.push('terrace = 1') if params[:terrace] == '1'
         etc.push('cc = 1') if params[:accept_bank_cards] == '1'
         filters.push(etc.join(' AND ')) if etc.count > 0
-        all_filters = filters.join(' AND ')
+        all_filters = filters.join(' AND ') if filters.count > 0
       
     
         if params[:open_now].to_i == 1
