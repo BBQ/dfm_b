@@ -150,7 +150,7 @@ class API < ActiveRecord::Base
               :terrace => restaurant.terrace == false ? 0 : 1,
               :lat => restaurant.lat,
               :lon => restaurant.lon,
-              :description => restaurant.description.to_s
+              :description => restaurant.description.to_s,
               :fsq_id => restaurant.fsq_id
             })
         end
