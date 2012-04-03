@@ -11,7 +11,7 @@ task :rev_rest_fix => :environment do
         # r.save
         p "#{rw.id}: #{r.id} #{r.name} #{r.votes}/#{r.rating}"
       else
-        p "Network #{rw.network_id} not found!"
+        p "#{rw.id}: Network #{rw.network_id} not found!"
       end
     end
   end
