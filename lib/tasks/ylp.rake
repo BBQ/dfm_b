@@ -8,11 +8,76 @@ namespace :ylp do
   require 'nokogiri'
   require 'time'
   
-  task :copy => :environment do
-    id_start = 24000
-    id_end = 26000
+  task :cl_ny => :environment do
+    p Restaurant.where("source = 'ylp' AND created_at <= '2012-03-27 09:07:22'").delete_all 
+    p YlpDish.where("created_at <= '2012-03-27 09:07:22'").delete_all  
+    p YlpRestaurant.where("created_at <= '2012-03-27 09:07:22'").update_all("has_menu = NULL")
+  end
+  
+  task :review => :environment do
+    i = 0
+    rest = Restaurant.where("source ='foursquare'")
     
-    restaurants = YlpRestaurant.select([:id, :name, :city, :ylp_uri]).group(:name).where("city != 'New York'").order('id DESC')
+    rest.each do |r|
+      if r1 = Restaurant.where("source = 'ylp' AND network_id = ? AND fsq_id = ?", r.network_id, r.fsq_id).first
+        i += 1
+      elsif r1 = Restaurant.where("source = 'ylp' AND network_id = ? AND address LIKE ?", r.network_id, "%#{r.address.gsub(/\.|,/, '')}%").first
+        i += 1
+      elsif r1 = Restaurant.where("source = 'ylp' AND network_id = ? AND ROUND(lat, 3) = ? AND ROUND(lon, 3) = ?", r.network_id, r.lat.round(3), r.lon.round(3)).first
+        i += 1
+      elsif r1 = Restaurant.where("source = 'ylp' AND network_id = ? AND phone = ? ", r.network_id, r.phone).first
+        i += 1    
+      else
+        # p "#{r.id}; #{r.name}; #{r.address}; #{r.city};"
+      end
+      
+      unless r1.nil?
+        r.time = r1.time
+        r.phone = r1.phone
+        r.web = r1.web
+        r.wifi = r1.wifi
+        r.terrace = r1.terrace
+        r.cc = r1.cc
+        r.source = r1.source
+        r.good_for_kids = r1.good_for_kids
+        r.reservation = r1.reservation
+        r.delivery = r1.delivery
+        r.takeaway = r1.takeaway
+        r.service = r1.service
+        r.alcohol = r1.alcohol
+        r.noise = r1.noise
+        r.tv = r1.tv
+        r.disabled = r1.disabled
+        r.parking = r1.parking
+        r.bill = r1.bill
+        r.sun = r1.sun
+        r.mon = r1.mon
+        r.tue = r1.tue
+        r.wed = r1.wed
+        r.thu = r1.thu
+        r.fri = r1.fri
+        r.sat = r1.sat
+        r.attire = r1.attire
+        r.transit = r1.transit
+        r.caters = r1.caters
+        r.ambience = r1.ambience
+        r.good_for_groups = r1.good_for_groups
+        r.good_for_meal = r1.good_for_meal
+        
+        # r.save
+        p "#{r.id} #{r.name} #{r.fsq_id} #{r.address} #{r.phone}"
+        p "#{r1.id} #{r1.name} #{r1.fsq_id} #{r1.address} #{r1.phone}"
+        # r1.destroy
+      end
+    end
+    p "#{rest.count}/#{i}"
+  end
+  
+  task :copy => :environment do
+    id_start = 15000
+    id_end = 20000
+    
+    restaurants = YlpRestaurant.select([:id, :name, :city, :ylp_uri]).group(:name).where("city = 'New York'").order('id')
     restaurants = restaurants.where("id BETWEEN ? AND ?",id_start,id_end) if id_start > 0 && id_end > 0
     
     restaurants.each do |r|
@@ -142,9 +207,9 @@ namespace :ylp do
     end
   end  
   
-  #3873, 18435, 18536!, 6736, 5769, 13250
+  #3873, 4158, 4322, 6841, 16972, 15921, 17127, 17587, 21682, 22639, 22644 
   task :get_fsq  => :environment do
-    YlpRestaurant.where('has_menu IS NULL AND city != "New York"').order(:id).each do |r|
+    YlpRestaurant.where('city = "New York" AND id >=15922 AND id < 16000').order(:id).each do |r|
       p r.id
       if r.has_menu.nil?
         client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
