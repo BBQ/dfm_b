@@ -151,6 +151,7 @@ class API < ActiveRecord::Base
               :lat => restaurant.lat,
               :lon => restaurant.lon,
               :description => restaurant.description.to_s
+              :fsq_id => restaurant.fsq_id
             })
         end
       end

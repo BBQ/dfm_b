@@ -4,14 +4,14 @@ task :rev_rest_fix => :environment do
     unless r = Restaurant.select(:id).find_by_id(rw.restaurant_id)
       if r = Restaurant.select([:id, :name, :votes, :rating]).find_by_network_id(rw.network_id)
         rw.restaurant_id = r.id
-        # rw.save
+        rw.save
       
         r.votes = r.votes + 1
         r.rating = ((r.rating*r.votes) + rw.rating)/r.votes
-        # r.save
+        r.save
         p "#{rw.id}: #{r.id} #{r.name} #{r.votes}/#{r.rating}"
       else
-        p "#{rw.id}: Network #{rw.network_id} not found!"
+        p "#{rw.id}: No restaurants found in Network #{rw.network_id}"
       end
     end
   end
