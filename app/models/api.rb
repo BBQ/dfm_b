@@ -206,7 +206,7 @@ class API < ActiveRecord::Base
       end
       
       wday = Date.today.strftime("%a").downcase
-      if restaurant.send(wday)
+      unless restaurant.send(wday).blank?
         now = Time.now.strftime("%H%M")
         open_now = now > restaurant.send(wday)[0,5].gsub(':','') && now < restaurant.send(wday)[-5,5].gsub(':','') ? 1 : 0
       end
