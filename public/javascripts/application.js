@@ -32,7 +32,7 @@ function setMarkers(map, locations) {
   // Origins, anchor positions and coordinates of the marker
   // increase in the X direction to the right and in
   // the Y direction down.
-  var image = new google.maps.MarkerImage('http://dishfm.local/images/mapPointer.png',
+  var image = new google.maps.MarkerImage('http://test.dish.fm/images/mapPointer.png',
       // This marker is 20 pixels wide by 32 pixels tall.
       new google.maps.Size(26, 42),
       // The origin for this image is 0,0.
