@@ -567,9 +567,9 @@ class ApiController < ApplicationController
         if params[:type] == 'home_cooked'
           dishes = HomeCook.select([:id, :name, :rating, :votes, :photo]).order("votes DESC, photo DESC")
         elsif params[:type] == 'delivery'
-          dishes = DishDelivery.select([:id, :name, :rating, :votes, :photo, :price, :delivery_id]).order("votes DESC, photo DESC")
+          dishes = DishDelivery.select([:id, :name, :rating, :votes, :photo, :price, :currency, :delivery_id]).order("votes DESC, photo DESC")
         else      
-          dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :price, :fsq_checkins_count]).order("votes DESC, photo DESC, fsq_checkins_count DESC")
+          dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :price, :currency, :fsq_checkins_count]).order("votes DESC, photo DESC, fsq_checkins_count DESC")
           dishes = dishes.where("network_id IN (#{networks.join(',')})") if networks.count > 0
           dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
           dishes = dishes.search(params[:search]) unless params[:search].blank?
@@ -624,6 +624,7 @@ class ApiController < ApplicationController
                           :rating => d.rating,
                           :votes => d.votes,
                           :price => d.price,
+                          :currency => d.currency,
                           :image_sd => d.image_sd,
                           :image_hd => d.image_hd,
                           :network => params[:type] == 'home_cooked' ? {} : {
@@ -656,6 +657,7 @@ class ApiController < ApplicationController
                     :rating => d.rating,
                     :votes => d.votes,
                     :price => d.price,
+                    :currency => d.currency,
                     :image_sd => d.image_sd,
                     :image_hd => d.image_hd,
                     :network => {
@@ -695,6 +697,8 @@ class ApiController < ApplicationController
                           :name => d.name,
                           :rating => d.rating,
                           :votes => d.votes,
+                          :price => d.price,
+                          :currency => d.currency,
                           :image_sd => d.image_sd,
                           :image_hd => d.image_hd,
                           :network => {
