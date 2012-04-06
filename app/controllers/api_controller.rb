@@ -908,7 +908,7 @@ class ApiController < ApplicationController
       restaurants = restaurants.where("network_id IN (#{params[:network_id]})") unless params[:network_id].blank?
     
       if params[:type] != 'delivery'
-        restaurants = restaurants.select('restaurants.fsq_checkins_count, restaurant_categories, restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')    
+        restaurants = restaurants.select('restaurants.bill, restaurants.fsq_checkins_count, restaurant_categories, restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')    
       end
       restaurants = restaurants.limit("#{offset}, #{limit}")
     
