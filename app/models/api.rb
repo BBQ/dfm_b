@@ -206,8 +206,10 @@ class API < ActiveRecord::Base
       end
       
       wday = Date.today.strftime("%a").downcase
-      now = Time.now.strftime("%H%M")
-      open_now = now > restaurant.send(wday)[0,5].gsub(':','') && now < restaurant.send(wday)[-5,5].gsub(':','') ? 1 : 0
+      if restaurant.send(wday)
+        now = Time.now.strftime("%H%M")
+        open_now = now > restaurant.send(wday)[0,5].gsub(':','') && now < restaurant.send(wday)[-5,5].gsub(':','') ? 1 : 0
+      end
       
       data = {
           :network_ratings => data_r.rating,
