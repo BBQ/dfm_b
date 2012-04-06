@@ -205,14 +205,19 @@ class API < ActiveRecord::Base
         end
       end
       
+      wday = Date.today.strftime("%a").downcase
+      now = Time.now.strftime("%H%M")
+      open_now = now > restaurant.send(wday)[0,5].gsub(':','') && now < restaurant.send(wday)[-5,5].gsub(':','') ? 1 : 0
+      
       data = {
           :network_ratings => data_r.rating,
           :network_reviews_count => data_r.reviews.count,
-          :popularity => type == 'delivery' ? 0 : restaurant.fsq_checkins_count,
+          :popularity => type == 'delivery' ? 0 : restaurant.fsq_checkins_count ||= 0,
           :restaurant_name => restaurant.name,
           :reviews => review_data,
           :best_dishes => best_dishes ||= '',
           :top_expert => top_expert ||= nil,
+          :open_now => open_now, 
           :restaurant => {
               :image_sd => restaurant.find_image && restaurant.find_image.iphone.url != '/images/noimage.jpg' ? restaurant.find_image.iphone.url : '',
               :image_hd => restaurant.find_image && restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
