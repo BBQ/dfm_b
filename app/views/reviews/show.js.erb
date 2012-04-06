@@ -1,3 +1,1 @@
-var markers = "<%= @markers %>";
-console.log(markers);
-$("#popup_layer").html("<%= escape_javascript(render "popup/dish_review") %>").fadeIn(100);
+$("#review_content").html("<%= escape_javascript(render "popup/review") %>").slideDown(100);

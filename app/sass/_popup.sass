@@ -1,3 +1,16 @@
+.star
+	margin: 0px 2px 0px 0
+	float: left
+	display: block	
+.rate
+	width: 130px
+.sp
+	border-top: 1px solid #bbb6b0
+	border-bottom: 1px solid #fffffa
+	width: 100%
+	margin-bottom: 5px
+	display: block
+	clear: both
 #simple_popup
 	background: #f2efea
 	text-align: center
@@ -10,17 +23,10 @@
 	left: 50%
 	z-index: 9
 	top: 50%
-	width: 620px
+	width: 960px
 	margin-top: -105px
 	margin-left: -300px
 	cursor: pointer
-	
-	.close
-		position: absolute
-		text-align: right
-		right: 0
-		margin-right: -45px
-		margin-top: -60px
 	
 	#fb_message
 		margin: 0 auto
@@ -35,190 +41,76 @@
 		margin: 0 10px
 	
 #popup
-	width: 750px
+	width: 960px
 	left: 50%
-	margin-left: -500px
-	top: 20px
+	margin-left: -480px
 	position: absolute
 	z-index: 6
-	padding-left: 15px
 	background: #e1dcd3
 	border: 1px solid #f6f5f2
 	border-radius: 5px
-	box-shadow: 0px 0px 25px 0px rgba(0, 0, 0, 0.50)
 	line-height: 1.2em
 	
 .side_div
-	width: 250px
+	width: 220px
 	font-family: bell
 	font-size: 0.9em
 	color: #453624
 	float: left
-	p
-		width: 230px
-	h2
-		font-size: 1.7em
-		color: #453624
-		text-shadow: 0px 1px 0 rgba(255, 255, 255, 0.50)
-		font-weight: normal
-		font-family: bell
-		margin-top: 15px
+	padding: 0 15px
+	.hd2
+		color: #2b8da2
+		font-size: 2em
+		line-height: 0.9em
+		margin: 15px 0 10px 0
+		text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.75)
+	.desc
+		font-size: 1em
+		line-height: 1em
+		float: left
+		margin-bottom: 10px
+	.price
+		font-weight: bold
+		font-size: 1.1em
+		float: right
+		font-family: arial
+	.rating
+		font-family: bell_bold
+		font-size: 1em		
+	.rate
+		font-family: Arial
+		line-height: 1.7em
+		.mark
+			font-size: 1em
+			float: left
+			font-weight: bold
+			color: #d85f16
+			margin-right: 5px
+			clear: both
+		.voices
+			font-size: 0.8em
+			float: left
+			color: #3f3627
+			margin-bottom: 5px
 	#map_canvas_popup
 		width: 225px
 		height: 225px
 		margin: 5px 0
 		float: left
 		border: 1px solid #999
-	.number
-		color: #fff
-		border-radius: 5px
-		background: #d09b77
-		width: 22px
-		height: 17px
-		text-align: center
-		float: left
-		margin-right: 5px
-	p
-		margin: 0
-		span
-			font-family: bell_bold
-		
-.link_button
-	display: block
-	height: 20px
-	width: 140px
-	border-radius: 6px
-	background: url('/images/change_profile_button_bg.png')
-	text-decoration: none
-	color: #fff
-	padding-top: 2px
-	box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.7)
-	text-shadow: 0px -1px 0 rgba(0, 0, 0, 0.30)
-	text-align: center
-	&:hover
-		box-shadow: inset -1px -1px 0px 0px rgba(0, 0, 0, 0.5)
-		margin-top: 1px
-		height: 19px
-		
-.place
-	margin-left: 10px
-	width: 210px
-	border-bottom: 1px solid #bdb8b2
-	box-shadow: 0px 1px 0px 0px rgba(255, 255, 255, 0.50)
-	padding: 8px 10px
-	span
-		color: #D85F16
-	a
-		text-decoration: none
-		color: #453624
-	&:hover
-		background: #f2efe9
-		cursor: pointer
-
+	.addr_phone
+		line-height: 1.2em
 		
 .center_div
-	width: 498px
+	width: 710px
 	float: left
 	font-family: bell
 	background: #f2efe9
 	color: #453624
 	border-radius: 5px
-	border: 1px solid #fff
-	box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.50)
-	h2
-		color: #2b8da2
-		font-size: 2em
-		line-height: 1em
-		margin: 20px 0 0 10px
-	.rate
-		font-family: Arial
-		text-shadow: 1px 1px 0 #fff
-		line-height: 1.7em
-		margin: 10px 0 0 15px 
-		.star
-			margin: 5px 1px 5px 0
-			float: left
-		.mark
-			font-size: 0.9em
-			float: left
-			font-weight: bold
-			color: #d85f16
-			margin: 0 5px
-		.voices
-			font-size: 0.8em
-			float: left
-			color: #a99c83
-	.info
-		margin-left: 15px 
-		font-size: 0.9em
-		line-height: 0.9em
-		width: 300px
-		float: left
-	.link_button
-		font-size: 0.9em
-		float: right
-		margin-right: 15px
-	
-	#your_rate
-		font-size: 0.8em
-		font-family: bell_bold
-		float: right
-		text-shadow: 1px 1px 0 #fff
-		line-height: 1em
-		margin: -20px 15px 0 0
-		div
-			float: left
-			margin: 2px
-		span
-			color: #d85f16
-		a
-			float: left
-			
-	ul#menu_list
-		float: left
-		margin-left: 15px
-		li
-			float: left
-			margin-right: 4px
-			padding-bottom: 5px
-			&:hover
-				background: url('/images/arr_down_categries.png') no-repeat center bottom
-				.menu_button
-					background-image: none
-					background: #6a2d0c
-		li.active
-			background: url('/images/arr_down_categries.png') no-repeat center bottom
-			.menu_button
-				background-image: none
-				background: #6a2d0c
-					
-		.menu_button
-			margin-top: 10px
-			display: block
-			height: 21px
-			padding: 4px 10px 0 10px
-			border-radius: 5px
-			font-family: bell
-			background: url('/images/restaurant_info_button_bg.png')
-			text-decoration: none
-			color: #e1dcd3
-			text-align: center
-			&:hover
-				background-image: none
-				background: #6a2d0c
-				
-	#restaurant_content
+	min-height: 580px
+	#review_content
 		clear: both
 		@import "network_menu"
 		@import "network_dishes"
 		@import "popup_review"
-
-.close_popup
-	float: right
-	margin-right: -50px
-	cursor: pointer
-			
-		
-	
-	
-	

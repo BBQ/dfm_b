@@ -1,1 +1,53 @@
-= render "popup/dish_review"
+#popup
+	.side_div
+		.hd2
+			= "#{@review.dish.name}"
+		.desc
+			с уткой по-пекински
+			с уткой по-пекински
+			с уткой по-пекински
+			с уткой по-пекински
+			с уткой по-пекински
+			с уткой по-пекински
+			= "#{@review.dish.description}"
+		.price
+			= "#{@review.dish.price} #{@review.dish.currency}"
+		.sp
+		.rating
+			Raiting
+		.rate
+			- rate = @review.dish.votes.to_i != 0 ? (@review.dish.rating/@review.dish.votes).to_i : 0				
+			- if rate
+				- rate.times do
+					= image_tag 'star_filled.png', :class => 'star'
+				- (5-rate).times do
+					= image_tag 'star_empty.png', :class => 'star'
+			- else
+				- 5.times do
+					= image_tag 'star_empty.png', :class => 'star'
+			.mark
+				= @review.dish.votes.to_i != 0 ? "%.1f" % (@review.dish.rating/@review.dish.votes.to_f) : 0
+			.voices
+				(#{@review.dish.votes} голосов)
+		.sp
+		.hd3
+			= "@ #{@review.restaurant.name}"
+		#rest_desc
+			= "#{@r_categories},"
+			= "#{@review.restaurant.rating.round(1)}(#{@review.restaurant.votes}votes),"
+			= "#{@review.restaurant.fsq_checkins_count}checkins,"
+			= @bill
+		#map_canvas_popup
+		%script
+			= "load_map(#{@markers})"
+		.addr_phone
+			= "#{@review.restaurant.address} Тел:#{@review.restaurant.phone}"
+	.center_div
+		#review_content
+			= render 'popup/review'
+			
+
+		
+	
+			
+			

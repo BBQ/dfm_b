@@ -1,13 +1,38 @@
 # encoding: utf-8
 namespace :facebook do
   
-  task :dishin => :environment do
+  task :like => :environment do
+    like_id = ENV["LIKE_ID"]
     
-    review_id = ENV["REVIEW_ID"]
-    if r = Review.find_by_id(review_id)
+    if l = Like.find_by_id(like_id)
+      r = Review.find_by_id(l.review_id) 
+      u = User.find_by_id(l.user_id)    
       
+      if r && u
+        unless u.fb_access_token.blank? && u.user_preferences.share_my_like_to_facebook == true
+          graph = Koala::Facebook::API.new(u.fb_access_token)
+          graph.put_object("me", "feed", :message => "")
+        end
+      end
+      
+    end
+  end
+  
+  task :comment => :environment do
+    
+  end
+  
+  task :expert => :environment do
+    
+  end
+  
+  task :dishin => :environment do    
+    review_id = ENV["REVIEW_ID"]
+    
+    if r = Review.find_by_id(review_id)  
       if u = User.find_by_id(r.user_id)
-        unless u.fb_access_token.blank?
+        
+        unless u.fb_access_token.blank? 
           graph = Koala::Facebook::API.new(u.fb_access_token)
 
           if r.text.blank?
@@ -54,6 +79,7 @@ namespace :facebook do
           end
           graph.put_object(picture['id'],'tags', :tags => "[#{tags.join(',')}]") if tags.count > 0
         end
+
       end
     end
     
