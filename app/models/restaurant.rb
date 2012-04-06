@@ -187,7 +187,7 @@ class Restaurant < ActiveRecord::Base
     self[:votes] = self.network.votes
     self[:fsq_id] = self.fsq_id || ''
         
-    super(:only => [:id, :name, :address, :rating, :votes, :lat, :lon, :network_id, :fsq_id, :fsq_checkins_count], :methods => [:has_menu, :thumb, :categories])
+    super(:only => [:id, :bill, :name, :address, :rating, :votes, :lat, :lon, :network_id, :fsq_id, :fsq_checkins_count], :methods => [:has_menu, :thumb, :categories])
   end
   
   def has_menu
