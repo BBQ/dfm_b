@@ -29,7 +29,7 @@
 		#rest_desc
 			= "#{@r_categories},"
 			= "#{@review.restaurant.rating.round(1)}(#{@review.restaurant.votes}votes),"
-			= "#{@review.restaurant.fsq_checkins_count}checkins,"
+			= "#{@review.restaurant.fsq_checkins_count} checkins,"
 			= @bill
 		#map_canvas_popup
 		%script

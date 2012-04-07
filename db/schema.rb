@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120328154543) do
+ActiveRecord::Schema.define(:version => 20120406155917) do
 
   create_table "_ylp_dishes", :force => true do |t|
     t.string   "ylp_restaurant_id"
@@ -659,19 +659,20 @@ ActiveRecord::Schema.define(:version => 20120328154543) do
 
   create_table "reviews", :force => true do |t|
     t.string   "photo"
-    t.float    "rating",         :default => 0.0
+    t.float    "rating",            :default => 0.0
     t.text     "text"
-    t.integer  "dish_id",                           :null => false
-    t.integer  "user_id",                           :null => false
+    t.integer  "dish_id",                              :null => false
+    t.integer  "user_id",                              :null => false
     t.integer  "restaurant_id"
-    t.integer  "count_likes",    :default => 0
-    t.integer  "count_comments", :default => 0
-    t.boolean  "web",            :default => false
+    t.integer  "count_likes",       :default => 0
+    t.integer  "count_comments",    :default => 0
+    t.boolean  "web",               :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "network_id",     :default => 0
+    t.integer  "network_id",        :default => 0
     t.string   "rtype"
     t.text     "friends"
+    t.string   "facebook_share_id"
   end
 
   add_index "reviews", ["count_likes"], :name => "index_reviews_on_count_likes"
@@ -727,37 +728,40 @@ ActiveRecord::Schema.define(:version => 20120328154543) do
   add_index "types", ["name"], :name => "index_types_on_name"
 
   create_table "user_preferences", :force => true do |t|
-    t.integer  "user_id",                              :null => false
-    t.boolean  "friends_dishin_email"
-    t.boolean  "friends_from_facebook_joins_email"
+    t.integer  "user_id",                                                :null => false
+    t.boolean  "dishin_email"
+    t.boolean  "fb_friend_email"
     t.boolean  "start_following_me_email"
-    t.boolean  "comment_my_dishin_email"
-    t.boolean  "add_to_favorites_my_dishin_email"
-    t.boolean  "news_and_updates_email"
+    t.boolean  "comment_email"
+    t.boolean  "like_email"
+    t.boolean  "following_email"
     t.boolean  "weekly_friends_activity_email"
     t.boolean  "ousted_as_top_expert_email"
     t.boolean  "unlock_new_level_email"
     t.boolean  "share_my_dishin_to_facebook"
-    t.boolean  "share_my_favorites_to_facebook"
+    t.boolean  "share_my_like_to_facebook"
     t.boolean  "share_my_comments_to_facebook"
     t.boolean  "share_my_top_expert_to_facebook"
     t.boolean  "share_my_new_level_badge_to_facebook"
     t.boolean  "share_my_dishin_to_twitter"
-    t.boolean  "share_my_favorites_to_twitter"
+    t.boolean  "share_my_like_to_twitter"
     t.boolean  "share_my_comments_to_twitter"
     t.boolean  "share_my_top_expert_to_twitter"
     t.boolean  "share_my_new_level_badge_to_twitter"
-    t.boolean  "friends_dishin_mobile"
-    t.boolean  "friends_from_facebook_joins_mobile"
+    t.boolean  "dishin_mobile"
+    t.boolean  "fb_friend_mobile"
     t.boolean  "start_following_me_mobile"
-    t.boolean  "comment_my_dishin_mobile"
-    t.boolean  "add_to_favorites_my_dishin_mobile"
-    t.boolean  "news_and_updates_mobile"
-    t.boolean  "weekly_friends_activity_mobile"
+    t.boolean  "comment_mobile"
+    t.boolean  "like_mobile"
+    t.boolean  "following_mobile"
     t.boolean  "ousted_as_top_expert_mobile"
     t.boolean  "unlock_new_level_mobile"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "tagged_email",                         :default => true
+    t.boolean  "tagged_mobile",                        :default => true
+    t.boolean  "news_and_updates_email",               :default => true
+    t.boolean  "news_and_updates_mobile",              :default => true
   end
 
   create_table "users", :force => true do |t|
@@ -776,6 +780,8 @@ ActiveRecord::Schema.define(:version => 20120328154543) do
     t.string   "gender"
     t.string   "current_city"
     t.string   "fb_access_token"
+    t.string   "oauth_token_secret"
+    t.string   "oauth_token"
   end
 
   add_index "users", ["facebook_id"], :name => "index_users_on_facebook_id"

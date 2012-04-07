@@ -813,15 +813,15 @@ class ApiController < ApplicationController
           bill.push('bill = 2') if params[:bill][1] == '1'
           bill.push('bill = 3') if params[:bill][2] == '1'
           bill.push('bill = 4') if params[:bill][3] == '1'
-          filters.push(bill.join(' OR ')) if bill.count > 0
+          filters.push("(#{bill.join(' OR ')})") if bill.count > 0
         end
       
         etc = []
-        etc.push('wifi != 0 OR wifi != "нет"') if params[:wifi] == '1'
+        etc.push('(wifi != 0 OR wifi != "нет")') if params[:wifi] == '1'
         etc.push('terrace = 1') if params[:terrace] == '1'
         etc.push('cc = 1') if params[:accept_bank_cards] == '1'
         filters.push(etc.join(' AND ')) if etc.count > 0
-        all_filters = filters.join(' AND ') if filters.count > 0
+        
       
     
         if params[:open_now].to_i == 1
@@ -831,10 +831,12 @@ class ApiController < ApplicationController
       
           if now.to_i < 1000
             now24 = now.to_i + 2400
-            open_now = open_now + " OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+            open_now = "(#{open_now} OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', ''))"
           end    
-          all_filters = all_filters ? all_filters + open_now : open_now
+          filters.push(open_now)
+          
         end  
+        all_filters = filters.join(' AND ') if filters.count > 0
       end 
     
       city_radius = 30

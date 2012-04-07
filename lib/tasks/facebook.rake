@@ -9,9 +9,15 @@ namespace :facebook do
       u = User.find_by_id(l.user_id)    
       
       if r && u
-        unless u.fb_access_token.blank? && u.user_preferences.share_my_like_to_facebook == true
+        if !u.fb_access_token.blank? && u.user_preferences.share_my_like_to_facebook == true
           graph = Koala::Facebook::API.new(u.fb_access_token)
-          graph.put_object("me", "feed", :message => "")
+          
+          if r.facebook_share_id.blank?
+            graph.put_object("me", "feed", :message => "liked #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} http://test.dish.fm/reviews/#{r.id}")
+          else
+            graph.put_object(picture['id'], 'likes')
+          end
+          
         end
       end
       
@@ -19,11 +25,50 @@ namespace :facebook do
   end
   
   task :comment => :environment do
+    comment_id = ENV["COMMENT_ID"]
     
+    if c = Comment.find_by_id(comment_id)
+      r = Review.find_by_id(c.review_id) 
+      u = User.find_by_id(c.user_id)    
+      
+      if r && u
+        if !u.fb_access_token.blank? && u.user_preferences.share_my_comments_to_facebook == true
+          graph = Koala::Facebook::API.new(u.fb_access_token)
+          
+          if r.facebook_share_id.blank?
+            graph.put_object("me", "feed", :message => "commented on #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} \"#{c.text}\" http://test.dish.fm/reviews/#{r.id}")
+          else
+            graph.put_object(picture['id'],'comments', :message => c.text )
+          end
+          
+        end
+      end
+      
+    end
   end
   
   task :expert => :environment do
-    
+    review_id = ENV["REVIEW_ID"]
+    if rw = Review.find_by_id(review_id)
+      
+      d = Dish.find_by_id(rw.dish_id)
+      r = Restaurant.find_by_id(rw.restaurant_id)
+      u = User.find_by_id(rw.user_id) 
+      
+      if (r || d) && u
+        if !u.fb_access_token.blank? && u.user_preferences.share_my_top_expert_to_facebook == true
+          graph = Koala::Facebook::API.new(u.fb_access_token)
+          
+          if d.top_user_id == u.id
+            graph.put_object("me", "feed", :message => "became an expert on #{d.name}@#{r.name}")
+          elsif r.top_user_id == u.id
+            graph.put_object("me", "feed", :message => "became an expert on #{r.name}")
+          end
+        
+        end
+      end
+      
+    end
   end
   
   task :dishin => :environment do    
