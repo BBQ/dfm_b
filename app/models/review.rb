@@ -46,7 +46,7 @@ class Review < ActiveRecord::Base
           data[:nva] = network.votes
           
           top_uid = Review.where('restaurant_id = ? AND id != ?', restaurant.id, review.id).group('user_id').count
-          restaurant.top_user_id = top_uid.nil? ? 0 : top_uid.max[0]
+          restaurant.top_user_id = top_uid.blank? ? 0 : top_uid.max[0]
           
           restaurant.save
           network.save
