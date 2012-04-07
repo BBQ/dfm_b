@@ -73,7 +73,7 @@ class Review < ActiveRecord::Base
              data[:deleted] = 'yes'
           else    
             top_uid = Review.where('dish_id = ? AND id != ?', dish.id, review.id).group('user_id').count
-            dish.top_user_id = top_uid.nil? ? 0 : top_uid.max[0]
+            dish.top_user_id = top_uid.blank? ? 0 : top_uid.max[0]
             dish.save
           end
           
