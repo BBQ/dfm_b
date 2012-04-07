@@ -72,10 +72,8 @@ class Review < ActiveRecord::Base
           if dish.created_by_user != 0 && dish.votes == 0 
              dish.delete
              data[:deleted] = 'yes'
-          else
-            if top_uid = (Review.where('dish_id = ? AND id != ?', dish.id, review.id).group('user_id').count).max[0]
-              dish.top_user_id = top_uid
-            end
+          else            
+            dish.top_user_id = top_uid if top_uid = (Review.where('dish_id = ? AND id != ?', dish.id, review.id).group('user_id').count).max[0]
             dish.save
           end
           
