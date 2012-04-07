@@ -45,9 +45,8 @@ class Review < ActiveRecord::Base
           data[:nra] = network.rating
           data[:nva] = network.votes
           
-          if top_uid = Review.where('restaurant_id = ? AND id != ?', restaurant.id, review.id).group('user_id').count
-            restaurant.top_user_id = top_uid.max[0]
-          end
+          top_uid = Review.where('restaurant_id = ? AND id != ?', restaurant.id, review.id).group('user_id').count
+          restaurant.top_user_id = top_uid.nil? ? 0 : top_uid.max[0]
           
           restaurant.save
           network.save
@@ -72,8 +71,9 @@ class Review < ActiveRecord::Base
           if dish.created_by_user != 0 && dish.votes == 0 
              dish.delete
              data[:deleted] = 'yes'
-          else            
-            dish.top_user_id = top_uid.max[0] if top_uid = (Review.where('dish_id = ? AND id != ?', dish.id, review.id).group('user_id').count)
+          else    
+            top_uid = Review.where('dish_id = ? AND id != ?', dish.id, review.id).group('user_id').count
+            dish.top_user_id = top_uid.nil? ? 0 : top_uid.max[0]
             dish.save
           end
           
