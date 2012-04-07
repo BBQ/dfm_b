@@ -110,19 +110,27 @@ namespace :facebook do
           caption = "#{dish_text} #{place} http://dish.fm/reviews/#{r.id}"
           albuminfo = graph.put_object('me','albums', :name => 'Dish.fm Photos') if albuminfo["id"].blank?
 
-          picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
-
-          tags = []
-          if r.friends
-            r.friends.split(',').each do |u|
-              if user = User.find_by_id(u)
-                tags.push("{\"tag_uid\":\"#{user.facebook_id}\"}")
-              elsif user = u.split('@@@')
-                tags.push("{\"tag_uid\":\"#{user[0]}\"}")
+          if picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
+            
+            r.facebook_share_id = picture['id']
+            r.save
+            
+            tags = []
+            if r.friends
+              r.friends.split(',').each do |u|
+                
+                if user = User.find_by_id(u)
+                  tags.push("{\"tag_uid\":\"#{user.facebook_id}\"}")
+                elsif user = u.split('@@@')
+                  tags.push("{\"tag_uid\":\"#{user[0]}\"}")
+                end
+                
               end
             end
+            
+            graph.put_object(picture['id'],'tags', :tags => "[#{tags.join(',')}]") if tags.count > 0
           end
-          graph.put_object(picture['id'],'tags', :tags => "[#{tags.join(',')}]") if tags.count > 0
+          
         end
 
       end
