@@ -5,7 +5,7 @@ class Notification < ActiveRecord::Base
     user_id_to = user_id_to.to_i != 0 ? user_id_to.to_i : Review.find_by_id(review_id).user_id
     review_id = review_id.to_i
 
-    unless APN::Notification.find_by_user_id_to_and_user_id_from_notification_type_review_id(user_id_to,user_id_from,notification_type,review_id)    
+    unless APN::Notification.where("user_id_to = ? AND user_id_from = ? AND notification_type = ? AND review_id = ?", user_id_to, user_id_from, notification_type, review_id).first    
       if pref = UserPreference.find_by_user_id(user_id_to)
     
         if user = User.select(:name).find_by_id(user_id_from) && notification_type
