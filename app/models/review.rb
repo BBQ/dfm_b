@@ -45,6 +45,10 @@ class Review < ActiveRecord::Base
           data[:nra] = network.rating
           data[:nva] = network.votes
           
+          if top_uid = (Review.where('restaurant_id = ? AND id != ?', restaurant.id, review.id).group('user_id').count).max[0]
+            restaurant.top_user_id = top_uid
+          end
+          
           restaurant.save
           network.save
           
@@ -69,11 +73,13 @@ class Review < ActiveRecord::Base
              dish.delete
              data[:deleted] = 'yes'
           else
-             dish.save
+            if top_uid = (Review.where('dish_id = ? AND id != ?', dish.id, review.id).group('user_id').count).max[0]
+              dish.top_user_id = top_uid
+            end
+            dish.save
           end
-          if n = APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(review.user_id,review.id,'dishin')
-            n.destroy
-          end
+          
+          APN::Notification.destroy_all(:review_id => review.id)
           review.destroy
           
           result = "review with id #{id} gone forever!"
