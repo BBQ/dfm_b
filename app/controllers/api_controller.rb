@@ -229,7 +229,7 @@ class ApiController < ApplicationController
 
           client.follower_ids.ids.each do |id|
             dont_push = 0
-            if user = User.select([:id, :name, :photo, :twitter_id]).find_by_twitter_id(id)
+            if user = User.select([:id, :name, :photo, :twitter_id, :facebook_id]).find_by_twitter_id(id)
               data.each do |d|
                 if d[:id] == user.id
                   d[:twitter] = user.twitter_id.to_s
