@@ -1,6 +1,10 @@
 # encoding: utf-8
 
 def set_offset
+  Timezone::Configure.begin do |c|
+    c.username = 8.times.map{65.+(rand(25)).chr}.join
+    p c.username
+  end
   begin
     Restaurant.where('time_zone_offset IS NULL AND lat IS NOT NULL AND lon IS NOT NULL').each do |r|
       p "#{r.id}: #{r.lat},#{r.lon}"
@@ -13,10 +17,6 @@ def set_offset
       end
     end
   rescue
-    Timezone::Configure.begin do |c|
-      c.username = 8.times.map{65.+(rand(25)).chr}.join
-      p c.username
-    end
     set_offset
   end
     
