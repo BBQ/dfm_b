@@ -17,7 +17,7 @@ def set_offset
       c.username = 8.times.map{65.+(rand(25)).chr}.join
       p c.username
     end
-    # set_offset
+    set_offset
   end
     
 end
