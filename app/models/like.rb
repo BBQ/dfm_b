@@ -32,7 +32,7 @@ class Like < ActiveRecord::Base
             n.destroy
           end
         else
-          Like.create({:user_id => user_id, :review_id => review_id})
+          l = Like.create({:user_id => user_id, :review_id => review_id})
           review.count_likes += 1 
           review.save
 
@@ -42,7 +42,9 @@ class Like < ActiveRecord::Base
             when 'delivery' then review.dish_delivery.name
             else review.dish.name
           end
-          Notification.send(user_id, 'like', review.user_id, dish_name, nil, nil, review.id)          
+          Notification.send(user_id, 'like', review.user_id, dish_name, nil, nil, review.id)      
+          system "rake facebook:like LIKE_ID='#{l.id}' &"
+          system "rake twitter:like LIKE_ID='#{l.id}' &"    
           
         end
       end

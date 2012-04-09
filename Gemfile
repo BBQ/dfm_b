@@ -36,6 +36,7 @@ gem "twitter", "~> 2.1.0"
 gem 'apn_on_rails', :git => 'https://github.com/natescherer/apn_on_rails.git', :branch => 'rails3'
 
 gem 'whenever', :require => false
+gem 'timezone'
 
 # gem 'fast_trie', '0.5.0', :git => 'git://github.com/tyler/trie.git'
 

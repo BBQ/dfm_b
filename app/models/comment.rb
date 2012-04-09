@@ -15,7 +15,7 @@ class Comment < ActiveRecord::Base
       end
     else
       if review = Review.find_by_id(data[:review_id])
-        Comment.create(data)
+        с = Comment.create(data)
         review.count_comments += 1
         review.save
       end
@@ -28,6 +28,10 @@ class Comment < ActiveRecord::Base
       end
       Notification.send(data[:user_id], 'comment', review.user_id, dish_name, nil, nil, review.id)
       Notification.send(data[:user_id], 'comment_on_comment', review.user_id, dish_name, nil, nil, review.id)
+      
+      system "rake facebook:comment COMMENT_ID='#{с.id}' &"
+      system "rake twitter:comment COMMENT_ID='#{с.id}' &"
+      
     end  
   end
 

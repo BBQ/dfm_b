@@ -1,5 +1,33 @@
 # encoding: utf-8
+
+def set_offset
+  begin
+    Restaurant.where('time_zone_offset IS NULL AND lat IS NOT NULL AND lon IS NOT NULL').each do |r|
+      p "#{r.id}: #{r.lat},#{r.lon}"
+      if timezone = Timezone::Zone.new(:latlon => [r.lat,r.lon])
+        r.time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
+        r.save
+        p "#{r.name}: #{r.time_zone}"
+      else
+        p "#{r.name}: NO ZONE!"
+      end
+    end
+  rescue
+    Timezone::Configure.begin do |c|
+      c.username = 8.times.map{65.+(rand(25)).chr}.join
+      p c.username
+    end
+    # set_offset
+  end
+    
+end
+
 namespace :fixup do
+  
+  desc "Set TimeZone offset for restaurants"
+  task :set_osffset => :environment do
+    set_offset
+  end
   
   #TODO: Start rake fix:add_r_img, tags:match_dishes, tags:match_rest on Test Server foursquare check_ins
   desc "Add Images to Restaurant"

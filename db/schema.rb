@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120406155917) do
+ActiveRecord::Schema.define(:version => 20120409144854) do
 
   create_table "_ylp_dishes", :force => true do |t|
     t.string   "ylp_restaurant_id"
@@ -642,6 +642,7 @@ ActiveRecord::Schema.define(:version => 20120406155917) do
     t.string   "ambience"
     t.string   "good_for_groups"
     t.string   "good_for_meal"
+    t.string   "time_zone"
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"
@@ -786,6 +787,7 @@ ActiveRecord::Schema.define(:version => 20120406155917) do
 
   add_index "users", ["facebook_id"], :name => "index_users_on_facebook_id"
   add_index "users", ["remember_me_token"], :name => "index_users_on_remember_me_token"
+  add_index "users", ["twitter_id"], :name => "index_users_on_twitter_id"
 
   create_table "ylp_dishes", :force => true do |t|
     t.string   "ylp_restaurant_id"

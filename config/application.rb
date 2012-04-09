@@ -38,5 +38,9 @@ module Dishfm
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
+    
+    Timezone::Configure.begin do |c|
+      c.username = 'innt'
+    end
   end
 end

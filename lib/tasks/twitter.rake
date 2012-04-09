@@ -67,39 +67,60 @@ namespace :twitter do
   
   task :dishin => :environment do
     review_id = ENV["REVIEW_ID"]
-    
     if r = Review.find_by_id(review_id)  
-      if u = User.find_by_id(r.user_id)
-        
+      
+      if u = User.find_by_id(r.user_id)  
         if !u.oauth_token_secret.blank? && !u.oauth_token.blank?
+          
           client = Twitter::Client.new(:oauth_token => u.oauth_token, :oauth_token_secret => u.oauth_token_secret)
-
           if r.text.blank?
-            r.text = case r.rating
+            
+            dish_text = case r.rating
               when 0..2.99 then "Survived"
               when 3..3.99 then "Ate"
               when 4..5 then "Enjoyed"
             end
-            dish_text = "#{r.text}"
+            
           else
             dish_text = "#{r.text} -"
           end
           
-          if r.rtype == 'home_cooked'
-            place = "#{r.home_cook.name} (home-cooked)"
-          elsif r.rtype == 'delivery'
-            place = "#{r.dish_delivery.name} @ #{r.delivery.name}"
-          else
-            place = "#{r.dish.name} @ #{r.network.name}"
+          tags = " #life #out #photo"
+          tags += case r.rating
+            when 0..2.99 then ' #hate'
+            when 3..5 then ' #love'
+          end
+
+          tags += case Time.now.strftime("%H%M").to_i
+            when 0..1129 then ' #breakfast'
+            when 1130..1759 then ' #lunch'
+            when 1800..2400 then ' #night'
+          end     
+
+          place = case r.rtype
+            when 'home_cooked' then "##{r.home_cook.name} (home-cooked)"
+            when 'delivery' then "##{r.dish_delivery.name} @ #{r.delivery.name}"
+            else "##{r.dish.name} @ #{r.network.name}"
+          end
+           
+          friends = "with #{r.friends.split(',').count} friend(s)" if r.friends
+          caption = "#{dish_text} #{place} #{friends}" + tags + " http://dish.fm/reviews/#{r.id}"
+          
+          if caption.lenght > 140
+            caption = "#{dish_text} #{place}" + tags + " http://dish.fm/reviews/#{r.id}"
+            if caption.lenght > 140
+              caption = "#{dish_text} #{place[0,place.index('@')]}" + tags + " http://dish.fm/reviews/#{r.id}"
+              if caption.lenght > 140
+                caption = "#{dish_text}"[0,99] + "..." + tags[0,18] + " http://dish.fm/reviews/#{r.id}"
+              end
+            end
           end
           
-          friends = "with #{r.friends.split(',').count} friend(s)" if r.friends
-          caption = "#{dish_text} #{place} #{friends}"[0,140] + "http://dish.fm/reviews/#{r.id}"
           client.update(caption)
         end
-        
       end
+      
     end
-    
   end
+  
 end

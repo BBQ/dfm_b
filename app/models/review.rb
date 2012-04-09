@@ -232,12 +232,20 @@ class Review < ActiveRecord::Base
       end
     
       if top_uid = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0]
+        if dish.top_user_id != top_uid
+          system "rake facebook:expert REVIEW_ID='#{r.id}' &"
+          system "rake twitter:expert REVIEW_ID='#{r.id}' &"
+        end
         dish.top_user_id = top_uid
         dish.save
       end
     
       if restaurant
         if top_uid = (Review.where('restaurant_id = ?', restaurant.id).group('user_id').count).max[0]
+          if restaurant.top_user_id != top_uid
+            system "rake facebook:expert REVIEW_ID='#{r.id}' &"
+            system "rake twitter:expert REVIEW_ID='#{r.id}' &"
+          end
           restaurant.top_user_id = top_uid
           restaurant.save
         end
