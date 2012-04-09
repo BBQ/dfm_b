@@ -71,7 +71,7 @@ namespace :twitter do
     if r = Review.find_by_id(review_id)  
       if u = User.find_by_id(r.user_id)
         
-        if !u.oauth_token_secret.blank? && !oauth_token.blank?
+        if !u.oauth_token_secret.blank? && !u.oauth_token.blank?
           client = Twitter::Client.new(:oauth_token => u.oauth_token, :oauth_token_secret => u.oauth_token_secret)
 
           if r.text.blank?
