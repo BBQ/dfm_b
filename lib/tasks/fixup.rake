@@ -5,16 +5,19 @@ def set_offset
     c.username = 8.times.map{65.+(rand(25)).chr}.join
     p c.username
   end
-
-  Restaurant.where('time_zone_offset IS NULL AND lat IS NOT NULL AND lon IS NOT NULL').each do |r|
-    p "#{r.id}: #{r.lat},#{r.lon}"
-    if timezone = Timezone::Zone.new(:latlon => [r.lat,r.lon])
-      r.time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
-      r.save
-      p "#{r.name}: #{r.time_zone}"
-    else
-      p "#{r.name}: NO ZONE!"
+  begin
+    Restaurant.where('time_zone_offset IS NULL AND lat IS NOT NULL AND lon IS NOT NULL').each do |r|
+      p "#{r.id}: #{r.lat},#{r.lon}"
+      if timezone = Timezone::Zone.new(:latlon => [r.lat,r.lon])
+        r.time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
+        r.save
+        p "#{r.name}: #{r.time_zone_offset}"
+      else
+        p "#{r.name}: NO ZONE!"
+      end
     end
+  rescue
+    set_offset
   end
     
 end
