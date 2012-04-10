@@ -305,35 +305,41 @@ namespace :ylp do
     oakland = "Dimond_District,Downtown_Oakland,East_Oakland,Fruitvale,Glenview,Grand_Lake,Jack_London_Square,Lake_Merritt,Lakeshore,Laurel_District,Lower_Hills,Montclair_Village,North_Oakland,Oakland_Chinatown,Oakland_Hills,Old_Oakland,Piedmont,Piedmont_Ave,Rockridge,Temescal,Uptown,West_Oakland"
     berkeley = "Claremont,Downtown_Berkeley,East_Solano_Ave,Elmwood,Fourth_Street,Gourmet_Ghetto,North_Berkeley,North_Berkeley_Hills,South_Berkeley,Telegraph_Ave,UC_Campus_Area"
     
+    san_francisco = "food,burgers,italian,newamerican,tradamerican,asianfusion,bars,breakfast_brunch,catering,chinese,coffee,hotdogs,foodstands,french,hotelstravel,indpak,japanese,lounges,mediterranean,mexican,nightlife,pizza,restaurants,sushi,thai,vietnamese,bakeries,dimsum,desserts,delis,sandwiches,seafood,steakhouses,wine_bars,afghani,ethnicmarkets,mideastern,african,latin,argentine,gluten_free,peruvian,spanish,tapas,tapasmallplates,vegan,hawaiian,bbq,chinese,korean,basque,belgian,brazilian,brasseries,british,buffets,burmese,cafes,cajun,cambodian,caribbean,cheesesteaks,chicken_wings,indonesian,creperies,cuban,diners,ethiopian,filipino,fishnchips,fondue,gastropubs,german,greek,halal,himalayan,hungarian,irish,kosher,raw_food,malaysian,modern_european,mongolian,Moroccan,pakistani,persian,peruvian,polish,portuguese,russian,salad,scandinavian,singaporean,soulfood,soup,southern,taiwanese,tex-mex,turkish,ukrainian,vegetarian,donuts,dumplings,food+trucks,juice+bars+%26+smoothies,ramen,chocolate,breweries,pubs,divebars,beer_and_wine,champagne_bars,icecream,bagels,tea, wineries"
+    
     neighborhoods = {
       # :Manhattan => manhattan.split(','),
       # :Brooklyn => brooklyn.split(','),
       # :Queens => queens.split(','),
       # :Bronx => bronx.split(','),
       # :Staten_Island => staten_island.split(','),
-      # :San_Francisco => san_francisco.split(','),
+      :San_Francisco => san_francisco.split(','),
       # :Oakland => oakland.split(','),
       # :Berkeley => berkeley.split(','),
-      :City => other.split(',')
+      # :City => other.split(',')
 
     }
     state = "CA"
     
     if neighborhoods.keys.first.to_s == 'City'
       find_loc = "#{neighborhoods.first[1][0].gsub(/ |_/, '+')}+#{state}" # {city+with+pluses}+state
-      filters = "#{state}:#{neighborhoods.first[1][0].gsub(' ', '_')}" # state:{city_with_unerscores}::district
+      filters_cities = "#{state}:#{neighborhoods.first[1][0].gsub(' ', '_')}" # state:{city_with_unerscores}::district
     else
       find_loc = "#{neighborhoods.keys.first.to_s.gsub('_', '+')}+#{state}" # {city+with+pluses}+state
-      filters = "#{state}:#{neighborhoods.keys.first}::#{neighborhoods.first[1][0]}" # state:{city_with_unerscores}::district
+      filters_cities = "#{state}:#{neighborhoods.keys.first}::#{neighborhoods.first[1][0]}" # state:{city_with_unerscores}::district
+      filters_categories = neighborhoods.first[1][0]
     end
-        
+    
+    start_url_cities = "http://www.yelp.com/search?rpp=40&find_desc=restaurants&ns=1&l=p:#{filters_cities}&find_loc=#{find_loc}"     
+    start_url_categories = "http://www.yelp.com/search?find_desc=y+combinator&find_loc=#{find_loc}&ns=1#cflt=#{filters_categories}&find_desc=restaurants"
+    
     headers = {
       "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       "Accept-Charset" => "windows-1251,utf-8;q=0.7,*;q=0.3",
       "Accept-Language" => "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4",
       "Cache-Control" => "max-age=0",
       "Connection" => "keep-alive",
-      "Cookie" => open("http://www.yelp.com/search?rpp=40&find_desc=restaurants&ns=1&l=p:#{filters}&find_loc=#{find_loc}").meta['set-cookie'],
+      "Cookie" => open(start_url_categories).meta['set-cookie'],
       "Host" => "www.yelp.com",
       "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30"
     }
@@ -343,14 +349,16 @@ namespace :ylp do
         
         if k.to_s == 'City'
           find_loc = "#{n.gsub(/ |_/, '+')}+#{state}" # {city+with+pluses}+state
-          filters = "#{state}:#{n.gsub(' ', '_')}" # state:{city_with_unerscores}::district
+          filters_cities = "#{state}:#{n.gsub(' ', '_')}" # state:{city_with_unerscores}::district
         else
           find_loc = "#{k.to_s.gsub('_', '+')}+#{state}" # {city+with+pluses}+state
-          filters = "#{state}:#{k}::#{n}" # state:{city_with_unerscores}::district
+          filters_cities = "#{state}:#{k}::#{n}" # state:{city_with_unerscores}::district
+          filters_categories = n
         end
-        url = "http://www.yelp.com/search?rpp=40&find_desc=restaurants&ns=1&l=p:#{filters}&find_loc=#{find_loc}"  
+        url_cities = "http://www.yelp.com/search?rpp=40&find_desc=restaurants&ns=1&l=p:#{filters_cities}&find_loc=#{find_loc}"  
+        start_url_categories = "http://www.yelp.com/search?find_desc=y+combinator&find_loc=#{find_loc}&ns=1#cflt=#{filters_categories}&find_desc=restaurants"
         
-        f = go_sub(url, headers)
+        f = go_sub(start_url_categories, headers)
         headers['Cookie'] = f.meta['set-cookie']
       end
     end
