@@ -146,7 +146,7 @@ class Review < ActiveRecord::Base
       :restaurant_id => restaurant ? restaurant.id : 0,  
       :restaurant_address => restaurant ? "#{restaurant.address}#{restaurant.city ? ', ' + restaurant.city : ''}" : '',    
       :restaurant_name => restaurant ? restaurant.name : '',
-      :user_id => user_id,
+      :user_id => user.id,
       :user_name => user.name,
       :user_photo => user.user_photo,
       :likes => count_likes,
