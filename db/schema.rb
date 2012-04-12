@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120409144854) do
+ActiveRecord::Schema.define(:version => 20120411154230) do
 
   create_table "_ylp_dishes", :force => true do |t|
     t.string   "ylp_restaurant_id"
@@ -368,6 +368,13 @@ ActiveRecord::Schema.define(:version => 20120409144854) do
   add_index "dishes", ["rating"], :name => "index_dishes_on_rating"
   add_index "dishes", ["votes"], :name => "index_dishes_on_votes"
 
+  create_table "favourites", :force => true do |t|
+    t.integer  "dish_id",       :default => 0
+    t.integer  "restaurant_id", :default => 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "followers", :force => true do |t|
     t.integer  "user_id",        :null => false
     t.integer  "follow_user_id", :null => false
@@ -642,7 +649,7 @@ ActiveRecord::Schema.define(:version => 20120409144854) do
     t.string   "ambience"
     t.string   "good_for_groups"
     t.string   "good_for_meal"
-    t.string   "time_zone"
+    t.string   "time_zone_offset"
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"
@@ -807,6 +814,7 @@ ActiveRecord::Schema.define(:version => 20120409144854) do
   create_table "ylp_restaurants", :force => true do |t|
     t.string   "name"
     t.string   "ylp_uri"
+    t.datetime "updated_at"
     t.string   "lat"
     t.string   "lng"
     t.string   "rating"
@@ -837,7 +845,6 @@ ActiveRecord::Schema.define(:version => 20120409144854) do
     t.string   "caters"
     t.string   "wheelchair_accessible"
     t.datetime "created_at"
-    t.datetime "updated_at"
     t.string   "fsq_id"
     t.string   "fsq_name"
     t.string   "fsq_address"
@@ -853,7 +860,10 @@ ActiveRecord::Schema.define(:version => 20120409144854) do
     t.integer  "our_network_id"
   end
 
+  add_index "ylp_restaurants", ["city"], :name => "city"
   add_index "ylp_restaurants", ["fsq_id"], :name => "index_ylp_restaurants_on_fsq_id"
+  add_index "ylp_restaurants", ["has_menu"], :name => "has_menu"
+  add_index "ylp_restaurants", ["name"], :name => "name"
   add_index "ylp_restaurants", ["ylp_uri"], :name => "index_ylp_restaurants_on_ylp_uri"
 
 end

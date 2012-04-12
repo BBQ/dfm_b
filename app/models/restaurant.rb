@@ -15,6 +15,7 @@ class Restaurant < ActiveRecord::Base
   
   has_many :restaurant_tags, :dependent => :destroy
   has_many :tags, :through => :restaurant_tags
+  has_many :favourites
     
   mount_uploader :photo, ImageUploader 
   

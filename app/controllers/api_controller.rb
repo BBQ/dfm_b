@@ -7,6 +7,16 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def add_to_favourite
+    if Session.check_token(params[:user_id], params[:token]) && (params[:dish_id] || params[:restaurant_id])
+      Favourite.create({
+        :user_id => params[:user_id].to_i,
+        :dish_id => params[:dish_id].to_i,
+        :restaurant_id => params[:restaurant_id].to_i
+      })
+    end
+  end
+  
   def set_user_preferences
     if Session.check_token(params[:user_id], params[:token])
       if pref = UserPreference.find_by_user_id(params[:user_id])
@@ -1126,90 +1136,50 @@ class ApiController < ApplicationController
       
   end
   
-  def get_user_profile
-    if params[:id]
+  def get_notifications
+    if Session.check_token(params[:user_id], params[:token])
       
-      limit = params[:limit] ? params[:limit] : 25
+      limit = params[:limit] ? params[:limit] : 100
       offset = params[:offset] ? params[:offset] : 0
       
-      following_count = Follower.select(:id).where(:user_id => params[:id]).count(:id) rescue 0 
-      followers_count = Follower.select(:id).where(:follow_user_id => params[:id]).count(:id) rescue 0
-      
-      params[:type] ||= 'reviews'
-      
-      reviews = Review.where('id IN (SELECT review_id FROM likes WHERE user_id = ?)',params[:id]) if params[:type] == 'likes'
-      reviews = Review.where('user_id = ?',params[:id]) if params[:type] == 'reviews'
-        
-      if reviews
-        review_count = reviews.count
-        reviews = reviews.limit("#{offset}, #{limit}").order("id DESC")
-      
-        review_data = Array.new
-        reviews.each do |review|
-          review_data.push(review.format_review_for_api(params[:id]))
-        end
-        
-        return render :json => {
-              :review_count => review_count,
-              :reviews => review_data, 
-              :following_count => following_count,
-              :followers_count => followers_count,              
-              :error => $error
-        }
-      end
-      
-      if params[:type] == 'notifications'
-        if Session.check_token(params[:id], params[:token])
-          
-          limit = 100
-          data = []
-          
-          APN::Notification.where("user_id_to = ?", params[:id]).limit(limit).order("id DESC").each do |n|
-            user = User.find_by_id(n.user_id_from)
-            data.push({
-              :date => n.created_at.to_i,
-              :type => n.notification_type,
-              :review_id => n.review_id,
-              :read => n.read,
-              :text => n.alert,
-              :user => {
-                :name => user.name,
-                :id => user.id,
-                :photo => user.user_photo
-              }
-            })
-            n.read = 1
-            n.save
-          end 
-          
-          # data = data.sort_by { |k| k[:data] }.reverse!
-          
-        else
-          $error = {:description => 'Parameters missing', :code => 822}
-        end
-        
-        return render :json => {
-              :notifications => data,
-              :error => $error
-        }
-        
-        end   
-    else
-      $error = {:description => 'Parameters missing', :code => 832}
+      data = []
+      APN::Notification.where("user_id_to = ?", params[:user_id]).limit(limit).order("id DESC").each do |n|
+        user = User.find_by_id(n.user_id_from)
+        data.push({
+          :date => n.created_at.to_i,
+          :type => n.notification_type,
+          :review_id => n.review_id,
+          :read => n.read,
+          :text => n.alert,
+          :user => {
+            :name => user.name,
+            :id => user.id,
+            :photo => user.user_photo
+          }
+        })
+        n.read = 1
+        n.save
+      end   
       return render :json => {
-            :following_count => following_count,
-            :followers_count => followers_count,
+            :notifications => data,
             :error => $error
+      }    
+    else
+      return render :json => {
+            :error => {:description => 'Parameters missing', :code => 1169}
       }
     end
   end
   
   def get_reviews
-    
     limit = params[:limit] ? params[:limit] : 25
     
     if params[:following_for_user_id].to_i > 0
       reviews = Review.following(params[:following_for_user_id].to_i)
+    elsif params[:liked_reviews_for_user_id]
+      reviews = Review.where('id IN (SELECT review_id FROM likes WHERE user_id = ?)', params[:liked_reviews_for_user_id])
+    elsif params[:reviews_for_user_id]
+      reviews = Review.where('user_id = ?',params[:reviews_for_user_id])
     else
       reviews = Review.where('photo IS NOT NULL')
     end

@@ -134,6 +134,8 @@ class Review < ActiveRecord::Base
       restaurant = Restaurant.find_by_id(restaurant_id)
     end
     
+    favourite = Favourite.find_by_user_id_and_dish_id(user_id, dish_id) ? 1 : 0
+    
     data = {
       :review_id => id,
       :created_at => created_at.to_time.to_i,
@@ -144,7 +146,7 @@ class Review < ActiveRecord::Base
       :restaurant_id => restaurant ? restaurant.id : 0,  
       :restaurant_address => restaurant ? "#{restaurant.address}#{restaurant.city ? ', ' + restaurant.city : ''}" : '',    
       :restaurant_name => restaurant ? restaurant.name : '',
-      :user_id => user.id,
+      :user_id => user_id,
       :user_name => user.name,
       :user_photo => user.user_photo,
       :likes => count_likes,
@@ -154,6 +156,7 @@ class Review < ActiveRecord::Base
       :image_sd => photo.iphone.url != '/images/noimage.jpg' ? photo.iphone.url : '' ,
       :image_hd => photo.iphone_retina.url != '/images/noimage.jpg' ? photo.iphone_retina.url : '',
       :liked => user_id && Like.find_by_user_id_and_review_id(user_id, id) ? 1 : 0,
+      :favourite => favourite,
       :self_review => 0,
       :rtype => rtype,
       :friends => friends_with

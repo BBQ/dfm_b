@@ -299,13 +299,16 @@ namespace :ylp do
     # bronx = "Baychester,Bedford_Park,Belmont,Castle_Hill,City_Island,Claremont_Village,Clason_Point,Co-op_City,Concourse,Concourse_Village,Country_Club,East_Tremont,Eastchester,Edenwald,Edgewater_Park,Fieldston,Fordham,High_Bridge,Hunts_Point,Kingsbridge,Longwood,Melrose,Morris_Heights,Morris_Park,Morrisania,Mott_Haven,Mount_Eden,Mount_Hope,North_Riverdale,Norwood,Olinville,Parkchester,Pelham_Bay,Pelham_Gardens,Port_Morris,Riverdale,Schuylerville,Soundview,Spuyten_Duyvil,Throgs_Neck,Unionport,University_Heights,Van_Nest,Wakefield,West_Farms,Westchester_Square,Williamsbridge,Woodlawn"
     # staten_island = "Annadale,Arden_Heights,Arlington,Arrochar,Bay_Terrace,Bloomfield,Bullshead,Castleton_Corners,Charleston,Chelsea,Clifton,Concord,Dongan_Hills,Elm_Park,Eltingville,Emerson_Hill,Graniteville,Grant_City,Grasmere,Great_Kills,Grymes_Hill,Heartland_Village,Howland_Hook,Huguenot,Lighthouse_Hill,Mariner,Midland_Beach,New_Brighton,New_Dorp,New_Dorp_Beach,New_Springville,Oakwood,Old_Town,Park_Hill,Pleasant_Plains,Port_Richmond,Princes_Bay,Randall_Manor,Richmond_Town,Richmond_Valley,Rosebank,Rossville,Shore_Acres,Silver_Lake,St._George,Stapleton,Sunnyside,Todt_Hill,Tompkinsville,Tottenville,West_Brighton,Westerleigh,Woodrow"
     # other = "Bayonne::,Belleville::,Bergenfield::,Bloomfield::,Bogota::,Carlstadt::,Cliffside_Park::,Clifton::,Cresskill::,Dumont::,East_Newark::,East_Rutherford::,Edgewater::,Elizabeth::,Elmwood_Park::,Englewood::,Englewood_Cliffs::,Fair_Lawn::,Fairview::,Fort_Lee::,Garfield::,Guttenberg::,Hackensack::,Harrison::,Hasbrouck_Heights::,Hawthorne::,Hoboken::,Jersey_City::,Kearny::,Leonia::,Little_Ferry::,Lodi::,Lyndhurst::,Maywood::,Moonachie::,New_Milford::,Newark::,North_Arlington::,North_Bergen::,Nutley::,Palisades_Park::,Paramus::,Passaic::,Paterson::,Ridgefield::,Ridgefield_Park::,River_Edge::,Rochelle_Park::,Rutherford::,Saddle_Brook::,Secaucus::,South_Hackensack::,Teaneck::,Tenafly::,Union_City::,Wallington::,Weehawken::,West_New_York::,Wood-Ridge::,Wood_Ridge::%5D,NY:%5BBronxville::,Corona::,Farmingville::,Larchmont::,Mount_Vernon::,Mt_Vernon::,New_Rochelle::,New_York_City::,Pelham::,Ronkonkoma::,Saint_Albans::,South_Ozone_Park::,South_Richmond_Hill::,Yonkers::"
-    # san_francisco = "Bayview/Hunters_Point,Bernal_Heights,Castro,Chinatown,Civic_Center/Tenderloin,Cole_Valley,Crocker-Amazon,Diamond_Heights,Dogpatch,Embarcadero,Excelsior,Financial_District,Fisherman's_Wharf,Glen_Park,Haight-Ashbury,Hayes_Valley,Ingleside,Inner_Richmond,Inner_Sunset,Japantown,Lakeside,Laurel_Heights,Lower_Haight,Lower_Pac_Heights,Marina/Cow_Hollow,Miraloma,Mission,Mission_Terrace,Nob_Hill,Noe_Valley,North_Beach/Telegraph_Hill,Outer_Richmond,Outer_Sunset,Pacific_Heights,Parkside,Portola,Potrero_Hill,Russian_Hill,SOMA,Twin_Peaks,Union_Square,Visitacion_Valley,West_Portal,Western_Addition/NOPA"
-
-    other = "San_Leandro::,Alameda::,San_Lorenzo::,Hayward::,Union_city::,Fremont::,Santa_Clara::,San_Jose::,Cupertino::,Campbell::,Sunnyvale::,Palo_Alto::,Los_Altos::,North_Fair_Oaks::,Menlo_Park::,Redwood_city::,San_Carlos::,Belmont::,San_Mateo::,San_Bruno::,Los_Gatos::,Milpitas::,Newark::,Castro_Valley::,Richmond::,East_Palo_Alto::,Saratoga::,Alviso::,Belmont::,Burlingame::,Campbell::,Cupertino::,East_Palo_Alto::,Foster_City::,Fremont::,La_Honda::,Los_Altos::,Menlo_Park::,Newark::,Palo_Alto::,Portola_Valley::,Redwood_Shores::,San_Carlos::,San_Jose::,San_Mateo::,Santa_Clara::,Saratoga::,Stanford::,Union_City::,Woodside::"
-    oakland = "Dimond_District,Downtown_Oakland,East_Oakland,Fruitvale,Glenview,Grand_Lake,Jack_London_Square,Lake_Merritt,Lakeshore,Laurel_District,Lower_Hills,Montclair_Village,North_Oakland,Oakland_Chinatown,Oakland_Hills,Old_Oakland,Piedmont,Piedmont_Ave,Rockridge,Temescal,Uptown,West_Oakland"
-    berkeley = "Claremont,Downtown_Berkeley,East_Solano_Ave,Elmwood,Fourth_Street,Gourmet_Ghetto,North_Berkeley,North_Berkeley_Hills,South_Berkeley,Telegraph_Ave,UC_Campus_Area"
     
-    san_francisco = "food,burgers,italian,newamerican,tradamerican,asianfusion,bars,breakfast_brunch,catering,chinese,coffee,hotdogs,foodstands,french,hotelstravel,indpak,japanese,lounges,mediterranean,mexican,nightlife,pizza,restaurants,sushi,thai,vietnamese,bakeries,dimsum,desserts,delis,sandwiches,seafood,steakhouses,wine_bars,afghani,ethnicmarkets,mideastern,african,latin,argentine,gluten_free,peruvian,spanish,tapas,tapasmallplates,vegan,hawaiian,bbq,chinese,korean,basque,belgian,brazilian,brasseries,british,buffets,burmese,cafes,cajun,cambodian,caribbean,cheesesteaks,chicken_wings,indonesian,creperies,cuban,diners,ethiopian,filipino,fishnchips,fondue,gastropubs,german,greek,halal,himalayan,hungarian,irish,kosher,raw_food,malaysian,modern_european,mongolian,Moroccan,pakistani,persian,peruvian,polish,portuguese,russian,salad,scandinavian,singaporean,soulfood,soup,southern,taiwanese,tex-mex,turkish,ukrainian,vegetarian,donuts,dumplings,food+trucks,juice+bars+%26+smoothies,ramen,chocolate,breweries,pubs,divebars,beer_and_wine,champagne_bars,icecream,bagels,tea, wineries"
+    # san_francisco = "Bayview/Hunters_Point,Bernal_Heights,Castro,Chinatown,Civic_Center/Tenderloin,Cole_Valley,Crocker-Amazon,Diamond_Heights,Dogpatch,Embarcadero,Excelsior,Financial_District,Fisherman's_Wharf,Glen_Park,Haight-Ashbury,Hayes_Valley,Ingleside,Inner_Richmond,Inner_Sunset,Japantown,Lakeside,Laurel_Heights,Lower_Haight,Lower_Pac_Heights,Marina/Cow_Hollow,Miraloma,Mission,Mission_Terrace,Nob_Hill,Noe_Valley,North_Beach/Telegraph_Hill,Outer_Richmond,Outer_Sunset,Pacific_Heights,Parkside,Portola,Potrero_Hill,Russian_Hill,SOMA,Twin_Peaks,Union_Square,Visitacion_Valley,West_Portal,Western_Addition/NOPA"
+    # other = "San_Leandro::,Alameda::,San_Lorenzo::,Hayward::,Union_city::,Fremont::,Santa_Clara::,San_Jose::,Cupertino::,Campbell::,Sunnyvale::,Palo_Alto::,Los_Altos::,North_Fair_Oaks::,Menlo_Park::,Redwood_city::,San_Carlos::,Belmont::,San_Mateo::,San_Bruno::,Los_Gatos::,Milpitas::,Newark::,Castro_Valley::,Richmond::,East_Palo_Alto::,Saratoga::,Alviso::,Belmont::,Burlingame::,Campbell::,Cupertino::,East_Palo_Alto::,Foster_City::,Fremont::,La_Honda::,Los_Altos::,Menlo_Park::,Newark::,Palo_Alto::,Portola_Valley::,Redwood_Shores::,San_Carlos::,San_Jose::,San_Mateo::,Santa_Clara::,Saratoga::,Stanford::,Union_City::,Woodside::"
+    # oakland = "Dimond_District,Downtown_Oakland,East_Oakland,Fruitvale,Glenview,Grand_Lake,Jack_London_Square,Lake_Merritt,Lakeshore,Laurel_District,Lower_Hills,Montclair_Village,North_Oakland,Oakland_Chinatown,Oakland_Hills,Old_Oakland,Piedmont,Piedmont_Ave,Rockridge,Temescal,Uptown,West_Oakland"
+    # berkeley = "Claremont,Downtown_Berkeley,East_Solano_Ave,Elmwood,Fourth_Street,Gourmet_Ghetto,North_Berkeley,North_Berkeley_Hills,South_Berkeley,Telegraph_Ave,UC_Campus_Area"
+
+    other = "Stanford::,Union_City::,Woodside::"
+    
+    categories = "chocolate,breweries,pubs,divebars,beer_and_wine,champagne_bars,icecream,bagels,tea,wineries,food,nightlife,pizza,restaurants,sushi,thai,vietnamese,bakeries,dimsum,desserts,delis,sandwiches,seafood,wine_bars,afghani,ethnicmarkets,mideastern,african,latin,argentine,gluten_free,peruvian,spanish,tapas,tapasmallplates,vegan,hawaiian,bbq,chinese,korean,basque,belgian,brazilian,brasseries,british,buffets,burmese,cafes,cajun,cambodian,caribbean,cheesesteaks,chicken_wings,indonesian,creperies,cuban,diners,ethiopian,filipino,fishnchips,fondue,gastropubs,german,greek,halal,himalayan,hungarian,irish,kosher,raw_food,malaysian,modern_european,mongolian,moroccan,pakistani,persian,peruvian,polish,portuguese,russian,salad,scandinavian,singaporean,soulfood,soup,southern,taiwanese,tex-mex,turkish,ukrainian,vegetarian,donuts"
+    # dumplings,steakhouses,food+trucks,juice+bars,smoothies,ramen
     
     neighborhoods = {
       # :Manhattan => manhattan.split(','),
@@ -313,7 +316,7 @@ namespace :ylp do
       # :Queens => queens.split(','),
       # :Bronx => bronx.split(','),
       # :Staten_Island => staten_island.split(','),
-      :San_Francisco => san_francisco.split(','),
+      # :San_Francisco => san_francisco.split(','),
       # :Oakland => oakland.split(','),
       # :Berkeley => berkeley.split(','),
       # :City => other.split(',')
@@ -321,45 +324,56 @@ namespace :ylp do
     }
     state = "CA"
     
-    if neighborhoods.keys.first.to_s == 'City'
-      find_loc = "#{neighborhoods.first[1][0].gsub(/ |_/, '+')}+#{state}" # {city+with+pluses}+state
-      filters_cities = "#{state}:#{neighborhoods.first[1][0].gsub(' ', '_')}" # state:{city_with_unerscores}::district
-    else
-      find_loc = "#{neighborhoods.keys.first.to_s.gsub('_', '+')}+#{state}" # {city+with+pluses}+state
-      filters_cities = "#{state}:#{neighborhoods.keys.first}::#{neighborhoods.first[1][0]}" # state:{city_with_unerscores}::district
-      filters_categories = neighborhoods.first[1][0]
-    end
+    # if neighborhoods.keys.first.to_s == 'City'
+    #   find_loc = "#{neighborhoods.first[1][0].gsub(/ |_/, '+')}+#{state}" # {city+with+pluses}+state
+    #   filters_cities = "#{state}:#{neighborhoods.first[1][0].gsub(' ', '_')}" # state:{city_with_unerscores}::district
+    # else
+    #   find_loc = "#{neighborhoods.keys.first.to_s.gsub('_', '+')}+#{state}" # {city+with+pluses}+state
+    #   filters_cities = "#{state}:#{neighborhoods.keys.first}::#{neighborhoods.first[1][0]}" # state:{city_with_unerscores}::district
+    #   filters_categories = neighborhoods.first[1][0]
+    # end
+    # 
+    # start_url_cities = "http://www.yelp.com/search?rpp=40&find_desc=restaurants&ns=1&l=p:#{filters_cities}&find_loc=#{find_loc}"     
+    # start_url_categories = "http://www.yelp.com/search?attrs=&cflt=#{filters_categories}&find_desc=restaurants&find_loc=#{find_loc}&mapsize=small&rpp=40&sortby=best_match"
+    # cookies = open(start_url_categories).meta['set-cookie']
+    # p "cookies: #{cookies}"
+    # headers = {
+    #   "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    #   "Accept-Charset" => "windows-1251,utf-8;q=0.7,*;q=0.3",
+    #   "Accept-Language" => "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4",
+    #   "Cache-Control" => "max-age=0",
+    #   "Connection" => "keep-alive",
+    #   "Cookie" => cookies,
+    #   "Host" => "www.yelp.com",
+    #   "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30"
+    # }
+        
+    # neighborhoods.each do |k,v|
+    #   v.each do |n| 
+    #     
+    #     if k.to_s == 'City'
+    #       find_loc = "#{n.gsub(/ |_/, '+')}+#{state}" # {city+with+pluses}+state
+    #       filters_cities = "#{state}:#{n.gsub(' ', '_')}" # state:{city_with_unerscores}::district
+    #     else
+    #       find_loc = "#{k.to_s.gsub('_', '+')}+#{state}" # {city+with+pluses}+state
+    #       filters_cities = "#{state}:#{k}::#{n}" # state:{city_with_unerscores}::district
+    #       filters_categories = n
+    #     end
+    #     url_cities = "http://www.yelp.com/search?rpp=40&find_desc=restaurants&ns=1&l=p:#{filters_cities}&find_loc=#{find_loc}"  
+    #     url_categories = "http://www.yelp.com/search?attrs=&cflt=#{filters_categories}&find_desc=restaurants&find_loc=#{find_loc}&mapsize=small&rpp=40&sortby=best_match"
+    # 
+    #     f = go_sub(url_categories)
+    #     # f = go_sub(url_categories, headers)
+    #     # headers['Cookie'] = f.meta['set-cookie']
+    #   end
+    # end
     
-    start_url_cities = "http://www.yelp.com/search?rpp=40&find_desc=restaurants&ns=1&l=p:#{filters_cities}&find_loc=#{find_loc}"     
-    start_url_categories = "http://www.yelp.com/search?find_desc=y+combinator&find_loc=#{find_loc}&ns=1#cflt=#{filters_categories}&find_desc=restaurants"
-    
-    headers = {
-      "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "Accept-Charset" => "windows-1251,utf-8;q=0.7,*;q=0.3",
-      "Accept-Language" => "ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4",
-      "Cache-Control" => "max-age=0",
-      "Connection" => "keep-alive",
-      "Cookie" => open(start_url_categories).meta['set-cookie'],
-      "Host" => "www.yelp.com",
-      "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30"
-    }
-        
-    neighborhoods.each do |k,v|
-      v.each do |n| 
-        
-        if k.to_s == 'City'
-          find_loc = "#{n.gsub(/ |_/, '+')}+#{state}" # {city+with+pluses}+state
-          filters_cities = "#{state}:#{n.gsub(' ', '_')}" # state:{city_with_unerscores}::district
-        else
-          find_loc = "#{k.to_s.gsub('_', '+')}+#{state}" # {city+with+pluses}+state
-          filters_cities = "#{state}:#{k}::#{n}" # state:{city_with_unerscores}::district
-          filters_categories = n
-        end
-        url_cities = "http://www.yelp.com/search?rpp=40&find_desc=restaurants&ns=1&l=p:#{filters_cities}&find_loc=#{find_loc}"  
-        start_url_categories = "http://www.yelp.com/search?find_desc=y+combinator&find_loc=#{find_loc}&ns=1#cflt=#{filters_categories}&find_desc=restaurants"
-        
-        f = go_sub(start_url_categories, headers)
-        headers['Cookie'] = f.meta['set-cookie']
+    other.split(',').each do |d|
+      find_loc = "#{d.gsub('::', '')}+#{state}"
+      categories.split(',').each do |c| 
+        filters_categories = c
+        url_categories = "http://www.yelp.com/search?attrs=&cflt=#{filters_categories}&find_desc=restaurants&find_loc=#{find_loc}&mapsize=small&rpp=40&sortby=best_match"
+        f = go_sub(url_categories)
       end
     end
   
@@ -367,9 +381,9 @@ namespace :ylp do
   
 end
 
-def go_sub(url, headers)
+def go_sub(url, headers = nil)
   p url
-  if src = open(url.gsub("/search?", "/search/snippet?"), headers)
+  if src = open(url.gsub("/search?", "/search/snippet?"))#, headers)
     json = JSON.parse(src.read)
   
     json['events']['search.map.overlays'].each do |ds|

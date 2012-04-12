@@ -5,9 +5,36 @@ $(document).ready(function() {
 
 			});
 			return false
-		})
-		
+	})
+
+	refreshIntervalId = slide()
+
+	$('#pages li').live('click', function(){
+		scroll($(this).index())
+		clearInterval(refreshIntervalId);	
+	})
+
 })
+
+function slide() {
+		var i = 0
+    id = setInterval(function () {
+			i = (i + 1) % 8;
+			scroll(i);
+    }, 6000); // repeat forever, polling every 3 seconds
+		return id
+}
+
+function scroll(i) {
+		$('#pages li').removeClass('active')
+		$($("#pages li")[i]).addClass('active')
+
+		$('ul.text li').removeClass('active')
+		$($("ul.text li")[i]).addClass('active')
+
+		$('.iscreen').removeClass('active').hide()
+		$($(".iscreen")[i]).fadeIn(2000).addClass('active')
+}
 
 function load_map(markers) {
   var mapOptions = {

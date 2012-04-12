@@ -15,6 +15,7 @@ class Dish < ActiveRecord::Base
   
   has_many :dish_tags, :dependent => :destroy
   has_many :tags, :through => :dish_tags
+  has_many :favourites
       
   mount_uploader :photo, ImageUploader
   
