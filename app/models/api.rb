@@ -59,7 +59,7 @@ class API < ActiveRecord::Base
       if type != 'home_cooked' && type != 'delivery'
         restaurants = []
         dish.network.restaurants.each do |restaurant|
-          restaurants.push({
+          restaurants.push(
             :id => restaurant.id,
             :address => restaurant.address,
             :phone => restaurant.phone.to_s,
@@ -68,13 +68,13 @@ class API < ActiveRecord::Base
             :lon => restaurant.lon,
             :description => restaurant.description.to_s,
             :type => nil
-          })
+          )
         end
       elsif type == 'delivery'
         restaurants = []
         restaurant = dish.delivery
         
-        restaurants.push({
+        restaurants.push(
           :id => restaurant.id,
           :address => restaurant.address,
           :phone => restaurant.phone.to_s,
@@ -83,7 +83,7 @@ class API < ActiveRecord::Base
           :lon => restaurant.lon,
           :description => restaurant.description.to_s,
           :type => 'delivery'
-        })
+        )
       end
       
       if type == 'delivery'
@@ -91,7 +91,8 @@ class API < ActiveRecord::Base
       elsif type != 'home_cooked'
         restaurant = dish.network.restaurants.first
       end
-    
+
+      favourite = Favourite.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0      
       data = {
         :name => dish.name,
         :current_user_rating => user_review ? user_review.rating : '',
@@ -108,6 +109,7 @@ class API < ActiveRecord::Base
         :reviews => review_data,
         :top_expert => top_expert ||= nil,
         :restaurants => restaurants,
+        :favourite => favourite,
         :error => {:description => nil, :code => nil}
       }  
       data.as_json
@@ -147,7 +149,7 @@ class API < ActiveRecord::Base
               :lat => restaurant.lat,
               :lon => restaurant.lon,
               :description => restaurant.description.to_s,
-              :fsq_id => restaurant.fsq_id
+              :fsq_id => restaurant.fsq_id,
             })
         end
       end
@@ -156,14 +158,16 @@ class API < ActiveRecord::Base
       
       
       data_d.select('DISTINCT id, name, photo, rating, votes, dish_type_id').order("(rating - 3)*votes DESC, photo DESC").where("photo IS NOT NULL OR rating > 0").each do |dish|
-          best_dishes.push({
+          favourite = Favourite.find_by_user_id_and_dish_id_id(user_id, dish.id) ? 1 : 0
+          best_dishes.push(
             :id => dish.id,
             :name => dish.name,
             :photo => dish.image_sd,
             :rating => dish.rating,
             :votes => dish.votes,
-            :type => type
-          })
+            :type => type,
+            :favourite => favourite
+          )
       end
       
       if user = User.find_by_id(restaurant.top_user_id)
@@ -173,26 +177,6 @@ class API < ActiveRecord::Base
           :user_id => user.id
         }
       end
-
-      # if type == 'delivery'
-      #   better_restaurants = Delivery.where('rating >= ?', restaurant.rating).count.to_f
-      #   rating_restaurants = Delivery.where('rating > 0').count.to_f
-      # else
-      #   better_restaurants = Restaurant.where('restaurants.fsq_checkins_count >= ?', restaurant.fsq_checkins_count).count.to_f
-      #   rating_restaurants = Restaurant.where('restaurants.fsq_checkins_count > 0').count.to_f
-      # end
-      # 
-      # if rating_restaurants != 0
-      #   popularity = case (100 * better_restaurants / rating_restaurants).round(0)  
-      #     
-      #     when 0..33 then "Very popular"
-      #     when 34..66 then "Popular"
-      #     when 67..100 then "Not so popular"
-      #   end        
-      # else
-      #   popularity = "Not so popular"
-      #   
-      # end
             
       restaurant_categories = []
       if type != 'delivery'
@@ -208,6 +192,7 @@ class API < ActiveRecord::Base
         open_now = 1 if now > restaurant.send(wday)[0,5].gsub(':','') && now < restaurant.send(wday)[-5,5].gsub(':','')
       end
       
+      favourite = Favourite.find_by_user_id_and_network_id(user_id, restaurant.network_id) ? 1 : 0
       data = {
           :network_ratings => data_r.rating,
           :network_reviews_count => data_r.reviews.count,
@@ -225,6 +210,7 @@ class API < ActiveRecord::Base
           :restaurant_categories => restaurant_categories ? restaurant_categories.join(', ') : [],
           :restaurants => restaurants,
           :type => type,
+          :favourite => favourite,
           :error => {:description => '', :code => ''}
       }
     else

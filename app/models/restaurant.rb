@@ -191,6 +191,10 @@ class Restaurant < ActiveRecord::Base
     super(:only => [:id, :bill, :name, :address, :rating, :votes, :lat, :lon, :network_id, :fsq_id, :fsq_checkins_count], :methods => [:has_menu, :thumb, :categories])
   end
   
+  def favourite(id)
+    id
+  end
+  
   def has_menu
     self.dishes.count > 0 ? 1 : 0
   end

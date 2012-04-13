@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120411154230) do
+ActiveRecord::Schema.define(:version => 20120413081021) do
 
   create_table "_ylp_dishes", :force => true do |t|
     t.string   "ylp_restaurant_id"
@@ -369,11 +369,19 @@ ActiveRecord::Schema.define(:version => 20120411154230) do
   add_index "dishes", ["votes"], :name => "index_dishes_on_votes"
 
   create_table "favourites", :force => true do |t|
-    t.integer  "dish_id",       :default => 0
-    t.integer  "restaurant_id", :default => 0
+    t.integer  "dish_id",          :default => 0
+    t.integer  "restaurant_id",    :default => 0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "user_id"
+    t.integer  "delivery_id",      :default => 0
+    t.integer  "dish_delivery_id", :default => 0
+    t.integer  "home_cook_id",     :default => 0
   end
+
+  add_index "favourites", ["delivery_id"], :name => "index_favourites_on_delivery_id"
+  add_index "favourites", ["dish_delivery_id"], :name => "index_favourites_on_dish_delivery_id"
+  add_index "favourites", ["home_cook_id"], :name => "index_favourites_on_home_cook_id"
 
   create_table "followers", :force => true do |t|
     t.integer  "user_id",        :null => false
