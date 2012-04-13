@@ -11,7 +11,7 @@ namespace :ylp do
   task :cl_ny => :environment do
     p Restaurant.where("source = 'ylp' AND created_at <= '2012-03-27 09:07:22'").delete_all 
     p YlpDish.where("created_at <= '2012-03-27 09:07:22'").delete_all  
-    p YlpRestaurant.where("created_at <= '2012-03-27 09:07:22'").update_all("has_menu = NULL")
+    p YlpRestaurant.where("created_at <= '2012-03-27 09:07:22'").update_all("has_menu = NULL") 
   end
   
   task :review => :environment do
