@@ -953,14 +953,21 @@ class ApiController < ApplicationController
         if params[:type] == 'delivery' 
           name = "deliveries.`name`"
           name_eng = "deliveries.`name_eng`"
+          restaurants = restaurants.where("#{name} LIKE ? OR #{name_eng} LIKE ? ", "%#{search}%", "%#{search}%")
         else
           name = "restaurants.`name`"
           name_eng = "restaurants.`name_eng`"
-          if rc = RestaurantCategory.find_by_name(search)
-            rc_search = "OR restaurant_categories REGEXP ?"
+          if rcs = RestaurantCategory.where('name LIKE ?', "%#{search}%")
+            rc_ids = []
+            rcs.each do |rc|
+              rc_ids.push(",?[[:<:]]#{rc.id}[[:>:]],?")
+            end
+            restaurants = restaurants.where("#{name} LIKE ? OR #{name_eng} LIKE ? OR restaurant_categories REGEXP ?", "%#{search}%", "%#{search}%", rc_ids.join('|'))
+          else
+            restaurants = restaurants.where("#{name} LIKE ? OR #{name_eng} LIKE ? ", "%#{search}%", "%#{search}%")
           end
         end
-        restaurants = restaurants.where("#{name} LIKE ? OR #{name_eng} LIKE ? #{rc_search}", "%#{search}%", "%#{search}%", "[[:<:]]#{rc.id}[[:>:]],?")
+        
       end
     
       restaurants = restaurants.search_by_word(params[:keyword]) unless params[:keyword].blank?
