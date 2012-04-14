@@ -1316,7 +1316,7 @@ class ApiController < ApplicationController
       Comment.add({:user_id => params[:user_id], :review_id => params[:review_id], :text => params[:comment]}, params[:self_review])
     else
       return render :json => {
-        :error => {:description => 'Parameters missing', :code => 8}
+        :error => {:description => 'Sorry, this feature will be enabled on monday.', :code => 8}
       }
     end
     return render :json => {
