@@ -158,7 +158,7 @@ class API < ActiveRecord::Base
       
       
       data_d.select('DISTINCT id, name, photo, rating, votes, dish_type_id').order("(rating - 3)*votes DESC, photo DESC").where("photo IS NOT NULL OR rating > 0").each do |dish|
-          favourite = Favourite.find_by_user_id_and_dish_id_id(user_id, dish.id) ? 1 : 0
+          favourite = Favourite.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0
           best_dishes.push(
             :id => dish.id,
             :name => dish.name,
