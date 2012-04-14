@@ -962,7 +962,7 @@ class ApiController < ApplicationController
             rcs.each do |rc|
               rc_ids.push(",?[[:<:]]#{rc.id}[[:>:]],?")
             end
-            src = "OR restaurant_categories REGEXP ?" rc_ids.count > 0
+            src = "OR restaurant_categories REGEXP ?" if rc_ids.count > 0
             restaurants = restaurants.where("#{name} LIKE ? OR #{name_eng} LIKE ? #{src}", "%#{search}%", "%#{search}%", rc_ids.join('|'))
           else
             restaurants = restaurants.where("#{name} LIKE ? OR #{name_eng} LIKE ? ", "%#{search}%", "%#{search}%")
