@@ -1013,7 +1013,7 @@ class ApiController < ApplicationController
             favourite = 1 if Favourite.find_by_user_id_and_network_id(user_id, r.network_id)
           end
           networks.push(
-            :network_id => params[:type] == 'delivery' ? r.network_id : '',
+            :network_id => params[:type] == 'delivery' ? '' : r.network_id,
             :favourite => favourite,
             :type => 'delivery',            
             :dishes => dishes,
