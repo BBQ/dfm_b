@@ -657,7 +657,7 @@ class ApiController < ApplicationController
                           :name => d.name,
                           :rating => d.rating,
                           :votes => d.votes,
-                          :price => d.price,
+                          :price => params[:type] == 'home_cooked' ? 0 : d.price,
                           :currency => d.currency,
                           :image_sd => d.image_sd,
                           :image_hd => d.image_hd,
@@ -1013,7 +1013,7 @@ class ApiController < ApplicationController
             favourite = 1 if Favourite.find_by_user_id_and_network_id(user_id, r.network_id)
           end
           networks.push(
-            :network_id => r.network_id,
+            :network_id => params[:type] == 'delivery' ? r.network_id : '',
             :favourite => favourite,
             :type => 'delivery',            
             :dishes => dishes,
