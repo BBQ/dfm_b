@@ -658,7 +658,7 @@ class ApiController < ApplicationController
                           :rating => d.rating,
                           :votes => d.votes,
                           :price => params[:type] == 'home_cooked' ? 0 : d.price,
-                          :currency => d.currency,
+                          :currency => params[:type] == 'home_cooked' ? 0 : d.currency,
                           :image_sd => d.image_sd,
                           :image_hd => d.image_hd,
                           :favourite => favourite,
