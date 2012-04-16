@@ -45,6 +45,14 @@ class Restaurant < ActiveRecord::Base
        else
          network_id = Network.create({:name => venue.name, :city =>venue.location.city}).id
        end
+       
+       Timezone::Configure.begin do |c|
+         c.username = 8.times.map{65.+(rand(25)).chr}.join
+       end
+       
+       if timezone = Timezone::Zone.new(:latlon => [venue.location.lat.to_f,venue.location.lng.to_f])
+         time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
+       end
 
        data = {
          :name => venue.name,
@@ -63,7 +71,8 @@ class Restaurant < ActiveRecord::Base
          :source => 'foursquare',
          :phone => venue.contact.formattedPhone,
          :restaurant_categories => category_id.join(','),
-         :network_id => network_id
+         :network_id => network_id,
+         :time_zone_offset => time_zone_offset ||= "00:00"
        }
 
        if r = create(data)
