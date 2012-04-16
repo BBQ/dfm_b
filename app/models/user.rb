@@ -132,7 +132,7 @@ class User < ActiveRecord::Base
       if user = User.find_by_facebook_id(result["id"])
         token = Session.get_token(user)
         user.fb_access_token = access_token
-        user.fb_valid_to = fb_valid_to
+        user.fb_valid_to =  Time.at(fb_valid_to)
         user.save
       elsif result["email"] 
         user = create_user_from_facebook(rest,fb_valid_to)
@@ -151,7 +151,7 @@ class User < ActiveRecord::Base
       :current_city => auth_result["location"] ? auth_result["location"]["name"] : '',
       :facebook_id => auth_result["id"],
       :fb_access_token => rest.access_token,
-      :fb_valid_to => fb_valid_to
+      :fb_valid_to => Time.at(fb_valid_to)
     })
     
     Authentication.create({
