@@ -192,7 +192,7 @@ class API < ActiveRecord::Base
         rc.push(b)
       end 
       rc.push(restaurant_categories.join(', ')) if restaurant_categories.count > 0
-      rc.join(', ') if rc.count > 0
+      rc = rc.join(', ') if rc.count > 0
       
       wday = Date.today.strftime("%a").downcase
       open_now = 0
