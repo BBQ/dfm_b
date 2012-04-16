@@ -1292,7 +1292,9 @@ class ApiController < ApplicationController
     reviews.each {|r| review_data.push(r.format_review_for_api(params[:user_id]))}    
     
     if !params[:user_id].blank?    
-      n_count = n.badge if n = APN::Notification.where(:user_id_to => params[:user_id], :read => 0).last  
+      if n = APN::Notification.where(:user_id_to => params[:user_id], :read => 0).last  
+        n_count = n.badge
+      end
     end
     
     return render :json => {
