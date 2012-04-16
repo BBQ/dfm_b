@@ -106,7 +106,7 @@ class User < ActiveRecord::Base
     rescue
       nil
     end
-    {:name => user.name, :fb_access_token =>user.fb_access_token, :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
+    {:name => user.name, :fb_access_token =>user.fb_access_token, :fb_valid_to => user.fb_valid_to, :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
   end
   
   def self.create_user_from_twitter(client, email)
@@ -124,7 +124,7 @@ class User < ActiveRecord::Base
     user
   end
   
-  def self.authenticate_by_facebook(access_token)
+  def self.authenticate_by_facebook(access_token, fb_valid_to)
       
       rest = Koala::Facebook::GraphAndRestAPI.new(access_token) # pre-1.2beta
       result = rest.get_object("me")
@@ -132,15 +132,16 @@ class User < ActiveRecord::Base
       if user = User.find_by_facebook_id(result["id"])
         token = Session.get_token(user)
         user.fb_access_token = access_token
+        user.fb_valid_to = fb_valid_to
         user.save
       elsif result["email"] 
-        user = create_user_from_facebook(rest)
+        user = create_user_from_facebook(rest,fb_valid_to)
         token = Session.get_token(user)        
       end
-      {:name => user.name, :fb_access_token =>user.fb_access_token, :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
+      {:name => user.name, :fb_access_token => user.fb_access_token, :fb_valid_to => user.fb_valid_to,  :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
   end
   
-  def self.create_user_from_facebook(rest)
+  def self.create_user_from_facebook(rest, fb_valid_to)
     auth_result = rest.get_object("me")
     
     user = User.create({
@@ -149,7 +150,8 @@ class User < ActiveRecord::Base
       :gender => auth_result["gender"],
       :current_city => auth_result["location"] ? auth_result["location"]["name"] : '',
       :facebook_id => auth_result["id"],
-      :fb_access_token => rest.access_token
+      :fb_access_token => rest.access_token,
+      :fb_valid_to => fb_valid_to
     })
     
     Authentication.create({

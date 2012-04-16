@@ -377,8 +377,8 @@ class ApiController < ApplicationController
   def authenticate_user
     if params[:provider]
       
-      if params[:provider] == 'facebook' && params[:access_token]
-        session = User.authenticate_by_facebook(params[:access_token]) 
+      if params[:provider] == 'facebook' && params[:access_token] && params[:fb_valid_to]
+        session = User.authenticate_by_facebook(params[:access_token], params[:fb_valid_to]) 
       elsif params[:provider] == 'twitter' && params[:oauth_token] && params[:oauth_token_secret]
         session = User.authenticate_by_twitter(params[:oauth_token], params[:oauth_token_secret], params[:email])
       end
@@ -1291,8 +1291,13 @@ class ApiController < ApplicationController
     review_data = []
     reviews.each {|r| review_data.push(r.format_review_for_api(params[:user_id]))}    
     
+    if !params[:user_id].blank?    
+      n_count = n.badge if n = APN::Notification.where(:user_id_to => 11, :read => 0).last  
+    end
+    
     return render :json => {
       :reviews => review_data,
+      :notifications => n_count ||= 0,
       :error => $error
     }
           
