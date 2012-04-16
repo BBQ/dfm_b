@@ -122,7 +122,7 @@ class Notification < ActiveRecord::Base
 
                 notification = APN::Notification.new
                 notification.device = device
-                notification.badge = u[:badge]  
+                notification.badge = u[:badge] + 1  
                 notification.sound = 'default'   
                 notification.alert = alert
                 notification.notification_type = notification_type
