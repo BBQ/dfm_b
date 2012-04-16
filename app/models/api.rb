@@ -137,7 +137,7 @@ class API < ActiveRecord::Base
       if type != 'delivery'
         restaurants = []
         restaurant.network.restaurants.each do |restaurant|
-            restaurants.push({
+            restaurants.push(
               :id => restaurant.id,
               :address => restaurant.address,
               :phone => restaurant.phone.to_s,
@@ -150,7 +150,7 @@ class API < ActiveRecord::Base
               :lon => restaurant.lon,
               :description => restaurant.description.to_s,
               :fsq_id => restaurant.fsq_id,
-            })
+            )
         end
       end
       
@@ -185,6 +185,11 @@ class API < ActiveRecord::Base
         end
       end
       
+      rc = []
+      rc.push(restaurant.bill.to_i.times {'$'}) if restaurant.bill.to_i > 0
+      rc.push(restaurant_categories.join(', ')) if restaurant_categories.count > 0
+      rc.join(', ') if rc.count > 0
+      
       wday = Date.today.strftime("%a").downcase
       open_now = 0
       unless restaurant.send(wday).blank?
@@ -207,7 +212,7 @@ class API < ActiveRecord::Base
               :image_hd => restaurant.find_image && restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
               :description => restaurant.description ||= ''
           },
-          :restaurant_categories => restaurant_categories ? restaurant_categories.join(', ') : [],
+          :restaurant_categories => rc ||= '',
           :restaurants => restaurants,
           :type => type,
           :favourite => favourite,
