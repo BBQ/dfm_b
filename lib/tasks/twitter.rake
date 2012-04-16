@@ -106,11 +106,11 @@ namespace :twitter do
           friends = "with #{r.friends.split(',').count} friend(s)" if r.friends
           caption = "#{dish_text} #{place} #{friends}" + tags + " http://dish.fm/reviews/#{r.id}"
           
-          if caption.lenght > 140
+          if caption.length > 140
             caption = "#{dish_text} #{place}" + tags + " http://dish.fm/reviews/#{r.id}"
-            if caption.lenght > 140
+            if caption.length > 140
               caption = "#{dish_text} #{place[0,place.index('@')]}" + tags + " http://dish.fm/reviews/#{r.id}"
-              if caption.lenght > 140
+              if caption.length > 140
                 caption = "#{dish_text}"[0,99] + "..." + tags[0,18] + " http://dish.fm/reviews/#{r.id}"
               end
             end

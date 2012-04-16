@@ -873,7 +873,7 @@ class ApiController < ApplicationController
         end
       
         etc = []
-        etc.push('(wifi != 0 OR wifi != "нет")') if params[:wifi] == '1'
+        etc.push('(wifi != 0 AND wifi != "нет" AND wifi != "NULL")') if params[:wifi] == '1'
         etc.push('terrace = 1') if params[:terrace] == '1'
         etc.push('cc = 1') if params[:accept_bank_cards] == '1'
         filters.push(etc.join(' AND ')) if etc.count > 0
