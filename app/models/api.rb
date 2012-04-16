@@ -187,6 +187,7 @@ class API < ActiveRecord::Base
       
       rc = []
       if restaurant.bill.to_i > 0
+        b = ''
         restaurant.bill.to_i.times {b << '$'}
         rc.push(b)
       end 
