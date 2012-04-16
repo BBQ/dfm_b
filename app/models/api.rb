@@ -186,7 +186,10 @@ class API < ActiveRecord::Base
       end
       
       rc = []
-      rc.push(restaurant.bill.to_i.times {'$'}) if restaurant.bill.to_i > 0
+      if restaurant.bill.to_i > 0
+        restaurant.bill.to_i.times {b << '$'}
+        rc.push(b)
+      end 
       rc.push(restaurant_categories.join(', ')) if restaurant_categories.count > 0
       rc.join(', ') if rc.count > 0
       
