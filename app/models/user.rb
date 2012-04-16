@@ -106,7 +106,7 @@ class User < ActiveRecord::Base
     rescue
       nil
     end
-    {:name => user.name, :fb_access_token =>user.fb_access_token, :fb_valid_to => user.fb_valid_to, :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
+    {:name => user.name, :fb_access_token =>user.fb_access_token, :fb_valid_to => user.fb_valid_to.to_i, :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
   end
   
   def self.create_user_from_twitter(client, email)
@@ -138,7 +138,7 @@ class User < ActiveRecord::Base
         user = create_user_from_facebook(rest,fb_valid_to)
         token = Session.get_token(user)        
       end
-      {:name => user.name, :fb_access_token => user.fb_access_token, :fb_valid_to => user.fb_valid_to,  :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
+      {:name => user.name, :fb_access_token => user.fb_access_token, :fb_valid_to => user.fb_valid_to.to_i,  :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
   end
   
   def self.create_user_from_facebook(rest, fb_valid_to)
