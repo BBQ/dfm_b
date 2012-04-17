@@ -366,10 +366,9 @@ namespace :ylp do
     end
     
     urls.each do |url|
-      p url
-      # go_sub(url)
-      # go_sub(url+"&sortby=review_count")
-      # go_sub(url+"&sortby=rating")
+      go_sub(url+"&sortby=review_count")
+      go_sub(url+"&sortby=rating")
+      go_sub(url)
     end
     p "This done!"
     

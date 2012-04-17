@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120413081021) do
+ActiveRecord::Schema.define(:version => 20120416163309) do
 
   create_table "_ylp_dishes", :force => true do |t|
     t.string   "ylp_restaurant_id"
@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(:version => 20120413081021) do
   create_table "_ylp_restaurants", :force => true do |t|
     t.string   "name"
     t.string   "ylp_uri"
+    t.datetime "updated_at"
     t.string   "lat"
     t.string   "lng"
     t.string   "rating"
@@ -61,7 +62,6 @@ ActiveRecord::Schema.define(:version => 20120413081021) do
     t.string   "caters"
     t.string   "wheelchair_accessible"
     t.datetime "created_at"
-    t.datetime "updated_at"
     t.string   "fsq_id"
     t.string   "fsq_name"
     t.string   "fsq_address"
@@ -73,12 +73,13 @@ ActiveRecord::Schema.define(:version => 20120413081021) do
     t.string   "restaurant_categories"
     t.string   "city"
     t.boolean  "has_menu"
+    t.integer  "db_status"
     t.integer  "our_network_id"
-    t.integer  "db_status",             :null => false
   end
 
-  add_index "_ylp_restaurants", ["db_status"], :name => "db_status"
+  add_index "_ylp_restaurants", ["city"], :name => "city"
   add_index "_ylp_restaurants", ["fsq_id"], :name => "index_ylp_restaurants_on_fsq_id"
+  add_index "_ylp_restaurants", ["has_menu"], :name => "has_menu"
   add_index "_ylp_restaurants", ["name"], :name => "name"
   add_index "_ylp_restaurants", ["ylp_uri"], :name => "index_ylp_restaurants_on_ylp_uri"
 
@@ -377,6 +378,7 @@ ActiveRecord::Schema.define(:version => 20120413081021) do
     t.integer  "delivery_id",      :default => 0
     t.integer  "dish_delivery_id", :default => 0
     t.integer  "home_cook_id",     :default => 0
+    t.integer  "network_id"
   end
 
   add_index "favourites", ["delivery_id"], :name => "index_favourites_on_delivery_id"
@@ -596,7 +598,7 @@ ActiveRecord::Schema.define(:version => 20120413081021) do
   create_table "restaurants", :force => true do |t|
     t.string   "name"
     t.string   "city"
-    t.integer  "network_id",                                           :null => false
+    t.integer  "network_id",                                             :null => false
     t.float    "rating",                :limit => 21, :default => 0.0
     t.string   "name_eng"
     t.float    "lon"
@@ -608,8 +610,8 @@ ActiveRecord::Schema.define(:version => 20120413081021) do
     t.string   "phone"
     t.string   "web"
     t.text     "description"
-    t.string   "breakfast"
-    t.string   "businesslunch"
+    t.string   "breakfast",                           :default => "0"
+    t.string   "businesslunch",                       :default => "0"
     t.string   "photo"
     t.integer  "votes",                               :default => 0
     t.string   "wifi",                                :default => "0"
@@ -619,19 +621,18 @@ ActiveRecord::Schema.define(:version => 20120413081021) do
     t.string   "source"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "good_for_kids"
-    t.string   "banquet"
-    t.string   "reservation"
-    t.string   "delivery"
-    t.string   "takeaway"
-    t.string   "service"
-    t.string   "good_for"
-    t.string   "alcohol"
-    t.string   "noise"
-    t.string   "tv"
-    t.string   "disabled"
-    t.string   "music"
-    t.string   "parking"
+    t.string   "good_for_kids",                       :default => "0"
+    t.boolean  "banquet",                             :default => false
+    t.string   "reservation",                         :default => "0"
+    t.string   "delivery",                            :default => "0"
+    t.boolean  "takeaway",                            :default => false
+    t.boolean  "service",                             :default => false
+    t.string   "alcohol",                             :default => "0"
+    t.string   "noise",                               :default => "0"
+    t.boolean  "tv",                                  :default => false
+    t.string   "disabled",                            :default => "0"
+    t.string   "music",                               :default => "0"
+    t.string   "parking",                             :default => "0"
     t.string   "menu_url"
     t.string   "bill"
     t.string   "sun",                                 :default => ""
@@ -651,12 +652,12 @@ ActiveRecord::Schema.define(:version => 20120413081021) do
     t.integer  "top_user_id",                         :default => 0
     t.string   "restaurant_categories",               :default => "0"
     t.boolean  "delivery_only"
-    t.string   "attire"
-    t.string   "transit"
-    t.string   "caters"
-    t.string   "ambience"
-    t.string   "good_for_groups"
-    t.string   "good_for_meal"
+    t.string   "attire",                              :default => "0"
+    t.string   "transit",                             :default => "0"
+    t.string   "caters",                              :default => "0"
+    t.string   "ambience",                            :default => "0"
+    t.boolean  "good_for_groups",                     :default => false
+    t.string   "good_for_meal",                       :default => "0"
     t.string   "time_zone_offset"
   end
 
@@ -798,6 +799,7 @@ ActiveRecord::Schema.define(:version => 20120413081021) do
     t.string   "fb_access_token"
     t.string   "oauth_token_secret"
     t.string   "oauth_token"
+    t.datetime "fb_valid_to"
   end
 
   add_index "users", ["facebook_id"], :name => "index_users_on_facebook_id"

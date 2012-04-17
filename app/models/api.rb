@@ -203,27 +203,40 @@ class API < ActiveRecord::Base
       
       description = []
       description.push(restaurant.description) unless restaurant.description.blank?
-      # 
-      # description.push("Breakfast: #{restaurant.breakfast.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.breakfast.blank?
-      # description.push("Business lunch: #{restaurant.businesslunch.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.businesslunch.blank?
-      # description.push("Wifi: #{restaurant.wifi.sub('0','no').sub('1','yes').sub('2','paid')}") unless restaurant.wifi.blank?
-      # 
-      # description.push("Chillum: #{restaurant.chillum.sub('0','no').sub('1','yes')}") unless restaurant.chillum.blank?
-      # description.push("Terrace: #{restaurant.terrace.sub('0','no').sub('1','yes')}") unless restaurant.terrace.blank?
-      # description.push("Credit Card: #{restaurant.cc.sub('0','no').sub('1','yes')}") unless restaurant.cc.blank?
-      # 
-      # description.push("Good for kids: #{restaurant.good_for_kids.sub('0','no').sub('1','yes')}") unless restaurant.good_for_kids.blank?
-      # description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
-      # description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?
-      # 
-      # description.push("Good for kids: #{restaurant.good_for_kids.sub('0','no').sub('1','yes')}") unless restaurant.good_for_kids.blank?
-      # description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
-      # description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?
-      # 
-      # description.push("Takeaway: #{restaurant.takeaway.sub('0','no').sub('1','yes')}") unless restaurant.takeaway.blank?
-      # description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
-      # description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?
-      # 
+      
+      description.push("Breakfast: #{restaurant.breakfast.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.breakfast.blank?
+      description.push("Business lunch: #{restaurant.businesslunch.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.businesslunch.blank?
+      description.push("Wifi: #{restaurant.wifi.sub('0','no').sub('1','yes').sub('2','paid')}") unless restaurant.wifi.blank?
+      
+      description.push("Chillum: #{restaurant.chillum.sub('0','no').sub('1','yes')}") unless restaurant.chillum.blank?
+      description.push("Terrace: #{restaurant.terrace.sub('0','no').sub('1','yes')}") unless restaurant.terrace.blank?
+      description.push("Credit Card: #{restaurant.cc.sub('0','no').sub('1','yes')}") unless restaurant.cc.blank?
+      
+      description.push("Good for kids: #{restaurant.good_for_kids.sub('0','no').sub('1','yes')}") unless restaurant.good_for_kids.blank?
+      description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
+      description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?
+      
+      description.push("Takeaway: #{restaurant.takeaway.to_s.sub('true','no').sub('false','yes')}") unless restaurant.takeaway.blank?
+      description.push("Service: waiters") if restaurant.service == true
+      description.push("Alcohol: #{restaurant.alcohol}") if restaurant.alcohol != 0
+      
+      description.push("Noise: #{restaurant.noise}") if restaurant.noise != 0
+      description.push("TV: #{restaurant.tv.sub('0','no').sub('1','yes')}") unless restaurant.tv.blank?
+      description.push("Disabled: #{restaurant.disabled.sub('0','no').sub('1','yes')}") unless restaurant.disabled.blank?
+      
+      description.push("Attire: #{restaurant.attire}") unless restaurant.attire.blank?
+      description.push("Parking: #{restaurant.parking.sub('0','no').sub('1','yes')}") unless restaurant.parking.blank?
+      description.push("Music: #{restaurant.music.sub('0','no').sub('1','yes')}") unless restaurant.music.blank?
+      
+      description.push("Transit: #{restaurant.transit}") if restaurant.transit != 0
+      description.push("Caters: #{restaurant.caters.sub('0','no').sub('1','yes')}") unless restaurant.caters.blank?
+      description.push("Ambience: #{restaurant.ambience}") if restaurant.ambience != 0
+      
+      description.push("Good for meal: #{restaurant.good_for_meal}") if restaurant.good_for_meal != 0
+      description.push("Good for groups: #{restaurant.good_for_groups.sub('0','no').sub('1','yes')}") unless restaurant.good_for_groups.blank?      
+      
+      description = description.join("\n") if description.count > 0
+                  
       favourite = Favourite.find_by_user_id_and_network_id(user_id, restaurant.network_id) ? 1 : 0
       data = {
           :network_ratings => data_r.rating,
@@ -237,7 +250,7 @@ class API < ActiveRecord::Base
           :restaurant => {
               :image_sd => restaurant.find_image && restaurant.find_image.iphone.url != '/images/noimage.jpg' ? restaurant.find_image.iphone.url : '',
               :image_hd => restaurant.find_image && restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
-              :description => restaurant.description ||= ''
+              :description => description ||= ''
           },
           :restaurant_categories => rc ||= '',
           :restaurants => restaurants,
