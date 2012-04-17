@@ -342,7 +342,7 @@ namespace :ylp do
               find_loc = "#{city.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
               
               filters_cities = "#{state}:#{city}:#{district}:#{area}" # state:{city_with_unerscores}:district:area
-              url_cities = "http://www.yelp.com/search/snippet?attrs=&cflt=&find_desc=restaurants&find_loc=#{find_loc}&l=p:#{filters_cities}&rpp=40"
+              url_city = "http://www.yelp.com/search/snippet?attrs=&cflt=&find_desc=restaurants&find_loc=#{find_loc}&l=p:#{filters_cities}&rpp=40"
               
               urls.push(url_city)
               urls.push(url_city+"&sortby=review_count")
