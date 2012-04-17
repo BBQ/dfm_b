@@ -323,7 +323,7 @@ namespace :ylp do
           :Bronx => bronx.split(','),
           :Staten_Island => staten_island.split(',')
         }
-      }
+      },
       :CA => {
         :San_Francisco => san_francisco,
         :Oakland => oakland,
