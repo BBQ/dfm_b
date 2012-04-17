@@ -325,38 +325,41 @@ namespace :ylp do
         }
       },
       :CA => {
-        :San_Francisco => san_francisco,
-        :Oakland => oakland,
-        :Berkeley => berkeley
+        :San_Francisco => san_francisco.split(','),
+        :Oakland => oakland.split(','),
+        :Berkeley => berkeley.split(',')
       }
     }
         
     urls = []
     neighborhoods.each do |state,v|
       v.each do |city, v| 
-        if v
-          v.each do |district, v|
+
+        v.each do |district, v|
+          if v.class == Array
+            
             v.each do |area|
               find_loc = "#{city.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
-          
+              
               filters_cities = "#{state}:#{city}:#{district}:#{area}" # state:{city_with_unerscores}:district:area
               url_city = "http://www.yelp.com/search/snippet?attrs=&cflt=&find_desc=restaurants&find_loc=#{find_loc}&l=p:#{filters_cities}&rpp=40"
-          
+              
               urls.push(url_city)
               urls.push(url_city+"&sortby=review_count")
               urls.push(url_city+"&sortby=rating")               
-            end            
-          end
-        else
-            find_loc = "#{city.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
+            end 
             
-            filters_cities = "#{state}:#{city}::#{district}" # state:{city_with_unerscores}::district
-            url_city = "http://www.yelp.com/search/snippet?attrs=&cflt=&find_desc=restaurants&find_loc=#{find_loc}&l=p:#{filters_cities}&rpp=40"
-            
-            urls.push(url_city)
-            urls.push(url_city+"&sortby=review_count")
-            urls.push(url_city+"&sortby=rating")
-            # start_url_categories = "http://www.yelp.com/search?rpp=40&find_loc=#{find_loc}&ns=1#cflt=#{filters_categories}&find_desc=restaurants"                        
+          else
+              find_loc = "#{city.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
+              
+              filters_cities = "#{state}:#{city}::#{district}" # state:{city_with_unerscores}::district
+              url_city = "http://www.yelp.com/search/snippet?attrs=&cflt=&find_desc=restaurants&find_loc=#{find_loc}&l=p:#{filters_cities}&rpp=40"
+              
+              urls.push(url_city)
+              urls.push(url_city+"&sortby=review_count")
+              urls.push(url_city+"&sortby=rating")
+              # start_url_categories = "http://www.yelp.com/search?rpp=40&find_loc=#{find_loc}&ns=1#cflt=#{filters_categories}&find_desc=restaurants"                        
+          end            
         end
         
       end
