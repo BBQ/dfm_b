@@ -383,7 +383,7 @@ def go_sub(url)
           p "Existed: #{ds['respos']}: #{ds['url']}"
           
         else
-          doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}"))
+          doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}", :proxy_http_basic_authentication => [URI.parse(proxy), username, password]))
           data = {}  
           category = []
           
