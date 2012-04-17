@@ -8,10 +8,6 @@ namespace :ylp do
   require 'nokogiri'
   require 'time'
   
-  proxy = 'http://69.195.255.63:7777'
-  username = 'asurin'
-  password = 'Pirai3tooBie6Roo'
-  
   task :cl_ny => :environment do
     p Restaurant.where("source = 'ylp' AND created_at <= '2012-03-27 09:07:22'").delete_all 
     p YlpDish.where("created_at <= '2012-03-27 09:07:22'").delete_all  
@@ -372,6 +368,10 @@ end
 
 def go_sub(url)
   p url
+  
+  proxy = 'http://69.195.255.63:7777'
+  username = 'asurin'
+  password = 'Pirai3tooBie6Roo'
   
   if src = open(url.gsub("/search?", "/search/snippet?"), :proxy_http_basic_authentication => [URI.parse(proxy), username, password])
     json = JSON.parse(src.read)
