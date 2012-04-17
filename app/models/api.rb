@@ -234,10 +234,10 @@ class API < ActiveRecord::Base
       
       description.push("Good for meal: #{restaurant.good_for_meal}") if restaurant.good_for_meal != 0
       description.push("Good for groups: #{restaurant.good_for_groups.sub('0','no').sub('1','yes')}") unless restaurant.good_for_groups.blank?      
-      
-      description = description.join("\n") if description.count > 0
-                  
+
+      description = description.join("\n") if description.count > 0                  
       favourite = Favourite.find_by_user_id_and_network_id(user_id, restaurant.network_id) ? 1 : 0
+      
       data = {
           :network_ratings => data_r.rating,
           :network_reviews_count => data_r.reviews.count,
