@@ -345,9 +345,9 @@ namespace :ylp do
           end
         else
           find_loc = "#{city.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
-          urls = urls | make_categories(categories,"#{city.to_s.gsub('_', '+')}+#{state.to_s}")
           
-          v.each do |district, v|            
+          v.each do |district, v| 
+            urls = urls | make_categories(categories,"#{district.to_s.gsub('_', '+')}+#{state.to_s}")           
             if v.class == Array
               v.each do |area|              
                 filters_cities = "#{state}:#{city}:#{district}:#{area}" # state:{city_with_unerscores}:district:area   
