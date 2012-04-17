@@ -324,7 +324,7 @@ namespace :ylp do
         # :San_Francisco => san_francisco.split(','),
         # :Oakland => oakland.split(','),
         :Berkeley => berkeley.split(',')
-        # :Other => ca_other.split(',')
+        :Other => ca_other.split(',')
       }
     }
     
@@ -344,12 +344,10 @@ namespace :ylp do
             
           end
         else
-          find_loc = "#{v.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
-          urls = urls | make_categories(categories,find_loc)
+          find_loc = "#{city.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
+          urls = urls | make_categories(categories,"#{v.to_s.gsub('_', '+')}+#{state.to_s}")
           
-          v.each do |district, v|
-            urls = urls | make_categories(categories,find_loc)
-            
+          v.each do |district, v|            
             if v.class == Array
               v.each do |area|              
                 filters_cities = "#{state}:#{city}:#{district}:#{area}" # state:{city_with_unerscores}:district:area   
