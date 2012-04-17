@@ -323,7 +323,7 @@ namespace :ylp do
       :CA => {
         # :San_Francisco => san_francisco.split(','),
         # :Oakland => oakland.split(','),
-        :Berkeley => berkeley.split(',')
+        :Berkeley => berkeley.split(','),
         :Other => ca_other.split(',')
       }
     }
