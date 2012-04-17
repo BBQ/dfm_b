@@ -344,11 +344,10 @@ namespace :ylp do
             
           end
         else
-          find_loc = "#{city.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
+          find_loc = "#{v.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
           urls = urls | make_categories(categories,find_loc)
           
           v.each do |district, v|
-            find_loc += "+#{district.to_s.gsub('_', '+')}"
             urls = urls | make_categories(categories,find_loc)
             
             if v.class == Array
