@@ -203,27 +203,27 @@ class API < ActiveRecord::Base
       
       description = []
       description.push(restaurant.description) unless restaurant.description.blank?
-      
-      description.push("Breakfast: #{restaurant.breakfast.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.breakfast.blank?
-      description.push("Business lunch: #{restaurant.businesslunch.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.businesslunch.blank?
-      description.push("Wifi: #{restaurant.wifi.sub('0','no').sub('1','yes').sub('2','paid')}") unless restaurant.wifi.blank?
-      
-      description.push("Chillum: #{restaurant.chillum.sub('0','no').sub('1','yes')}") unless restaurant.chillum.blank?
-      description.push("Terrace: #{restaurant.terrace.sub('0','no').sub('1','yes')}") unless restaurant.terrace.blank?
-      description.push("Credit Card: #{restaurant.cc.sub('0','no').sub('1','yes')}") unless restaurant.cc.blank?
-      
-      description.push("Good for kids: #{restaurant.good_for_kids.sub('0','no').sub('1','yes')}") unless restaurant.good_for_kids.blank?
-      description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
-      description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?
-      
-      description.push("Good for kids: #{restaurant.good_for_kids.sub('0','no').sub('1','yes')}") unless restaurant.good_for_kids.blank?
-      description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
-      description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?
-      
-      description.push("Takeaway: #{restaurant.takeaway.sub('0','no').sub('1','yes')}") unless restaurant.takeaway.blank?
-      description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
-      description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?
-      
+      # 
+      # description.push("Breakfast: #{restaurant.breakfast.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.breakfast.blank?
+      # description.push("Business lunch: #{restaurant.businesslunch.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.businesslunch.blank?
+      # description.push("Wifi: #{restaurant.wifi.sub('0','no').sub('1','yes').sub('2','paid')}") unless restaurant.wifi.blank?
+      # 
+      # description.push("Chillum: #{restaurant.chillum.sub('0','no').sub('1','yes')}") unless restaurant.chillum.blank?
+      # description.push("Terrace: #{restaurant.terrace.sub('0','no').sub('1','yes')}") unless restaurant.terrace.blank?
+      # description.push("Credit Card: #{restaurant.cc.sub('0','no').sub('1','yes')}") unless restaurant.cc.blank?
+      # 
+      # description.push("Good for kids: #{restaurant.good_for_kids.sub('0','no').sub('1','yes')}") unless restaurant.good_for_kids.blank?
+      # description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
+      # description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?
+      # 
+      # description.push("Good for kids: #{restaurant.good_for_kids.sub('0','no').sub('1','yes')}") unless restaurant.good_for_kids.blank?
+      # description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
+      # description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?
+      # 
+      # description.push("Takeaway: #{restaurant.takeaway.sub('0','no').sub('1','yes')}") unless restaurant.takeaway.blank?
+      # description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
+      # description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?
+      # 
       favourite = Favourite.find_by_user_id_and_network_id(user_id, restaurant.network_id) ? 1 : 0
       data = {
           :network_ratings => data_r.rating,
