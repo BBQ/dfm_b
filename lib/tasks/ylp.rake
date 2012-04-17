@@ -364,7 +364,7 @@ namespace :ylp do
         
       end
     end
-    urls {|url| go_sub(url)}
+    urls.each {|url| go_sub(url)}
   
   end
   
