@@ -449,13 +449,13 @@ class ApiController < ApplicationController
     timestamp = Time.at(params[:timestamp].to_i) if params[:timestamp].to_i > 0
             
     keywords = Tag.select("id, name_a as name").where("name_a IN ('salad','soup','pasta','pizza','burger','noodles','risotto','rice','steak','sushi','dessert','drinks','meat','fish','vegetables')")    
-    networks = Network.select([:id, :name])
     locations = LocationTip.select([:id, :name])
+    rc = RestaurantCategory.select([:name])
 
     return render :json => {
           :types => DishType.format_for_api(timestamp),
           :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords.all,
-          # :networks => timestamp ? networks.where('updated_at >= ?', timestamp) : networks.all,
+          :restaurant_categories => timestamp ? rc.where('updated_at >= ?', timestamp) : rc.all,
           :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
           :tags => Tag.get_all(timestamp),
           :error => $error
