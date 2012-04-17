@@ -427,8 +427,6 @@ class ApiController < ApplicationController
 
             end
         end
-    else
-      $error = {:description => 'Parameters missing', :code => 8}
     end
     
     return render :json => {
