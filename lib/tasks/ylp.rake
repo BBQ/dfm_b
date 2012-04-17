@@ -346,8 +346,9 @@ namespace :ylp do
               
               urls.push(url_city)
               urls.push(url_city+"&sortby=review_count")
-              urls.push(url_city+"&sortby=rating")  
-            else
+              urls.push(url_city+"&sortby=rating")               
+            end 
+          else
               find_loc = "#{city.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
               
               filters_cities = "#{state}:#{city}::#{district}" # state:{city_with_unerscores}::district
@@ -357,10 +358,7 @@ namespace :ylp do
               urls.push(url_city+"&sortby=review_count")
               urls.push(url_city+"&sortby=rating")
               # start_url_categories = "http://www.yelp.com/search?rpp=40&find_loc=#{find_loc}&ns=1#cflt=#{filters_categories}&find_desc=restaurants"                        
-              
-            end
-            
-          end
+          end            
         end
         
       end
