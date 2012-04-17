@@ -348,6 +348,7 @@ namespace :ylp do
           urls = urls | make_categories(categories,find_loc)
           
           v.each do |district, v|
+            find_loc += "+#{district.to_s.gsub('_', '+')}"
             urls = urls | make_categories(categories,find_loc)
             
             if v.class == Array
