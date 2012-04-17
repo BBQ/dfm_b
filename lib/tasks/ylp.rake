@@ -337,34 +337,24 @@ namespace :ylp do
           v.each do |city|              
             
             find_loc = "#{city.to_s.gsub('_', '+').gsub('::', '')}+#{state.to_s}"
-            filters_cities = "#{state}:#{city}" # state:{city_with_unerscores_and_two_dots_at_the_end::}   
-
-            categories.split(',').each do |c|
-              url_category = "http://www.yelp.com/search/snippet?rpp=40&find_loc=#{find_loc}&ns=1#cflt=#{c}&find_desc=restaurants"
-              urls.push(url_category) 
-            end                        
-            
+            filters_cities = "#{state}:#{city}" # state:{city_with_unerscores_and_two_dots_at_the_end::}                                  
             url_city = "http://www.yelp.com/search/snippet?attrs=&cflt=&find_desc=restaurants&find_loc=#{find_loc}&l=p:#{filters_cities}&rpp=40"
-            urls.push(url_city)  
+            urls.push(url_city)
+            urls = urls | make_categories(categories,find_loc)
             
           end
         else
           find_loc = "#{city.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
-          
-          categories.split(',').each do |c|
-            url_category = "http://www.yelp.com/search/snippet?rpp=40&find_loc=#{find_loc}&ns=1#cflt=#{c}&find_desc=restaurants"
-            urls.push(url_category) 
-          end
+          urls = urls | make_categories(categories,find_loc)
           
           v.each do |district, v|
+            urls = urls | make_categories(categories,find_loc)
             
             if v.class == Array
               v.each do |area|              
-                
                 filters_cities = "#{state}:#{city}:#{district}:#{area}" # state:{city_with_unerscores}:district:area   
                 url_city = "http://www.yelp.com/search/snippet?attrs=&cflt=&find_desc=restaurants&find_loc=#{find_loc}&l=p:#{filters_cities}&rpp=40"
-                urls.push(url_city)  
-                
+                urls.push(url_city)                
               end 
             else
               filters_cities = "#{state}:#{city}::#{district}" # state:{city_with_unerscores}::district
@@ -389,7 +379,7 @@ namespace :ylp do
   
 end
 
-def make_categories(categories,find_loc,c)
+def make_categories(categories,find_loc)
   categories.split(',').each do |c|
     url_category = "http://www.yelp.com/search/snippet?rpp=40&find_loc=#{find_loc}&ns=1#cflt=#{c}&find_desc=restaurants"
     urls.push(url_category) 
