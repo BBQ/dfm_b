@@ -380,6 +380,7 @@ namespace :ylp do
 end
 
 def make_categories(categories,find_loc)
+  urls = []
   categories.split(',').each do |c|
     url_category = "http://www.yelp.com/search/snippet?rpp=40&find_loc=#{find_loc}&ns=1#cflt=#{c}&find_desc=restaurants"
     urls.push(url_category) 
