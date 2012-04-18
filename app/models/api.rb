@@ -233,7 +233,7 @@ class API < ActiveRecord::Base
       description.push("Ambience: #{restaurant.ambience}") if restaurant.ambience.to_i != 0
       
       description.push("Good for meal: #{restaurant.good_for_meal}") if restaurant.good_for_meal.to_i  != 0
-      description.push("Good for groups: #{restaurant.good_for_groups.sub('0','no').sub('1','yes')}") unless restaurant.good_for_groups.blank?      
+      description.push("Good for groups: #{restaurant.good_for_groups.sub('false','no').sub('true','yes')}") unless restaurant.good_for_groups.blank?      
 
       description = description.join("\n") if description.count > 0                  
       favourite = Favourite.find_by_user_id_and_network_id(user_id, restaurant.network_id) ? 1 : 0
