@@ -41,11 +41,11 @@ class Comment < ActiveRecord::Base
       end
       
       if ncc_from = APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(comment.user_id,comment.review_id,'comment_on_comment')
-        ncc.destroy
+        ncc_from.destroy
       end
       
       if ncc_to = APN::Notification.find_by_user_id_to_and_review_id_and_notification_type(comment.user_id,comment.review_id,'comment_on_comment')
-        ncc.destroy
+        ncc_to.destroy
       end
       
       comment.destroy
