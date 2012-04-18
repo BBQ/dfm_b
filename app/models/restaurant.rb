@@ -48,11 +48,12 @@ class Restaurant < ActiveRecord::Base
        
       begin
         Timezone::Configure.begin do |c|
-          c.username = 8.times.map{65.+(rand(25)).chr}.join
+          c.username = 'innty'
+          c.url = 'api.geonames.org'
         end
-          if timezone = Timezone::Zone.new(:latlon => [venue.location.lat.to_f,venue.location.lng.to_f])
-            time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
-          end
+        if timezone = Timezone::Zone.new(:latlon => [venue.location.lat.to_f,venue.location.lng.to_f])
+          time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
+        end
       rescue
       end
        

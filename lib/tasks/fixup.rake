@@ -2,8 +2,8 @@
 
 def set_offset
   Timezone::Configure.begin do |c|
-    c.username = 12.times.map{65.+(rand(25)).chr}.join
-    p c.username
+    c.username = 'innty'
+    c.url = 'api.geonames.org'
   end
   begin
     Restaurant.where('time_zone_offset IS NULL AND lat IS NOT NULL AND lon IS NOT NULL').each do |r|
