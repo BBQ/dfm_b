@@ -120,7 +120,7 @@ class Notification < ActiveRecord::Base
             if notification_type == 'like'
               push_allow = 0 if pref.like_mobile == false
               email_allow = 0 if pref.like_email == false
-            elsif notification_type == 'comment' || notification_type = 'comment_on_comment'
+            elsif notification_type == 'comment' || notification_type == 'comment_on_comment'
               push_allow = 0 if pref.comment_mobile == false
               email_allow = 0 if pref.comment_email == false
             elsif notification_type == 'dishin'
