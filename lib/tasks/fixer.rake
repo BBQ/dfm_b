@@ -1,5 +1,3 @@
-
-
 desc "Find Reviews with unexisted restaurant_id and fix it by find first restaurant in Review Network"
 task :rev_rest_fix => :environment do
   Review.select([:id, :network_id, :restaurant_id, :rating]).where("restaurant_id IS NOT NULL && network_id IS NOT NULL").each do |rw|

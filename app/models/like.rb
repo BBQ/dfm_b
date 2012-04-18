@@ -37,12 +37,7 @@ class Like < ActiveRecord::Base
           review.save
 
           # Send Notification
-          dish_name = case review.rtype
-            when 'home_cooked' then review.home_cook.name
-            when 'delivery' then review.dish_delivery.name
-            else review.dish.name
-          end
-          Notification.send(user_id, 'like', review.user_id, dish_name, nil, nil, review.id)      
+          Notification.send(user_id, 'like', nil, review)      
           system "rake facebook:like LIKE_ID='#{l.id}' &"
           system "rake twitter:like LIKE_ID='#{l.id}' &"    
           

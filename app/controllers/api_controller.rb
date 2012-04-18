@@ -1506,11 +1506,11 @@ class ApiController < ApplicationController
           restaurant_name = r.restaurant.name
         end
                    
-        Notification.send(r.user_id, 'dishin', nil, dish_name, nil, nil, r.id)        
+        Notification.send(r.user_id, 'dishin', nil, r)        
 
         unless r.friends.blank?
-          Notification.send(r.user_id, 'tagged', nil, nil, restaurant_name, r.friends, r.id)
-          Notification.send(r.user_id, 'tagged_by_friend', nil, nil, restaurant_name, r.friends, r.id)
+          Notification.send(r.user_id, 'tagged', nil, r, restaurant_name, r.friends)
+          Notification.send(r.user_id, 'tagged_by_friend', nil, r, restaurant_name, r.friends)
         end
 
         unless r.photo.iphone_retina.url.blank?

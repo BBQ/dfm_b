@@ -208,7 +208,7 @@ class API < ActiveRecord::Base
       description.push("Business lunch: #{restaurant.businesslunch.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.businesslunch.blank?
       description.push("Wifi: #{restaurant.wifi.sub('0','no').sub('1','yes').sub('2','paid')}") unless restaurant.wifi.blank?
       
-      description.push("Chillum: #{restaurant.chillum.sub('0','no').sub('1','yes')}") unless restaurant.chillum.blank?
+      description.push("Shisha: #{restaurant.chillum.sub('0','no').sub('1','yes')}") unless restaurant.chillum.blank?
       description.push("Terrace: #{restaurant.terrace.to_s.sub('false','no').sub('true','yes')}") unless restaurant.terrace.blank?
       description.push("Credit Card: #{restaurant.cc.to_s.sub('false','no').sub('true','yes')}") unless restaurant.cc.blank?
       

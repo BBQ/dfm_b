@@ -22,13 +22,8 @@ class Comment < ActiveRecord::Base
       end
 
       # Send notifications
-      dish_name = case review.rtype
-        when 'home_cooked' then review.home_cook.name
-        when 'delivery' then review.dish_delivery.name
-        else review.dish.name
-      end
-      Notification.send(data[:user_id], 'comment', review.user_id, dish_name, nil, nil, review.id)
-      Notification.send(data[:user_id], 'comment_on_comment', review.user_id, dish_name, nil, nil, review.id)
+      Notification.send(data[:user_id], 'comment', nil, review)
+      Notification.send(data[:user_id], 'comment_on_comment', nil, review.id)
       
       system "rake facebook:comment COMMENT_ID='#{с.id}' &"
       system "rake twitter:comment COMMENT_ID='#{с.id}' &"
@@ -45,7 +40,11 @@ class Comment < ActiveRecord::Base
         nc.destroy
       end
       
-      if ncc = APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(comment.user_id,comment.review_id,'comment_on_comment')
+      if ncc_from = APN::Notification.find_by_user_id_from_and_review_id_and_notification_type(comment.user_id,comment.review_id,'comment_on_comment')
+        ncc.destroy
+      end
+      
+      if ncc_to = APN::Notification.find_by_user_id_to_and_review_id_and_notification_type(comment.user_id,comment.review_id,'comment_on_comment')
         ncc.destroy
       end
       
