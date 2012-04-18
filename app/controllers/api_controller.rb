@@ -377,7 +377,7 @@ class ApiController < ApplicationController
   def authenticate_user
     if params[:provider]
       
-      if params[:provider] == 'facebook' && params[:access_token] && params[:fb_valid_to]
+      if params[:provider] == 'facebook' && params[:access_token]
         session = User.authenticate_by_facebook(params[:access_token], params[:fb_valid_to]) 
       elsif params[:provider] == 'twitter' && params[:oauth_token] && params[:oauth_token_secret]
         session = User.authenticate_by_twitter(params[:oauth_token], params[:oauth_token_secret], params[:email])
