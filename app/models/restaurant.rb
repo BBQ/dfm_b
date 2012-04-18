@@ -46,20 +46,22 @@ class Restaurant < ActiveRecord::Base
          network_id = Network.create({:name => venue.name, :city =>venue.location.city}).id
        end
        
-       begin
-         Timezone::Configure.begin do |c|
-           c.username = 8.times.map{65.+(rand(25)).chr}.join
-         end
-         if timezone = Timezone::Zone.new(:latlon => [venue.location.lat.to_f,venue.location.lng.to_f])
-           time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
-         end
-       end
+      begin
+        Timezone::Configure.begin do |c|
+          c.username = 8.times.map{65.+(rand(25)).chr}.join
+        end
+          if timezone = Timezone::Zone.new(:latlon => [venue.location.lat.to_f,venue.location.lng.to_f])
+            time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
+          end
+      rescue
+      end
        
        begin
          if address = Geocoder.search("#{venue.location.lat.to_f},#{venue.location.lng.to_f}")       
            venue.location.address = address[0].address if venue.location.address.blank?
            venue.location.city = address[0].city if venue.location.city.blank?
          end
+       rescue
        end
 
        data = {
