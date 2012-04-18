@@ -209,19 +209,19 @@ class API < ActiveRecord::Base
       description.push("Wifi: #{restaurant.wifi.sub('0','no').sub('1','yes').sub('2','paid')}") unless restaurant.wifi.blank?
       
       description.push("Chillum: #{restaurant.chillum.sub('0','no').sub('1','yes')}") unless restaurant.chillum.blank?
-      description.push("Terrace: #{restaurant.terrace.to_s.sub('true','no').sub('false','yes')}") unless restaurant.terrace.blank?
-      description.push("Credit Card: #{restaurant.cc.to_s.sub('false','no').sub('false','yes')}") unless restaurant.cc.blank?
+      description.push("Terrace: #{restaurant.terrace.to_s.sub('false','no').sub('true','yes')}") unless restaurant.terrace.blank?
+      description.push("Credit Card: #{restaurant.cc.to_s.sub('false','no').sub('true','yes')}") unless restaurant.cc.blank?
       
       description.push("Good for kids: #{restaurant.good_for_kids.sub('0','no').sub('1','yes')}") unless restaurant.good_for_kids.blank?
       description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
       description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?
       
-      description.push("Takeaway: #{restaurant.takeaway.to_s.sub('true','no').sub('false','yes')}") unless restaurant.takeaway.blank?
+      description.push("Takeaway: #{restaurant.takeaway.to_s.sub('false','no').sub('true','yes')}") unless restaurant.takeaway.blank?
       description.push("Service: waiters") if restaurant.service == true
       description.push("Alcohol: #{restaurant.alcohol}") if restaurant.alcohol.to_i != 0
       
       description.push("Noise: #{restaurant.noise}") if restaurant.noise.to_i != 0
-      description.push("TV: #{restaurant.tv.sub('0','no').sub('1','yes')}") unless restaurant.tv.blank?
+      description.push("TV: #{restaurant.tv.to_s.sub('false','no').sub('true','yes')}") unless restaurant.tv.blank?
       description.push("Disabled: #{restaurant.disabled.sub('0','no').sub('1','yes')}") unless restaurant.disabled.blank?
       
       description.push("Attire: #{restaurant.attire}") if restaurant.attire.to_i != 0
