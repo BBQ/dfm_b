@@ -456,7 +456,7 @@ class ApiController < ApplicationController
           :types => DishType.format_for_api(timestamp),
           :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords.all,
           :restaurant_categories => timestamp ? rc.where('updated_at >= ?', timestamp) : rc.all,
-          :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
+          # :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
           :tags => Tag.get_all(timestamp),
           :error => $error
     }

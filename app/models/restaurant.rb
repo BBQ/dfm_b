@@ -53,6 +53,11 @@ class Restaurant < ActiveRecord::Base
        if timezone = Timezone::Zone.new(:latlon => [venue.location.lat.to_f,venue.location.lng.to_f])
          time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
        end
+       
+       if address = Geocoder.search("#{venue.location.lat.to_f},#{venue.location.lng.to_f}")       
+         venue.location.address = address[0].address if venue.location.address.blank?
+         venue.location.city = address[0].city if venue.location.city.blank?
+       end
 
        data = {
          :name => venue.name,

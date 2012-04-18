@@ -2,7 +2,7 @@
 
 def set_offset
   Timezone::Configure.begin do |c|
-    c.username = 8.times.map{65.+(rand(25)).chr}.join
+    c.username = 12.times.map{65.+(rand(25)).chr}.join
     p c.username
   end
   begin
