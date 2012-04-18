@@ -143,7 +143,7 @@ class Notification < ActiveRecord::Base
             notification.sound = 'default'   
             notification.alert = alert
             notification.notification_type = notification_type
-            notification.review_id = review_id ||= 0
+            notification.review_id = review ? review.id : 0
             notification.user_id_from = user_id_from
             notification.user_id_to = u[:user_id]
             notification.push_allow = push_allow
