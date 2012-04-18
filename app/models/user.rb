@@ -151,7 +151,7 @@ class User < ActiveRecord::Base
       :current_city => auth_result["location"] ? auth_result["location"]["name"] : '',
       :facebook_id => auth_result["id"],
       :fb_access_token => rest.access_token,
-      :fb_valid_to => Time.at(fb_valid_to.to_i) ||= nil
+      :fb_valid_to => Time.at(fb_valid_to.to_i)
     })
     
     Authentication.create({
