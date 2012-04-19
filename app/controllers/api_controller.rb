@@ -7,6 +7,12 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def logout
+    if Session.check_token(params[:user_id], params[:token])
+      Session.find_by_user_id(params[:user_id]).destroy
+    end
+  end
+  
   def add_to_favourite
     if Session.check_token(params[:user_id], params[:token]) && (params[:dish_id] || params[:restaurant_id])
       network_id = Network.find_by_restaurant_id(params[:restaurant_id]) unless params[:restaurant_id].blank?

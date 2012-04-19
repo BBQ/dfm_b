@@ -23,7 +23,7 @@ class Comment < ActiveRecord::Base
 
       # Send notifications
       Notification.send(data[:user_id], 'comment', nil, review)
-      Notification.send(data[:user_id], 'comment_on_comment', nil, review.id)
+      Notification.send(data[:user_id], 'comment_on_comment', nil, review)
       
       system "rake facebook:comment COMMENT_ID='#{с.id}' &"
       system "rake twitter:comment COMMENT_ID='#{с.id}' &"
