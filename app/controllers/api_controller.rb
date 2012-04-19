@@ -141,7 +141,7 @@ class ApiController < ApplicationController
           user.name = result["name"]
           user.gender = result["gender"]
           user.current_city = result["location"] ? result["location"]["name"] : ''
-          user.photo = nil
+          user.photo = "NULL"
           
           user.save
         end

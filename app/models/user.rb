@@ -48,17 +48,17 @@ class User < ActiveRecord::Base
       d.save
     end
     
-    Follower.where(:user_id => old_user.id).each do |d|
+    Follower.where("user_id = ? AND follow_user_id != ?", old_user.id, new_user.id).each do |d|
       d.user_id = new_user.id
       d.save
     end
     Follower.destroy_all(:user_id => old_user.id)
     
-    Follower.where(:follow_user_id => old_user.id).each do |d|
+    Follower.where("user_id != ? AND follow_user_id = ?", new_user.id, old_user.id).each do |d|
       d.follow_user_id = new_user.id
       d.save
     end
-    Follower.destroy_all(:user_id => old_user.id)
+    Follower.destroy_all(:follow_user_id => old_user.id)
     old_user.destroy
     
   end
