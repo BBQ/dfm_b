@@ -200,7 +200,7 @@ class API < ActiveRecord::Base
       description = []
       description.push(restaurant.description) unless restaurant.description.blank?
 
-      description.push("Wifi: #{restaurant.wifi.sub('0','no').sub('1','yes').sub('2','paid')}") unless restaurant.wifi.blank?
+      description.push("Wi-Fi: #{restaurant.wifi.sub('0','no').sub('1','yes').sub('2','paid')}") unless restaurant.wifi.blank?
       description.push("Accept Credit Card: #{restaurant.cc.to_s.sub('false','no').sub('true','yes')}") unless restaurant.cc.blank?
       description.push("Terrace: #{restaurant.terrace.to_s.sub('false','no').sub('true','yes')}") unless restaurant.terrace.blank?
 

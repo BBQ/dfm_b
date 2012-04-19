@@ -21,6 +21,36 @@ class User < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
+  def migrate(old_user, new_user)
+    
+    Review.where(:user_id => old_user.id).each do |d|
+      d.user_id = new_user.id
+      d.save
+    end
+  
+    Like.where(:user_id => old_user.id).each do |d|
+      d.user_id = new_user.id
+      d.save
+    end
+  
+    Comment.where(:user_id => old_user.id).each do |d|
+      d.user_id = new_user.id
+      d.save
+    end
+  
+    Follower.where(:user_id => old_user.id).each do |d|
+      d.user_id = new_user.id
+      d.save
+    end
+    
+    Follower.where(:follow_user_id => old_user.id).each do |d|
+      d.follow_user_id = new_user.id
+      d.save
+    end
+    old_user.destroy
+    
+  end
+  
   def self.put_friends(fb_f = nil, tw_f = nil)
     friends = []
     

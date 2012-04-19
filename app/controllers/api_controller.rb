@@ -122,90 +122,38 @@ class ApiController < ApplicationController
   end
   
   def add_social_network_account
+    
     if Session.check_token(params[:user_id], params[:token]) && (params[:access_token] || (params[:oauth_token] && params[:oauth_token_secret]))
       user = User.find_by_id(params[:user_id])
+      
+      unless params[:access_token].blank?
+        if rest = Koala::Facebook::GraphAndRestAPI.new(params[:access_token])
     
-      if params[:access_token] && user.facebook_id.blank?
-      
-        if session = User.authenticate_by_facebook(params[:access_token])          
+          result = rest.get_object("me")
+          user.facebook_id = result["id"]
+          user.fb_access_token = params[:access_token]
+    
           if old_user = User.find_by_facebook_id(result["id"])
-          
-            Review.where(:user_id => old_user.id).each do |d|
-              d.user_id = user.id
-              d.save
-            end
-          
-            Like.where(:user_id => old_user.id).each do |d|
-              d.user_id = user.id
-              d.save
-            end
-          
-            Comment.where(:user_id => old_user.id).each do |d|
-              d.user_id = user.id
-              d.save
-            end
-          
-            Follower.where(:user_id => old_user.id).each do |d|
-              d.user_id = user.id
-              d.save
-            end
-            
-            Follower.where(:follow_user_id => old_user.id).each do |d|
-              d.follow_user_id = user.id
-              d.save
-            end
-            
-            rest = Koala::Facebook::GraphAndRestAPI.new(params[:access_token])
-            result = rest.get_object("me")
-
-            user.facebook_id = result["id"]
-            user.save
-            
-            old_user.destroy    
+            User.migrate(old_user,user)
           end
-          
-        end  
-      
-      elsif params[:oauth_token] && params[:oauth_token_secret] && user.twitter_id.blank?
-     
-        if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])           
-          
-          if old_user = User.find_by_twitter_id(client.user.id)
-          
-            Review.where(:user_id => old_user.id).each do |d|
-              d.user_id = user.id
-              d.save
-            end
-          
-            Like.where(:user_id => old_user.id).each do |d|
-              d.user_id = user.id
-              d.save
-            end
-          
-            Comment.where(:user_id => old_user.id).each do |d|
-              d.user_id = user.id
-              d.save
-            end
-          
-            Follower.where(:user_id => old_user.id).each do |d|
-              d.user_id = user.id
-              d.save
-            end
-            
-            Follower.where(:follow_user_id => old_user.id).each do |d|
-              d.follow_user_id = user.id
-              d.save
-            end
-                        
-            user.twitter_id = client.user.id
-            user.save
-            
-            old_user.destroy
-          end
-          
+          user.save
         end
-        
       end
+      
+      if !params[:oauth_token_secret].blank? && !params[:oauth_token].blank?
+        if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])          
+    
+          user.oauth_token_secret = params[:oauth_token_secret]
+          user.oauth_token = params[:oauth_token]          
+          user.twitter_id = client.user.id
+    
+          if old_user = User.find_by_twitter_id(client.user.id)
+            User.migrate(old_user,user)
+          end
+          user.save
+        end
+      end
+      
     else
       $error = {:description => 'Params missing', :code => 8}
     end
