@@ -1,3 +1,11 @@
+desc "Delete dublicates in cuisines"
+task :del_dbl_cus => :environment do
+  RestaurantCuisine.group('restaurant_id, cuisine_id').having('count(*) > 1').each do |rc|
+    rc.destroy_all(:restaurant_id => rc.restaurant_id, :cuisine_id => rc.cuisine_id)
+    RestaurantCuisine.create(:restaurant_id => rc.restaurant_id, :cuisine_id => rc.cuisine_id)
+  end
+end
+
 desc "Find Reviews with unexisted restaurant_id and fix it by find first restaurant in Review Network"
 task :rev_rest_fix => :environment do
   Review.select([:id, :network_id, :restaurant_id, :rating]).where("restaurant_id IS NOT NULL && network_id IS NOT NULL").each do |rw|
