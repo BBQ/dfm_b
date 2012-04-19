@@ -17,8 +17,8 @@ class Comment < ActiveRecord::Base
       Notification.send(data[:user_id], 'comment', nil, review)
       Notification.send(data[:user_id], 'comment_on_comment', nil, review)
       
-      system "rake facebook:comment COMMENT_ID='#{с.id}' &"
-      system "rake twitter:comment COMMENT_ID='#{с.id}' &"
+      system "rake facebook:comment COMMENT_ID='#{comment.id}' &"
+      system "rake twitter:comment COMMENT_ID='#{comment.id}' &"
     else
       if dish = Dish.find_by_id(data[:review_id])
         unless dish.photo.blank?
