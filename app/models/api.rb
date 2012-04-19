@@ -229,7 +229,7 @@ class API < ActiveRecord::Base
       
       description.push("Good for meal: #{restaurant.good_for_meal}") if restaurant.good_for_meal.to_i  != 0
       description.push("Good for groups: #{restaurant.good_for_groups.to_s.sub('false','no').sub('true','yes')}") unless restaurant.good_for_groups.blank?      
-      description.push("Good For Kids: #{restaurant.good_for_kids.sub('0','no').sub('1','yes')}") unless restaurant.good_for_kids.blank?
+      description.push("Good For Kids: #{restaurant.good_for_kids.sub('1','yes')}") if restaurant.good_for_kids.to_i  != 0
       
       description.push("Cuisines: #{restaurant.cuisines.map{|k| k.name}.join(', ')}") unless restaurant.cuisines.blank?      
 
