@@ -132,17 +132,23 @@ class ApiController < ApplicationController
           
           if old_user = User.find_by_facebook_id(result["id"])
             User.migrate(old_user,user) 
+            user.fb_valid_to = old_user.fb_valid_to
           end
-          
-          user.facebook_id = result["id"]
+
           user.fb_access_token = params[:access_token]
+          user.facebook_id = result["id"]                    
+          user.email = result["email"]
+          user.name = result["name"]
+          user.gender = result["gender"]
+          user.current_city = result["location"] ? result["location"]["name"] : ''
+          
           user.save
         end
       end
       
       if !params[:oauth_token_secret].blank? && !params[:oauth_token].blank?
         if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])          
-          if old_user = User.find_by_twitter_id(client.user.id)
+          if old_user = User.find_by_twitter_id(client.user.id)                        
             User.migrate(old_user,user)
           end
           

@@ -37,9 +37,14 @@ class User < ActiveRecord::Base
       d.user_id = new_user.id
       d.save
     end
-  
-    Follower.where(:user_id => old_user.id).each do |d|
-      d.user_id = new_user.id
+    
+    Dish.where(:top_user_id => old_user.id).each do |d|
+      d.top_user_id = new_user.id
+      d.save
+    end
+    
+    Restaurant.where(:top_user_id => old_user.id).each do |d|
+      d.top_user_id = new_user.id
       d.save
     end
     
@@ -47,11 +52,13 @@ class User < ActiveRecord::Base
       d.user_id = new_user.id
       d.save
     end
+    Follower.destroy_all(:user_id => old_user.id)
     
     Follower.where(:follow_user_id => old_user.id).each do |d|
       d.follow_user_id = new_user.id
       d.save
     end
+    Follower.destroy_all(:user_id => old_user.id)
     old_user.destroy
     
   end
