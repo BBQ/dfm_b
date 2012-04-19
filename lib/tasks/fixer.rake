@@ -1,7 +1,7 @@
 desc "Delete dublicates in cuisines"
 task :del_dbl_cus => :environment do
   RestaurantCuisine.group('restaurant_id, cuisine_id').having('count(*) > 1').each do |rc|
-    RestaurantCuisine.destroy_all("restaurant_id = #{rc.restaurant_id} AND cuisine_id = #{rc.cuisine_id}")
+    RestaurantCuisine.delete_all("restaurant_id = #{rc.restaurant_id} AND cuisine_id = #{rc.cuisine_id}")
     p RestaurantCuisine.create(:restaurant_id => rc.restaurant_id, :cuisine_id => rc.cuisine_id)
   end
 end
