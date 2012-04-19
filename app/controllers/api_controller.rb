@@ -1325,14 +1325,15 @@ class ApiController < ApplicationController
   def comment_on_review
     if params[:comment] && params[:review_id] && Session.check_token(params[:user_id], params[:token])
       Comment.add({:user_id => params[:user_id], :review_id => params[:review_id], :text => params[:comment]}, params[:self_review])
+      return render :json => {
+        :error => $error,
+        :comment_id => c
+      }
     else
       return render :json => {
-        :error => {:description => 'Sorry, this feature will be enabled on monday.', :code => 8}
+        :error => {:description => 'Parameters missing', :code => 1330}
       }
     end
-    return render :json => {
-      :error => $error
-    }
   end
   
   def get_restaurant_menu

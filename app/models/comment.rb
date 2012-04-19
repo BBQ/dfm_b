@@ -9,7 +9,7 @@ class Comment < ActiveRecord::Base
     unless self_review.blank?
       if dish = Dish.find_by_id(data[:review_id])
         unless dish.photo.blank?
-          DishComment.create({:user_id => data[:user_id], :dish_id => data[:review_id], :text => data[:text]})
+          c = DishComment.create({:user_id => data[:user_id], :dish_id => data[:review_id], :text => data[:text]})
           dish.count_comments += 1
           dish.save
         end
@@ -27,8 +27,8 @@ class Comment < ActiveRecord::Base
       
       system "rake facebook:comment COMMENT_ID='#{с.id}' &"
       system "rake twitter:comment COMMENT_ID='#{с.id}' &"
-      
     end  
+    c ||= 0
   end
 
   def delete
