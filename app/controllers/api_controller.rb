@@ -128,9 +128,9 @@ class ApiController < ApplicationController
       
       unless params[:access_token].blank?
         if rest = Koala::Facebook::GraphAndRestAPI.new(params[:access_token])
+          result = rest.get_object("me")
           User.migrate(old_user,user) if old_user = User.find_by_facebook_id(result["id"])
           
-          result = rest.get_object("me")
           user.facebook_id = result["id"]
           user.fb_access_token = params[:access_token]
           user.save

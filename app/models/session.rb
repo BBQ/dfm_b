@@ -4,12 +4,13 @@ class Session < ActiveRecord::Base
     
   def self.get_token(user)
     md5 = Digest::MD5
-    session_token = md5.hexdigest(user.created_at.to_s).to_s
-    salt = (0...4).map{ ('A'..'Z').to_a[rand(26)]}.join
     
     if token = Session.find_by_user_id(user.id)
       real_token = "#{md5.hexdigest(token.salt)}#{md5.hexdigest(token.session_token)}"
     else
+      session_token = md5.hexdigest(user.created_at.to_s).to_s
+      salt = (0...4).map{ ('A'..'Z').to_a[rand(26)]}.join
+      
       Session.create({:user_id => user.id, :session_token => session_token, :salt => salt})    
       real_token = "#{md5.hexdigest(salt)}#{md5.hexdigest(session_token)}"
     end

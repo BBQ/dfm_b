@@ -43,6 +43,11 @@ class User < ActiveRecord::Base
       d.save
     end
     
+    Follower.where(:user_id => old_user.id).each do |d|
+      d.user_id = new_user.id
+      d.save
+    end
+    
     Follower.where(:follow_user_id => old_user.id).each do |d|
       d.follow_user_id = new_user.id
       d.save
