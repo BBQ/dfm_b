@@ -6,7 +6,6 @@ class Comment < ActiveRecord::Base
   default_scope order('id DESC')
   
   def self.add(data, self_review)
-    c = 0
     unless self_review.blank?
       if dish = Dish.find_by_id(data[:review_id])
         unless dish.photo.blank?
@@ -29,7 +28,7 @@ class Comment < ActiveRecord::Base
       system "rake facebook:comment COMMENT_ID='#{с.id}' &"
       system "rake twitter:comment COMMENT_ID='#{с.id}' &"
     end  
-    c
+    c ? c.id : 0
   end
 
   def delete
