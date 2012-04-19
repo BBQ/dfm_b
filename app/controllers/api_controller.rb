@@ -128,28 +128,22 @@ class ApiController < ApplicationController
       
       unless params[:access_token].blank?
         if rest = Koala::Facebook::GraphAndRestAPI.new(params[:access_token])
-    
+          User.migrate(old_user,user) if old_user = User.find_by_facebook_id(result["id"])
+          
           result = rest.get_object("me")
           user.facebook_id = result["id"]
           user.fb_access_token = params[:access_token]
-    
-          if old_user = User.find_by_facebook_id(result["id"])
-            User.migrate(old_user,user)
-          end
           user.save
         end
       end
       
       if !params[:oauth_token_secret].blank? && !params[:oauth_token].blank?
         if client = Twitter::Client.new(:oauth_token => params[:oauth_token], :oauth_token_secret => params[:oauth_token_secret])          
-    
+          User.migrate(old_user,user) if old_user = User.find_by_twitter_id(client.user.id)
+          
           user.oauth_token_secret = params[:oauth_token_secret]
           user.oauth_token = params[:oauth_token]          
           user.twitter_id = client.user.id
-    
-          if old_user = User.find_by_twitter_id(client.user.id)
-            User.migrate(old_user,user)
-          end
           user.save
         end
       end
