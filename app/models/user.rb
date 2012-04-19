@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
-  def migrate(old_user, new_user)
+  def self.migrate(old_user, new_user)
     
     Review.where(:user_id => old_user.id).each do |d|
       d.user_id = new_user.id
