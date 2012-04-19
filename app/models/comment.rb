@@ -6,17 +6,9 @@ class Comment < ActiveRecord::Base
   default_scope order('id DESC')
   
   def self.add(data, self_review)
-    unless self_review.blank?
-      if dish = Dish.find_by_id(data[:review_id])
-        unless dish.photo.blank?
-          c = DishComment.create({:user_id => data[:user_id], :dish_id => data[:review_id], :text => data[:text]})
-          dish.count_comments += 1
-          dish.save
-        end
-      end
-    else
+    if self_review.blank?
       if review = Review.find_by_id(data[:review_id])
-        с = Comment.create(data)
+        comment = Comment.create(data)
         review.count_comments += 1
         review.save
       end
@@ -27,8 +19,16 @@ class Comment < ActiveRecord::Base
       
       system "rake facebook:comment COMMENT_ID='#{с.id}' &"
       system "rake twitter:comment COMMENT_ID='#{с.id}' &"
+    else
+      if dish = Dish.find_by_id(data[:review_id])
+        unless dish.photo.blank?
+          comment = DishComment.create(:user_id => data[:user_id], :dish_id => data[:review_id], :text => data[:text])
+          dish.count_comments += 1
+          dish.save
+        end
+      end
     end  
-    c ? c.id : 0
+    comment ? comment.id : 0
   end
 
   def delete

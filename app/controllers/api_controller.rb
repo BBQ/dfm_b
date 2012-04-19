@@ -1324,10 +1324,10 @@ class ApiController < ApplicationController
   
   def comment_on_review
     if params[:comment] && params[:review_id] && Session.check_token(params[:user_id], params[:token])
-      c = Comment.add({:user_id => params[:user_id], :review_id => params[:review_id], :text => params[:comment]}, params[:self_review])
+      comment_id = Comment.add({:user_id => params[:user_id], :review_id => params[:review_id], :text => params[:comment]}, params[:self_review])
       return render :json => {
         :error => $error,
-        :comment_id => c
+        :comment_id => comment_id
       }
     else
       return render :json => {
