@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
   end
   
   has_many :authentications, :dependent => :destroy
+  has_many :user_preference, :dependent => :destroy
   accepts_nested_attributes_for :authentications
 
   # validates_confirmation_of :password
@@ -13,7 +14,6 @@ class User < ActiveRecord::Base
   # validates_presence_of :email
   validates_uniqueness_of :email, :allow_nil => true, :allow_blank => true
   
-  has_many :user_preferences
   has_many :reviews
   has_many :comments
   has_many :likes
