@@ -11,6 +11,7 @@ class ApiController < ApplicationController
     if Session.check_token(params[:user_id], params[:token])
       Session.find_by_user_id(params[:user_id]).destroy
     end
+    return render :json => {:error => $error}
   end
   
   def add_to_favourite
@@ -27,6 +28,9 @@ class ApiController < ApplicationController
         :network_id => network_id ||= nil
       )
     end
+    return render :json => {
+      :error => $error
+    }
   end
   
   def set_user_preferences
