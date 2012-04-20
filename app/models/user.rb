@@ -76,7 +76,7 @@ class User < ActiveRecord::Base
   end
   
   def user_photo
-    if photo.blank?
+    if photo.blank? || photo.nil?
       ph = "http://graph.facebook.com/#{facebook_id}/picture?type=square" unless facebook_id.blank?
     else
       ph = "http://test.dish.fm#{photo.thumb.url}"

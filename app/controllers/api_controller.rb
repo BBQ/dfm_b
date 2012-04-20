@@ -8,8 +8,11 @@ class ApiController < ApplicationController
   end
   
   def logout
-    if Session.check_token(params[:user_id], params[:token])
-      Session.find_by_user_id(params[:user_id]).destroy
+    if Session.check_token(params[:user_id], params[:token]) && params[:push_token] 
+      if device = APN::Device.find_by_push_token(params[:push_token])
+        device.active = 0
+        device.save
+      end
     end
     return render :json => {:error => $error}
   end
@@ -184,23 +187,23 @@ class ApiController < ApplicationController
 
         rest.get_connections("me", "friends").each do |f|
           if user = User.select([:id, :name, :photo, :facebook_id]).find_by_facebook_id(f['id'])
-            data.push({
+            data.push(
               :id => user.id,
               :name => user.name,
               :photo => user.user_photo,
               :use => 1,
               :twitter => 0,
               :facebook => user.facebook_id.to_s
-            })
+            )
           else
-            data.push({
+            data.push(
               :id => 0,
               :name => f['name'],
               :photo => "http://graph.facebook.com/#{f['id']}/picture?type=square",
               :use => 0,
               :twitter => 0,
               :facebook => f['id']
-            })
+            )
           end
         end
       end
@@ -262,8 +265,8 @@ class ApiController < ApplicationController
   end
   
   def add_push_token
-    if params[:token]
-      APN::Device.create(:token => params[:token]) unless APN::Device.where(:token => params[:token]).first
+    if params[:push_token]
+      APN::Device.create(:token => params[:push_token]) unless APN::Device.where(:token => params[:push_token]).first
     else
       $error = {:description => 'Params missing', :code => 8}
     end
