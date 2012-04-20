@@ -22,44 +22,24 @@ class User < ActiveRecord::Base
   mount_uploader :photo, ImageUploader
   
   def self.migrate(old_user, new_user)
-    
-    Review.where(:user_id => old_user.id).each do |d|
-      d.user_id = new_user.id
-      d.save
-    end
+
+    Review.where(:user_id => old_user.id).update_all(:user_id => new_user.id)
   
-    Like.where(:user_id => old_user.id).each do |d|
-      d.user_id = new_user.id
-      d.save
-    end
-  
-    Comment.where(:user_id => old_user.id).each do |d|
-      d.user_id = new_user.id
-      d.save
-    end
+    Like.where(:user_id => old_user.id).update_all(:user_id => new_user.id)
+    Comment.where(:user_id => old_user.id).update_all(:user_id => new_user.id)
     
-    Dish.where(:top_user_id => old_user.id).each do |d|
-      d.top_user_id = new_user.id
-      d.save
-    end
+    Dish.where(:top_user_id => old_user.id).update_all(:top_user_id => new_user.id)
+    Restaurant.where(:top_user_id => old_user.id).update_all(:top_user_id => new_user.id)
     
-    Restaurant.where(:top_user_id => old_user.id).each do |d|
-      d.top_user_id = new_user.id
-      d.save
-    end
-    
-    
-    Follower.where("user_id = ? AND follow_user_id != ?", old_user.id, new_user.id).each do |d|
-      d.user_id = new_user.id
-      d.save
-    end
+    Follower.where("user_id = ? AND follow_user_id != ?", old_user.id, new_user.id).update_all(:user_id => new_user.id)
     Follower.destroy_all(:user_id => old_user.id)
     
-    Follower.where("user_id != ? AND follow_user_id = ?", new_user.id, old_user.id).each do |d|
-      d.follow_user_id = new_user.id
-      d.save
-    end
+    Follower.where("user_id != ? AND follow_user_id = ?", new_user.id, old_user.id).update_all(:follow_user_id => new_user.id)
     Follower.destroy_all(:follow_user_id => old_user.id)
+    
+    APN::Notification.where(:user_id_from => old_user.id).update_all(:user_id_from => new_user.id)
+    APN::Notification.where(:user_id_to => old_user.id).update_all(:user_id_to => new_user.id)
+    
     old_user.destroy
     
   end
