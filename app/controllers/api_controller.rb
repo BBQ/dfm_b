@@ -9,7 +9,7 @@ class ApiController < ApplicationController
   
   def logout
     if Session.check_token(params[:user_id], params[:token]) && params[:push_token] 
-      if device = APN::Device.find_by_push_token(params[:push_token])
+      if device = APN::Device.find_by_token_user_di(params[:push_token],params[:user_id])
         device.active = 0
         device.save
       end
