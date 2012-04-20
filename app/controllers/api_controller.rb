@@ -72,13 +72,6 @@ class ApiController < ApplicationController
       end
       params[:restaurant].delete(:category)
       
-      # if n = Network.find_by_name(params[:restaurant][:name])
-      #   params[:restaurant][:network_id] = n.id
-      # else
-      #   n = Network.create({:name => params[:restaurant][:name], :city => params[:restaurant][:city]})
-      #   params[:restaurant][:network_id] = n.id
-      # end
-      
       n = Network.create({:name => params[:restaurant][:name], :city => params[:restaurant][:city]})
       params[:restaurant][:network_id] = n.id
       
@@ -377,33 +370,23 @@ class ApiController < ApplicationController
   end
   
   def follow_user
-    if !params[:user_id].blank? && !params[:token].blank? && !params[:follow_user_id].blank?
-        if Session.check_token(params[:user_id], params[:token]) && params[:user_id] != params[:follow_user_id]
-            follow_user_ids = params[:follow_user_id].split(',')
+    if Session.check_token(params[:user_id], params[:token]) && !params[:follow_user_id].blank?
+      
+      params[:follow_user_id].split(',').each do |fu|
+        if fu != params[:user_id]
+        
+          if follower = Follower.find_by_user_id_and_follow_user_id(params[:user_id], fu)
+            follower.destroy
+          else
+            Follower.create({:user_id => params[:user_id], :follow_user_id => fu})
+            Notification.send(params[:user_id], 'following', fu)
+          end
           
-            if follow_user_ids.count == 1 && follower = Follower.find_by_user_id_and_follow_user_id(params[:user_id], params[:follow_user_id])
-              follower.destroy
-              status = 'unfollow'
-            else
-              follow_user_ids.each do |fu|
-                if user = User.find_by_id(fu)
-                  Follower.create({:user_id => params[:user_id], :follow_user_id => fu})
-                  Notification.send(params[:user_id], 'following', fu)
-                  status = 'follow'
-                else
-                  $error = {:description => 'user or follower not found', :code => 5}
-                end
-              end
-
-            end
         end
+      end
+      
     end
-    
-    return render :json => {
-      :status => status ||= nil,
-      :error => $error
-    }
-    
+    return render :json => {:error => $error}
   end
   
   def get_dish
