@@ -166,8 +166,7 @@ class User < ActiveRecord::Base
   
   def self.create_user_from_facebook(rest, fb_valid_to = nil)
     auth_result = rest.get_object("me")
-    
-    user = User.create({
+    data = {
       :email => auth_result["email"] , 
       :name => auth_result["name"], 
       :gender => auth_result["gender"],
@@ -175,26 +174,29 @@ class User < ActiveRecord::Base
       :facebook_id => auth_result["id"],
       :fb_access_token => rest.access_token,
       :fb_valid_to => Time.at(fb_valid_to.to_i)
-    })
+    }
     
-    Authentication.create({
-      :user_id => user.id,
-      :provider => 'facebook',
-      :uid => auth_result["id"], 
-    })    
-    
-    UserPreference.create({:user_id => user.id})
-    
-    rest.get_connections("me", "friends").each do |f|
-      if user_friend = User.find_by_facebook_id(f['id'])
-        # Notification.send(user.id, 'new_fb_user', user_friend.id)
-        if Follower.create({:user_id => user.id, :follow_user_id => user_friend.id})
-          Notification.send(user.id, 'following', user_friend.id)
+    if user = User.create(data)
+      
+      Authentication.create({
+        :user_id => user.id,
+        :provider => 'facebook',
+        :uid => auth_result["id"], 
+      })  
+      
+      UserPreference.create(:user_id => user.id)
+      
+      rest.get_connections("me", "friends").each do |f|
+        if user_friend = User.find_by_facebook_id(f['id'])
+          # Notification.send(user.id, 'new_fb_user', user_friend.id)
+          if Follower.create({:user_id => user.id, :follow_user_id => user_friend.id})
+            Notification.send(user.id, 'following', user_friend.id)
+          end
         end
       end
+      
+      user
     end
-    
-    user
   end
     
   def get_user_fb_token(code)
