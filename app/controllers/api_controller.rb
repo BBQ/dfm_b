@@ -353,10 +353,12 @@ class ApiController < ApplicationController
       
       #Add push token
       if params[:push_token] && session
-        if push_token = APN::Device.where(:token => params[:push_token]).first
+        if push_token = APN::Device.find_by_token(params[:push_token])
           if push_token.user_id == 0
             push_token.user_id = session[:user_id]
             push_token.save
+          elsif push_token.user_id != session[:user_id]
+            APN::Device.create({:token => params[:push_token], :user_id => session[:user_id]})
           end
         else
           APN::Device.create({:token => params[:push_token], :user_id => session[:user_id]})
