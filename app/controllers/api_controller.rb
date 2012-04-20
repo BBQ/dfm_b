@@ -350,7 +350,7 @@ class ApiController < ApplicationController
           if push_token.user_id == 0
             push_token.user_id = session[:user_id]
             push_token.save
-          elsif push_token.user_id != session[:user_id]
+          elsif push_token.user_id != session[:user_id].to_i
             APN::Device.create({:token => params[:push_token], :user_id => session[:user_id]})
           end
         else
