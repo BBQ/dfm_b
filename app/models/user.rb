@@ -40,6 +40,8 @@ class User < ActiveRecord::Base
     APN::Notification.where(:user_id_from => old_user.id).update_all(:user_id_from => new_user.id)
     APN::Notification.where(:user_id_to => old_user.id).update_all(:user_id_to => new_user.id)
     
+    APN::Device.where(:user_id => old_user.id).update_all(:user_id => new_user.id)
+    
     old_user.destroy
     
   end

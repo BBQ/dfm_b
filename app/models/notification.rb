@@ -106,13 +106,6 @@ class Notification < ActiveRecord::Base
         
         user_to_array.each do |u|
             
-            if device = APN::Device.find_by_user_id(u[:user_id])
-              send = 1
-            else
-              device = APN::Device.new
-              device.id = 0
-            end
-            
             pref = UserPreference.find_by_user_id(u[:user_id])
             push_allow = 1
             email_allow = 1
@@ -137,20 +130,23 @@ class Notification < ActiveRecord::Base
               email_allow = 0 if pref.fb_friend_email == false                                                    
             end
 
-            notification = APN::Notification.new
-            notification.device = device
-            notification.badge = u[:badge] + 1  
-            notification.sound = 'default'   
-            notification.alert = alert
-            notification.notification_type = notification_type
-            notification.review_id = review ? review.id : 0
-            notification.user_id_from = user_id_from
-            notification.user_id_to = u[:user_id]
-            notification.push_allow = push_allow
-            notification.email_allow = email_allow
-            notification.sent_at = Time.now.to_s(:db) if push_allow == 0
-            notification.mailed_at = Time.now.to_s(:db) if email_allow == 0              
-            notification.save
+            APN::Device.where(:user_id => u[:user_id]).each do |device|
+              notification = APN::Notification.new
+              notification.device = device
+              notification.badge = u[:badge] + 1  
+              notification.sound = 'default'   
+              notification.alert = alert
+              notification.notification_type = notification_type
+              notification.review_id = review ? review.id : 0
+              notification.user_id_from = user_id_from
+              notification.user_id_to = u[:user_id]
+              notification.push_allow = push_allow
+              notification.email_allow = email_allow
+              notification.sent_at = Time.now.to_s(:db) if push_allow == 0
+              notification.mailed_at = Time.now.to_s(:db) if email_allow == 0              
+              notification.save
+              send = 1
+            end
       
         end
   
