@@ -34,7 +34,7 @@ class User < ActiveRecord::Base
     followers = Follower.where("user_id = ? AND follow_user_id != ?", old_user.id, new_user.id)
     
     ids = Follower.select(:follow_user_id).where(:user_id => new_user.id).collect{|x| x.follow_user_id}      
-    followers.where("follow_user_id NOT IN (#{ids.join(',')})") if ids.count > 0 
+    followers.where("follow_user_id NOT IN (#{ids.join(',')})") if ids.any?
     
     followers.update_all(:user_id => new_user.id)
     Follower.destroy_all(:user_id => old_user.id)
@@ -52,8 +52,7 @@ class User < ActiveRecord::Base
     
     APN::Device.where(:user_id => old_user.id).update_all(:user_id => new_user.id)
     
-    old_user.destroy
-    
+    old_user.destroy  
   end
   
   def self.put_friends(fb_f = nil, tw_f = nil)
