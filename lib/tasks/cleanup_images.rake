@@ -70,7 +70,7 @@ task :cup_images => :environment do
   
   restaurant_images = directory + 'restaurant_image/photo/'
   RestaurantImage.all.each do |i|
-    if Dir["#{restaurant_images}#{i.id}"].nil?
+    if Dir["#{restaurant_images}#{i.id}"].blank?
       p i.id
       i.destroy 
     end
