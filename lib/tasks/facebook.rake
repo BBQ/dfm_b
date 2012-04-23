@@ -81,14 +81,14 @@ namespace :facebook do
           graph = Koala::Facebook::API.new(u.fb_access_token)
 
           if r.text.blank?
-            r.text = case r.rating
+            text = case r.rating
               when 0..2.99 then "Survived"
               when 3..3.99 then "Ate"
               when 4..5 then "Enjoyed"
             end
-            dish_text = "#{r.text}"
+            dish_text = "#{text}"
           else
-            dish_text = "#{r.text} -"
+            dish_text = "#{text} -"
           end
           
           if r.rtype == 'home_cooked'
