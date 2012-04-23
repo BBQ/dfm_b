@@ -34,7 +34,7 @@ class User < ActiveRecord::Base
     following = Follower.where("user_id = ? AND follow_user_id != ?", old_user.id, new_user.id)
     
     ids = Follower.select(:follow_user_id).where(:user_id => new_user.id).collect{|x| x.follow_user_id}      
-    following.where("follow_user_id NOT IN (#{ids.join(',')})") if ids.any?
+    following = following.where("follow_user_id NOT IN (#{ids.join(',')})") if ids.any?
     
     following.update_all(:user_id => new_user.id)
     Follower.destroy_all(:user_id => old_user.id)
@@ -42,7 +42,7 @@ class User < ActiveRecord::Base
     followers = Follower.where("follow_user_id = ? AND user_id != ?", old_user.id, new_user.id)
 
     ids = Follower.select(:user_id).where(:follow_user_id => new_user.id).collect{|x| x.user_id} 
-    followers.where("user_id NOT IN (#{ids.join(',')})") if ids.any?
+    followers = followers.where("user_id NOT IN (#{ids.join(',')})") if ids.any?
     
     followers.update_all(:follow_user_id => new_user.id)
     Follower.destroy_all(:follow_user_id => old_user.id)
