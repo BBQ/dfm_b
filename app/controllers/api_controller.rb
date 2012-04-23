@@ -344,6 +344,12 @@ class ApiController < ApplicationController
         session = User.authenticate_by_twitter(params[:oauth_token], params[:oauth_token_secret], params[:email])
       end
       
+      #Alow send pushes on login
+      if params[:push_token] && session && device = APN::Device.find_by_token_and_user_id(params[:push_token], session[:user_id])
+        device.active = 1
+        device.save
+      end
+      
       #Add push token
       if params[:push_token] && session && !APN::Device.find_by_token_and_user_id(params[:push_token], session[:user_id])
         push_token = APN::Device.find_by_token(params[:push_token])
@@ -354,8 +360,8 @@ class ApiController < ApplicationController
         else
           APN::Device.create(:token => params[:push_token], :user_id => session[:user_id])
         end
-        
       end
+      
       user_preferences = UserPreference.for_user.find_by_user_id session[:user_id] if session
     else
       $error = {:description => 'Parameters missing', :code => 8}
