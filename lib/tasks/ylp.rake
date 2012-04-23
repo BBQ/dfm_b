@@ -387,13 +387,13 @@ end
 def go_sub(url)
   p url
   
-  proxy = 'http://69.195.255.63:7777'
-  username = 'asurin'
-  password = 'Pirai3tooBie6Roo'
+  proxy = 'http://183.178.248.167:8909'
+  # username = 'asurin'
+  # password = 'Pirai3tooBie6Roo'
 
-  if src = open(url.gsub("/search?", "/search/snippet?"))
+  # if src = open(url.gsub("/search?", "/search/snippet?"))
   
-  # if src = open(url.gsub("/search?", "/search/snippet?"), :proxy_http_basic_authentication => [URI.parse(proxy), username, password])
+  if src = open(url.gsub("/search?", "/search/snippet?"), :proxy => proxy) # :proxy_http_basic_authentication => [URI.parse(proxy), username, password]
     json = JSON.parse(src.read)
   
     json['events']['search.map.overlays'].each do |ds|
@@ -403,9 +403,9 @@ def go_sub(url)
           p "Existed: #{ds['respos']}: #{ds['url']}"
           
         else
-          doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}"))
+          # doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}"))
           
-          # doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}", :proxy_http_basic_authentication => [URI.parse(proxy), username, password]))
+          doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}", :proxy => proxy))
           data = {}  
           category = []
           
