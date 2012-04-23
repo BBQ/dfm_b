@@ -4,25 +4,25 @@ task :cup_images => :environment do
   directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/public/uploads/'
   require 'fileutils'
   
-  dishes = directory + 'dish/photo/'
-  Dir[dishes + '*'].each do |dish|
-    if d = Dish.find_by_id(dish.sub(dishes, ''))
-      p d.name
-      fies_in_folder = Dir[dish + '/*']
-      if fies_in_folder.count > 7
-        fies_in_folder.each do |f|
-          photo = File.basename(d.photo.url)[0, File.basename(d.photo.url).index('.')]
-          unless File.basename(f).to_s.index(photo)
-            p f 
-            FileUtils.rm_rf f
-          end
-        end
-      end
-    else
-      p dish
-      FileUtils.rm_rf dish
-    end
-  end
+  # dishes = directory + 'dish/photo/'
+  # Dir[dishes + '*'].each do |dish|
+  #   if d = Dish.find_by_id(dish.sub(dishes, ''))
+  #     p d.name
+  #     fies_in_folder = Dir[dish + '/*']
+  #     if fies_in_folder.count > 7
+  #       fies_in_folder.each do |f|
+  #         photo = File.basename(d.photo.url)[0, File.basename(d.photo.url).index('.')]
+  #         unless File.basename(f).to_s.index(photo)
+  #           p f 
+  #           FileUtils.rm_rf f
+  #         end
+  #       end
+  #     end
+  #   else
+  #     p dish
+  #     FileUtils.rm_rf dish
+  #   end
+  # end
   
   # reviews = directory + 'review/photo/'
   #  Dir[reviews + '*'].each do |review|

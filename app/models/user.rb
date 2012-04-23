@@ -25,9 +25,16 @@ class User < ActiveRecord::Base
 
     Review.where(:user_id => old_user.id).update_all(:user_id => new_user.id)
   
-    Like.where(:user_id => old_user.id).update_all(:user_id => new_user.id)
-    Comment.where(:user_id => old_user.id).update_all(:user_id => new_user.id)
+    likes = Like.where(:user_id => old_user.id)
     
+    ids = likes.select(:review_id).where(:user_id => new_user.id).collect{|x| x.review_id}      
+    likes = likes.where("review_id NOT IN (#{ids.join(',')})") if ids.any?
+    
+    likes.update_all(:user_id => new_user.id)
+    Like.destroy_all(:user_id => old_user.id)
+    
+    Comment.where(:user_id => old_user.id).update_all(:user_id => new_user.id)
+        
     Dish.where(:top_user_id => old_user.id).update_all(:top_user_id => new_user.id)
     Restaurant.where(:top_user_id => old_user.id).update_all(:top_user_id => new_user.id)
         

@@ -833,7 +833,7 @@ class ApiController < ApplicationController
         if params[:open_now].to_i == 1
           wday = Date.today.strftime("%a").downcase
           now = Time.now.utc.strftime("%H%M")
-          open_now = "#{now} + REPLACE(time_zone_offset, ':', '') BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', '')"
+          open_now = "#{now} + REPLACE(time_zone_offset, ':', '') BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(SUBSTRING(#{wday},7,11), ':', '')"
       
           if now.to_i < 1000
             now24 = now.to_i + 2400
