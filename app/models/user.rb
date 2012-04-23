@@ -31,18 +31,18 @@ class User < ActiveRecord::Base
     Dish.where(:top_user_id => old_user.id).update_all(:top_user_id => new_user.id)
     Restaurant.where(:top_user_id => old_user.id).update_all(:top_user_id => new_user.id)
         
-    followers = Follower.where("user_id = ? AND follow_user_id != ?", old_user.id, new_user.id)
+    following = Follower.where("user_id = ? AND follow_user_id != ?", old_user.id, new_user.id)
     
     ids = Follower.select(:follow_user_id).where(:user_id => new_user.id).collect{|x| x.follow_user_id}      
-    followers.where("follow_user_id NOT IN (#{ids.join(',')})") if ids.any?
+    following.where("follow_user_id NOT IN (#{ids.join(',')})") if ids.any?
     
-    followers.update_all(:user_id => new_user.id)
+    following.update_all(:user_id => new_user.id)
     Follower.destroy_all(:user_id => old_user.id)
     
     followers = Follower.where("follow_user_id = ? AND user_id != ?", old_user.id, new_user.id)
 
     ids = Follower.select(:user_id).where(:follow_user_id => new_user.id).collect{|x| x.user_id} 
-    followers.where("user_id NOT IN (#{ids.join(',')})") if ids.count > 0 
+    followers.where("user_id NOT IN (#{ids.join(',')})") if ids.any?
     
     followers.update_all(:follow_user_id => new_user.id)
     Follower.destroy_all(:follow_user_id => old_user.id)
@@ -50,7 +50,12 @@ class User < ActiveRecord::Base
     APN::Notification.where(:user_id_from => old_user.id).update_all(:user_id_from => new_user.id)
     APN::Notification.where(:user_id_to => old_user.id).update_all(:user_id_to => new_user.id)
     
-    APN::Device.where(:user_id => old_user.id).update_all(:user_id => new_user.id)
+    APN::Device.where(:user_id => new_user.id).each do |d|
+      if old = APN::Device.where("user_id = ? && token = ", old_user.id, d.token)
+        old.destroy
+      end
+    end
+    APN::Device.where("user_id = ?", old_user.id).update_all(:user_id => new_user.id)
     
     old_user.destroy  
   end
