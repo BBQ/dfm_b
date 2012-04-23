@@ -81,14 +81,14 @@ namespace :facebook do
           graph = Koala::Facebook::API.new(u.fb_access_token)
 
           if r.text.blank?
-            text = case r.rating
+            r.text = case r.rating
               when 0..2.99 then "Survived"
               when 3..3.99 then "Ate"
               when 4..5 then "Enjoyed"
             end
-            dish_text = "#{text}"
+            dish_text = "#{r.text}"
           else
-            dish_text = "#{text} -"
+            dish_text = "#{r.text} -"
           end
           
           if r.rtype == 'home_cooked'
@@ -112,8 +112,9 @@ namespace :facebook do
 
           if picture = graph.put_picture("http://test.dish.fm/#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
             
-            r.facebook_share_id = picture['id']
-            r.save
+            rev = Review.find_by_id(review_id) 
+            rev.facebook_share_id = picture['id']
+            rev.save
             
             tags = []
             if r.friends

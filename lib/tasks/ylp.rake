@@ -387,80 +387,101 @@ end
 def go_sub(url)
   p url
   
-  proxy = 'http://183.178.248.167:8909'
+  # url.split('&').each do |param|
+  #   set = param.scan /(.+)=(.+)/
+  #   
+  #   find_loc = set[0][1] if set[0][0] == 'find_loc'
+  #   cflt = set[0][1] if set[0][0] == 'cflt'
+  #   
+  #   if cflt && find_loc
+  #     if data = ParserStat.find_by_cflt_and_find_loc(cflt, find_loc)
+  #       url = data.url
+  #     end
+  #   elsif find_loc
+  #     if data = ParserStat.find_by_find_loc(find_loc)
+  #       url = data.url
+  #     end
+  #   end
+  # 
+  # end
+  
+  proxy = 'http://128.208.04.198:2124'
   # username = 'asurin'
   # password = 'Pirai3tooBie6Roo'
 
   # if src = open(url.gsub("/search?", "/search/snippet?"))
   
-  if src = open(url.gsub("/search?", "/search/snippet?"), :proxy => proxy) # :proxy_http_basic_authentication => [URI.parse(proxy), username, password]
-    json = JSON.parse(src.read)
+  begin
+    if src = open(url.gsub("/search?", "/search/snippet?"), :proxy => proxy) # :proxy_http_basic_authentication => [URI.parse(proxy), username, password]
+      json = JSON.parse(src.read)
   
-    json['events']['search.map.overlays'].each do |ds|
-      if ds['respos'].to_i > 0
+      json['events']['search.map.overlays'].each do |ds|
+        if ds['respos'].to_i > 0
         
-        if YlpRestaurant.select(:id).find_by_ylp_uri(ds['url'])
-          p "Existed: #{ds['respos']}: #{ds['url']}"
+          if YlpRestaurant.select(:id).find_by_ylp_uri(ds['url'])
+            p "Existed: #{ds['respos']}: #{ds['url']}"
           
-        else
-          # doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}"))
+          else
+            # doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}"))
           
-          doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}", :proxy => proxy))
-          data = {}  
-          category = []
+            doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}", :proxy => proxy))
+            data = {}  
+            category = []
           
-          unless doc.css('span#cat_display a').blank? 
-            doc.css('span#cat_display a').each do |c|
-              category.push(c.text.strip)
+            unless doc.css('span#cat_display a').blank? 
+              doc.css('span#cat_display a').each do |c|
+                category.push(c.text.strip)
+              end
             end
-          end
 
-          data[:name] = doc.css('h1.fn.org')[0].text unless doc.css('h1.fn.org').blank?
-          data[:ylp_uri] = ds['url']
-          data[:lat] = ds['lat']
-          data[:lng] = ds['lng']       
-          data[:rating] = doc.css('img.rating.average')[0]["title"][0..2] unless doc.css('img.rating.average').blank? 
+            data[:name] = doc.css('h1.fn.org')[0].text unless doc.css('h1.fn.org').blank?
+            data[:ylp_uri] = ds['url']
+            data[:lat] = ds['lat']
+            data[:lng] = ds['lng']       
+            data[:rating] = doc.css('img.rating.average')[0]["title"][0..2] unless doc.css('img.rating.average').blank? 
       
-          data[:review_count] = doc.css('span.review-count')[0].text.to_i unless doc.css('span.review-count').blank? 
-          data[:category] = category.join(',') if category.count > 0 
-          data[:city] = doc.css('span.locality')[0].text if !doc.css('span.locality').blank?
-          data[:address] = "#{doc.css('span.street-address')[0].text}, #{doc.css('span.locality')[0].text}, #{doc.css('span.region')[0].text}" if !doc.css('span.street-address').blank? && !doc.css('span.locality').blank? && !doc.css('span.region').blank?
+            data[:review_count] = doc.css('span.review-count')[0].text.to_i unless doc.css('span.review-count').blank? 
+            data[:category] = category.join(',') if category.count > 0 
+            data[:city] = doc.css('span.locality')[0].text if !doc.css('span.locality').blank?
+            data[:address] = "#{doc.css('span.street-address')[0].text}, #{doc.css('span.locality')[0].text}, #{doc.css('span.region')[0].text}" if !doc.css('span.street-address').blank? && !doc.css('span.locality').blank? && !doc.css('span.region').blank?
       
-          data[:phone] = doc.css('span#bizPhone')[0].text unless doc.css('span#bizPhone').blank?
-          data[:web] = doc.css('div#bizUrl a')[0].text unless doc.css('div#bizUrl a').blank?
+            data[:phone] = doc.css('span#bizPhone')[0].text unless doc.css('span#bizPhone').blank?
+            data[:web] = doc.css('div#bizUrl a')[0].text unless doc.css('div#bizUrl a').blank?
       
-          data[:transit] = doc.css('dd.attr-transit')[0].text.strip unless doc.css('dd.attr-transit').blank?
-          data[:hours] = doc.css('dd.attr-BusinessHours')[0].text unless doc.css('dd.attr-BusinessHours').blank?
-          data[:parking] = doc.css('dd.attr-BusinessParking')[0].text unless doc.css('dd.attr-BusinessParking').blank?
-          data[:cc] = doc.css('dd.attr-BusinessAcceptsCreditCards')[0].text unless doc.css('dd.attr-BusinessAcceptsCreditCards').blank?
+            data[:transit] = doc.css('dd.attr-transit')[0].text.strip unless doc.css('dd.attr-transit').blank?
+            data[:hours] = doc.css('dd.attr-BusinessHours')[0].text unless doc.css('dd.attr-BusinessHours').blank?
+            data[:parking] = doc.css('dd.attr-BusinessParking')[0].text unless doc.css('dd.attr-BusinessParking').blank?
+            data[:cc] = doc.css('dd.attr-BusinessAcceptsCreditCards')[0].text unless doc.css('dd.attr-BusinessAcceptsCreditCards').blank?
 
-          data[:price] = doc.css('span#price_tip')[0].text.count('$')  unless doc.css('span#price_tip').blank?
-          data[:attire] = doc.css('dd.attr-RestaurantsAttire')[0].text unless doc.css('dd.attr-RestaurantsAttire').blank?
-          data[:groups] = doc.css('dd.attr-RestaurantsGoodForGroups')[0].text unless doc.css('dd.attr-RestaurantsGoodForGroups').blank?
-          data[:kids] = doc.css('dd.attr-GoodForKids')[0].text unless doc.css('dd.attr-GoodForKids').blank?
-          data[:reservation] = doc.css('dd.attr-RestaurantsReservations')[0].text unless doc.css('dd.attr-RestaurantsReservations').blank?
-          data[:delivery] = doc.css('dd.attr-RestaurantsDelivery')[0].text unless doc.css('dd.attr-RestaurantsDelivery').blank?
-          data[:takeout] = doc.css('dd.attr-RestaurantsTakeOut')[0].text unless doc.css('dd.attr-RestaurantsTakeOut').blank?
-          data[:table_service] = doc.css('dd.attr-RestaurantsTableService')[0].text unless doc.css('dd.attr-RestaurantsTableService').blank?
-          data[:outdoor_seating] = doc.css('dd.attr-OutdoorSeating')[0].text unless doc.css('dd.attr-OutdoorSeating').blank?
+            data[:price] = doc.css('span#price_tip')[0].text.count('$')  unless doc.css('span#price_tip').blank?
+            data[:attire] = doc.css('dd.attr-RestaurantsAttire')[0].text unless doc.css('dd.attr-RestaurantsAttire').blank?
+            data[:groups] = doc.css('dd.attr-RestaurantsGoodForGroups')[0].text unless doc.css('dd.attr-RestaurantsGoodForGroups').blank?
+            data[:kids] = doc.css('dd.attr-GoodForKids')[0].text unless doc.css('dd.attr-GoodForKids').blank?
+            data[:reservation] = doc.css('dd.attr-RestaurantsReservations')[0].text unless doc.css('dd.attr-RestaurantsReservations').blank?
+            data[:delivery] = doc.css('dd.attr-RestaurantsDelivery')[0].text unless doc.css('dd.attr-RestaurantsDelivery').blank?
+            data[:takeout] = doc.css('dd.attr-RestaurantsTakeOut')[0].text unless doc.css('dd.attr-RestaurantsTakeOut').blank?
+            data[:table_service] = doc.css('dd.attr-RestaurantsTableService')[0].text unless doc.css('dd.attr-RestaurantsTableService').blank?
+            data[:outdoor_seating] = doc.css('dd.attr-OutdoorSeating')[0].text unless doc.css('dd.attr-OutdoorSeating').blank?
 
-          data[:wifi] = doc.css('dd.attr-WiFi')[0].text unless doc.css('dd.attr-WiFi').blank?
-          data[:meal] = doc.css('dd.attr-GoodForMeal')[0].text unless doc.css('dd.attr-GoodForMeal').blank?
-          data[:alcohol] = doc.css('dd.attr-Alcohol')[0].text unless doc.css('dd.attr-Alcohol').blank?
-          data[:noise] = doc.css('dd.attr-NoiseLevel')[0].text unless doc.css('dd.attr-NoiseLevel').blank?
-          data[:ambience] = doc.css('dd.attr-Ambience')[0].text unless doc.css('dd.attr-Ambience').blank?
-          data[:tv] = doc.css('dd.attr-HasTV')[0].text unless doc.css('dd.attr-HasTV').blank?
-          data[:caters] = doc.css('dd.attr-Caters')[0].text unless doc.css('dd.attr-Caters').blank?
-          data[:wheelchair_accessible] = doc.css('dd.attr-WheelchairAccessible')[0].text unless doc.css('dd.attr-WheelchairAccessible').blank?
+            data[:wifi] = doc.css('dd.attr-WiFi')[0].text unless doc.css('dd.attr-WiFi').blank?
+            data[:meal] = doc.css('dd.attr-GoodForMeal')[0].text unless doc.css('dd.attr-GoodForMeal').blank?
+            data[:alcohol] = doc.css('dd.attr-Alcohol')[0].text unless doc.css('dd.attr-Alcohol').blank?
+            data[:noise] = doc.css('dd.attr-NoiseLevel')[0].text unless doc.css('dd.attr-NoiseLevel').blank?
+            data[:ambience] = doc.css('dd.attr-Ambience')[0].text unless doc.css('dd.attr-Ambience').blank?
+            data[:tv] = doc.css('dd.attr-HasTV')[0].text unless doc.css('dd.attr-HasTV').blank?
+            data[:caters] = doc.css('dd.attr-Caters')[0].text unless doc.css('dd.attr-Caters').blank?
+            data[:wheelchair_accessible] = doc.css('dd.attr-WheelchairAccessible')[0].text unless doc.css('dd.attr-WheelchairAccessible').blank?
         
-          YlpRestaurant.create(data)
-          p "Created: #{ds['respos']}: #{ds['url']}"
+            YlpRestaurant.create(data)
+            p "Created: #{ds['respos']}: #{ds['url']}"
+          end
         end
       end
+      go_sub(json['seoPaginationUrls']['relNextUrl']) if json['seoPaginationUrls'] && !json['seoPaginationUrls']['relNextUrl'].blank?
     end
-    go_sub(json['seoPaginationUrls']['relNextUrl']) if json['seoPaginationUrls'] && !json['seoPaginationUrls']['relNextUrl'].blank?
+  rescue
+    go_sub(url)
   end
-  src
 end
 
 def f_hours(restarant_hours)   
