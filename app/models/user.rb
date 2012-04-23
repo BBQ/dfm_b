@@ -51,7 +51,7 @@ class User < ActiveRecord::Base
     APN::Notification.where(:user_id_to => old_user.id).update_all(:user_id_to => new_user.id)
     
     APN::Device.where(:user_id => new_user.id).each do |d|
-      if old = APN::Device.where("user_id = ? && token = ", old_user.id, d.token)
+      if old = APN::Device.where("user_id = ? && token = ?", old_user.id, d.token)
         old.destroy
       end
     end
