@@ -44,27 +44,35 @@ task :cup_images => :environment do
   #    end
   #  end
   
+  # restaurant_images = directory + 'restaurant_image/photo/'
+  # Dir[restaurant_images + '*'].each do |restaurant_image|
+  #   if r = RestaurantImage.find_by_id(restaurant_image.sub(restaurant_images, ''))
+  #     if r.restaurant.nil?
+  #       p restaurant_image
+  #       r.destroy
+  #     else
+  #       fies_in_folder = Dir[restaurant_image + '/*']
+  #       if fies_in_folder.count > 7
+  #         fies_in_folder.each do |f|
+  #           photo = File.basename(r.photo.url)[0, File.basename(r.photo.url).index('.')]
+  #           unless File.basename(f).to_s.index(photo)
+  #             p f 
+  #             FileUtils.rm_rf f
+  #           end
+  #         end
+  #       end
+  #     end
+  #   else
+  #     p restaurant_image
+  #     FileUtils.rm_rf restaurant_image
+  #   end
+  # end
+  
   restaurant_images = directory + 'restaurant_image/photo/'
-  Dir[restaurant_images + '*'].each do |restaurant_image|
-    if r = RestaurantImage.find_by_id(restaurant_image.sub(restaurant_images, ''))
-      if r.restaurant.nil?
-        p restaurant_image
-        r.destroy
-      else
-        fies_in_folder = Dir[restaurant_image + '/*']
-        if fies_in_folder.count > 7
-          fies_in_folder.each do |f|
-            photo = File.basename(r.photo.url)[0, File.basename(r.photo.url).index('.')]
-            unless File.basename(f).to_s.index(photo)
-              p f 
-              FileUtils.rm_rf f
-            end
-          end
-        end
-      end
-    else
-      p restaurant_image
-      FileUtils.rm_rf restaurant_image
+  RestaurantImage.all.each do |i|
+    if Dir["#{restaurant_images}#{i.id}"].nil?
+      p i.id
+      i.destroy 
     end
   end
     
