@@ -407,7 +407,7 @@ def go_sub(url)
   # 
   # end
   
-  proxy = 'http://128.208.04.198:2124'
+  proxy = 'http://78.153.151.7:3128'
   # username = 'asurin'
   # password = 'Pirai3tooBie6Roo'
 
