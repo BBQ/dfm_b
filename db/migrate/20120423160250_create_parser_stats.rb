@@ -5,9 +5,11 @@ class CreateParserStats < ActiveRecord::Migration
       t.column :find_loc, :string
       t.column :cflt, :string
       t.column :url, :string
+      t.column :status, :boolean, :default => false
       t.timestamps
     end
       add_index :parser_stats, :find_loc
+      add_index :parser_stats, :status
       add_index :parser_stats, :cflt
   end
 

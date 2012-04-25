@@ -2,6 +2,7 @@
 class ApiController < ApplicationController
   
   before_filter :init_error
+  helper :all
   
   def init_error
     $error = {:description => nil, :code => nil}

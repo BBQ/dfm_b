@@ -214,107 +214,123 @@ namespace :ylp do
   
   #3873, 4158, 4322, 6841, 16972, 15921, 17127, 17587, 21682, 22639, 22644 
   task :get_fsq  => :environment do
-    YlpRestaurant.where('city = "New York" AND id >=15922 AND id < 16000').order(:id).each do |r|
-      p r.id
-      if r.has_menu.nil?
-        client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
-        fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lng}", :query => r.name, :intent => 'match') if r.lat && r.lng && r.name
-    
-        fsq_rest = nil
-        if fsq_hash && fsq_hash.groups[0].items.count > 0
-          fsq_hash.groups[0].items.each do |i|
-            if i.contact.formattedPhone.to_s == r.phone.to_s
-              fsq_rest = i
-            elsif i.name == r.name
-              fsq_rest = i
-            elsif i.categories.count > 0 && i.categories[0].name =~ /Afghan|African|American|Argentine|Asian Fusion|Bagels|Bakeries|Barbeque|Bars|Basque|Beer|Wine|Spirits|Belgian|Bowling|Brasseries|Brazilian|Breakfast|Brunch|Breweries|British|Buffets|Burgers|Burmese|Butcher|Cafes|Cajun|Creole|Cambodian|Candy|Caribbean|Caterers|Cheese|Cheesesteaks|Chicken|Chinese|Chocolatiers|Coffee|Tea|Creperies|Cuban|Delis|Desserts|Dim Sum|Diners|Doctors|Donuts|Employment Agencies|Ethiopian|Farmers Market|Filipino|Fish|Fondue|Food|French|Fruits & Veggies|Gastropubs|German|Gluten-Free|Greek|Grocery|Halal|Hawaiian|Himalayan|Nepalese|Hookah Bars|Hot|Hungarian|Ice Cream|Indian|Indonesian|Irish|Italian|Japanese|Juice|Karaoke|Korean|Kosher|Lawyers|Magicians|Malaysian|Meat|Mediterranean|Mexican|Eastern|European|Mongolian|Moroccan|Nightlife|Pakistani|Peruvian|Pizza|Polish|Portuguese|Pubs|Restaurant|Restaurants|Russian|Salad|Sandwiches|Scandinavian|Seafood|Singaporean|Soul Food|Soup|Southern|Spanish|Specialty Food|Steakhouses|Sushi|Taiwanese|Tapas|Tea|Thai|Tobacco Shops|Turkish|Ukrainian|Vegan|Vegetarian|Vietnamese|/
-              fsq_rest = i
-            elsif i.name.to_s =~ /#{r.name}/
-              fsq_rest = i
-            end
-          end
-          
-          if !fsq_rest.nil?
-            category = []
-            
-            fsq_rest.categories.each do |v|
-              category.push(v.name)
-            end
-
-            r.fsq_id = fsq_rest.id        
-            r.fsq_name = fsq_rest.name
-            r.fsq_address = fsq_rest.location.address
-            r.fsq_lat = fsq_rest.location.lat
-            r.fsq_lng = fsq_rest.location.lng
-            r.fsq_checkins_count = fsq_rest.stats.checkinsCount
-            r.fsq_users_count = fsq_rest.stats.usersCount
-            r.fsq_tip_count = fsq_rest.stats.tipCount
-            r.restaurant_categories = category.count > 0 ? category.join(',') : 0
-            r.save  
-            p "#{r.id}:#{r.fsq_id} #{r.name} #{r.address}"
-    
-            r.has_menu = 0
-            client.venue_menu(r.fsq_id).each do |m|           
-              m.entries.fourth.second.items.each do |i|
-                i.entries.third.second.items.each do |d|  
-
-                  if d.prices
-                    if price = /(.)(\d+\.\d+)/.match(d.prices.first)
-                      price = price[2]
-                      currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
-                    else
-                      price = /(.)(\d+\.\d+)/.match(d.prices.second)[2]
-                      currency = /(.)(\d+\.\d+)/.match(d.prices.second)[1]
-                    end
-                  end
-
-                  data = {
-                  :ylp_restaurant_id => r.id,
-                  :name => d.name,
-                  :price => price ||= 0,
-                  :currency => currency ||= '',
-                  :description => d.description,
-                  :dish_category => i.name,
-                  }
-                  YlpDish.create(data) unless YlpDish.find_by_name_and_ylp_restaurant_id(d.name, r.id)
-
-                end
-              end
-              r.has_menu = 1
-              p "   --- menu found! #{r.id}"
-            end
-            r.save
-          end
-          
-        end
-      end
+    YlpRestaurant.where('id >= 40000 AND id < 50000 && has_menu = 0').order(:id).each do |r|
+      # p r.id
+      match_fsq(r)
     end
+    p "Done!Done!Done!"
   end
   
   task :parse => :environment do
-    
-    # New York
-    manhattan = "Alphabet_City,Battery_Park,Chelsea,Chinatown,Civic_Center,East_Harlem,East_Village,Financial_District,Flatiron,Gramercy,Greenwich_Village,Harlem,Hell's_Kitchen,Inwood,Kips_Bay,Koreatown,Little_Italy,Lower_East_Side,Manhattan_Valley,Marble_Hill,Meatpacking_District,Midtown_East,Midtown_West,Morningside_Heights,Murray_Hill,NoHo,Nolita,Roosevelt_Island,SoHo,South_Street_Seaport,South_Village,Stuyvesant_Town,Theater_District,TriBeCa,Two_Bridges,Union_Square,Upper_East_Side,Upper_West_Side,Washington_Heights,West_Village,Yorkville"
-    # brooklyn = "Bath_Beach,Bay_Ridge,Bedford_Stuyvesant,Bensonhurst,Boerum_Hill,Borough_Park,Brighton_Beach,Brooklyn_Heights,Brownsville,Bushwick,Canarsie,Carroll_Gardens,City_Line,Clinton_Hill,Cobble_Hill,Columbia_Street_Waterfront_District,Coney_Island,Crown_Heights,Cypress_Hills,DUMBO,Ditmas_Park,Downtown_Brooklyn,Dyker_Heights,East_Flatbush,East_New_York,East_Williamsburg,Flatbush,Flatlands,Fort_Greene,Fort_Hamilton,Georgetown,Gerritson_Beach,Gowanus,Gravesend,Greenpoint,Highland_Park,Kensington,Manhattan_Beach,Marine_Park,Midwood,Mill_Basin,Mill_Island,New_Lots,Ocean_Hill,Ocean_Parkway,Paedergat_Basin,Park_Slope,Prospect_Heights,Prospect_Lefferts_Gardens,Prospect_Park_South,Red_Hook,Remsen_Village,Sea_Gate,Sheepshead_Bay,South_Williamsburg,Spring_Creek,Starret_City,Sunset_Park,Vinegar_Hill,Weeksville,Williamsburg_-_North_Side,Williamsburg_-_South_Side,Windsor_Terrace,Wingate"
-    # queens = "Arverne,Astoria,Astoria_Heights,Auburndale,Bay_Terrace,Bayside,Beechurst,Bellaire,Belle_Harbor,Bellerose,Breezy_Point,Briarwood,Cambria_Heights,College_Point,Douglaston,Downtown_Flushing,East_Elmhurst,Edgemere,Elmhurst,Far_Rockaway,Floral_Park,Flushing,Flushing_Meadows,Forest_Hills,Fresh_Meadows,Glen_Oaks,Glendale,Hillcrest,Hollis,Holliswood,Howard_Beach,Hunters_Point,JFK_Airport,Jackson_Heights,Jamaica,Jamaica_Estates,Jamaica_Hills,Kew_Gardens,Kew_Gardens_Hills,LaGuardia_Airport,Laurelton,LeFrak_City,Lindenwood,Little_Neck,Long_Island_City,Malba,Maspeth,Middle_Village,Murray_Hill,North_Corona,Oakland_Gardens,Ozone_Park,Pomonok,Queens_Village,Queensborough_Hill,Rego_Park,Richmond_Hill,Ridgewood,Rochdale,Rockaway_Park,Rosedale,Seaside,Somerville,Springfield_Gardens,Steinway,Sunnyside,Utopia,Whitestone,Woodhaven,Woodside"
-    # bronx = "Baychester,Bedford_Park,Belmont,Castle_Hill,City_Island,Claremont_Village,Clason_Point,Co-op_City,Concourse,Concourse_Village,Country_Club,East_Tremont,Eastchester,Edenwald,Edgewater_Park,Fieldston,Fordham,High_Bridge,Hunts_Point,Kingsbridge,Longwood,Melrose,Morris_Heights,Morris_Park,Morrisania,Mott_Haven,Mount_Eden,Mount_Hope,North_Riverdale,Norwood,Olinville,Parkchester,Pelham_Bay,Pelham_Gardens,Port_Morris,Riverdale,Schuylerville,Soundview,Spuyten_Duyvil,Throgs_Neck,Unionport,University_Heights,Van_Nest,Wakefield,West_Farms,Westchester_Square,Williamsbridge,Woodlawn"
-    # staten_island = "Annadale,Arden_Heights,Arlington,Arrochar,Bay_Terrace,Bloomfield,Bullshead,Castleton_Corners,Charleston,Chelsea,Clifton,Concord,Dongan_Hills,Elm_Park,Eltingville,Emerson_Hill,Graniteville,Grant_City,Grasmere,Great_Kills,Grymes_Hill,Heartland_Village,Howland_Hook,Huguenot,Lighthouse_Hill,Mariner,Midland_Beach,New_Brighton,New_Dorp,New_Dorp_Beach,New_Springville,Oakwood,Old_Town,Park_Hill,Pleasant_Plains,Port_Richmond,Princes_Bay,Randall_Manor,Richmond_Town,Richmond_Valley,Rosebank,Rossville,Shore_Acres,Silver_Lake,St._George,Stapleton,Sunnyside,Todt_Hill,Tompkinsville,Tottenville,West_Brighton,Westerleigh,Woodrow"
+    parse
+  end
+  
+end
 
+def match_fsq(r)
+  if r.has_menu == false
+      client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
+      fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lng}", :query => r.name, :intent => 'match') if r.lat && r.lng && r.name
+
+      fsq_rest = nil
+      if fsq_hash && fsq_hash.groups[0].items.count > 0
+        fsq_hash.groups[0].items.each do |i|
+          if i.contact.formattedPhone.to_s == r.phone.to_s
+            fsq_rest = i
+          elsif i.name == r.name
+            fsq_rest = i
+          elsif i.categories.count > 0 && i.categories[0].name =~ /Afghan|African|American|Argentine|Asian Fusion|Bagels|Bakeries|Barbeque|Bars|Basque|Beer|Wine|Spirits|Belgian|Bowling|Brasseries|Brazilian|Breakfast|Brunch|Breweries|British|Buffets|Burgers|Burmese|Butcher|Cafes|Cajun|Creole|Cambodian|Candy|Caribbean|Caterers|Cheese|Cheesesteaks|Chicken|Chinese|Chocolatiers|Coffee|Tea|Creperies|Cuban|Delis|Desserts|Dim Sum|Diners|Doctors|Donuts|Employment Agencies|Ethiopian|Farmers Market|Filipino|Fish|Fondue|Food|French|Fruits & Veggies|Gastropubs|German|Gluten-Free|Greek|Grocery|Halal|Hawaiian|Himalayan|Nepalese|Hookah Bars|Hot|Hungarian|Ice Cream|Indian|Indonesian|Irish|Italian|Japanese|Juice|Karaoke|Korean|Kosher|Lawyers|Magicians|Malaysian|Meat|Mediterranean|Mexican|Eastern|European|Mongolian|Moroccan|Nightlife|Pakistani|Peruvian|Pizza|Polish|Portuguese|Pubs|Restaurant|Restaurants|Russian|Salad|Sandwiches|Scandinavian|Seafood|Singaporean|Soul Food|Soup|Southern|Spanish|Specialty Food|Steakhouses|Sushi|Taiwanese|Tapas|Tea|Thai|Tobacco Shops|Turkish|Ukrainian|Vegan|Vegetarian|Vietnamese|/
+            fsq_rest = i
+          elsif i.name.to_s =~ /#{r.name}/
+            fsq_rest = i
+          end
+        end
+      
+        if !fsq_rest.nil?
+          category = []
+        
+          fsq_rest.categories.each do |v|
+            category.push(v.name)
+          end
+
+          r.fsq_id = fsq_rest.id        
+          r.fsq_name = fsq_rest.name
+          r.fsq_address = fsq_rest.location.address
+          r.fsq_lat = fsq_rest.location.lat
+          r.fsq_lng = fsq_rest.location.lng
+          r.fsq_checkins_count = fsq_rest.stats.checkinsCount
+          r.fsq_users_count = fsq_rest.stats.usersCount
+          r.fsq_tip_count = fsq_rest.stats.tipCount
+          r.restaurant_categories = category.count > 0 ? category.join(',') : 0
+          r.save  
+          p "#{r.id}:#{r.fsq_id} #{r.name} #{r.address}"
+
+          r.has_menu = 0
+          client.venue_menu(r.fsq_id).each do |m|           
+            m.entries.fourth.second.items.each do |i|
+              i.entries.third.second.items.each do |d|  
+
+                if d.prices
+                  if price = /(.)(\d+\.\d+)/.match(d.prices.first)
+                    price = price[2]
+                    currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
+                  else
+                    price = /(.)(\d+\.\d+)/.match(d.prices.second)[2]
+                    currency = /(.)(\d+\.\d+)/.match(d.prices.second)[1]
+                  end
+                end
+
+                data = {
+                :ylp_restaurant_id => r.id,
+                :name => d.name,
+                :price => price ||= 0,
+                :currency => currency ||= '',
+                :description => d.description,
+                :dish_category => i.name,
+                }
+                YlpDish.create(data) unless YlpDish.find_by_name_and_ylp_restaurant_id(d.name, r.id)
+
+              end
+            end
+            r.has_menu = 1
+            p "   --- menu found! #{r.id}"
+          end
+          r.save
+        end
+      
+      end
+    rescue Exception => e
+      p e.message
+      match_fsq(r)
+    end
     
-    # California
-    # san_francisco = "Bayview/Hunters_Point,Bernal_Heights,Castro,Chinatown,Civic_Center/Tenderloin,Cole_Valley,Crocker-Amazon,Diamond_Heights,Dogpatch,Embarcadero,Excelsior,Financial_District,Fisherman's_Wharf,Glen_Park,Haight-Ashbury,Hayes_Valley,Ingleside,Inner_Richmond,Inner_Sunset,Japantown,Lakeside,Laurel_Heights,Lower_Haight,Lower_Pac_Heights,Marina/Cow_Hollow,Miraloma,Mission,Mission_Terrace,Nob_Hill,Noe_Valley,North_Beach/Telegraph_Hill,Outer_Richmond,Outer_Sunset,Pacific_Heights,Parkside,Portola,Potrero_Hill,Russian_Hill,SOMA,Twin_Peaks,Union_Square,Visitacion_Valley,West_Portal,Western_Addition/NOPA"
-    oakland = "Dimond_District,Downtown_Oakland,East_Oakland,Fruitvale,Glenview,Grand_Lake,Jack_London_Square,Lake_Merritt,Lakeshore,Laurel_District,Lower_Hills,Montclair_Village,North_Oakland,Oakland_Chinatown,Oakland_Hills,Old_Oakland,Piedmont,Piedmont_Ave,Rockridge,Temescal,Uptown,West_Oakland"
-    berkeley = "Claremont,Downtown_Berkeley,East_Solano_Ave,Elmwood,Fourth_Street,Gourmet_Ghetto,North_Berkeley,North_Berkeley_Hills,South_Berkeley,Telegraph_Ave,UC_Campus_Area"
-    ca_other = "San_Leandro::,Alameda::,San_Lorenzo::,Hayward::,Union_city::,Fremont::,Santa_Clara::,San_Jose::,Cupertino::,Campbell::,Sunnyvale::,Palo_Alto::,Los_Altos::,North_Fair_Oaks::,Menlo_Park::,Redwood_city::,San_Carlos::,Belmont::,San_Mateo::,San_Bruno::,Los_Gatos::,Milpitas::,Newark::,Castro_Valley::,Richmond::,East_Palo_Alto::,Saratoga::,Alviso::,Belmont::,Burlingame::,Campbell::,Cupertino::,East_Palo_Alto::,Foster_City::,Fremont::,La_Honda::,Los_Altos::,Menlo_Park::,Newark::,Palo_Alto::,Portola_Valley::,Redwood_Shores::,San_Carlos::,San_Jose::,San_Mateo::,Santa_Clara::,Saratoga::,Stanford::,Union_City::,Woodside::"
-    
-    # categories = "food,burgers,italian,newamerican,tradamerican,asianfusion,bars,breakfast_brunch,catering,chinese,coffee,hotdogs,foodstands,french,indpak,japanese,lounges,mediterranean,mexican,nightlife,pizza,restaurants,sushi,thai,vietnamese,bakeries,dimsum,desserts,delis,sandwiches,seafood,steak,wine_bars,afghani,ethnicmarkets,mideastern,african,latin,argentine,gluten_free,peruvian,spanish,tapas,tapasmallplates,vegan,hawaiian,bbq,chinese,korean,basque,belgian,brazilian,brasseries,british,buffets,burmese,cafes,cajun,cambodian,caribbean,cheesesteaks,chicken_wings,indonesian,creperies,cuban,diners,ethiopian,filipino,fishnchips,fondue,gastropubs,german,greek,halal,himalayan,hungarian,irish,kosher,raw_food,malaysian,modern_european,mongolian,Moroccan,pakistani,persian,peruvian,polish,portuguese,russian,salad,scandinavian,singaporean,soulfood,soup,southern,taiwanese,tex-mex,turkish,ukrainian,vegetarian,donuts,dumplings,trucks,juice,bars,smoothies,ramen,chocolate,breweries,pubs,divebars,beer_and_wine,champagne_bars,icecream,bagels,tea,wineries"
-    categories = "steak,wine_bars,afghani,ethnicmarkets,mideastern,african,latin,argentine,gluten_free,peruvian,spanish,tapas,tapasmallplates,vegan,hawaiian,bbq,chinese,korean,basque,belgian,brazilian,brasseries,british,buffets,burmese,cafes,cajun,cambodian,caribbean,cheesesteaks,chicken_wings,indonesian,creperies,cuban,diners,ethiopian,filipino,fishnchips,fondue,gastropubs,german,greek,halal,himalayan,hungarian,irish,kosher,raw_food,malaysian,modern_european,mongolian,Moroccan,pakistani,persian,peruvian,polish,portuguese,russian,salad,scandinavian,singaporean,soulfood,soup,southern,taiwanese,tex-mex,turkish,ukrainian,vegetarian,donuts,dumplings,trucks,juice,bars,smoothies,ramen,chocolate,breweries,pubs,divebars,beer_and_wine,champagne_bars,icecream,bagels,tea,wineries"
-    
-    
+  end
+end
+
+
+def parse
+  
+  # New York
+   manhattan = "Alphabet_City,Battery_Park,Chelsea,Chinatown,Civic_Center,East_Harlem,East_Village,Financial_District,Flatiron,Gramercy,Greenwich_Village,Harlem,Hell's_Kitchen,Inwood,Kips_Bay,Koreatown,Little_Italy,Lower_East_Side,Manhattan_Valley,Marble_Hill,Meatpacking_District,Midtown_East,Midtown_West,Morningside_Heights,Murray_Hill,NoHo,Nolita,Roosevelt_Island,SoHo,South_Street_Seaport,South_Village,Stuyvesant_Town,Theater_District,TriBeCa,Two_Bridges,Union_Square,Upper_East_Side,Upper_West_Side,Washington_Heights,West_Village,Yorkville"
+   brooklyn = "Bath_Beach,Bay_Ridge,Bedford_Stuyvesant,Bensonhurst,Boerum_Hill,Borough_Park,Brighton_Beach,Brooklyn_Heights,Brownsville,Bushwick,Canarsie,Carroll_Gardens,City_Line,Clinton_Hill,Cobble_Hill,Columbia_Street_Waterfront_District,Coney_Island,Crown_Heights,Cypress_Hills,DUMBO,Ditmas_Park,Downtown_Brooklyn,Dyker_Heights,East_Flatbush,East_New_York,East_Williamsburg,Flatbush,Flatlands,Fort_Greene,Fort_Hamilton,Georgetown,Gerritson_Beach,Gowanus,Gravesend,Greenpoint,Highland_Park,Kensington,Manhattan_Beach,Marine_Park,Midwood,Mill_Basin,Mill_Island,New_Lots,Ocean_Hill,Ocean_Parkway,Paedergat_Basin,Park_Slope,Prospect_Heights,Prospect_Lefferts_Gardens,Prospect_Park_South,Red_Hook,Remsen_Village,Sea_Gate,Sheepshead_Bay,South_Williamsburg,Spring_Creek,Starret_City,Sunset_Park,Vinegar_Hill,Weeksville,Williamsburg_-_North_Side,Williamsburg_-_South_Side,Windsor_Terrace,Wingate"
+   queens = "Arverne,Astoria,Astoria_Heights,Auburndale,Bay_Terrace,Bayside,Beechurst,Bellaire,Belle_Harbor,Bellerose,Breezy_Point,Briarwood,Cambria_Heights,College_Point,Douglaston,Downtown_Flushing,East_Elmhurst,Edgemere,Elmhurst,Far_Rockaway,Floral_Park,Flushing,Flushing_Meadows,Forest_Hills,Fresh_Meadows,Glen_Oaks,Glendale,Hillcrest,Hollis,Holliswood,Howard_Beach,Hunters_Point,JFK_Airport,Jackson_Heights,Jamaica,Jamaica_Estates,Jamaica_Hills,Kew_Gardens,Kew_Gardens_Hills,LaGuardia_Airport,Laurelton,LeFrak_City,Lindenwood,Little_Neck,Long_Island_City,Malba,Maspeth,Middle_Village,Murray_Hill,North_Corona,Oakland_Gardens,Ozone_Park,Pomonok,Queens_Village,Queensborough_Hill,Rego_Park,Richmond_Hill,Ridgewood,Rochdale,Rockaway_Park,Rosedale,Seaside,Somerville,Springfield_Gardens,Steinway,Sunnyside,Utopia,Whitestone,Woodhaven,Woodside"
+   bronx = "Baychester,Bedford_Park,Belmont,Castle_Hill,City_Island,Claremont_Village,Clason_Point,Co-op_City,Concourse,Concourse_Village,Country_Club,East_Tremont,Eastchester,Edenwald,Edgewater_Park,Fieldston,Fordham,High_Bridge,Hunts_Point,Kingsbridge,Longwood,Melrose,Morris_Heights,Morris_Park,Morrisania,Mott_Haven,Mount_Eden,Mount_Hope,North_Riverdale,Norwood,Olinville,Parkchester,Pelham_Bay,Pelham_Gardens,Port_Morris,Riverdale,Schuylerville,Soundview,Spuyten_Duyvil,Throgs_Neck,Unionport,University_Heights,Van_Nest,Wakefield,West_Farms,Westchester_Square,Williamsbridge,Woodlawn"
+   staten_island = "Annadale,Arden_Heights,Arlington,Arrochar,Bay_Terrace,Bloomfield,Bullshead,Castleton_Corners,Charleston,Chelsea,Clifton,Concord,Dongan_Hills,Elm_Park,Eltingville,Emerson_Hill,Graniteville,Grant_City,Grasmere,Great_Kills,Grymes_Hill,Heartland_Village,Howland_Hook,Huguenot,Lighthouse_Hill,Mariner,Midland_Beach,New_Brighton,New_Dorp,New_Dorp_Beach,New_Springville,Oakwood,Old_Town,Park_Hill,Pleasant_Plains,Port_Richmond,Princes_Bay,Randall_Manor,Richmond_Town,Richmond_Valley,Rosebank,Rossville,Shore_Acres,Silver_Lake,St._George,Stapleton,Sunnyside,Todt_Hill,Tompkinsville,Tottenville,West_Brighton,Westerleigh,Woodrow"
+
+   
+   # California
+   san_francisco = "Bayview/Hunters_Point,Bernal_Heights,Castro,Chinatown,Civic_Center/Tenderloin,Cole_Valley,Crocker-Amazon,Diamond_Heights,Dogpatch,Embarcadero,Excelsior,Financial_District,Fisherman's_Wharf,Glen_Park,Haight-Ashbury,Hayes_Valley,Ingleside,Inner_Richmond,Inner_Sunset,Japantown,Lakeside,Laurel_Heights,Lower_Haight,Lower_Pac_Heights,Marina/Cow_Hollow,Miraloma,Mission,Mission_Terrace,Nob_Hill,Noe_Valley,North_Beach/Telegraph_Hill,Outer_Richmond,Outer_Sunset,Pacific_Heights,Parkside,Portola,Potrero_Hill,Russian_Hill,SOMA,Twin_Peaks,Union_Square,Visitacion_Valley,West_Portal,Western_Addition/NOPA"
+   oakland = "Dimond_District,Downtown_Oakland,East_Oakland,Fruitvale,Glenview,Grand_Lake,Jack_London_Square,Lake_Merritt,Lakeshore,Laurel_District,Lower_Hills,Montclair_Village,North_Oakland,Oakland_Chinatown,Oakland_Hills,Old_Oakland,Piedmont,Piedmont_Ave,Rockridge,Temescal,Uptown,West_Oakland"
+   berkeley = "Claremont,Downtown_Berkeley,East_Solano_Ave,Elmwood,Fourth_Street,Gourmet_Ghetto,North_Berkeley,North_Berkeley_Hills,South_Berkeley,Telegraph_Ave,UC_Campus_Area"
+   ca_other = "San_Leandro::,Alameda::,San_Lorenzo::,Hayward::,Union_city::,Fremont::,Santa_Clara::,San_Jose::,Cupertino::,Campbell::,Sunnyvale::,Palo_Alto::,Los_Altos::,North_Fair_Oaks::,Menlo_Park::,Redwood_city::,San_Carlos::,Belmont::,San_Mateo::,San_Bruno::,Los_Gatos::,Milpitas::,Newark::,Castro_Valley::,Richmond::,East_Palo_Alto::,Saratoga::,Alviso::,Belmont::,Burlingame::,Campbell::,Cupertino::,East_Palo_Alto::,Foster_City::,Fremont::,La_Honda::,Los_Altos::,Menlo_Park::,Newark::,Palo_Alto::,Portola_Valley::,Redwood_Shores::,San_Carlos::,San_Jose::,San_Mateo::,Santa_Clara::,Saratoga::,Stanford::,Union_City::,Woodside::"
+   
+   # categories = "food,burgers,italian,newamerican,tradamerican,asianfusion,bars,breakfast_brunch,catering,chinese,coffee,hotdogs,foodstands,french,indpak,japanese,lounges,mediterranean,mexican,nightlife,pizza,restaurants,sushi,thai,vietnamese,bakeries,dimsum,desserts,delis,sandwiches,seafood,steak,wine_bars,afghani,ethnicmarkets,mideastern,african,latin,argentine,gluten_free,peruvian,spanish,tapas,tapasmallplates,vegan,hawaiian,bbq,chinese,korean,basque,belgian,brazilian,brasseries,british,buffets,burmese,cafes,cajun,cambodian,caribbean,cheesesteaks,chicken_wings,indonesian,creperies,cuban,diners,ethiopian,filipino,fishnchips,fondue,gastropubs,german,greek,halal,himalayan,hungarian,irish,kosher,raw_food,malaysian,modern_european,mongolian,moroccan,pakistani,persian,peruvian,polish,portuguese,russian,salad,scandinavian,singaporean,soulfood,soup,southern,taiwanese,tex-mex,turkish,ukrainian,vegetarian,donuts,dumplings,trucks,juice,bars,smoothies,ramen,chocolate,breweries,pubs,divebars,beer_and_wine,champagne_bars,icecream,bagels,tea,wineries"
+   categories = "tradamerican,asianfusion,bars,breakfast_brunch,catering,chinese,coffee,hotdogs,foodstands,french,indpak,japanese,lounges,mediterranean,mexican,nightlife,pizza,restaurants,sushi,thai,vietnamese,bakeries,dimsum,desserts,delis,sandwiches,seafood,steak,wine_bars,afghani,ethnicmarkets,mideastern,african,latin,argentine,gluten_free,peruvian,spanish,tapas,tapasmallplates,vegan,hawaiian,bbq,chinese,korean,basque,belgian,brazilian,brasseries,british,buffets,burmese,cafes,cajun,cambodian,caribbean,cheesesteaks,chicken_wings,indonesian,creperies,cuban,diners,ethiopian,filipino,fishnchips,fondue,gastropubs,german,greek,halal,himalayan,hungarian,irish,kosher,raw_food,malaysian,modern_european,mongolian,moroccan,pakistani,persian,peruvian,polish,portuguese,russian,salad,scandinavian,singaporean,soulfood,soup,southern,taiwanese,tex-mex,turkish,ukrainian,vegetarian,donuts,dumplings,trucks,juice,bars,smoothies,ramen,chocolate,breweries,pubs,divebars,beer_and_wine,champagne_bars,icecream,bagels,tea,wineries"
+
     neighborhoods = {
       :NY => {
         :New_York => {
-          :Manhattan => manhattan.split(','),
+          # :Manhattan => manhattan.split(','),
           # :Brooklyn => brooklyn.split(','),
           # :Queens => queens.split(','),
           # :Bronx => bronx.split(','),
@@ -322,14 +338,18 @@ namespace :ylp do
         }
       },
       :CA => {
-        # :San_Francisco => san_francisco.split(','),
+        :San_Francisco => san_francisco.split(','),
         # :Oakland => oakland.split(','),
         # :Berkeley => berkeley.split(','),
         # :Other => ca_other.split(',')
       }
     }
     
-        
+    # if resume = ParserStat.where(:status => false).order("created_at").first
+    #   loc = resume.find_loc.gsub(',','').spli('+').reverse
+    #   
+    # end
+    
     urls = []
     neighborhoods.each do |state,v|
       v.each do |city, v| 
@@ -337,7 +357,7 @@ namespace :ylp do
         if city == :Other
           v.each do |city|              
             
-            find_loc = "#{city.to_s.gsub('_', '+').gsub('::', '')}+#{state.to_s}"
+            find_loc = "#{city.to_s.gsub('_', '+').gsub('::', '')},+#{state.to_s}"
             filters_cities = "#{state}:#{city}" # state:{city_with_unerscores_and_two_dots_at_the_end::}                                  
             url_city = "http://www.yelp.com/search/snippet?attrs=&cflt=&find_desc=restaurants&find_loc=#{find_loc}&l=p:#{filters_cities}&rpp=40"
             urls.push(url_city)
@@ -345,10 +365,10 @@ namespace :ylp do
             
           end
         else
-          find_loc = "#{city.to_s.gsub('_', '+')}+#{state.to_s}" # {city+with+pluses}+state
+          find_loc = "#{city.to_s.gsub('_', '+')},+#{state.to_s}" # {city+with+pluses}+state
           
           v.each do |district, v| 
-            urls = urls | make_categories(categories,"#{district.to_s.gsub('_', '+')}+#{state.to_s}")           
+            # urls = urls | make_categories(categories,"#{district.to_s.gsub('_', '+')},+#{state.to_s}")           
             if v.class == Array
               v.each do |area|              
                 filters_cities = "#{state}:#{city}:#{district}:#{area}" # state:{city_with_unerscores}:district:area   
@@ -372,10 +392,9 @@ namespace :ylp do
       go_sub(url)
     end
     p "This done!"
-    
-  end
   
 end
+
 
 def make_categories(categories,find_loc)
   urls = []
@@ -385,6 +404,7 @@ def make_categories(categories,find_loc)
   end
   urls
 end
+
 
 def go_sub(url)
   p url
@@ -407,7 +427,8 @@ def go_sub(url)
   # 
   # end
   
-  proxy = 'http://78.153.151.7:3128'
+  proxy = 'http://200.186.179.215:80'
+  # proxy = 'http://183.82.97.186:3128'
   # username = 'asurin'
   # password = 'Pirai3tooBie6Roo'
 
@@ -481,8 +502,11 @@ def go_sub(url)
       end
       go_sub(json['seoPaginationUrls']['relNextUrl']) if json['seoPaginationUrls'] && !json['seoPaginationUrls']['relNextUrl'].blank?
     end
-  rescue
-    go_sub(url)
+  rescue Exception => e
+    if e.message.to_s != "^C"
+      p e.message
+      go_sub(url)
+    end
   end
 end
 
