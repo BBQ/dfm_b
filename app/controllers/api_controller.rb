@@ -1105,7 +1105,7 @@ class ApiController < ApplicationController
         likes[:count] = likes_a.count
       end
       
-      if reviews_a = Review.select([:id, :photo, :dish_id]).where('user_id = ?', user.id).order('id DESC')
+      if reviews_a = Review.select([:id, :photo, :dish_id, :rtype]).where('user_id = ?', user.id).order('id DESC')
         reviews = {:data => [], :count => 0}
         
         reviews_a.each do |r|
