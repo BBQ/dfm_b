@@ -12,6 +12,7 @@ class Restaurant < ActiveRecord::Base
   
   has_many :restaurant_cuisines
   has_many :cuisines, :through => :restaurant_cuisines
+  has_many :dish_category_order, :dependent => :destroy
   
   has_many :restaurant_tags, :dependent => :destroy
   has_many :tags, :through => :restaurant_tags
