@@ -1,12 +1,12 @@
 # encoding: utf-8
 class Restaurant < ActiveRecord::Base
   
-  has_many :dishes
-  has_many :reviews
-  belongs_to :network 
+  has_many :dishes, :dependent => :destroy
+  has_many :reviews, :dependent => :destroy
+  belongs_to :network
   has_many :dishes, :through => :network 
   
-  has_many :restaurant_types
+  has_many :restaurant_types, :dependent => :destroy
   has_many :types, :through => :restaurant_types
   has_many :restaurant_images, :dependent => :destroy
   
@@ -15,7 +15,7 @@ class Restaurant < ActiveRecord::Base
   
   has_many :restaurant_tags, :dependent => :destroy
   has_many :tags, :through => :restaurant_tags
-  has_many :favourites
+  has_many :favourites, :dependent => :destroy
     
   mount_uploader :photo, ImageUploader 
   
