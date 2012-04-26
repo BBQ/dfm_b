@@ -1088,7 +1088,8 @@ class ApiController < ApplicationController
           likes[:data].push(
             :id => l.id,
             :photo => l.photo.iphone.url,
-            :favourite => favourite
+            :name => l.dish.name,
+            :favourite => favourite,
           )
         end
         likes[:count] = likes_a.count
@@ -1102,6 +1103,7 @@ class ApiController < ApplicationController
           reviews[:data].push(
             :id => r.id,
             :photo => r.photo.iphone.url,
+            :name => l.dish.name,
             :favourite => favourite
           )
         end

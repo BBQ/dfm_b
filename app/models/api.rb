@@ -67,7 +67,11 @@ class API < ActiveRecord::Base
             :lat => restaurant.lat,
             :lon => restaurant.lon,
             :description => restaurant.description.to_s,
-            :type => nil
+            :popularity => restaurant.fsq_checkins_count,
+            :rating => restaurant.rating,
+            :votes => restaurant.votes,
+            :photo => restaurant.thumb,
+            :type => nil            
           )
         end
       elsif type == 'delivery'
@@ -146,6 +150,10 @@ class API < ActiveRecord::Base
               :lon => restaurant.lon,
               :description => restaurant.description.to_s,
               :fsq_id => restaurant.fsq_id,
+              :popularity => restaurant.fsq_checkins_count,
+              :rating => restaurant.rating,
+              :votes => restaurant.votes,
+              :photo => restaurant.thumb,
             )
         end
       end
