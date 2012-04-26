@@ -8,6 +8,11 @@ namespace :ylp do
   require 'nokogiri'
   require 'time'
   
+  task :clean_rest => :environment do
+    rest_rev_ids = Review.select(:restaurant_id).group(:restaurant_id).all.collect {|r| r.restaurant_id}.join(',')
+    Restaurant.destroy_all("id NOT IN (#{rest_rev_ids}) AND id > 17974 AND city NOT IN ('Москва', 'Moscow', 'Tallinn', 'Skolkovo', 'Tallinna')")
+  end
+  
   task :cl_ny => :environment do
     p Restaurant.where("source = 'ylp' AND created_at <= '2012-03-27 09:07:22'").delete_all 
     p YlpDish.where("created_at <= '2012-03-27 09:07:22'").delete_all  
