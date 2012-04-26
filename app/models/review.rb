@@ -164,7 +164,7 @@ class Review < ActiveRecord::Base
   end
   
   def photo_iphone
-    dish.photo.iphone.url
+    dish.photo.iphone.url == "/images/noimage.jpg" ? "" : dish.photo.iphone.url
   end
   
   def self.review_exist?(user_id, dish_id)
