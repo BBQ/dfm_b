@@ -1088,7 +1088,7 @@ class ApiController < ApplicationController
           likes[:data].push(
             :id => l.id,
             :photo => l.photo.iphone.url == '/images/noimage.jpg' ? '' : l.photo.iphone.url,
-            :name => l.dish.name,
+            :name => l.dish ? l.dish.name : '',
             :favourite => favourite,
           )
         end
@@ -1103,7 +1103,7 @@ class ApiController < ApplicationController
           reviews[:data].push(
             :id => r.id,
             :photo => r.photo.iphone.url == '/images/noimage.jpg' ? '' : r.photo.iphone.url,
-            :name => r.dish.name,
+            :name => r.dish ? r.dish.name : '',
             :favourite => favourite
           )
         end
