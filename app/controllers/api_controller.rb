@@ -1081,20 +1081,20 @@ class ApiController < ApplicationController
       followers_count = Follower.select(:id).where(:follow_user_id => user.id).count(:id) rescue 0
             
       if likes_a = Review.select([:id, :photo, :dish_id, :rtype]).where('id IN (SELECT review_id FROM likes WHERE user_id = ?)', user.id).order('id DESC')
-        likes = {:data => [], :count => 0}
-        
-        case likes_a.rtype
-        when 'home_cooked'
-          dish_name = review.home_cook.name
-        when 'delivery'
-          dish_name = review.dish_delivery.name
-        else
-          dish_name = review.dish.name
-        end
-        
+        likes = {:data => [], :count => 0}        
         
         likes_a.each do |l|
           favourite = Favourite.find_by_user_id_and_dish_id(user.id, l.dish_id) ? 1 : 0
+          
+          case l.rtype
+          when 'home_cooked'
+            dish_name = review.home_cook.name
+          when 'delivery'
+            dish_name = review.dish_delivery.name
+          else
+            dish_name = review.dish.name
+          end
+          
           likes[:data].push(
             :id => l.id,
             :photo => l.photo.iphone.url == '/images/noimage.jpg' ? '' : l.photo.iphone.url,
