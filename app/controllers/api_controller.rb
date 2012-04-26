@@ -1088,11 +1088,11 @@ class ApiController < ApplicationController
           
           case l.rtype
           when 'home_cooked'
-            dish_name = review.home_cook.name
+            dish_name = l.home_cook.name
           when 'delivery'
-            dish_name = review.dish_delivery.name
+            dish_name = l.dish_delivery.name
           else
-            dish_name = review.dish.name
+            dish_name = l.dish.name
           end
           
           likes[:data].push(
