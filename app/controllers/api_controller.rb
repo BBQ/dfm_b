@@ -418,7 +418,7 @@ class ApiController < ApplicationController
           # :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
           :tags => Tag.get_all(timestamp),
           :error => $error,
-          :force_logout => 0
+          :force_logout => 1
     }
   end
   
