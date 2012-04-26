@@ -67,10 +67,10 @@ class API < ActiveRecord::Base
             :lat => restaurant.lat,
             :lon => restaurant.lon,
             :description => restaurant.description.to_s,
-            :popularity => restaurant.fsq_checkins_count,
+            :fsq_checkins_count => restaurant.fsq_checkins_count,
             :rating => restaurant.rating,
             :votes => restaurant.votes,
-            :photo => restaurant.thumb,
+            :thumb => restaurant.thumb,
             :type => nil            
           )
         end
@@ -150,10 +150,10 @@ class API < ActiveRecord::Base
               :lon => restaurant.lon,
               :description => restaurant.description.to_s,
               :fsq_id => restaurant.fsq_id,
-              :popularity => restaurant.fsq_checkins_count,
+              :fsq_checkins_count => restaurant.fsq_checkins_count,
               :rating => restaurant.rating,
               :votes => restaurant.votes,
-              :photo => restaurant.thumb,
+              :thumb => restaurant.thumb,
             )
         end
       end
