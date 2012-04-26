@@ -1110,10 +1110,18 @@ class ApiController < ApplicationController
         
         reviews_a.each do |r|
           favourite = Favourite.find_by_user_id_and_dish_id(user.id, r.dish_id) ? 1 : 0
+          case r.rtype
+          when 'home_cooked'
+            dish_name = r.home_cook.name
+          when 'delivery'
+            dish_name = r.dish_delivery.name
+          else
+            dish_name = r.dish.name
+          end
           reviews[:data].push(
             :id => r.id,
             :photo => r.photo.iphone.url == '/images/noimage.jpg' ? '' : r.photo.iphone.url,
-            :name => r.dish ? r.dish.name : '',
+            :name => r.dish_name ||= '',
             :favourite => favourite
           )
         end
