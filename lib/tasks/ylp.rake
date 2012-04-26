@@ -9,7 +9,7 @@ namespace :ylp do
   require 'time'
   
   task :clean_rest => :environment do
-    rest_rev_ids = Review.select(:restaurant_id).group(:restaurant_id).all.collect {|r| r.restaurant_id}.join(',')
+    rest_rev_ids = Review.select(:restaurant_id).group(:restaurant_id).all.collect {|r| r.restaurant_id}.compact.join(',')
     Restaurant.destroy_all("id NOT IN (#{rest_rev_ids}) AND id > 17974 AND city NOT IN ('Москва', 'Moscow', 'Tallinn', 'Skolkovo', 'Tallinna')")
   end
   
