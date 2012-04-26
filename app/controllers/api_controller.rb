@@ -1087,7 +1087,7 @@ class ApiController < ApplicationController
           favourite = Favourite.find_by_user_id_and_dish_id(user.id, l.dish_id) ? 1 : 0
           likes[:data].push(
             :id => l.id,
-            :photo => l.photo.iphone.url == '/images/noimage.jpg' : l.photo.iphone.url,
+            :photo => l.photo.iphone.url == '/images/noimage.jpg' ? '' : l.photo.iphone.url,
             :name => l.dish.name,
             :favourite => favourite,
           )
@@ -1102,7 +1102,7 @@ class ApiController < ApplicationController
           favourite = Favourite.find_by_user_id_and_dish_id(user.id, r.dish_id) ? 1 : 0
           reviews[:data].push(
             :id => r.id,
-            :photo => r.photo.iphone.url == '/images/noimage.jpg' : r.photo.iphone.url,
+            :photo => r.photo.iphone.url == '/images/noimage.jpg' ? '' : r.photo.iphone.url,
             :name => r.dish.name,
             :favourite => favourite
           )
