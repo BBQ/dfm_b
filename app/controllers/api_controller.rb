@@ -1080,7 +1080,7 @@ class ApiController < ApplicationController
       following_count = Follower.select(:id).where(:user_id => user.id).count(:id) rescue 0 
       followers_count = Follower.select(:id).where(:follow_user_id => user.id).count(:id) rescue 0
             
-      if likes_a = Review.select([:id, :photo, :dish_id]).where('id IN (SELECT review_id FROM likes WHERE user_id = ?)', user.id).order('id DESC')
+      if likes_a = Review.select([:id, :photo, :dish_id, :rtype]).where('id IN (SELECT review_id FROM likes WHERE user_id = ?)', user.id).order('id DESC')
         likes = {:data => [], :count => 0}
         
         case likes_a.rtype
