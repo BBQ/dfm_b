@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120416163309) do
+ActiveRecord::Schema.define(:version => 20120426125315) do
 
   create_table "_ylp_dishes", :force => true do |t|
     t.string   "ylp_restaurant_id"
@@ -102,17 +102,18 @@ ActiveRecord::Schema.define(:version => 20120416163309) do
   add_index "admins", ["reset_password_token"], :name => "index_admins_on_reset_password_token", :unique => true
 
   create_table "apn_devices", :force => true do |t|
-    t.string   "token",              :default => "", :null => false
+    t.string   "token",              :default => "",   :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "last_registered_at"
     t.integer  "user_id",            :default => 0
+    t.boolean  "active",             :default => true
   end
 
   add_index "apn_devices", ["token"], :name => "index_apn_devices_on_token", :unique => true
 
   create_table "apn_notifications", :force => true do |t|
-    t.integer  "device_id",                        :null => false
+    t.integer  "device_id",                            :null => false
     t.datetime "sent_at"
     t.integer  "errors_nb",         :default => 0
     t.string   "device_language"
@@ -123,11 +124,13 @@ ActiveRecord::Schema.define(:version => 20120416163309) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "mailed_at"
-    t.integer  "user_id_to",                       :null => false
-    t.integer  "user_id_from",                     :null => false
-    t.boolean  "read"
+    t.integer  "user_id_to",                           :null => false
+    t.integer  "user_id_from",                         :null => false
+    t.boolean  "read",              :default => false
     t.string   "notification_type"
     t.integer  "review_id",         :default => 0
+    t.boolean  "push_allow",        :default => true
+    t.boolean  "email_allow",       :default => true
   end
 
   add_index "apn_notifications", ["device_id"], :name => "index_apn_notifications_on_device_id"
@@ -536,6 +539,19 @@ ActiveRecord::Schema.define(:version => 20120416163309) do
   add_index "notifications", ["like_id"], :name => "index_notifications_on_like_id"
   add_index "notifications", ["user_id"], :name => "index_notifications_on_user_id"
 
+  create_table "parser_stats", :force => true do |t|
+    t.string   "find_loc"
+    t.string   "cflt"
+    t.string   "url"
+    t.boolean  "status",     :default => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "parser_stats", ["cflt"], :name => "index_parser_stats_on_cflt"
+  add_index "parser_stats", ["find_loc"], :name => "index_parser_stats_on_find_loc"
+  add_index "parser_stats", ["status"], :name => "index_parser_stats_on_status"
+
   create_table "rails_admin_histories", :force => true do |t|
     t.string   "message"
     t.string   "username"
@@ -800,6 +816,7 @@ ActiveRecord::Schema.define(:version => 20120416163309) do
     t.string   "oauth_token_secret"
     t.string   "oauth_token"
     t.datetime "fb_valid_to"
+    t.boolean  "force_logout",                              :default => false
   end
 
   add_index "users", ["facebook_id"], :name => "index_users_on_facebook_id"

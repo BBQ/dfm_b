@@ -59,6 +59,12 @@ class API < ActiveRecord::Base
       if type != 'home_cooked' && type != 'delivery'
         restaurants = []
         dish.network.restaurants.each do |restaurant|
+          
+          restaurant_categories = []
+          unless restaurant.restaurant_categories.blank?
+            RestaurantCategory.select(:name).where("id in (#{restaurant.restaurant_categories})").each {|r| restaurant_categories.push(r.name)}
+          end
+          
           restaurants.push(
             :id => restaurant.id,
             :address => restaurant.address,
@@ -71,6 +77,7 @@ class API < ActiveRecord::Base
             :rating => restaurant.rating,
             :votes => restaurant.votes,
             :thumb => restaurant.thumb,
+            :restaurant_categories => restaurant_categories.join(', ')
             :type => nil            
           )
         end
@@ -160,7 +167,7 @@ class API < ActiveRecord::Base
               :rating => restaurant.rating,
               :votes => restaurant.votes,
               :thumb => restaurant.thumb,
-              :restaurant_categories => restaurant_categories.joins(', ')
+              :restaurant_categories => restaurant_categories.join(', ')
             )
         end
       end
