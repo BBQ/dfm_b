@@ -417,7 +417,8 @@ class ApiController < ApplicationController
           :restaurant_categories => timestamp ? rc.where('updated_at >= ?', timestamp) : rc.all,
           # :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
           :tags => Tag.get_all(timestamp),
-          :error => $error
+          :error => $error,
+          :force_logout => 0
     }
   end
   

@@ -141,6 +141,12 @@ class API < ActiveRecord::Base
       if type != 'delivery'
         restaurants = []
         restaurant.network.restaurants.each do |restaurant|
+            
+            restaurant_categories = []
+            unless restaurant.restaurant_categories.blank?
+              RestaurantCategory.select(:name).where("id in (#{restaurant.restaurant_categories})").each {|r| restaurant_categories.push(r.name)}
+            end
+            
             restaurants.push(
               :id => restaurant.id,
               :address => restaurant.address,
@@ -154,13 +160,12 @@ class API < ActiveRecord::Base
               :rating => restaurant.rating,
               :votes => restaurant.votes,
               :thumb => restaurant.thumb,
+              :restaurant_categories => restaurant_categories.joins(', ')
             )
         end
       end
       
       best_dishes = []
-      
-      
       data_d.select('DISTINCT id, name, photo, rating, votes, dish_type_id').order("(rating - 3)*votes DESC, photo DESC").where("photo IS NOT NULL OR rating > 0").each do |dish|
           favourite = Favourite.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0
           best_dishes.push(
