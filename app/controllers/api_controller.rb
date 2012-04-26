@@ -1111,12 +1111,13 @@ class ApiController < ApplicationController
       end
       
       top_in_restaurants = {:data => [], :count => 0}
-      if restaurants = Restaurant.select([:id, :photo, :network_id]).where(:top_user_id => user.id).order('updated_at DESC')
+      if restaurants = Restaurant.select([:id, :name, :photo, :network_id]).where(:top_user_id => user.id).order('updated_at DESC')
         
         restaurants.each do |d|
           favourite = Favourite.find_by_user_id_and_network_id(user.id, d.network_id) ? 1 : 0
           top_in_restaurants[:data].push(
             :id => d.id,
+            :name => d.name ? d.name : '',
             :photo => d.thumb,
             :favourite => favourite,
             :type => nil
@@ -1124,11 +1125,12 @@ class ApiController < ApplicationController
         end
       end
       
-      if restaurants = Delivery.select([:id, :photo]).where(:top_user_id => user.id).order('updated_at DESC')
+      if restaurants = Delivery.select([:id, :name, :photo]).where(:top_user_id => user.id).order('updated_at DESC')
         restaurants.each do |d|
           favourite = Favourite.find_by_user_id_and_delivery_id(user.id, d.id) ? 1 : 0
           top_in_restaurants[:data].push(
             :id => d.id,
+            :name => d.name ? d.name : '',
             :photo => d.thumb,
             :favourite => favourite,
             :type => 'delivery'
@@ -1139,11 +1141,12 @@ class ApiController < ApplicationController
       
       top_in_dishes = {:data => [], :count => 0}
       
-      if dishes = Dish.select([:id, :photo, :created_at]).where(:top_user_id => user.id).order('id DESC')
+      if dishes = Dish.select([:id, :name, :photo, :created_at]).where(:top_user_id => user.id).order('id DESC')
         dishes.each do |d|
           favourite = Favourite.find_by_user_id_and_dish_id(user.id, d.id) ? 1 : 0
           top_in_dishes[:data].push(
             :id => d.id,
+            :name => d.name ? d.name : '',
             :photo => d.image_sd,
             :type => nil,
             :favourite => favourite,
@@ -1152,11 +1155,12 @@ class ApiController < ApplicationController
         end
       end
       
-      if dishes = DishDelivery.select([:id, :photo, :created_at]).where(:top_user_id => user.id).order('id DESC')
+      if dishes = DishDelivery.select([:id, :name, :photo, :created_at]).where(:top_user_id => user.id).order('id DESC')
         dishes.each do |d|
           favourite = Favourite.find_by_user_id_and_dish_delivery_id(user.id, d.id) ? 1 : 0
           top_in_dishes[:data].push(
             :id => d.id,
+            :name => d.name ? d.name : '',
             :photo => d.image_sd,
             :type => 'delivery',
             :favourite => favourite,
@@ -1165,11 +1169,12 @@ class ApiController < ApplicationController
         end
       end
       
-      if dishes = HomeCook.select([:id, :photo, :created_at]).where(:top_user_id => user.id).order('id DESC')
+      if dishes = HomeCook.select([:id, :name, :photo, :created_at]).where(:top_user_id => user.id).order('id DESC')
         dishes.each do |d|
           favourite = Favourite.find_by_user_id_and_home_cook_id(user.id, d.id) ? 1 : 0
           top_in_dishes[:data].push(
             :id => d.id,
+            :name => d.name ? d.name : '',
             :photo => d.image_sd,
             :type => 'home_cooked',
             :favourite => favourite,
