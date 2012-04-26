@@ -77,7 +77,7 @@ class API < ActiveRecord::Base
             :rating => restaurant.rating,
             :votes => restaurant.votes,
             :thumb => restaurant.thumb,
-            :restaurant_categories => restaurant_categories.join(', ')
+            :restaurant_categories => restaurant_categories.join(', '),
             :type => nil            
           )
         end
