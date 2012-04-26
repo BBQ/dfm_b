@@ -163,7 +163,7 @@ class ApiController < ApplicationController
       end
       
     else
-      $error = {:descri ption => 'Params missing', :code => 8}
+      $error = {:description => 'Params missing', :code => 8}
     end
     
     return render :json => {
