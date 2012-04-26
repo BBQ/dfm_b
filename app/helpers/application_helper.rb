@@ -9,5 +9,5 @@ module ApplicationHelper
     <meta property="og:url" content="http://test.dish.fm/reviews/130">
     }
   end
-
+  
 end

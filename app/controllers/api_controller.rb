@@ -1103,7 +1103,7 @@ class ApiController < ApplicationController
           reviews[:data].push(
             :id => r.id,
             :photo => r.photo.iphone.url,
-            :name => l.dish.name,
+            :name => r.dish.name,
             :favourite => favourite
           )
         end
