@@ -9,10 +9,13 @@ namespace :ylp do
   require 'time'
   
   task :clean_rest => :environment do
-    rest_rev_ids = Review.select(:restaurant_id).group(:restaurant_id).all.collect {|r| r.restaurant_id}.compact.join(',')
-    Restaurant.delete_all("id NOT IN (#{rest_rev_ids}) AND id > 17974 AND city NOT IN ('Москва', 'Moscow', 'Tallinn', 'Skolkovo', 'Tallinna')")
+    if rest_rev_ids = Review.select(:restaurant_id).group(:restaurant_id).all.collect {|r| r.restaurant_id}.compact.join(',')
+      Restaurant.delete_all("id NOT IN (#{rest_rev_ids}) AND id > 17974 AND city NOT IN ('Москва', 'Moscow', 'Tallinn', 'Skolkovo', 'Tallinna')")
+    end
     
-    netw_without_rest_ids = Network.select(:id).joins(:restaurants).group('networks.id')
+    if netw_without_rest_ids = Network.select('networks.id').joins(:restaurants).group('networks.id').collect {|n| n.id}.compact.join(',')
+      Network.delete_all("id not IN (#{netw_without_rest_ids})")
+    end
   end
   
   task :cl_ny => :environment do
