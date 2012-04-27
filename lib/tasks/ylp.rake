@@ -16,6 +16,11 @@ namespace :ylp do
     if netw_without_rest_ids = Network.select('networks.id').joins(:restaurants).group('networks.id').collect {|n| n.id}.compact.join(',')
       Network.delete_all("id not IN (#{netw_without_rest_ids})")
     end
+    
+    if dsh_without_rest_ids = Network.select('networks.id').joins(:restaurants).group('networks.id').collect {|n| n.id}.compact.join(',')
+      Network.delete_all("id not IN (#{netw_without_rest_ids})")
+    end
+    
   end
   
   task :cl_ny => :environment do
@@ -87,8 +92,8 @@ namespace :ylp do
     id_start = 15000
     id_end = 20000
     
-    restaurants = YlpRestaurant.select([:id, :name, :city, :ylp_uri]).group(:name).where("city = 'New York'").order('id')
-    restaurants = restaurants.where("id BETWEEN ? AND ?",id_start,id_end) if id_start > 0 && id_end > 0
+    restaurants = YlpRestaurant.select([:id, :name, :city, :ylp_uri]).group(:name).order('id')
+    restaurants = restaurants.where("id > ? AND id <= ?",id_start,id_end) if id_start > 0 && id_end > 0
     
     restaurants.each do |r|
       
@@ -115,62 +120,62 @@ namespace :ylp do
         end
         
         p "#{d.id} #{d.name} #{d.address}"
-        
-        data = {}
-        data = f_hours(d.hours) if d.hours
-        
-        data[:transit] = d.transit
-        data[:attire] = d.attire
-        data[:caters] = d.caters
-        data[:ambience] = d.ambience
-
-        data[:name] = d.name
-        data[:city] = d.city
         data[:network_id] = network_id
-
-        data[:lon] = d.lng
-        data[:lat] = d.lat
-        data[:fsq_lng] = d.fsq_lng unless d.fsq_lng.blank?
-        data[:fsq_lat] = d.fsq_lat  unless d.fsq_lat.blank?
         data[:address] = d.address? ? d.address : d.fsq_address ||= nil
-        data[:phone] = d.phone
-        data[:web] = d.web
         
-        d.cc = 1 if d.cc == 'Yes'
-        d.cc = 0 if d.cc == 'No'
-        d.outdoor_seating = 1 if d.outdoor_seating == 'Yes'
-        d.outdoor_seating = 0 if d.outdoor_seating == 'No'               
-
-        data[:wifi] = d.wifi
-        data[:terrace] = d.outdoor_seating
-        data[:cc] = d.cc
-        data[:source] = 'ylp'
-        data[:time] = d.hours
-
-        data[:reservation] = d.reservation
-        data[:delivery] = d.delivery
-        data[:takeaway] = d.takeout
-        data[:service] = d.table_service
-        data[:good_for_kids] = d.kids
-        data[:good_for_meal] = d.meal
-        data[:good_for_groups] = d.groups
-        data[:alcohol] = d.alcohol
-        data[:noise] = d.noise
-        data[:tv] = d.tv
-        data[:disabled] = d.wheelchair_accessible
-        data[:parking] = d.parking
-        data[:bill] = d.price
-        data[:fsq_checkins_count] = d.fsq_checkins_count
-        data[:fsq_tip_count] = d.fsq_tip_count
-        data[:fsq_users_count] = d.fsq_users_count
-        data[:fsq_name] = d.fsq_name
-        data[:fsq_address] = d.fsq_address
-        data[:fsq_id] = d.fsq_id
-        data[:restaurant_categories] = category_id.join(',')
-      
         if nr = Restaurant.find_by_address_and_network_id(data[:address],data[:network_id])
           p "  Existed!"
         else
+          data = {}
+          data = f_hours(d.hours) if d.hours
+
+          data[:transit] = d.transit
+          data[:attire] = d.attire
+          data[:caters] = d.caters
+          data[:ambience] = d.ambience
+
+          data[:name] = d.name
+          data[:city] = d.city
+
+          data[:lon] = d.lng
+          data[:lat] = d.lat
+          data[:fsq_lng] = d.fsq_lng unless d.fsq_lng.blank?
+          data[:fsq_lat] = d.fsq_lat  unless d.fsq_lat.blank?
+          data[:phone] = d.phone
+          data[:web] = d.web
+
+          d.cc = 1 if d.cc == 'Yes'
+          d.cc = 0 if d.cc == 'No'
+          d.outdoor_seating = 1 if d.outdoor_seating == 'Yes'
+          d.outdoor_seating = 0 if d.outdoor_seating == 'No'               
+
+          data[:wifi] = d.wifi
+          data[:terrace] = d.outdoor_seating
+          data[:cc] = d.cc
+          data[:source] = 'ylp'
+          data[:time] = d.hours
+
+          data[:reservation] = d.reservation
+          data[:delivery] = d.delivery
+          data[:takeaway] = d.takeout
+          data[:service] = d.table_service
+          data[:good_for_kids] = d.kids
+          data[:good_for_meal] = d.meal
+          data[:good_for_groups] = d.groups
+          data[:alcohol] = d.alcohol
+          data[:noise] = d.noise
+          data[:tv] = d.tv
+          data[:disabled] = d.wheelchair_accessible
+          data[:parking] = d.parking
+          data[:bill] = d.price
+          data[:fsq_checkins_count] = d.fsq_checkins_count
+          data[:fsq_tip_count] = d.fsq_tip_count
+          data[:fsq_users_count] = d.fsq_users_count
+          data[:fsq_name] = d.fsq_name
+          data[:fsq_address] = d.fsq_address
+          data[:fsq_id] = d.fsq_id
+          data[:restaurant_categories] = category_id.join(',')
+          
           nr = Restaurant.create(data)
           p "  Created!"
         end
