@@ -48,7 +48,7 @@ class DishesController < ApplicationController
         @review.text = @dish.description
       end
       
-      r_arr = Review.where(:dish_id => @review.dish_id).collect {|r| r.id}
+      r_arr = Review.where(:dish_id => @review.id).collect {|r| r.id}
       
       if next_index = r_arr.find_index(@review.id)
         @review_next_id = r_arr[0] unless @review_next_id = r_arr[next_index + 1]           
