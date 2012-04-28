@@ -1,1 +1,40 @@
-= render "popup/dish"
+#popup
+	.side_div
+		.hd2
+			= "#{@dish.name}"
+		.desc
+			= "#{@dish.description}"
+		.price
+			= "#{@dish.price} #{@dish.currency}"
+		.sp
+		.rating
+			Raiting
+		.rate
+			- if @dish.rating != 0
+				- @dish.rating.round.times do
+					= image_tag 'star_filled.png', :class => 'star'
+				- (5 - @dish.rating).round.times do
+					= image_tag 'star_empty.png', :class => 'star'
+			- else
+				- 5.times do
+					= image_tag 'star_empty.png', :class => 'star'
+			.mark
+				= @dish.votes.to_i != 0 ? @dish.rating.round(1) : 0
+			.voices
+				(#{@dish.votes} голосов)
+		.sp
+		.hd3
+			@ #{@dish.network.name}
+		#rest_desc
+			= [ @r_categories, 
+				"#{@restaurant.rating.round(1)}(#{@restaurant.votes}votes)", 
+				"#{@restaurant.fsq_checkins_count} checkins",
+				@bill ].reject!(&:empty?).join(', ')
+		#map_canvas_popup
+		%script
+			= "load_map(#{@markers})"
+		.addr_phone
+			= "#{@restaurant.address} Тел:#{@restaurant.phone}"
+	.center_div
+		#review_content
+			= render 'popup/review'

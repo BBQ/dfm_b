@@ -1,38 +1,40 @@
 #review
-	#full_photo{:style => "background : url(#{@review.photo.iphone_retina.url})"}
+	#full_photo{:style => "background : url(#{@review.photo.iphone_retina.url == '/images/noimage.jpg' ? @dish.photo.iphone_retina.url : @review.photo.iphone_retina.url })"}
 		= link_to(image_tag('prev.png'), "/reviews/#{@review_prev_id}", :class => 'prev') if @review_prev_id && @review_prev_id != @review.id
 		= link_to(image_tag('next.png'), "/reviews/#{@review_next_id}", :class => 'next') if @review_next_id && @review_next_id != @review.id
 	.data
 		= image_tag @review.user.user_photo, :class => 'photo'
 		= link_to @review.user.name.split(' ')[0], '', :class => 'user_link'
 		.rate
-			- rate = @review.dish.votes.to_i != 0 ? (@review.dish.rating/@review.dish.votes).to_i : 0
-			- if rate
-				- rate.times do
+			- if @review.rating != 0
+				- @review.rating.round.times do
 					= image_tag 'star_filled.png', :class => 'star'
-				- (5-rate).times do
+				- (5 - @review.rating).round.times do
 					= image_tag 'star_empty.png', :class => 'star'
 			- else
 				- 5.times do
 					= image_tag 'star_empty.png', :class => 'star'
 		.desc
 			= @review.text
-		- if @friends_with.count > 0
+		- friends = friends(@review)	
+		- if friends.any?
 			.set.friends
-				.title With #{@friends_with.count} friend(s)
-				- @friends_with.each do |f|
+				.title With #{friends.count} friend(s)
+				- friends.each do |f|
 					= image_tag f[:photo], :class => 'photo'
 		.sp
-		- if @likes.count > 0
+		- likes = likes(@review)
+		- if likes.any?
 			.set.likes
-				.title #{@likes.count} like(s)
-				- @likes.each do |l|
+				.title #{likes.count} like(s)
+				- likes.each do |l|
 					= image_tag l[:photo], :class => 'photo'
 					
-		- if @comments.count > 0
+		- comments = comments(@review)
+		- if comments.any?
 			.set.comments
-				.title #{@comments.count} comment(s)
-				- @comments.each do |c|
+				.title #{comments.count} comment(s)
+				- comments.each do |c|
 					.csp
 					= image_tag c[:photo]
 					= link_to c[:name]

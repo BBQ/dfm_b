@@ -89,11 +89,11 @@ namespace :ylp do
   end
   
   task :copy => :environment do
-    id_start = 15000
-    id_end = 20000
+    id_start = 44000
+    id_end = 50000
     
     restaurants = YlpRestaurant.select([:id, :name, :city, :ylp_uri]).group(:name).order('id')
-    restaurants = restaurants.where("id > ? AND id <= ?",id_start,id_end) if id_start > 0 && id_end > 0
+    restaurants = restaurants.where("id > ? AND id <= ?",id_start,id_end) if id_start > 0 && id_end > id_start
     
     restaurants.each do |r|
       
@@ -120,14 +120,16 @@ namespace :ylp do
         end
         
         p "#{d.id} #{d.name} #{d.address}"
+        
+        data = {}
+        data = f_hours(d.hours) if d.hours
+        
         data[:network_id] = network_id
         data[:address] = d.address? ? d.address : d.fsq_address ||= nil
         
         if nr = Restaurant.find_by_address_and_network_id(data[:address],data[:network_id])
           p "  Existed!"
         else
-          data = {}
-          data = f_hours(d.hours) if d.hours
 
           data[:transit] = d.transit
           data[:attire] = d.attire

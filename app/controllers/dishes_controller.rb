@@ -26,7 +26,40 @@ class DishesController < ApplicationController
   end
   
   def show
-    @dish = Dish.find_by_id(params[:id])
+    if @dish = Dish.find_by_id(params[:id])
+      @restaurant = @dish.network.restaurants.first
+      @r_categories = RestaurantCategory.where("id IN (#{@restaurant.restaurant_categories})").collect { |c| c.name}
+    
+      @bill = []
+      @restaurant.bill.to_i.times {@bill.push('$')}
+      @bill = @bill.join
+      
+      @markers = []
+      @dish.network.restaurants.each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
+      @markers = "[#{@markers.join(',')}]"
+      
+      if @dish.photo.blank?
+        @review = @dish.reviews.where('photo IS NOT NULL').order('count_likes DESC, rating DESC').first
+      else
+        @review = Review.new
+        @review.user_id = 1
+        @review.dish_id = @dish.id
+        @review.rating = @dish.rating
+        @review.text = @dish.description
+      end
+      
+      r_arr = Review.where(:dish_id => @review.dish_id).collect {|r| r.id}
+      
+      if next_index = r_arr.find_index(@review.id)
+        @review_next_id = r_arr[0] unless @review_next_id = r_arr[next_index + 1]           
+      end
+      
+      if prev_index = r_arr.find_index(@review.id)
+        @review_prev_id = r_arr[prev_index - 1] 
+      end
+      
+    end
+    
   end
   
   def delete
