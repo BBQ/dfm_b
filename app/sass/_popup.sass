@@ -8,7 +8,7 @@
 	border-top: 1px solid #bbb6b0
 	border-bottom: 1px solid #fffffa
 	width: 100%
-	margin-bottom: 5px
+	margin-bottom: 10px
 	display: block
 	clear: both
 #simple_popup
@@ -51,6 +51,13 @@
 	border-radius: 5px
 	line-height: 1.2em
 	
+.hd2
+	color: #2b8da2
+	font-size: 2em
+	line-height: 0.9em
+	margin: 15px 0 10px 0
+	text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.75)	
+	
 .side_div
 	width: 220px
 	font-family: bell
@@ -58,12 +65,6 @@
 	color: #453624
 	float: left
 	padding: 0 15px
-	.hd2
-		color: #2b8da2
-		font-size: 2em
-		line-height: 0.9em
-		margin: 15px 0 10px 0
-		text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.75)
 	.desc
 		font-size: 1em
 		line-height: 1em
@@ -92,6 +93,8 @@
 			float: left
 			color: #3f3627
 			margin-bottom: 5px
+	.hd3
+		font-size: 1.5em
 	#map_canvas_popup
 		width: 225px
 		height: 225px
@@ -102,15 +105,17 @@
 		line-height: 1.2em
 		
 .center_div
-	width: 710px
+	width: 680px
 	float: left
 	font-family: bell
 	background: #f2efe9
 	color: #453624
 	border-radius: 5px
-	min-height: 580px
+	min-height: 550px
+	padding: 15px
 	#review_content
 		clear: both
-		@import "network_menu"
-		@import "network_dishes"
-		@import "popup_review"
+@import "restaurant"		
+@import "network_menu"
+@import "network_dishes"
+@import "popup_review"

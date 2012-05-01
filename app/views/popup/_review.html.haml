@@ -1,5 +1,6 @@
 #review
-	#full_photo{:style => "background : url(#{@review.photo.iphone_retina.url == '/images/noimage.jpg' ? @dish.photo.iphone_retina.url : @review.photo.iphone_retina.url })"}
+	=image_tag(@review.photo.iphone_retina.url == '/images/noimage.jpg' ? @dish.photo.iphone_retina.url : @review.photo.iphone_retina.url, :id => "full_photo")
+	#review_nav
 		= link_to(image_tag('prev.png'), "/reviews/#{@review_prev_id}", :class => 'prev') if @review_prev_id && @review_prev_id != @review.id
 		= link_to(image_tag('next.png'), "/reviews/#{@review_next_id}", :class => 'next') if @review_next_id && @review_next_id != @review.id
 	.data
@@ -9,7 +10,7 @@
 			- if @review.rating != 0
 				- @review.rating.round.times do
 					= image_tag 'star_filled.png', :class => 'star'
-				- (5 - @review.rating).round.times do
+				- (5 - @review.rating).to_i.times do
 					= image_tag 'star_empty.png', :class => 'star'
 			- else
 				- 5.times do

@@ -1,0 +1,51 @@
+#popup
+	.center_div
+		= link_to image_tag(@restaurant.restaurant_images.first.photo.iphone.url), dish_path(@restaurant.id), id: 'rest_img'
+		.hd2r=@restaurant.name
+		.info
+			= [ @r_categories, 
+				"#{@restaurant.rating.round(1)}(#{@restaurant.votes}votes)", 
+				"#{@restaurant.fsq_checkins_count} checkins",
+				@bill ].reject(&:empty?).join(', ')
+		.info
+			- if @restaurant.description
+				= @restaurant.description.capitalize_first_letter
+		.sp
+		.hd3r="Best dishes"
+		%ul#best_dishes
+			-@best_dishes.each do |d|
+				%li
+					=image_tag(d.image_p120)
+					%br
+					= link_to truncate(d.name, :length => 10), dish_path(d.id)
+	.side_div
+		.block
+			.hd1s="Popularity: #{@restaurant.fsq_checkins_count} check-ins"
+			.sp
+			.hd1s Rating:
+			.rate
+				- if @restaurant.rating != 0
+					- @restaurant.rating.round.times do
+						= image_tag 'star_filled.png', :class => 'star'
+					- (5 - @restaurant.rating).to_i.times do
+						= image_tag 'star_empty.png', :class => 'star'
+				- else
+					- 5.times do
+						= image_tag 'star_empty.png', :class => 'star'
+				.mark
+					= @restaurant.votes.to_i != 0 ? @restaurant.rating.round(1) : 0
+				.voices
+					(#{@restaurant.votes} votes)
+			.sp
+			%ul.info_list
+				%li=@restaurant.address
+				%li="Phone #{@restaurant.phone}" unless @restaurant.phone.nil?
+				%li=raw"Opening hours: <br /> #{@restaurant.time}" unless @restaurant.time.nil?
+			#map_canvas_popup
+			%script
+				= "load_map(#{@markers})"
+
+		
+	
+			
+			

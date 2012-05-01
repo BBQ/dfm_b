@@ -321,7 +321,7 @@ img {
   border-top: 1px solid #bbb6b0;
   border-bottom: 1px solid #fffffa;
   width: 100%;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   display: block;
   clear: both; }
 
@@ -363,6 +363,13 @@ img {
   border-radius: 5px;
   line-height: 1.2em; }
 
+.hd2 {
+  color: #2b8da2;
+  font-size: 2em;
+  line-height: 0.9em;
+  margin: 15px 0 10px 0;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.75); }
+
 .side_div {
   width: 220px;
   font-family: bell;
@@ -370,12 +377,6 @@ img {
   color: #453624;
   float: left;
   padding: 0 15px; }
-  .side_div .hd2 {
-    color: #2b8da2;
-    font-size: 2em;
-    line-height: 0.9em;
-    margin: 15px 0 10px 0;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.75); }
   .side_div .desc {
     font-size: 1em;
     line-height: 1em;
@@ -404,6 +405,8 @@ img {
       float: left;
       color: #3f3627;
       margin-bottom: 5px; }
+  .side_div .hd3 {
+    font-size: 1.5em; }
   .side_div #map_canvas_popup {
     width: 225px;
     height: 225px;
@@ -414,135 +417,193 @@ img {
     line-height: 1.2em; }
 
 .center_div {
-  width: 710px;
+  width: 680px;
   float: left;
   font-family: bell;
   background: #f2efe9;
   color: #453624;
   border-radius: 5px;
-  min-height: 580px; }
+  min-height: 550px;
+  padding: 15px; }
   .center_div #review_content {
     clear: both; }
-    .center_div #review_content #restaurant_menu {
-      padding: 0 5px; }
-    .center_div #review_content .category {
-      font-size: 1.6em;
-      color: #453624;
-      margin: 20px 0 5px 0;
-      float: left;
-      display: block;
-      width: 490px;
-      padding: 0 5px; }
-    .center_div #review_content ul li {
-      float: left;
-      display: block;
-      padding: 8px 8px 6px 8px;
-      width: 472px; }
-    .center_div #review_content ul li.first {
-      background: #e1dcd3;
-      padding: 8px 8px 6px 8px; }
-    .center_div #review_content .name, .center_div #review_content .price {
-      font-size: 0.9em;
-      font-family: bell_bold; }
-    .center_div #review_content .name {
-      float: left; }
-    .center_div #review_content .price {
-      float: right;
-      text-align: right; }
-    .center_div #review_content .votes, .center_div #review_content .desc {
-      font-family: bell;
-      line-height: 1em; }
-      .center_div #review_content .votes span, .center_div #review_content .desc span {
-        font-family: bell_bold; }
-    .center_div #review_content .votes {
-      width: 110px; }
-    .center_div #review_content .desc {
-      width: 300px; }
-    .center_div #review_content #restaurant_dishes {
-      padding-top: 10px; }
-      .center_div #review_content #restaurant_dishes .dish {
-        border: 1px solid white;
-        margin: 0 20px 10px 25px; }
-        .center_div #review_content #restaurant_dishes .dish .rate {
-          margin: 0; }
-    .center_div #review_content #review #full_photo {
-      margin: 15px;
-      width: 470px;
-      height: 470px;
-      float: left;
-      background-size: 470px 470px; }
-      .center_div #review_content #review #full_photo .next {
-        float: right;
-        margin-top: 200px; }
-      .center_div #review_content #review #full_photo .prev {
-        float: left;
-        margin-top: 200px; }
-    .center_div #review_content #review .data {
-      margin-top: 15px;
-      z-index: 2;
-      float: left;
-      font-size: 0.9em;
-      line-height: 1em;
-      width: 195px; }
-      .center_div #review_content #review .data .user_link {
-        font-family: bell_bold;
-        color: #453624; }
-      .center_div #review_content #review .data .photo {
-        float: left;
-        width: 30px;
-        margin: 0 5px 5px 0; }
-      .center_div #review_content #review .data .desc {
-        width: 195px;
-        float: left;
-        margin: 10px 0; }
-    .center_div #review_content #review .friends {
-      background: url("/images/user.png") no-repeat left top; }
-    .center_div #review_content #review .likes {
-      background: url("/images/heart.png") no-repeat left top; }
-    .center_div #review_content #review .set {
-      height: 25px;
-      clear: both; }
-      .center_div #review_content #review .set .title {
-        padding: 5px 0 10px 25px;
-        font-size: 0.8em; }
-    .center_div #review_content #review #section-scroll {
-      overflow: auto;
-      height: 150px; }
-    .center_div #review_content #review .comments {
-      background: url("/images/comments.png") no-repeat left top; }
-      .center_div #review_content #review .comments img {
-        float: left;
-        margin-right: 5px;
-        width: 30px; }
-      .center_div #review_content #review .comments a {
-        font-size: 0.8em;
-        float: left;
-        color: #6f5f4d;
-        margin-right: 5px; }
-        .center_div #review_content #review .comments a:hover {
-          text-decoration: none; }
-      .center_div #review_content #review .comments .text {
-        font-size: 0.9em;
-        width: auto;
-        text-align: left;
-        color: #6f5f4d; }
-      .center_div #review_content #review .comments .hr {
-        margin: 10px 0;
-        padding: 5px 0;
-        border-bottom: 1px solid #bdb8b2;
-        box-shadow: 0px 1px 0px 0px #f1efeb; }
-      .center_div #review_content #review .comments .csp {
-        padding-bottom: 5px;
-        clear: both; }
-      .center_div #review_content #review .comments textarea {
-        border-radius: 5px;
-        border: 1px #bdb8b2 solid;
-        margin: 0;
-        width: 410px;
-        height: 60px;
-        color: #453624;
-        font-size: 1.2em;
-        padding: 5px; }
+
+#rest_img {
+  float: left;
+  padding: 0 10px 5px 0; }
+
+.hd2r {
+  font-size: 1.4em;
+  color: #2b8da2;
+  line-height: 0.9em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.75); }
+
+.info {
+  font-size: 0.8em;
+  margin: 0 0 10px 0; }
+
+.hd3r {
+  font-size: 1.6em;
+  line-height: 1.5em; }
+
+#best_dishes li {
+  float: left;
+  padding: 0 0 0 2px;
+  width: 95px;
+  text-align: center; }
+  #best_dishes li img {
+    width: 90px;
+    height: 90px; }
+  #best_dishes li a {
+    font-size: 0.9em;
+    color: #2b8da2; }
+
+.block {
+  margin-top: 10px; }
+  .block .hd1s {
+    font-family: bell_bold; }
+  .block .bm10 {
+    margin-bottom: 10px; }
+  .block .info_list li {
+    margin: 0;
+    padding: 0 0 5px 0;
+    width: auto; }
+
+#restaurant_menu {
+  padding: 0 5px; }
+
+.category {
+  font-size: 1.6em;
+  color: #453624;
+  margin: 20px 0 5px 0;
+  float: left;
+  display: block;
+  width: 490px;
+  padding: 0 5px; }
+
+ul li {
+  float: left;
+  display: block;
+  padding: 8px 8px 6px 8px;
+  width: 472px; }
+ul li.first {
+  background: #e1dcd3;
+  padding: 8px 8px 6px 8px; }
+
+.name, .price {
+  font-size: 0.9em;
+  font-family: bell_bold; }
+
+.name {
+  float: left; }
+
+.price {
+  float: right;
+  text-align: right; }
+
+.votes, .desc {
+  font-family: bell;
+  line-height: 1em; }
+  .votes span, .desc span {
+    font-family: bell_bold; }
+
+.votes {
+  width: 110px; }
+
+.desc {
+  width: 300px; }
+
+#restaurant_dishes {
+  padding-top: 10px; }
+  #restaurant_dishes .dish {
+    border: 1px solid white;
+    margin: 0 20px 10px 25px; }
+    #restaurant_dishes .dish .rate {
+      margin: 0; }
+
+#review #full_photo {
+  margin: 0 15px 0 0;
+  width: 470px;
+  height: 470px;
+  float: left;
+  position: relative;
+  background-size: 470px 470px; }
+#review #review_nav {
+  position: absolute;
+  top: 0;
+  width: 470px;
+  height: 470px; }
+  #review #review_nav .next {
+    float: right;
+    margin-top: 200px; }
+  #review #review_nav .prev {
+    float: left;
+    margin-top: 200px; }
+#review .data {
+  z-index: 2;
+  float: left;
+  font-size: 0.9em;
+  line-height: 1em;
+  width: 195px; }
+  #review .data .user_link {
+    font-family: bell_bold;
+    color: #453624; }
+  #review .data .photo {
+    float: left;
+    width: 30px;
+    margin: 0 5px 5px 0; }
+  #review .data .desc {
+    width: 195px;
+    float: left;
+    margin: 10px 0; }
+#review .friends {
+  background: url("/images/user.png") no-repeat left top; }
+#review .likes {
+  background: url("/images/heart.png") no-repeat left top; }
+#review .set {
+  height: 25px;
+  clear: both; }
+  #review .set .title {
+    padding: 5px 0 10px 25px;
+    font-size: 0.8em; }
+#review #section-scroll {
+  overflow: auto;
+  height: 150px; }
+#review .comments {
+  background: url("/images/comments.png") no-repeat left top; }
+  #review .comments img {
+    float: left;
+    margin-right: 5px;
+    width: 30px; }
+  #review .comments a {
+    font-size: 0.8em;
+    float: left;
+    color: #6f5f4d;
+    margin-right: 5px; }
+    #review .comments a:hover {
+      text-decoration: none; }
+  #review .comments .text {
+    font-size: 0.9em;
+    width: auto;
+    text-align: left;
+    color: #6f5f4d; }
+  #review .comments .hr {
+    margin: 10px 0;
+    padding: 5px 0;
+    border-bottom: 1px solid #bdb8b2;
+    box-shadow: 0px 1px 0px 0px #f1efeb; }
+  #review .comments .csp {
+    padding-bottom: 5px;
+    clear: both; }
+  #review .comments textarea {
+    border-radius: 5px;
+    border: 1px #bdb8b2 solid;
+    margin: 0;
+    width: 410px;
+    height: 60px;
+    color: #453624;
+    font-size: 1.2em;
+    padding: 5px; }
 
 #tags {
   background: #f2efe9;

@@ -17,7 +17,22 @@ class ReviewsController < ApplicationController
   def show
     if params[:id]
       
-      @review = Review.find_by_id(params[:id])
+      
+      if params[:id].count('-') > 0 
+        @dish = Dish.find_by_id(params[:id].sub('-', ''))
+        @review = Review.new
+        @review.id = "-#{@dish.id}"
+        @review.user_id = 1
+        @review.dish_id = @dish.id
+        @review.rating = @dish.rating
+        @review.text = @dish.description
+        @review.restaurant_id = @dish.network.restaurants.first.id
+        @review.network_id = @dish.network.id
+      else
+        @review = Review.find_by_id(params[:id])
+      end
+        
+      
       @r_categories = RestaurantCategory.where("id IN (#{@review.restaurant.restaurant_categories})").collect { |c| c.name}.join(', ')
     
       @bill = []
@@ -27,8 +42,21 @@ class ReviewsController < ApplicationController
       @bill = @bill.join('')
     
       @markers = []
-      @review.network.restaurants.each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
+      @review.network.restaurants.select([:name, :lat, :lon]).each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
       @markers = "[#{@markers.join(',')}]"
+      
+      @fb_obj = 'review'
+      
+      r_arr = Review.where("dish_id = ? AND photo IS NOT NULL",@review.dish_id).collect {|r| r.id}
+      r_arr.push("-#{@review.dish_id}".to_i) unless @review.dish.photo.blank?
+      
+      if next_index = r_arr.find_index(@review.id)
+        @review_next_id = r_arr[0] unless @review_next_id = r_arr[next_index + 1]           
+      end
+      
+      if prev_index = r_arr.find_index(@review.id)
+        @review_prev_id = r_arr[prev_index - 1]
+      end
     
       @friends_with = []
       if @review.friends
@@ -70,19 +98,7 @@ class ReviewsController < ApplicationController
           :text => c.text
         })
       end
-      
-      r_arr = Review.where(:dish_id => @review.dish_id).collect {|r| r.id}
-      
-      if next_index = r_arr.find_index(@review.id) + 1
-        @review_next_id = r_arr[0] unless @review_next_id = r_arr[next_index]           
-      end
-      
-      if prev_index = r_arr.find_index(@review.id) - 1
-        @review_prev_id = r_arr[prev_index] 
-      end
-      
-      
-      
+            
     end
   end
   

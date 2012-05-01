@@ -326,10 +326,10 @@ class ApiController < ApplicationController
         if review = Review.find_by_id_and_user_id(params[:review_id], params[:user_id])
           review.delete
         else
-          $error = {:description => 'Review not found', :code => 5}  
+          $error = {:description => 'Review not found', :code => 329}  
         end
     else
-        $error = {:description => 'Params missing', :code => 8}
+        $error = {:description => 'User or Review not found', :code => 332}
     end
     return render :json => {
           :error => $error
@@ -1512,7 +1512,7 @@ class ApiController < ApplicationController
       end
             
     else
-      $error = {:description => 'Parameters missing', :code => 8}  
+      $error = {:description => 'We\'re sorry, but we have some problems with your review, try to login/logout and post again', :code => 1515}  
     end
     
     return render :json => {

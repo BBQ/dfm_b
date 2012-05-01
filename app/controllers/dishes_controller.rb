@@ -35,27 +35,31 @@ class DishesController < ApplicationController
       @bill = @bill.join
       
       @markers = []
-      @dish.network.restaurants.each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
+      @dish.network.restaurants.select([:name, :lat, :lon]).each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
       @markers = "[#{@markers.join(',')}]"
       
       if @dish.photo.blank?
         @review = @dish.reviews.where('photo IS NOT NULL').order('count_likes DESC, rating DESC').first
       else
         @review = Review.new
+        @review.id = "-#{@dish.id}"
         @review.user_id = 1
         @review.dish_id = @dish.id
         @review.rating = @dish.rating
         @review.text = @dish.description
       end
       
-      r_arr = Review.where("dish_id = ? AND photo IS NOT NULL",@review.dish_id).collect {|r| r.id}
+      @fb_obj = 'dish'
+      
+      r_arr = Review.where("dish_id = ? AND photo IS NOT NULL",params[:id]).collect {|r| r.id}
+      r_arr.push("-#{@dish.id}".to_i) unless @dish.photo.blank?
       
       if next_index = r_arr.find_index(@review.id)
         @review_next_id = r_arr[0] unless @review_next_id = r_arr[next_index + 1]           
       end
       
       if prev_index = r_arr.find_index(@review.id)
-        @review_prev_id = r_arr[prev_index - 1] 
+        @review_prev_id = r_arr[prev_index - 1]
       end
       
     end

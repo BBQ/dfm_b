@@ -11,6 +11,7 @@ namespace :facebook do
       if r && u
         if !u.fb_access_token.blank? && u.user_preferences.share_my_like_to_facebook == true
           graph = Koala::Facebook::API.new(u.fb_access_token)
+          graph.put_connections('me', "dish_fm:review", :review => "http://dish.fm/reviews/#{r.id}" )
           
           if r.facebook_share_id.blank?
             graph.put_object("me", "feed", :message => "liked #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} http://test.dish.fm/reviews/#{r.id}")
@@ -34,6 +35,7 @@ namespace :facebook do
       if r && u
         if !u.fb_access_token.blank? && u.user_preferences.share_my_comments_to_facebook == true
           graph = Koala::Facebook::API.new(u.fb_access_token)
+          graph.put_connections('me', "dish_fm:review", :review => "http://dish.fm/reviews/#{r.id}" )
           
           if r.facebook_share_id.blank?
             graph.put_object("me", "feed", :message => "commented on #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} \"#{c.text}\" http://test.dish.fm/reviews/#{r.id}")
