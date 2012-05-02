@@ -32,71 +32,72 @@ class ReviewsController < ApplicationController
         @review = Review.find_by_id(params[:id])
       end
         
-      
-      @r_categories = RestaurantCategory.where("id IN (#{@review.restaurant.restaurant_categories})").collect { |c| c.name}.join(', ')
+      if @review
+        @r_categories = RestaurantCategory.where("id IN (#{@review.restaurant.restaurant_categories})").collect { |c| c.name}.join(', ')
     
-      @bill = []
-      @review.restaurant.bill.to_i.times do
-        @bill.push('$')
-      end
-      @bill = @bill.join('')
+        @bill = []
+        @review.restaurant.bill.to_i.times do
+          @bill.push('$')
+        end
+        @bill = @bill.join('')
     
-      @markers = []
-      @review.network.restaurants.select([:name, :lat, :lon]).each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
-      @markers = "[#{@markers.join(',')}]"
+        @markers = []
+        @review.network.restaurants.select([:name, :lat, :lon]).each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
+        @markers = "[#{@markers.join(',')}]"
       
-      @fb_obj = @review
+        @fb_obj = @review
       
-      r_arr = Review.where("dish_id = ? AND photo IS NOT NULL",@review.dish_id).collect {|r| r.id}
-      r_arr.push("-#{@review.dish_id}".to_i) unless @review.dish.photo.blank?
+        r_arr = Review.where("dish_id = ? AND photo IS NOT NULL",@review.dish_id).collect {|r| r.id}
+        r_arr.push("-#{@review.dish_id}".to_i) unless @review.dish.photo.blank?
       
-      if next_index = r_arr.find_index(@review.id)
-        @review_next_id = r_arr[0] unless @review_next_id = r_arr[next_index + 1]           
-      end
+        if next_index = r_arr.find_index(@review.id)
+          @review_next_id = r_arr[0] unless @review_next_id = r_arr[next_index + 1]           
+        end
       
-      if prev_index = r_arr.find_index(@review.id)
-        @review_prev_id = r_arr[prev_index - 1]
-      end
+        if prev_index = r_arr.find_index(@review.id)
+          @review_prev_id = r_arr[prev_index - 1]
+        end
     
-      @friends_with = []
-      if @review.friends
-        @review.friends.split(',').each do |u|
-          if user = User.find_by_id(u)
-            @friends_with.push({
-              :id => user.id,
-              :name => user.name,
-              :photo => user.user_photo
-            })
-          elsif user = u.split('@@@')
-            user[0] = "http://graph.facebook.com/#{user[0]}/picture?type=square" if user[0].to_i != 0
-            @friends_with.push({
-              :id => 0,
-              :name => user[1],
-              :photo => user[0],
+        @friends_with = []
+        if @review.friends
+          @review.friends.split(',').each do |u|
+            if user = User.find_by_id(u)
+              @friends_with.push({
+                :id => user.id,
+                :name => user.name,
+                :photo => user.user_photo
+              })
+            elsif user = u.split('@@@')
+              user[0] = "http://graph.facebook.com/#{user[0]}/picture?type=square" if user[0].to_i != 0
+              @friends_with.push({
+                :id => 0,
+                :name => user[1],
+                :photo => user[0],
+              })
+            end
+          end
+        end
+    
+        @likes = []
+        likes = Like.where(:review_id => params[:id])
+        if likes.count > 0
+          User.where("id IN (#{likes.collect {|l| l.user_id}.join(',')})").each do |u|
+            @likes.push({
+              :id => u.id,
+              :name => u.name,
+              :photo => u.user_photo
             })
           end
         end
-      end
-    
-      @likes = []
-      likes = Like.where(:review_id => params[:id])
-      if likes.count > 0
-        User.where("id IN (#{likes.collect {|l| l.user_id}.join(',')})").each do |u|
-          @likes.push({
-            :id => u.id,
-            :name => u.name,
-            :photo => u.user_photo
+      
+        @comments = []
+        Comment.where(:review_id => params[:id]).order("created_at DESC").limit(5).each do |c|
+          @comments.push({
+            :name => c.user.name,
+            :photo => c.user.user_photo,
+            :text => c.text
           })
         end
-      end
-      
-      @comments = []
-      Comment.where(:review_id => params[:id]).order("created_at DESC").limit(5).each do |c|
-        @comments.push({
-          :name => c.user.name,
-          :photo => c.user.user_photo,
-          :text => c.text
-        })
       end
             
     end
