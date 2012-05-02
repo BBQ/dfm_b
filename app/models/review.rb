@@ -221,8 +221,8 @@ class Review < ActiveRecord::Base
         review.save        
         
       else
-        user_review.lat = restaurant.lat
-        user_review.lng = restaurant.lng
+        user_review[:lat] = restaurant.lat
+        user_review[:lng] = restaurant.lng
         
         r = create(user_review)  
         dish.rating = (dish.rating * dish.votes + rating) / (dish.votes + 1)
