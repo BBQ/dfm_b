@@ -29,6 +29,15 @@ namespace :fixup do
     set_offset
   end
   
+  task :set_rev_loc => :environment do
+    Review.all.each do |r|
+      r.lat = r.restaurant.lat
+      r.lng = r.restaurant.lon
+      r.save
+    end
+    p 'Done'
+  end
+  
   #TODO: Start rake fix:add_r_img, tags:match_dishes, tags:match_rest on Test Server foursquare check_ins
   desc "Add Images to Restaurant"
   task :add_r_img => :environment do  
