@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
   end
   
   has_many :authentications, :dependent => :destroy
-  belongs_to :user_preference, :dependent => :destroy
+  has_one :user_preference, :dependent => :destroy
   accepts_nested_attributes_for :authentications
 
   # validates_confirmation_of :password
