@@ -23,7 +23,7 @@ module ApplicationHelper
       
       raw %Q{<meta property="fb:app_id" content="#{app_id}" />
       <meta property="og:type" content="dish_fm:#{type}" />
-      <meta property="og:title" content="title" />
+      <meta property="og:title" content="#{title}" />
       <meta property="og:image" content="#{image}" />
       <meta property="og:description" content="#{description}" />
       <meta property="og:url" content="#{url}">
