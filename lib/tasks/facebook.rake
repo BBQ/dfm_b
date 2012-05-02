@@ -9,7 +9,7 @@ namespace :facebook do
       u = User.find_by_id(l.user_id)    
       
       if r && u
-        if !u.fb_access_token.blank? && u.user_preferences.share_my_like_to_facebook == true
+        if !u.fb_access_token.blank? && u.user_preference.share_my_like_to_facebook == true
           graph = Koala::Facebook::API.new(u.fb_access_token)
           graph.put_connections('me', "dish_fm:review", :review => "http://dish.fm/reviews/#{r.id}" )
           
@@ -33,7 +33,7 @@ namespace :facebook do
       u = User.find_by_id(c.user_id)    
       
       if r && u
-        if !u.fb_access_token.blank? && u.user_preferences.share_my_comments_to_facebook == true
+        if !u.fb_access_token.blank? && u.user_preference.share_my_comments_to_facebook == true
           graph = Koala::Facebook::API.new(u.fb_access_token)
           graph.put_connections('me', "dish_fm:review", :review => "http://dish.fm/reviews/#{r.id}" )
           
@@ -50,15 +50,14 @@ namespace :facebook do
   end
   
   task :expert => :environment do
-    review_id = ENV["REVIEW_ID"]
-    if rw = Review.find_by_id(review_id)
+    if rw = Review.find_by_id(ENV["REVIEW_ID"])
       
       d = Dish.find_by_id(rw.dish_id)
       r = Restaurant.find_by_id(rw.restaurant_id)
       u = User.find_by_id(rw.user_id) 
       
       if (r || d) && u
-        if !u.fb_access_token.blank? && u.user_preferences.share_my_top_expert_to_facebook == true
+        if !u.fb_access_token.blank? && u.user_preference.share_my_top_expert_to_facebook == true
           graph = Koala::Facebook::API.new(u.fb_access_token)
           
           if d.top_user_id == u.id
