@@ -1271,8 +1271,8 @@ class ApiController < ApplicationController
     end
     
     if params[:lat] && params[:lon]
-      lat = params[:lat].round(2)
-      lng = params[:lon].round(2)
+      lat = params[:lat].to_f.round(2)
+      lng = params[:lon].to_f.round(2)
     else 
       lat = 40.77
       lng = -73.98
