@@ -1,40 +1,41 @@
-#popup
-	.side_div
-		.hd2
-			= "#{@review.dish.name}"
-		.desc
-			= "#{@review.dish.description}"
-		.price
-			= "#{@review.dish.price} #{@review.dish.currency}"
-		.sp
-		.rating
-			Raiting
-		.rate
-			- if @review.dish.rating != 0
-				- @review.dish.rating.round.times do
-					= image_tag 'star_filled.png', :class => 'star'
-				- (5 - @review.dish.rating).to_i.times do
-					= image_tag 'star_empty.png', :class => 'star'
-			- else
-				- 5.times do
-					= image_tag 'star_empty.png', :class => 'star'
-			.mark
-				= @review.dish.votes.to_i != 0 ? @review.dish.rating.round(1) : 0
-			.voices
-				(#{@review.dish.votes} vote(s))
-		.sp
-		.hd3
-			= "@ #{@review.restaurant.name}"
-		#rest_desc
-			= [ @r_categories, 
-				"#{@review.restaurant.rating.round(1)}(#{@review.restaurant.votes}votes)", 
-				"#{@review.restaurant.fsq_checkins_count} checkins",
-				@bill ].reject(&:empty?).join(', ')
-		#map_canvas_popup
-		%script
-			= "load_map(#{@markers})"
-		.addr_phone
-			= "#{@review.restaurant.address} Тел:#{@review.restaurant.phone}"
-	.center_div
-		#review_content
-			= render 'popup/review'
+-if @review
+	#popup
+		.side_div
+			.hd2
+				= "#{@review.dish.name}"
+			.desc
+				= "#{@review.dish.description}"
+			.price
+				= "#{@review.dish.price} #{@review.dish.currency}"
+			.sp
+			.rating
+				Raiting
+			.rate
+				- if @review.dish.rating != 0
+					- @review.dish.rating.round.times do
+						= image_tag 'star_filled.png', :class => 'star'
+					- (5 - @review.dish.rating).to_i.times do
+						= image_tag 'star_empty.png', :class => 'star'
+				- else
+					- 5.times do
+						= image_tag 'star_empty.png', :class => 'star'
+				.mark
+					= @review.dish.votes.to_i != 0 ? @review.dish.rating.round(1) : 0
+				.voices
+					(#{@review.dish.votes} vote(s))
+			.sp
+			.hd3
+				= "@ #{@review.restaurant.name}"
+			#rest_desc
+				= [ @r_categories, 
+					"#{@review.restaurant.rating.round(1)}(#{@review.restaurant.votes}votes)", 
+					"#{@review.restaurant.fsq_checkins_count} checkins",
+					@bill ].reject(&:empty?).join(', ')
+			#map_canvas_popup
+			%script
+				= "load_map(#{@markers})"
+			.addr_phone
+				= "#{@review.restaurant.address} Тел:#{@review.restaurant.phone}"
+		.center_div
+			#review_content
+				= render 'popup/review'
