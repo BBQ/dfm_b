@@ -16,7 +16,7 @@ class Review < ActiveRecord::Base
     where("((ACOS(
     	SIN(lat * PI() / 180) * SIN(? * PI() / 180) + 
     	COS(lat * PI() / 180) * COS(? * PI() / 180) * 
-    	COS((? - lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344 <= ?", lat, lat, lng, rad)
+    	COS((? - lng) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344 <= ?", lat, lat, lng, rad)
   end
   
   def self.following(user_id)
