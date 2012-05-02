@@ -12,10 +12,10 @@ module ApplicationHelper
       case type
         when 'dish'
           title = "#{@fb_obj.name}"
-          description = "#{@fb_obj.description}"
+          description = "#{@fb_obj.description}. Rating: #{@fb_obj.rating}. Votes: #{@fb_obj.votes}."
         when 'restaurant'
           title = "#{@fb_obj.name}"
-          description = "#{@fb_obj.description}"
+          description = "#{@fb_obj.description}. Rating: #{@fb_obj.rating}. Votes: #{@fb_obj.votes}. Popularity: #{@fb_obj.fsq_checkins_count} checkins"
         when 'review' 
           title = "#{@fb_obj.dish.name}"
           description = "#{@fb_obj.dish.name} in #{@fb_obj.restaurant.name}"

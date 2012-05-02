@@ -397,7 +397,7 @@ class ApiController < ApplicationController
   
   def get_dish
     if params[:dish_id]
-      return render :json => API.get_dish(params[:user_id], params[:dish_id], params[:type])
+      return render :json => API.get_dish(params[:user_id], params[:dish_id], params[:type], params[:found])
     else
       $error = {:description => 'Parameters missing', :code => 8}
       return render :json => {:error => $error}
@@ -431,7 +431,7 @@ class ApiController < ApplicationController
         id = params[:network_id]
         data_type = 'network'
       end     
-      return render :json => API.get_restaurant(id, data_type, params[:user_id], params[:type])
+      return render :json => API.get_restaurant(id, data_type, params[:user_id], params[:type], params[:found])
     else
       return render :json => {:error => $error}
     end
