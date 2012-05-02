@@ -127,9 +127,9 @@ namespace :facebook do
           if picture = graph.put_picture("#{$domain}#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
             graph.put_connections('me', "dish_fm:Post", :review => "#{$domain}reviews/#{r.id}")
             
-            rev = Review.find_by_id(review_id) 
-            rev.facebook_share_id = picture['id']
-            rev.save
+            review = Review.find_by_id(r.id) 
+            review.facebook_share_id = picture['id']
+            review.save
             
             tags = []
             if r.friends
