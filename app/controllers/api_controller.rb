@@ -1267,18 +1267,17 @@ class ApiController < ApplicationController
     elsif params[:reviews_for_user_id]
       reviews = Review.where('user_id = ?',params[:reviews_for_user_id])
     else
-      reviews = Review.where('photo IS NOT NULL')
+      if params[:lat] && params[:lon] 
+        lat = params[:lat].to_f.round(2)
+        lng = params[:lon].to_f.round(2)
+      else 
+        lat = 40.77
+        lng = -73.98
+      end      
+      reviews = Review.where('photo IS NOT NULL').near(lat,lng)
     end
     
-    if params[:lat] && params[:lon]
-      lat = params[:lat].to_f.round(2)
-      lng = params[:lon].to_f.round(2)
-    else 
-      lat = 40.77
-      lng = -73.98
-    end
-    
-    reviews = reviews.near(lat,lng).limit(limit).order('id DESC').includes(:dish)
+    reviews = reviews.limit(limit).order('id DESC').includes(:dish)
     reviews = reviews.where("id < ?", params[:review_id]) if params[:review_id]
     
     review_data = []
