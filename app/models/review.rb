@@ -189,7 +189,7 @@ class Review < ActiveRecord::Base
         dish = DishDelivery.find(user_review[:dish_id])
         restaurant = Delivery.find_by_id(user_review[:restaurant_id])
       else
-        dish = Dish.find(user_review[:dish_id])      
+        dish = Dish.find_by_id(user_review[:dish_id])      
         restaurant = Restaurant.find_by_id(user_review[:restaurant_id])
         network = Network.find_by_id(restaurant.network_id)
       end
@@ -247,11 +247,12 @@ class Review < ActiveRecord::Base
     
       if top_uid = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0]
         if dish.top_user_id != top_uid
+          dish.top_user_id = top_uid
+          dish.save
+          
           system "rake facebook:expert REVIEW_ID='#{r.id}' &"
           system "rake twitter:expert REVIEW_ID='#{r.id}' &"
         end
-        dish.top_user_id = top_uid
-        dish.save
       end
     
       if restaurant
