@@ -14,7 +14,7 @@ class RestaurantsController < ApplicationController
       end
       @bill = @bill.join('')
       
-      @fb_obj = 'restaurant'
+      @fb_obj = @restaurant
             
       @best_dishes = Dish.select([:id, :photo, :name]).where("network_id = ? AND rating > 0", @restaurant.network_id).limit(21).order("rating/votes DESC")
       

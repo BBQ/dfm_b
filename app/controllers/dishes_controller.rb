@@ -49,7 +49,7 @@ class DishesController < ApplicationController
         @review.text = @dish.description
       end
       
-      @fb_obj = 'dish'
+      @fb_obj = @dish
       
       r_arr = Review.where("dish_id = ? AND photo IS NOT NULL",params[:id]).collect {|r| r.id}
       r_arr.push("-#{@dish.id}".to_i) unless @dish.photo.blank?

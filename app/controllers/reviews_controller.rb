@@ -45,7 +45,7 @@ class ReviewsController < ApplicationController
       @review.network.restaurants.select([:name, :lat, :lon]).each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
       @markers = "[#{@markers.join(',')}]"
       
-      @fb_obj = 'review'
+      @fb_obj = @review
       
       r_arr = Review.where("dish_id = ? AND photo IS NOT NULL",@review.dish_id).collect {|r| r.id}
       r_arr.push("-#{@review.dish_id}".to_i) unless @review.dish.photo.blank?
