@@ -58,16 +58,15 @@ namespace :facebook do
       
       if (r || d) && u
         if !u.fb_access_token.blank? && u.user_preference.share_my_top_expert_to_facebook == true
+
           graph = Koala::Facebook::API.new(u.fb_access_token)
+          action = "dish_fm:Become_An_Expert"
+                    
+          graph.put_connections('me', action, :dish => "http://test.dish.fm/dishes/#{d.id}") if d.top_user_id == u.id
+          graph.put_connections('me', action, :restaurant => "http://test.dish.fm/restaurants/#{r.id}") if r.top_user_id == u.id
           
-          if d.top_user_id == u.id
-            # graph.put_object("me", "feed", :message => "became an expert on #{d.name}@#{r.name}")
-            graph.put_connections('me', "dish_fm:Become_An_Expert", :dish => "http://test.dish.fm/dishes/#{d.id}")
-          elsif r.top_user_id == u.id
-            # graph.put_object("me", "feed", :message => "became an expert on #{r.name}")
-            graph.put_connections('me', "dish_fm:Become_An_Expert", :restaurant => "http://test.dish.fm/restaurants/#{r.id}")
-          end
-        
+          # graph.put_object("me", "feed", :message => "became an expert on #{d.name}@#{r.name}")
+          # graph.put_object("me", "feed", :message => "became an expert on #{r.name}")
         end
       end
       
