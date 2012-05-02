@@ -8,7 +8,13 @@ namespace :facebook do
     
     if l = Like.find_by_id(like_id)
       r = Review.find_by_id(l.review_id) 
-      u = User.find_by_id(l.user_id)    
+      u = User.find_by_id(l.user_id)
+      
+      if u.id != r.user_id
+        name = "#{r.user.name.split(' ')[0]}'s"
+      else
+        name = 'his own'
+      end    
       
       if r && u
         if !u.fb_access_token.blank? && u.user_preference.share_my_like_to_facebook == true
@@ -16,7 +22,7 @@ namespace :facebook do
           graph.put_connections('me', "dish_fm:review", :review => "#{$domain}reviews/#{r.id}" )
           
           if r.facebook_share_id.blank?
-            graph.put_object("me", "feed", :message => "liked #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} #{$domain}reviews/#{r.id}")
+            graph.put_object("me", "feed", :message => "liked #{name} dish-in in #{r.dish.name}@#{r.restaurant.name} #{$domain}reviews/#{r.id}")
           else
             graph.put_object(picture['id'], 'likes')
           end
@@ -37,7 +43,7 @@ namespace :facebook do
       if u.id != r.user_id
         name = "#{r.user.name.split(' ')[0]}'s"
       else
-        name = 'his'
+        name = 'his own'
       end    
       
       if r && u
