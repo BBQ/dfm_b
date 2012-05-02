@@ -4,7 +4,7 @@
 		.hd2r=@restaurant.name
 		.info
 			= [ @r_categories, 
-				"#{@restaurant.rating.round(1)}(#{@restaurant.votes}votes)", 
+				"#{@restaurant.rating.round(1)} (#{@restaurant.votes} vote(s))", 
 				"#{@restaurant.fsq_checkins_count} checkins",
 				@bill ].reject(&:empty?).join(', ')
 		.info
