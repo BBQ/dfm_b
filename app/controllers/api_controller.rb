@@ -1276,6 +1276,7 @@ class ApiController < ApplicationController
     else 
       lat = 40.77
       lng = -73.98
+    end
     
     reviews = reviews.near(lat,lng).limit(limit).order('id DESC').includes(:dish)
     reviews = reviews.where("id < ?", params[:review_id]) if params[:review_id]
