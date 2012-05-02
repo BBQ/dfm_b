@@ -31,8 +31,8 @@ namespace :fixup do
   
   task :set_rev_loc => :environment do
     Review.all.each do |r|
-      r.lat = r.restaurant.lat
-      r.lng = r.restaurant.lon
+      r.lat = r.restaurant.lat if r.restaurant.lat
+      r.lng = r.restaurant.lon if r.restaurant.lon
       r.save
     end
     p 'Done'
