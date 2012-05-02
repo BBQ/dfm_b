@@ -40,7 +40,7 @@ namespace :facebook do
           graph.put_connections('me', "dish_fm:Comment", :review => "#{$domain}reviews/#{r.id}" )
           
           if r.facebook_share_id.blank?
-            graph.put_object("me", "feed", :message => "commented on #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} \"#{c.text}\" http://test.dish.fm/reviews/#{r.id}")
+            graph.put_object("me", "feed", :message => "commented on #{r.user.name.splot(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} \"#{c.text}\" http://test.dish.fm/reviews/#{r.id}")
           else
             graph.put_object(picture['id'],'comments', :message => c.text )
           end
