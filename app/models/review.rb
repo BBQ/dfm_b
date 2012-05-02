@@ -221,7 +221,9 @@ class Review < ActiveRecord::Base
         review.save        
         
       else
-
+        user_review.lat = restaurant.lat
+        user_review.lng = restaurant.lng
+        
         r = create(user_review)  
         dish.rating = (dish.rating * dish.votes + rating) / (dish.votes + 1)
         dish.votes += 1
@@ -237,9 +239,6 @@ class Review < ActiveRecord::Base
             network.rating = (network.rating * network.votes + rating) / (network.votes + 1)
             network.votes += 1
             network.save
-            
-            review.lat = restaurant.lat
-            review.lng = restaurant.lon
           end
         end
         status = 'created'
