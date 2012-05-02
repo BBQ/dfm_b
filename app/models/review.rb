@@ -237,6 +237,9 @@ class Review < ActiveRecord::Base
             network.rating = (network.rating * network.votes + rating) / (network.votes + 1)
             network.votes += 1
             network.save
+            
+            review.lat = restaurant.lat
+            review.lng = restaurant.lon
           end
         end
         status = 'created'
