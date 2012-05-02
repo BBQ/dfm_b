@@ -1270,8 +1270,15 @@ class ApiController < ApplicationController
       reviews = Review.where('photo IS NOT NULL')
     end
     
-    reviews = reviews.limit(limit).order('id DESC').includes(:dish)
-    reviews = reviews.where("id < ?", params[:review_id]) if params[:review_id] 
+    if params[:lat] && params[:lon]
+      lat = params[:lat].round(2)
+      lng = params[:lon].round(2)
+    else 
+      lat = 40.77
+      lng = -73.98
+    
+    reviews = reviews.near(lat,lng).limit(limit).order('id DESC').includes(:dish)
+    reviews = reviews.where("id < ?", params[:review_id]) if params[:review_id]
     
     review_data = []
     reviews.each {|r| review_data.push(r.format_review_for_api(params[:user_id]))}    

@@ -12,6 +12,13 @@ class Review < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader 
   
+  def self.near(lat, lng, rad = 1000)
+    where("((ACOS(
+    	SIN(lat * PI() / 180) * SIN(? * PI() / 180) + 
+    	COS(lat * PI() / 180) * COS(? * PI() / 180) * 
+    	COS((? - lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344 <= ?", lat, lat, lng, rad)
+  end
+  
   def self.following(user_id)
     where("user_id = ? || user_id IN (SELECT follow_user_id FROM followers WHERE user_id = ?)", user_id, user_id)
   end
