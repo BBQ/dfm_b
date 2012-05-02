@@ -210,7 +210,9 @@ class Review < ActiveRecord::Base
           if user_review[:rtype] != 'delivery'
             network.rating = network.votes == 1?0 : (network.rating * network.votes - review.rating) / (network.votes - 1)
             network.rating = (network.rating * (network.votes - 1) + rating) / network.votes
-            network.save
+            network.save            
+            review.lat = restaurant.lat
+            review.lng = restaurant.lon
           end
         end
           
