@@ -3,10 +3,9 @@ namespace :facebook do
   
   $domain = 'http://test.dish.fm/'
   
-  task :like => :environment do
-    like_id = ENV["LIKE_ID"]
-    
-    if l = Like.find_by_id(like_id)
+  task :like => :environment do    
+    if l = Like.find_by_id(ENV["LIKE_ID"])
+      
       r = Review.find_by_id(l.review_id) 
       u = User.find_by_id(l.user_id)
       
