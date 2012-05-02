@@ -16,7 +16,7 @@ namespace :facebook do
           graph.put_connections('me', "dish_fm:review", :review => "#{$domain}reviews/#{r.id}" )
           
           if r.facebook_share_id.blank?
-            graph.put_object("me", "feed", :message => "liked #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} http://test.dish.fm/reviews/#{r.id}")
+            graph.put_object("me", "feed", :message => "liked #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} #{$domain}reviews/#{r.id}")
           else
             graph.put_object(picture['id'], 'likes')
           end
@@ -32,7 +32,13 @@ namespace :facebook do
     
     if c = Comment.find_by_id(comment_id)
       r = Review.find_by_id(c.review_id) 
-      u = User.find_by_id(c.user_id)    
+      u = User.find_by_id(c.user_id)
+      
+      if u.id != r.user_id
+        name = "#{r.user.name.split(' ')[0]}'s"
+      else
+        name = 'his'
+      end    
       
       if r && u
         if !u.fb_access_token.blank? && u.user_preference.share_my_comments_to_facebook == true
@@ -40,9 +46,9 @@ namespace :facebook do
           graph.put_connections('me', "dish_fm:Comment", :review => "#{$domain}reviews/#{r.id}" )
           
           if r.facebook_share_id.blank?
-            graph.put_object("me", "feed", :message => "commented on #{r.user.name.split(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} \"#{c.text}\" http://test.dish.fm/reviews/#{r.id}")
+            graph.put_object("me", "feed", :message => "commented on #{name} dish-in in #{r.dish.name}@#{r.restaurant.name} \"#{c.text}\" #{$domain}reviews/#{r.id}")
           else
-            graph.put_object(picture['id'],'comments', :message => c.text )
+            graph.put_object(r.facebook_share_id, 'comments', :message => c.text )
           end
           
         end
@@ -111,7 +117,7 @@ namespace :facebook do
             end
           end
 
-          caption = "#{dish_text} #{place} #{$domain}/reviews/#{r.id}"
+          caption = "#{dish_text} #{place} #{$domain}reviews/#{r.id}"
           albuminfo = graph.put_object('me','albums', :name => 'Dish.fm Photos') if albuminfo["id"].blank?
 
           if picture = graph.put_picture("#{$domain}#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
