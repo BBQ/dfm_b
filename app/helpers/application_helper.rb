@@ -6,19 +6,21 @@ module ApplicationHelper
       domain = "http://test.dish.fm"
       app_id = Rails.application.config.sorcery.facebook.key
       type = @fb_obj.class.name.downcase
-      image = "#{domain}#{@fb_obj.photo.iphone.url}"
       url = "#{domain}#{eval "#{type}_path(#{@fb_obj.id})" }"
       
       case type
         when 'dish'
           title = "#{@fb_obj.name}"
           description = "Rating: #{@fb_obj.rating} (#{@fb_obj.votes} vote(s)). #{@fb_obj.description}"
+          image = "#{domain}#{@fb_obj.photo.iphone.url}"
         when 'restaurant'
           title = "#{@fb_obj.name}"
           description = "Rating: #{@fb_obj.rating} (#{@fb_obj.votes} vote(s)). Popularity: #{@fb_obj.fsq_checkins_count} checkins. #{@fb_obj.description}"
+          image = "#{domain}#{@fb_obj.restaurant_images.first.photo.iphone.url}"
         when 'review' 
           title = "#{@fb_obj.dish.name}"
           description = "#{@fb_obj.dish.name} in #{@fb_obj.restaurant.name}"
+          image = "#{domain}#{@fb_obj.photo.iphone.url}"
       end
       
       raw %Q{<meta property="fb:app_id" content="#{app_id}" />

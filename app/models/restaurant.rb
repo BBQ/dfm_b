@@ -1,22 +1,22 @@
 # encoding: utf-8
 class Restaurant < ActiveRecord::Base
   
-  has_many :dishes# , :dependent => :destroy
-  has_many :reviews# , :dependent => :destroy
+  has_many :dishes, :dependent => :destroy
+  has_many :reviews, :dependent => :destroy
   belongs_to :network
   has_many :dishes, :through => :network 
   
-  has_many :restaurant_types# , :dependent => :destroy
+  has_many :restaurant_types, :dependent => :destroy
   has_many :types, :through => :restaurant_types
-  has_many :restaurant_images# , :dependent => :destroy
+  has_many :restaurant_images, :dependent => :destroy
   
   has_many :restaurant_cuisines
   has_many :cuisines, :through => :restaurant_cuisines
-  has_many :dish_category_order# , :dependent => :destroy
+  has_many :dish_category_order, :dependent => :destroy
   
-  has_many :restaurant_tags# , :dependent => :destroy
+  has_many :restaurant_tags, :dependent => :destroy
   has_many :tags, :through => :restaurant_tags
-  has_many :favourites# , :dependent => :destroy
+  has_many :favourites, :dependent => :destroy
     
   mount_uploader :photo, ImageUploader 
   

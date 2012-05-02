@@ -6,16 +6,16 @@ class Dish < ActiveRecord::Base
   belongs_to :dish_subtype
   belongs_to :dish_extratype
   
-  has_many :reviews# , :dependent => :destroy
-  has_many :dish_likes# , :dependent => :destroy
-  has_many :dish_comments# , :dependent => :destroy
+  has_many :reviews, :dependent => :destroy
+  has_many :dish_likes, :dependent => :destroy
+  has_many :dish_comments, :dependent => :destroy
   
   belongs_to :network
   has_many :restaurants, :through => :network    
   
-  has_many :dish_tags# , :dependent => :destroy
+  has_many :dish_tags, :dependent => :destroy
   has_many :tags, :through => :dish_tags
-  has_many :favourites# , :dependent => :destroy
+  has_many :favourites, :dependent => :destroy
       
   mount_uploader :photo, ImageUploader
   
