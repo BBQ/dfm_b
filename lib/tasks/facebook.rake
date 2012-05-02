@@ -19,12 +19,12 @@ namespace :facebook do
       if r && u
         if !u.fb_access_token.blank? && u.user_preference.share_my_like_to_facebook == true
           graph = Koala::Facebook::API.new(u.fb_access_token)
-          graph.put_connections('me', "dish_fm:review", :review => "#{$domain}reviews/#{r.id}" )
+          graph.put_connections('me', "dish_fm:Like", :review => "#{$domain}reviews/#{r.id}" )
           
           if r.facebook_share_id.blank?
             graph.put_object("me", "feed", :message => "liked #{name} dish-in in #{r.dish.name}@#{r.restaurant.name} #{$domain}reviews/#{r.id}")
           else
-            graph.put_object(picture['id'], 'likes')
+            graph.put_object(r.facebook_share_id, 'likes')
           end
           
         end
