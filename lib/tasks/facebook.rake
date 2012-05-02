@@ -82,9 +82,8 @@ namespace :facebook do
   end
   
   task :dishin => :environment do    
-    review_id = ENV["REVIEW_ID"]
-    
-    if r = Review.find_by_id(review_id)  
+
+    if r = Review.find_by_id(ENV["REVIEW_ID"])  
       if u = User.find_by_id(r.user_id)
         
         unless u.fb_access_token.blank? 
@@ -121,6 +120,7 @@ namespace :facebook do
           albuminfo = graph.put_object('me','albums', :name => 'Dish.fm Photos') if albuminfo["id"].blank?
 
           if picture = graph.put_picture("#{$domain}#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
+            graph.put_connections('me', "dish_fm:Post", :review => "#{$domain}reviews/#{r.id}")
             
             rev = Review.find_by_id(review_id) 
             rev.facebook_share_id = picture['id']
