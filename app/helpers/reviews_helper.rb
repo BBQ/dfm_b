@@ -47,14 +47,14 @@ module ReviewsHelper
   def comments(review, self_review = nil)
 
     if self_review.nil?
-      cms = Comment.where(:review_id => review.id).order("created_at DESC").limit(5)
+      comments = Comment.where(:review_id => review.id).order("created_at DESC").limit(5)
     else
-      cms = DishComment.where(:dish_id => review.dish_id).order("created_at DESC").limit(5)
+      comments = DishComment.where(:dish_id => review.dish_id).order("created_at DESC").limit(5)
     end
     
     comments_a = []    
-    cms.each do |c|
-      comments.push({
+    comments.each do |c|
+      comments_a.push({
         :name => c.user.name,
         :photo => c.user.user_photo,
         :text => c.text
