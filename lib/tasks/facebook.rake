@@ -62,7 +62,7 @@ namespace :facebook do
           
           if d.top_user_id == u.id
             # graph.put_object("me", "feed", :message => "became an expert on #{d.name}@#{r.name}")
-            graph.put_connections('me', "dish_fm:Become_An_Expert", :restaurant => "http://test.dish.fm/dishes/#{d.id}")
+            graph.put_connections('me', "dish_fm:Become_An_Expert", :dish => "http://test.dish.fm/dishes/#{d.id}")
           elsif r.top_user_id == u.id
             # graph.put_object("me", "feed", :message => "became an expert on #{r.name}")
             graph.put_connections('me', "dish_fm:Become_An_Expert", :restaurant => "http://test.dish.fm/restaurants/#{r.id}")
