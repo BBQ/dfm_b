@@ -20,13 +20,16 @@ namespace :ylp do
 
         r.dishes.all.each do |d|
           yd = YlpDish.find_by_name_and_ylp_restaurant_id(d.name, yr.id)
-
-          if dish_category = DishCategory.find_by_name(yd.name)
-            d.dish_category_id = dish_category.id
-          else
-            d.dish_category_id = DishCategory.create({:name => yd.name}).id
+          
+          unless yd.dish_category.to_s.blank?
+            if dish_category = DishCategory.find_by_name(yd.dish_category)
+              d.dish_category_id = dish_category.id
+            else
+              d.dish_category_id = DishCategory.create({:name => yd.name}).id
+            end
+            d.save      
           end
-          d.save      
+          
         end
 
       end
