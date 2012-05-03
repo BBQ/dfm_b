@@ -25,7 +25,7 @@ namespace :ylp do
               if dish_category = DishCategory.find_by_name(yd.dish_category)
                 d.dish_category_id = dish_category.id
               else
-                d.dish_category_id = DishCategory.create({:name => yd.name}).id
+                d.dish_category_id = DishCategory.create({:name => yd.dish_category}).id
               end
               d.save      
             end
