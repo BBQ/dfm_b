@@ -31,7 +31,7 @@ namespace :fixup do
       sim = RestaurantCategory.where("name REGEXP '^#{c.name}' AND name != ?", c.name).collect{|c| "#{c.id}: #{c.name}"}.join(',')
       unless sim.blank?
         p "  #{sim}"
-        y = gets
+        y = STDIN.gets
         p y
       end  
          
