@@ -4,11 +4,15 @@ namespace :facebook do
   $domain = 'http://test.dish.fm/'
   
   task :find => :environment do
-    if !u.fb_access_token.blank?
-      graph = Koala::Facebook::API.new(u.fb_access_token)
+    if u = User.find_by_id(ENV["USER_ID"])    
+      if !u.fb_access_token.blank?
+        
+        graph = Koala::Facebook::API.new(u.fb_access_token)
       
-      graph.put_connections('me', "dish_fm:Find", :dish => "#{$domain}dishes/#{ENV["DISH_ID"]}" ) if ENV["DISH_ID"]
-      graph.put_connections('me', "dish_fm:Find", :restaurant => "#{$domain}restaurants/#{ENV["RESTAURANT_ID"]}" ) if ENV["RESTAURANT_ID"]
+        graph.put_connections('me', "dish_fm:Find", :dish => "#{$domain}dishes/#{ENV["DISH_ID"]}" ) if ENV["DISH_ID"]
+        graph.put_connections('me', "dish_fm:Find", :restaurant => "#{$domain}restaurants/#{ENV["RESTAURANT_ID"]}" ) if ENV["RESTAURANT_ID"]
+      
+      end
     end
   end
   

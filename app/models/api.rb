@@ -2,7 +2,7 @@
 class API < ActiveRecord::Base
   
   def self.get_dish(user_id, dish_id, type, found = nil)
-    system "rake facebook:find DISH_ID='#{dish_id}' &" if found = '1'
+    system "rake facebook:find DISH_ID='#{dish_id}', USER_ID = '#{user_id}' &" if found = '1'
     
     if type == 'home_cooked'
       dish = HomeCook.select([:top_user_id, :id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
@@ -132,7 +132,7 @@ class API < ActiveRecord::Base
   end
   
   def self.get_restaurant(id, data_type, user_id, type = nil, found = nil)
-    system "rake facebook:find RESTAURANT_ID='#{id}' &" if found = '1'
+    system "rake facebook:find RESTAURANT_ID='#{id}', USER_ID = '#{user_id}' &" if found = '1'
     
     if type == 'delivery'
       restaurant = Delivery.find_by_id(id)
