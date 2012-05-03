@@ -122,7 +122,6 @@ class API < ActiveRecord::Base
         :top_expert => top_expert ||= nil,
         :restaurants => restaurants,
         :favourite => favourite,
-        :sys => sys,
         :error => {:description => nil, :code => nil}
       }  
       data.as_json
