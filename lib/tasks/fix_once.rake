@@ -24,6 +24,15 @@ end
 
 namespace :fixup do
   
+  desc "Find similar categories in RestaurantCategory"
+  task :rc_sim => :environment do
+    RestaurantCategory.where("(LENGTH(name) - LENGTH(REPLACE(name, ' ', ''))+1) = 1").each do |c|
+      p "#{c.name}"
+      sim = RestaurantCategory.where("name REGEXP '[[:<:]]#{c.name}[[:>:]]'").collect{|c| "#{c.id}: #{c.name}"}.join(',')
+      p sim
+    end
+  end
+  
   desc "Delete dublicates in restaurants"
   task :del_dbl_res => :environment do
     exclude = Review.group('restaurant_id').all.collect {|rw| rw.restaurant_id}.compact.reject{|id| id.to_s.blank?}.join(',')
