@@ -2,10 +2,7 @@
 class API < ActiveRecord::Base
   
   def self.get_dish(user_id, dish_id, type, found = nil)
-    if found == '1'
-      system "rake facebook:find DISH_ID='#{dish_id}' USER_ID='#{user_id}' &"
-      sys = "rake facebook:find DISH_ID='#{dish_id}' USER_ID='#{user_id}' &" 
-    end
+    system "rake facebook:find DISH_ID='#{dish_id}' USER_ID='#{user_id}' &" if found == '1'
     
     if type == 'home_cooked'
       dish = HomeCook.select([:top_user_id, :id, :dish_subtype_id, :rating, :votes, :dish_type_id, :name, :description, :created_at, :count_likes, :count_comments, :photo]).find_by_id(dish_id)
