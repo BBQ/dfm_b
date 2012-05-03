@@ -293,9 +293,11 @@ namespace :fixup do
   end
   
   task :phone => :environment do
+    
     Restaurant.all.each do |r|
       unless r.phone.nil?
-        p_arr = []
+    
+        p_arr = []    
         r.phone.split(/[,;]/).each do  |p|
           phone = p.gsub('.0','')
           phone = phone.gsub(/\D/,'').to_s
