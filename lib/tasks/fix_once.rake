@@ -24,6 +24,25 @@ end
 
 namespace :fixup do
   
+  desc "Cleanup after deleting Restaursnts"
+  task :clean_rest_staff
+    
+    if networks_with_rest = Network.select('networks.id').joins(:restaurants).group('networks.id').collect {|n| n.id}.compact.reject{|id| id.to_s.blank?}.join(',')
+      Dish.delete_all("network_id not IN (#{networks_with_rest})")
+      Network.delete_all("id not IN (#{networks_with_rest})")
+    end
+    
+    if all_restaurants = Restaurant.select(:id).all.collect {|n| n.id}.compact.reject{|id| id.to_s.blank?}.join(',')
+      RestaurantType.delete_all("restaurant_id not IN (#{all_restaurants})")
+      RestaurantImage.destroy_all("restaurant_id not IN (#{all_restaurants})")
+      RestaurantCuisine.delete_all("restaurant_id not IN (#{all_restaurants})")
+      DishCategoryOrder.delete_all("restaurant_id not IN (#{all_restaurants})")
+      RestaurantTag.delete_all("restaurant_id not IN (#{all_restaurants})")
+    end
+    
+    p "Cleared!"
+  end
+  
   desc "Delete dublicates in restaurants"
   task :del_dbl_res => :environment do
     exclude = Review.group('restaurant_id').all.collect {|rw| rw.restaurant_id}.compact.reject{|id| id.to_s.blank?}.join(',')
