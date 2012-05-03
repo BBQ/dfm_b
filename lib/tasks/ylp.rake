@@ -10,7 +10,7 @@ namespace :ylp do
   
   task :fix_menu_categories => :environment do
 
-    all_r = Restaurant.where([:source => 'ylp', :has_menu => 1]).order(:id)
+    all_r = Restaurant.where({:source => 'ylp', :has_menu => 1}).order(:id)
     count = all_r.count
     p "Overall: #{count}"
     i = 0
