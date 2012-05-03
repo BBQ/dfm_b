@@ -25,7 +25,7 @@ end
 namespace :fixup do
   
   desc "Cleanup after deleting Restaursnts"
-  task :clean_rest_staff
+  task :clean_rest_staff => :environment do
     
     if networks_with_rest = Network.select('networks.id').joins(:restaurants).group('networks.id').collect {|n| n.id}.compact.reject{|id| id.to_s.blank?}.join(',')
       Dish.delete_all("network_id not IN (#{networks_with_rest})")
