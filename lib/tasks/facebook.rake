@@ -4,8 +4,8 @@ namespace :facebook do
   $domain = 'http://test.dish.fm/'
   
   task :find => :environment do
-    graph.put_connections('me', "dish_fm:Find", :review => "#{$domain}dish/#{ENV["DISH_ID"]}" ) if ENV["DISH_ID"]
-    graph.put_connections('me', "dish_fm:Find", :review => "#{$domain}restaurant/#{ENV["RESTAURANT_ID"]}" ) if ENV["RESTAURANT_ID"]
+    graph.put_connections('me', "dish_fm:Find", :dish => "#{$domain}dish/#{ENV["DISH_ID"]}" ) if ENV["DISH_ID"]
+    graph.put_connections('me', "dish_fm:Find", :restaurant => "#{$domain}restaurant/#{ENV["RESTAURANT_ID"]}" ) if ENV["RESTAURANT_ID"]
   end
   
   task :like => :environment do    
