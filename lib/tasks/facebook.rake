@@ -9,8 +9,8 @@ namespace :facebook do
         
         graph = Koala::Facebook::API.new(u.fb_access_token)
       
-        graph.put_connections('me', "dish_fm:Find", :dish => "#{$domain}dishes/#{ENV["DISH_ID"]}" ) if ENV["DISH_ID"]
-        graph.put_connections('me', "dish_fm:Find", :restaurant => "#{$domain}restaurants/#{ENV["RESTAURANT_ID"]}" ) if ENV["RESTAURANT_ID"]
+        p graph.put_connections('me', "dish_fm:Find", :dish => "#{$domain}dishes/#{ENV["DISH_ID"]}" ) if ENV["DISH_ID"]
+        p graph.put_connections('me', "dish_fm:Find", :restaurant => "#{$domain}restaurants/#{ENV["RESTAURANT_ID"]}" ) if ENV["RESTAURANT_ID"]
       
       end
     end
