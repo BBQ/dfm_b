@@ -19,24 +19,25 @@ namespace :ylp do
       if yr = YlpRestaurant.find_by_fsq_id_and_has_menu(r.fsq_id,1)
 
         r.dishes.all.each do |d|
-          yd = YlpDish.find_by_name_and_ylp_restaurant_id(d.name, yr.id)
+          if yd = YlpDish.find_by_name_and_ylp_restaurant_id(d.name, yr.id)
           
-          unless yd.dish_category.to_s.blank?
-            if dish_category = DishCategory.find_by_name(yd.dish_category)
-              d.dish_category_id = dish_category.id
-            else
-              d.dish_category_id = DishCategory.create({:name => yd.name}).id
+            unless yd.dish_category.to_s.blank?
+              if dish_category = DishCategory.find_by_name(yd.dish_category)
+                d.dish_category_id = dish_category.id
+              else
+                d.dish_category_id = DishCategory.create({:name => yd.name}).id
+              end
+              d.save      
             end
-            d.save      
+            
           end
-          
         end
-
+        
       end
       i += 1
       p "Done:#{r.id}, Left: #{count - i}"
+      
     end
-
   end
   
   task :clean_rest => :environment do
