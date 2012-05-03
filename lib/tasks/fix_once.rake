@@ -26,7 +26,7 @@ namespace :fixup do
   
   desc "Delete dublicates in restaurants"
   task :del_dbl_res => :environment do
-    exclude = Review.all.group('restaurant_id').collect {|rw| rw.restaurant_id}.reject(&:empty?).compact.join(',')
+    exclude = Review.group('restaurant_id').all.collect {|rw| rw.restaurant_id}.reject(&:empty?).compact.join(',')
     
     Restaurant.group('fsq_id').having('count(*) > 1"').where("source = 'ylp' and id NOT IN (#{exclude})").each do |r|
       p Restaurant.where(:fsq_id => r.fsq_id)
