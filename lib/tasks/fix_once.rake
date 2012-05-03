@@ -28,10 +28,9 @@ namespace :fixup do
   task :del_dbl_res => :environment do
     exclude = Review.group('restaurant_id').all.collect {|rw| rw.restaurant_id}.compact.reject{|id| id.to_s.blank?}.join(',')
     
-    Restaurant.group('fsq_id').having('count(*) > 1').where("source = 'ylp' and id NOT IN (#{exclude})").each do |r|
-      p Restaurant.where(:fsq_id => r.fsq_id)
-      # Restaurant.delete_all(:fsq_id => r.fsq_id)
-      # r.clone
+    Restaurant.group('fsq_id').having('count(*) > 1').where("fsq_id IS NOT NULL AND source = 'ylp' and id NOT IN (#{exclude})").order(:id).each do |r|
+      p "#{r.id}:#{r.name}"
+      Restaurant.delete_all("fsq_id = #{r.fsq_id} AND id != #{r.id}")
     end
   end
   
