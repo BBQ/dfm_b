@@ -145,49 +145,4 @@ namespace :tags do
     p 'It`s done!'
   end
   
-  desc "Match Tags"
-  task :match_old => :environment do
-    Tag.each do |t|
-      
-      tag_id = t.id     
-      
-      # Restaurants
-      rs = Restaurant.where("restaurants.network_id IN ( SELECT DISTINCT network_id FROM dishes WHERE 
-          dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{t.name}[[:>:]]')
-          OR 
-          dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{t.name}[[:>:]]')
-          OR
-          dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{t.name}[[:>:]]')
-          OR
-          LOWER(dishes.`name`) REGEXP '[[:<:]]#{t.name}[[:>:]]'
-          OR
-          LOWER(restaurants.`name`) REGEXP '[[:<:]]#{t.name}[[:>:]]')")
-      
-      rs.each do |r|
-        if tag_id
-          RestaurantTag.create(:tag_id => tag_id, :restaurant_id => r.id)
-        else
-          p 'Ouppps! R!'
-        end
-      end
-      
-      # Dishes      
-      ds = Dish.where("dish_category_id IN (SELECT DISTINCT id FROM dish_categories WHERE LOWER(dish_categories.`name`) REGEXP '[[:<:]]#{t.name}[[:>:]]') 
-            OR 
-            dishes.dish_type_id IN (SELECT DISTINCT id FROM dish_types WHERE LOWER(dish_types.`name`) REGEXP '[[:<:]]#{t.name}[[:>:]]')
-            OR
-            dishes.dish_subtype_id IN (SELECT DISTINCT id FROM dish_subtypes WHERE LOWER(dish_subtypes.`name`) REGEXP '[[:<:]]#{t.name}[[:>:]]')
-            OR 
-            LOWER(dishes.`name`) REGEXP '[[:<:]]#{t.name}[[:>:]]'")
-      
-      ds.each do |d|
-        if tag_id
-          DishTag.create(:tag_id => tag_id, :dish_id => d.id)
-        else
-          p 'Ouppps! D!'
-        end
-      end
-    end
-  end
-  
 end

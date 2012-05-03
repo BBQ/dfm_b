@@ -24,8 +24,14 @@ end
 
 namespace :fixup do
   
-  desc "Cleanup after deleting Restaursnts"
-  task :clean_rest_staff => :environment do
+  desc "Delete dublicates in restaurants"
+  task :del_dbl_res => :environment do
+    exclude = Review.group('restaurant_id').all.collect {|rw| rw.restaurant_id}.compact.reject{|id| id.to_s.blank?}.join(',')
+    
+    Restaurant.group('fsq_id').having('count(*) > 1').where("fsq_id IS NOT NULL AND source = 'ylp'").order(:id).each do |r|
+      p "#{r.id}:#{r.name}"
+      Restaurant.delete_all("fsq_id = '#{r.fsq_id}' AND id != '#{r.id}' AND id NOT IN (#{exclude})")
+    end
     
     if networks_with_rest = Network.select('networks.id').joins(:restaurants).group('networks.id').collect {|n| n.id}.compact.reject{|id| id.to_s.blank?}.join(',')
       Dish.delete_all("network_id not IN (#{networks_with_rest})")
@@ -40,17 +46,6 @@ namespace :fixup do
       RestaurantTag.delete_all("restaurant_id not IN (#{all_restaurants})")
     end
     
-    p "Cleared!"
-  end
-  
-  desc "Delete dublicates in restaurants"
-  task :del_dbl_res => :environment do
-    exclude = Review.group('restaurant_id').all.collect {|rw| rw.restaurant_id}.compact.reject{|id| id.to_s.blank?}.join(',')
-    
-    Restaurant.group('fsq_id').having('count(*) > 1').where("fsq_id IS NOT NULL AND source = 'ylp'").order(:id).each do |r|
-      p "#{r.id}:#{r.name}"
-      Restaurant.delete_all("fsq_id = '#{r.fsq_id}' AND id != '#{r.id}' AND id NOT IN (#{exclude})")
-    end
   end
   
   desc "Set TimeZone offset for restaurants"

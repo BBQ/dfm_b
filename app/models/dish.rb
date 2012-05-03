@@ -86,7 +86,7 @@ class Dish < ActiveRecord::Base
       end  
     end
     
-    # system "rake tags:match_rest NETWORK_ID='#{network_id}' DISH_ID='#{id}' &"
+    system "rake tags:match_rest NETWORK_ID='#{network_id}' DISH_ID='#{id}' &"
     
   end
   

@@ -407,7 +407,7 @@ class ApiController < ApplicationController
   def get_common_data
     timestamp = Time.at(params[:timestamp].to_i) if params[:timestamp].to_i > 0
             
-    keywords = Tag.select("id, name_a as name").where("name_a IN ('salad','soup','pasta','pizza','burger','noodles','risotto','rice','steak','sushi','dessert','drinks','meat','fish','vegetables')")    
+    keywords = Tag.select("id, name_a as name").where("name_a IN ('salad','soup','pasta','pizza','burger','steak','sushi','dessert','drinks','meat','fish','vegetables')")    
     locations = LocationTip.select([:id, :name])
     rc = RestaurantCategory.select([:name])
 
