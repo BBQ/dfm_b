@@ -104,9 +104,7 @@ namespace :tags do
   
   desc "Match Dish Tags"
   task :match_dishes => :environment do
-    tags  = Tag.all
-        
-    tags.each do |t|
+    Tag.all.each do |t|
       
       tag_id = t.id
       names_array = []
@@ -138,11 +136,11 @@ namespace :tags do
           :tag_id => tag_id, 
           :dish_id => d.id
         }
-        p "#{data}"
         DishTag.create(data)
+        pp data
       end
     end
-    p 'It`s done!'
+    p 'All done!'
   end
   
 end
