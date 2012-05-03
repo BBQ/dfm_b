@@ -132,7 +132,7 @@ class API < ActiveRecord::Base
   end
   
   def self.get_restaurant(id, data_type, user_id, type = nil, found = nil)
-    system "rake facebook:find RESTAURANT_ID='#{id}', USER_ID = '#{user_id}' &" if found = '1'
+    system "rake facebook:find RESTAURANT_ID='#{id}' USER_ID='#{user_id}' &" if found = '1'
     
     if type == 'delivery'
       restaurant = Delivery.find_by_id(id)
