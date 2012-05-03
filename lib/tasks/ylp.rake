@@ -8,6 +8,34 @@ namespace :ylp do
   require 'nokogiri'
   require 'time'
   
+  task :fix_menu_categories => :environment do
+
+    all_r = Restaurant.where([:source => 'ylp', :has_menu => 1])
+    count = all_r.count
+    p "Overall: #{count}"
+    i = 0
+
+    all_r.each do |r|
+      if yr = YlpRestaurant.find_by_fsq_id(r.fsq_id)
+
+        r.dishes.all.each do |d|
+          yd = YlpDish.find_by_name_and_ylp_restaurant_id(d.name, yr.id)
+
+          if dish_category = DishCategory.find_by_name(yd.name)
+            d.dish_category_id = dish_category.id
+          else
+            d.dish_category_id = DishCategory.create({:name => yd.name}).id
+          end
+          d.save      
+        end
+
+      end
+      i += 1
+      p "Done:#{i}, Left: #{count - i}"
+    end
+
+  end
+  
   task :clean_rest => :environment do
     if rest_rev_ids = Review.select(:restaurant_id).group(:restaurant_id).all.collect {|r| r.restaurant_id}.compact.join(',')
       Restaurant.delete_all("id NOT IN (#{rest_rev_ids}) AND id > 17974 AND city NOT IN ('Москва', 'Moscow', 'Tallinn', 'Skolkovo', 'Tallinna')")
