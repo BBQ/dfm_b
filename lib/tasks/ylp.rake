@@ -10,13 +10,13 @@ namespace :ylp do
   
   task :fix_menu_categories => :environment do
 
-    all_r = Restaurant.where({:source => 'ylp', :has_menu => 1}).order(:id)
+    all_r = Restaurant.select([:id, :fsq_id, :network_id]).where(:source => 'ylp').order(:id)
     count = all_r.count
     p "Overall: #{count}"
     i = 0
 
     all_r.each do |r|
-      if yr = YlpRestaurant.find_by_fsq_id(r.fsq_id)
+      if yr = YlpRestaurant.find_by_fsq_id_and_has_menu(r.fsq_id,1)
 
         r.dishes.all.each do |d|
           yd = YlpDish.find_by_name_and_ylp_restaurant_id(d.name, yr.id)
