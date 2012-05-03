@@ -29,7 +29,9 @@ namespace :fixup do
     RestaurantCategory.where("(LENGTH(name) - LENGTH(REPLACE(name, ' ', ''))+1) = 1").each do |c|
       p "#{c.name}"
       sim = RestaurantCategory.where("name REGEXP '^#{c.name}' AND name != ?", c.name).collect{|c| "#{c.id}: #{c.name}"}.join(',')
-      p "  #{sim}" unless sim.blank?
+      unless sim.blank?
+        p "  #{sim}"
+        gets y 
     end
   end
   
