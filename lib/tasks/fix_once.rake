@@ -27,7 +27,7 @@ namespace :fixup do
   desc "Find similar categories in RestaurantCategory"
   task :rc_sim => :environment do
     p "Getting Restaurants ... "
-    restaurants = Restaurant.all
+    restaurants = Restaurant.select([:id, :restaurant_categories]).all
     p "got it! "
     p "Begin with Categories ... "
     RestaurantCategory.where("(LENGTH(name) - LENGTH(REPLACE(name, ' ', ''))+1) = 1").each do |c|
@@ -40,11 +40,11 @@ namespace :fixup do
             if rc_array.index(c.id.to_s)
               p "before #{rc_array}"
               rc_array.delete_if {|i| i == c.id.to_s}
-              rc_array.push(r.cid)
+              rc_array.push(rc.id)
               p "after #{rc_array}"
             end
-            r.restaurant_categories = rc_array.join(',')
-            r.save
+            # r.restaurant_categories = rc_array.join(',')
+            # r.save
           end
           p "this done!"
         else
