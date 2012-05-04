@@ -33,7 +33,7 @@ namespace :fixup do
     RestaurantCategory.where("(LENGTH(name) - LENGTH(REPLACE(name, ' ', ''))+1) = 1").each do |c|
       RestaurantCategory.where("name REGEXP '^#{c.name}' AND name != ?", c.name).each do |rc|
         p "Do you want to merge #{rc.id}:#{rc.name} with #{c.id}:#{c.name} y/n:"
-        if STDIN.gets.count('y')
+        if STDIN.gets.count('y') != 0
           p "Merging ..."
           restaurants.each do |r|
             if r.restaurant_categories
