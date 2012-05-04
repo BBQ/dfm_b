@@ -32,23 +32,23 @@ namespace :fixup do
     p "Begin with Categories ... "
     RestaurantCategory.where("(LENGTH(name) - LENGTH(REPLACE(name, ' ', ''))+1) = 1").each do |c|
       RestaurantCategory.where("name REGEXP '^#{c.name}' AND name != ?", c.name).each do |rc|
-        p "Do you want to merge #{rc.id}:#{rc.name} with #{c.id}:#{c.name} y/n:"
+        p "Do you want to merge #{c.id}:#{c.name} with #{rc.id}:#{rc.name} y/n:"
         if STDIN.gets.count('y') != 0
           p "Merging ..."
           restaurants.each do |r|
             if r.restaurant_categories
               rc_array = r.restaurant_categories.split(',')
               
-              if rc_array.index(c.id.to_s)
-                rc_array.delete_if {|i| i == c.id.to_s}
-                rc_array.push(rc.id)
+              if rc_array.index(rc.id.to_s)
+                rc_array.delete_if {|i| i == rc.id.to_s}
+                rc_array.push(c.id)
                 r.restaurant_categories = rc_array.join(',')
                 r.save
               end
               
             end
           end
-          c.delete
+          rc.delete
           p "this done!"
         else
           p "Skiped"
