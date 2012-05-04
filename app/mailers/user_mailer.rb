@@ -1,6 +1,6 @@
 class UserMailer < ActionMailer::Base
   
-  default :from => "Dish.FM <hi@dish.fm>"
+  default :from => "order-confirm@example.com"
    
   def email_notification
     @url  = "http://test.dish.fm"
@@ -12,7 +12,7 @@ class UserMailer < ActionMailer::Base
         if email = user_to.email
           @user = user_to.name
           @text = "#{User.find_by_id(n.user_id_from).name.split(' ')[0]} #{n.alert.downcase}"
-          mail(:to => email, :subject => subject, :from => 'Dish.FM hi@dish.fm')
+          mail(:to => email, :subject => subject)
           
           n.mailed_at = Time.now
           n.save
