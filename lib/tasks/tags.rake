@@ -8,7 +8,7 @@ namespace :tags do
     if ENV["NETWORK_ID"]
       restaurants = restaurants.where(:network_id => ENV["NETWORK_ID"])
     else
-      restaurants = restaurants.all
+      restaurants = restaurants.where("id >= 82977")
     end
           
     restaurants.each do |r|
