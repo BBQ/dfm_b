@@ -48,6 +48,7 @@ namespace :fixup do
               
             end
           end
+          c.delete
           p "this done!"
         else
           p "Skiped"
