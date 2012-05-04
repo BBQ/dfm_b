@@ -1,6 +1,6 @@
 class UserMailer < ActionMailer::Base
   
-  default :from => "no-reply@example.com"
+  default :from => "hi@dish.fm"
    
   def email_notification
     @url  = "http://test.dish.fm"
