@@ -12,7 +12,7 @@ class UserMailer < ActionMailer::Base
         if email = user_to.email
           @user = user_to.name
           @text = "#{User.find_by_id(n.user_id_from).name.split(' ')[0]} #{n.alert.downcase}"
-          mail(:to => email, :subject => subject, :from => 'hi@dish.fm')
+          mail(:to => email, :subject => subject, :from => 'Dish.FM hi@dish.fm')
           
           n.mailed_at = Time.now
           n.save
