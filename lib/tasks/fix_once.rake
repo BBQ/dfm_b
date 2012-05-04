@@ -36,15 +36,15 @@ namespace :fixup do
         if STDIN.gets.count('y')
           p "Merging ..."
           restaurants.each do |r|
-            rc_array = r.restaurant_categories.split(',')
-            if rc_array.index(c.id.to_s)
-              p "before #{rc_array}"
-              rc_array.delete_if {|i| i == c.id.to_s}
-              rc_array.push(rc.id)
-              p "after #{rc_array}"
+            if r.restaurant_categories
+              rc_array = r.restaurant_categories.split(',')
+              if rc_array.index(c.id.to_s)
+                rc_array.delete_if {|i| i == c.id.to_s}
+                rc_array.push(rc.id)
+              end
+              r.restaurant_categories = rc_array.join(',')
+              r.save
             end
-            # r.restaurant_categories = rc_array.join(',')
-            # r.save
           end
           p "this done!"
         else
