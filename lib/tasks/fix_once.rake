@@ -38,12 +38,14 @@ namespace :fixup do
           restaurants.each do |r|
             if r.restaurant_categories
               rc_array = r.restaurant_categories.split(',')
+              
               if rc_array.index(c.id.to_s)
                 rc_array.delete_if {|i| i == c.id.to_s}
                 rc_array.push(rc.id)
+                r.restaurant_categories = rc_array.join(',')
+                r.save
               end
-              r.restaurant_categories = rc_array.join(',')
-              r.save
+              
             end
           end
           p "this done!"
