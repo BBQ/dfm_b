@@ -26,12 +26,29 @@ namespace :fixup do
   
   desc "Find similar categories in RestaurantCategory"
   task :rc_sim => :environment do
+    p "Getting Restaurants ... "
+    restaurants = Restaurant.all
+    p "got it! "
+    p "Begin with Categories ... "
     RestaurantCategory.where("(LENGTH(name) - LENGTH(REPLACE(name, ' ', ''))+1) = 1").each do |c|
       RestaurantCategory.where("name REGEXP '^#{c.name}' AND name != ?", c.name).each do |rc|
-        p "Do you want to merge #{rc.name} with #{c.name} y/n:"
+        p "Do you want to merge #{rc.id}:#{rc.name} with #{c.id}:#{c.name} y/n:"
         if STDIN.gets.count('y')
-          Restaurant.where(:id => rc.id).update_all(:key => "value")
-        
+          p "Merging ..."
+          restaurants.each do |r|
+            rc_array = r.restaurant_categories.split(',')
+            if rc_array.index(c.id.to_s)
+              p "before #{rc_array}"
+              rc_array.delete_if {|i| i == c.id.to_s}
+              rc_array.push(r.cid)
+              p "after #{rc_array}"
+            end
+            r.restaurant_categories = rc_array.join(',')
+            r.save
+          end
+          p "this done!"
+        else
+          p "Skiped"
         end
       end  
          

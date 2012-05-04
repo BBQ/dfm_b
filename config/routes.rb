@@ -12,6 +12,11 @@ Dishfm::Application.routes.draw do
   
   root :to => "landing_page#index"
   
+  match 'about/terms' => 'static#terms', :as => :terms
+  match 'about/privacy' => 'static#privacy', :as => :privacy
+  match 'about' => 'static#about', :as => :about
+  match 'support' => 'static#support', :as => :support
+  
   match 'restaurants/:id' => 'restaurants#show', :as => :restaurant
   match 'restaurants' => 'restaurants#index', :as => :restaurants
 
