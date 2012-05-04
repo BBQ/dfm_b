@@ -33,9 +33,9 @@ namespace :facebook do
           graph = Koala::Facebook::API.new(u.fb_access_token)
           graph.put_connections('me', "dish_fm:Like", :review => "#{$domain}reviews/#{r.id}" )
           
-          if r.facebook_share_id.blank?
-            graph.put_object("me", "feed", :message => "liked #{name} dish-in in #{r.dish.name}@#{r.restaurant.name} #{$domain}reviews/#{r.id}")
-          else
+          if !r.facebook_share_id.blank?
+            # graph.put_object("me", "feed", :message => "liked #{name} dish-in in #{r.dish.name}@#{r.restaurant.name} #{$domain}reviews/#{r.id}")
+          # else
             graph.put_object(r.facebook_share_id, 'likes')
           end
           
@@ -63,9 +63,9 @@ namespace :facebook do
           graph = Koala::Facebook::API.new(u.fb_access_token)
           graph.put_connections('me', "dish_fm:Comment", :review => "#{$domain}reviews/#{r.id}" )
           
-          if r.facebook_share_id.blank?
-            graph.put_object("me", "feed", :message => "commented on #{name} dish-in in #{r.dish.name}@#{r.restaurant.name} \"#{c.text}\" #{$domain}reviews/#{r.id}")
-          else
+          if !r.facebook_share_id.blank?
+            # graph.put_object("me", "feed", :message => "commented on #{name} dish-in in #{r.dish.name}@#{r.restaurant.name} \"#{c.text}\" #{$domain}reviews/#{r.id}")
+          # else
             graph.put_object(r.facebook_share_id, 'comments', :message => c.text )
           end
           
