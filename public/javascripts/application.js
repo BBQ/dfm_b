@@ -27,9 +27,7 @@ function pinme() {
 	$('body').append('<div id="pinme">'+'<div class="text">'+title+'</div>'+button+'</div>');
 	$('#container').css('display', 'none')
 	$('#header').css('display', 'none')
-	$('#pinme a').live("click", function(){
-	  $('#loading').css('margin', 'margin: -112px auto 0 auto').show();
-	});
+	$('#pinme a').live("click", function(){$('#loading').show();});
 	console.log(title)
 }
 

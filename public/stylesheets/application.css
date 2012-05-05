@@ -1257,6 +1257,7 @@ ul li.first {
   position: absolute;
   top: 5px;
   left: 5px;
+  bottom: 5px;
   width: 310px;
   z-index: 999;
   background: white;
@@ -1264,6 +1265,7 @@ ul li.first {
   border-radius: 0 0 3px 3px; }
   #pinme #loading {
     position: absolute;
+    display: none;
     bottom: 79px;
     left: 142px; }
   #pinme #pin_it {
@@ -1276,7 +1278,7 @@ ul li.first {
     margin: 0 auto; }
   #pinme .text {
     font-family: bell;
-    background: #ece8e0;
+    background: #f6f1e7;
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.75);
     color: #2b8da2;
     padding: 5px;
