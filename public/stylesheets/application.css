@@ -1258,14 +1258,14 @@ ul li.first {
   top: 5px;
   left: 5px;
   width: 310px;
-  height: 100%;
   z-index: 999;
   background: white;
   text-align: center;
-  padding-bottom: 40px;
   border-radius: 0 0 3px 3px; }
   #pinme #loading {
-    display: none; }
+    position: absolute;
+    bottom: 79px;
+    left: 142px; }
   #pinme #pin_it {
     margin-top: -250px; }
   #pinme img#full_photo {
