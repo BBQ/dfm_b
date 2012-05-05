@@ -222,6 +222,11 @@ class Review < ActiveRecord::Base
         
       else
         
+        if user_review[:rtype] != 'home_cooked' && user_review[:rtype] != 'delivery'
+          user_review[:lat] = restaurant.lat
+          user_review[:lng] = restaurant.lon
+        end
+        
         r = create(user_review)  
         dish.rating = (dish.rating * dish.votes + rating) / (dish.votes + 1)
         dish.votes += 1
@@ -232,8 +237,6 @@ class Review < ActiveRecord::Base
             restaurant.rating = (restaurant.rating * restaurant.votes + rating) / (restaurant.votes + 1)
             restaurant.votes += 1
             restaurant.save
-            user_review[:lat] = restaurant.lat
-            user_review[:lng] = restaurant.lon
           end
           if user_review[:rtype] != 'delivery'
             network.rating = (network.rating * network.votes + rating) / (network.votes + 1)
