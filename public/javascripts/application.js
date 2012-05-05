@@ -14,10 +14,9 @@ $(document).ready(function() {
 		clearInterval(refreshIntervalId);	
 	})
 	
-	if(getHash() == 'pinterest'){
+	if(getHash() == 'pinme'){
 		alert('Yay!')
 	}
-
 })
 
 function getHash() {
