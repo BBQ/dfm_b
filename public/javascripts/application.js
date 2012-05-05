@@ -13,8 +13,17 @@ $(document).ready(function() {
 		scroll($(this).index())
 		clearInterval(refreshIntervalId);	
 	})
+	
+	if(getHash() == 'pinterest'){
+		alert('Yay!')
+	}
 
 })
+
+function getHash() {
+  var hash = window.location.hash;
+  return hash.substring(1); // remove #
+}
 
 function slide() {
 		var i = 0
