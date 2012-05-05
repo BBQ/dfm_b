@@ -1261,13 +1261,11 @@ ul li.first {
   z-index: 999;
   background: white;
   text-align: center;
-  border-radius: 0 0 3px 3px;
-  margin-bottom: 5px; }
+  border-radius: 0 0 3px 3px; }
   #pinme #loading {
     position: absolute;
-    display: none;
-    bottom: 79px;
-    left: 142px; }
+    bottom: 75px;
+    left: 140px; }
   #pinme #pin_it {
     margin-top: -250px; }
   #pinme img#full_photo {
