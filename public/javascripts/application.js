@@ -15,9 +15,18 @@ $(document).ready(function() {
 	})
 	
 	if(getHash() == 'pinme'){
-		alert('Yay!')
+		pinme()
 	}
+
 })
+
+function pinme() {
+	var title = $('.side_div .hd2')[0].innerText
+	var image = $('#full_photo')[0].outerHTML
+	var button = '<a href="http://pinterest.com/pin/create/button/" class="pin-it-button" count-layout="horizontal"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a>'
+	$('body').append('<div id="pinme">'+'<p>'+title+'</p>'+image+button+'</div>');
+	console.log(title)
+}
 
 function getHash() {
   var hash = window.location.hash;
