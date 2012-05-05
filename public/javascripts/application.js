@@ -28,7 +28,7 @@ function pinme() {
 	$('#container').css('display', 'none')
 	$('#header').css('display', 'none')
 	$('#pinme a').live("click", function(){
-	  $('#loading').show().css('margin', 'margin: -112px auto 0 auto');
+	  $('#loading').css('margin', 'margin: -112px auto 0 auto').show();
 	});
 	console.log(title)
 }
