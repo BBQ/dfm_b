@@ -26,6 +26,7 @@ function pinme() {
 	var button = '<a href="http://pinterest.com/pin/create/button/" class="pin-it-button" count-layout="horizontal"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a>'
 	$('body').append('<div id="pinme">'+'<div class="text">'+title+'</div>'+image+button+'</div>');
 	$('#container').css('display', 'none')
+	$('#header').css('display', 'none')
 	console.log(title)
 }
 

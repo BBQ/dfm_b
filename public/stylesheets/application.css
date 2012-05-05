@@ -1259,7 +1259,6 @@ ul li.first {
   right: 0;
   width: 100%;
   height: 100%;
-  background: white;
   z-index: 999;
   text-align: center; }
   #pinme img#full_photo {
@@ -1269,10 +1268,10 @@ ul li.first {
     margin: 0 auto; }
   #pinme .text {
     font-family: bell;
-    background: #f2efe9;
+    background: white;
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.75);
     color: #2b8da2;
     padding: 5px;
-    border-radius: 5px 5px 0 0;
+    border-radius: 3px 3px 0 0;
     width: 290px;
     margin: 0 auto; }
