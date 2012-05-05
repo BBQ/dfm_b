@@ -1257,12 +1257,12 @@ ul li.first {
   position: absolute;
   top: 5px;
   left: 5px;
-  bottom: 5px;
   width: 310px;
   z-index: 999;
   background: white;
   text-align: center;
-  border-radius: 0 0 3px 3px; }
+  border-radius: 0 0 3px 3px;
+  margin-bottom: 5px; }
   #pinme #loading {
     position: absolute;
     display: none;
