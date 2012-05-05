@@ -23,10 +23,13 @@ $(document).ready(function() {
 function pinme() {
 	var title = $('.side_div .hd2')[0].innerText
 	var image = $('#full_photo')[0].outerHTML
-	var button = '<a href="http://pinterest.com/pin/create/button/" class="pin-it-button" count-layout="horizontal">'+image+'<img id="pin_it" src="/images/pin_it.png" />'+'</a>'
+	var button = '<a href="http://pinterest.com/pin/create/button/" class="pin-it-button" count-layout="horizontal">'+image+'<img id="pin_it" src="/images/pin_it.png" />'+'</a><img id="loading" src="/images/loader.gif" />'
 	$('body').append('<div id="pinme">'+'<div class="text">'+title+'</div>'+button+'</div>');
 	$('#container').css('display', 'none')
 	$('#header').css('display', 'none')
+	$('#pinme a').live("click", function(){
+	  $('#loading').show().css('margin', 'margin: -112px auto 0 auto');
+	});
 	console.log(title)
 }
 

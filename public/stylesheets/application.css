@@ -1256,18 +1256,20 @@ ul li.first {
 #pinme {
   position: absolute;
   top: 0;
-  left: 10px;
-  width: 300px;
+  left: 5px;
+  width: 310px;
   height: 100%;
   z-index: 999;
   background: white;
   text-align: center;
-  padding-bottom: 80px;
+  padding-bottom: 30px;
   border-radius: 0 0 3px 3px; }
+  #pinme #loading {
+    display: none; }
   #pinme #pin_it {
     margin-top: -250px; }
   #pinme img#full_photo {
-    width: 290px;
+    width: 300px;
     margin: 5px; }
   #pinme a {
     display: block;
