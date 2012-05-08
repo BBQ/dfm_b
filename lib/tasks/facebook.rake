@@ -1,7 +1,7 @@
 # encoding: utf-8
 namespace :facebook do
   
-  $domain = 'http://test.dish.fm/'
+  $domain = 'http://dish.fm/'
   
   task :find => :environment do
     if u = User.find_by_id(ENV["USER_ID"])    
