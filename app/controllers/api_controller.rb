@@ -407,18 +407,18 @@ class ApiController < ApplicationController
   def get_common_data
     timestamp = Time.at(params[:timestamp].to_i) if params[:timestamp].to_i > 0
             
-    keywords = Tag.select("id, name_a as name").where("name_a IN ('salad','soup','pasta','pizza','burger','steak','sushi','dessert','drinks','meat','fish','vegetables')")    
+    keywords = Tag.select("id, name_a as name").where("name_a IN ('steak','salad','soup','pasta','pizza','burger','sushi','dessert','drinks','meat','fish','vegetables')").order("`order`")
     locations = LocationTip.select([:id, :name])
     rc = RestaurantCategory.select([:name])
 
     return render :json => {
-          :types => DishType.format_for_api(timestamp),
+          # :types => DishType.format_for_api(timestamp),
           :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords.all,
-          :restaurant_categories => timestamp ? rc.where('updated_at >= ?', timestamp) : rc.all,
+          # :restaurant_categories => timestamp ? rc.where('updated_at >= ?', timestamp) : rc.all,
           # :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
-          :tags => Tag.get_all(timestamp),
-          :force_logout => 0,
-          :error => $error,
+          # :tags => Tag.get_all(timestamp),
+          # :force_logout => 0,
+          # :error => $error,
     }
   end
   

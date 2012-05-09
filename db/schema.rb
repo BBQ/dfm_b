@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120502075954) do
+ActiveRecord::Schema.define(:version => 20120509101712) do
 
   create_table "_ylp_dishes", :force => true do |t|
     t.string   "ylp_restaurant_id"
@@ -707,7 +707,7 @@ ActiveRecord::Schema.define(:version => 20120502075954) do
     t.text     "friends"
     t.string   "facebook_share_id"
     t.float    "lat"
-    t.float    "lon"
+    t.float    "lng"
   end
 
   add_index "reviews", ["count_likes"], :name => "index_reviews_on_count_likes"
@@ -751,7 +751,10 @@ ActiveRecord::Schema.define(:version => 20120502075954) do
     t.string   "name_f"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "order",      :default => 0
   end
+
+  add_index "tags", ["order"], :name => "index_tags_on_order"
 
   create_table "types", :force => true do |t|
     t.string   "name"
