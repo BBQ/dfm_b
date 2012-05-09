@@ -85,13 +85,13 @@ namespace :twitter do
             dish_text = "#{r.text} -"
           end
           
-          tags = " #life #out #photo"
+          tags = " #life #out #photo #dishfm"
           tags += case r.rating
             when 0..2.99 then ' #hate'
             when 3..5 then ' #love'
           end
 
-          tags += case Time.now.strftime("%H%M").to_i
+          tags += case Time.now.strftime("%H%M").to_i + r.restaurant.time_zone_offset.gsub(':','').to_i
             when 0..1129 then ' #breakfast'
             when 1130..1759 then ' #lunch'
             when 1800..2400 then ' #night'
