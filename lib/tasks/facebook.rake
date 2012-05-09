@@ -139,7 +139,7 @@ namespace :facebook do
           albuminfo = graph.put_object('me','albums', :name => 'Dish.fm Photos') if albuminfo["id"].blank?
 
           if picture = graph.put_picture("#{$domain_s}#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
-            graph.put_connections('me', "dish_fm:Post", :review => "#{$domain_s}/reviews/#{r.id}")
+            # graph.put_connections('me', "dish_fm:Post", :review => "#{$domain_s}/reviews/#{r.id}")
             
             review = Review.find_by_id(r.id) 
             review.facebook_share_id = picture['id']
