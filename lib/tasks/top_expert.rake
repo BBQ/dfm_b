@@ -4,9 +4,9 @@ task :top_exp => :environment do
   Restaurant.update_all({:top_user_id => 0})
   Review.where("restaurant_id IS NOT NULL AND rtype IS NULL").group(:restaurant_id).each do |r|
     
-    if user_id = (Review.where('restaurant_id = ? AND photo IS NOT NULL', r.restaurant_id).group('user_id').count).max
+    if user_id = (Review.where('restaurant_id = ? AND photo IS NOT NULL', r.restaurant_id).group(:user_id).count).max
       user_id = user_id[0]
-    elsif top_uid = (Review.where('restaurant_id = ? AND photo IS NULL', r.restaurant_id).group('user_id').count).max
+    elsif user_id = (Review.where('restaurant_id = ? AND photo IS NULL', r.restaurant_id).group(:user_id).count).max
       user_id = user_id[0]
     end
     
@@ -21,7 +21,7 @@ task :top_exp => :environment do
     
     if user_id = (Review.where("restaurant_id = ? AND photo IS NOT NULL AND rtype = 'delivery'", r.restaurant_id).group(:user_id).count).max
       user_id = user_id[0]
-    elsif top_uid = (Review.where("restaurant_id = ? AND photo IS NULL AND rtype = 'delivery'", r.restaurant_id).group(:user_id).count).max
+    elsif user_id = (Review.where("restaurant_id = ? AND photo IS NULL AND rtype = 'delivery'", r.restaurant_id).group(:user_id).count).max
       user_id = user_id[0]
     end
     
@@ -37,7 +37,7 @@ task :top_exp => :environment do
     
     if user_id = (Review.where("dish_id = ? AND photo IS NOT NULL AND rtype IS NULL", d.dish_id).group(:user_id).count).max
       user_id = user_id[0]
-    elsif top_uid = (Review.where("dish_id = ? AND photo IS NULL AND rtype IS NULL", d.dish_id).group(:user_id).count).max
+    elsif user_id = (Review.where("dish_id = ? AND photo IS NULL AND rtype IS NULL", d.dish_id).group(:user_id).count).max
       user_id = user_id[0]
     end
     
@@ -52,7 +52,7 @@ task :top_exp => :environment do
 
     if user_id = (Review.where("dish_id = ? AND photo IS NOT NULL AND rtype = 'home_cooked'", d.dish_id).group(:user_id).count).max
       user_id = user_id[0]
-    elsif top_uid = (Review.where("dish_id = ? AND photo IS NULL AND rtype = 'home_cooked'", d.dish_id).group(:user_id).count).max
+    elsif user_id = (Review.where("dish_id = ? AND photo IS NULL AND rtype = 'home_cooked'", d.dish_id).group(:user_id).count).max
       user_id = user_id[0]
     end
 
@@ -67,7 +67,7 @@ task :top_exp => :environment do
     
     if user_id = (Review.where("dish_id = ? AND photo IS NOT NULL AND rtype = 'delivery'", d.dish_id).group(:user_id).count).max
       user_id = user_id[0]
-    elsif top_uid = (Review.where("dish_id = ? AND photo IS NULL AND rtype = 'delivery'", d.dish_id).group(:user_id).count).max
+    elsif user_id = (Review.where("dish_id = ? AND photo IS NULL AND rtype = 'delivery'", d.dish_id).group(:user_id).count).max
       user_id = user_id[0]
     end
     
