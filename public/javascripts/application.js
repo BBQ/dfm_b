@@ -61,7 +61,7 @@ function load_map(markers) {
 		mapTypeControl: false,
 		streetViewControl: false,
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
-		zoom : 6,
+		zoom : 2,
 		center: new google.maps.LatLng(0,0)
   }
   map = new google.maps.Map(document.getElementById("map_canvas_popup"),mapOptions);
