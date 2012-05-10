@@ -1,6 +1,7 @@
 #popup
 	.center_div
-		= link_to @restaurant.restaurant_images.first ? image_tag(@restaurant.restaurant_images.first.photo.iphone.url) : @restaurant.name, dish_path(@restaurant.id), id: 'rest_img'
+		= if @restaurant.restaurant_images.first
+			image_tag(@restaurant.restaurant_images.first.photo.iphone.url)
 		.hd2r=@restaurant.name
 		.info
 			= [ @r_categories, 

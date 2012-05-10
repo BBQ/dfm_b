@@ -61,7 +61,6 @@ function load_map(markers) {
 		mapTypeControl: false,
 		streetViewControl: false,
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
-		maxZoom: 15,
 		center: new google.maps.LatLng(0,0)
   }
   map = new google.maps.Map(document.getElementById("map_canvas_popup"),mapOptions);
@@ -115,4 +114,11 @@ function setMarkers(map, locations) {
 		bounds.extend(myLatLng);
   }
 	map.fitBounds(bounds);
+	
+	var zoomOverride = map.getZoom();
+	        if(zoomOverride > 15) {
+	        zoomOverride = 15;
+	        }
+	      map.setZoom(zoomOverride);
+	map.setCenter(bounds.getCenter(), map.getBoundsZoomLevel(bounds));
 }
