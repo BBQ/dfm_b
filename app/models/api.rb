@@ -169,7 +169,8 @@ class API < ActiveRecord::Base
               :rating => restaurant.rating,
               :votes => restaurant.votes,
               :thumb => restaurant.thumb,
-              :restaurant_categories => restaurant_categories.join(', ')
+              :categories => restaurant_categories.join(', '),
+              :bill => restaurant.bill
             )
         end
       end
@@ -272,7 +273,7 @@ class API < ActiveRecord::Base
               :image_hd => restaurant.find_image && restaurant.find_image.iphone_retina.url != '/images/noimage.jpg' ? restaurant.find_image.iphone_retina.url : '',
               :description => description ||= ''
           },
-          :restaurant_categories => rc ||= '',
+          :categories => rc ||= '',
           :restaurants => restaurants,
           :type => type,
           :favourite => favourite,

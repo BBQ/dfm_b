@@ -248,7 +248,10 @@ class Review < ActiveRecord::Base
         
       end
     
-      if top_uid = (Review.where('dish_id = ?', dish.id).group('user_id').count).max[0]
+      top_uid = (Review.where('dish_id = ? AND photo IS NOT NULL', dish.id).group('user_id').count).max[0]
+      top_uid = (Review.where('dish_id = ? AND photo IS NULL', dish.id).group('user_id').count).max[0]  unless top_uid
+    
+      if top_uid
         if dish.top_user_id != top_uid
           dish.top_user_id = top_uid
           dish.save
