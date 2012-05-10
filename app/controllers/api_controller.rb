@@ -552,6 +552,7 @@ class ApiController < ApplicationController
     
         networks = []  
         restaurants.each {|r| networks.push(r.network_id)}
+        
         if networks.any?
           
           if params[:type] == 'home_cooked'
@@ -560,7 +561,7 @@ class ApiController < ApplicationController
             dishes = DishDelivery.select([:id, :name, :rating, :votes, :photo, :price, :currency, :delivery_id]).order("votes DESC, photo DESC")
           else      
             dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :price, :currency, :fsq_checkins_count]).order("votes DESC, photo DESC, fsq_checkins_count DESC")
-            dishes = dishes.where("network_id IN (#{networks.join(',')})") if networks.count > 0
+            dishes = dishes.where("network_id IN (#{networks.join(',')})")
             dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
             dishes = dishes.search(params[:search]) unless params[:search].blank?
           end

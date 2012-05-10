@@ -249,7 +249,8 @@ namespace :ylp do
               :price => yd.price ||= 0,
               :currency => yd.currency ||= '',
               :description => yd.description,
-              :dish_category_id => dish_category_id
+              :dish_category_id => dish_category_id,
+              :fsq_checkins_count => r.fsq_checkins_count
             }
             Dish.create(data)
             

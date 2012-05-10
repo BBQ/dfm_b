@@ -252,7 +252,7 @@ namespace :fixup do
   
   desc "Update Foursquare User Checkins for Dishes by setting max(Foursquare User Checkins) from network resataurant"
   task :dish_fsq => :environment do
-    Dish.where('fsq_checkins_count = 0').each do |d|
+    Dish.select([:id, :name, :network_id, :fsq_checkins_count]).where('fsq_checkins_count = 0').order('id DESC').each do |d|
       p d.name
       c = d.network.restaurants.order('fsq_checkins_count DESC').limit(1)
       if r = c[0]
@@ -261,13 +261,13 @@ namespace :fixup do
       end
     end
     
-    Network.all.each do |n|
-      c = n.restaurants.order('fsq_checkins_count DESC').limit(1)
-      if r = c[0]
-        n.fsq_checkins_count = r.fsq_checkins_count ||= 0
-        n.save
-      end
-    end
+    # Network.all.each do |n|
+    #   c = n.restaurants.order('fsq_checkins_count DESC').limit(1)
+    #   if r = c[0]
+    #     n.fsq_checkins_count = r.fsq_checkins_count ||= 0
+    #     n.save
+    #   end
+    # end
   end
 
   desc "Update Restaurants set restaurants_count"
