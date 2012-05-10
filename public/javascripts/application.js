@@ -61,7 +61,7 @@ function load_map(markers) {
 		mapTypeControl: false,
 		streetViewControl: false,
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
-		zoom : 2,
+		maxZoom: 15,
 		center: new google.maps.LatLng(0,0)
   }
   map = new google.maps.Map(document.getElementById("map_canvas_popup"),mapOptions);
@@ -71,7 +71,6 @@ function load_map(markers) {
 // Add markers to the map
 function setMarkers(map, locations) {
   // Add markers to the map
-
   // Marker sizes are expressed as a Size of X,Y
   // where the origin of the image (0,0) is located
   // in the top left of the image.
@@ -115,5 +114,5 @@ function setMarkers(map, locations) {
     });
 		bounds.extend(myLatLng);
   }
-  map.fitBounds(bounds);
+	map.fitBounds(bounds);
 }
