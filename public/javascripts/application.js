@@ -30,7 +30,6 @@ function pinme() {
 	$('#container').css('display', 'none')
 	$('#header').css('display', 'none')
 	$('#pinme a').live("click", function(){$('#loading').show();});
-	console.log($('#full_photo')[0])
 }
 
 function getHash() {
