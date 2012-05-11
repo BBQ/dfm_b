@@ -7,7 +7,7 @@
 			.desc
 				= "#{@review.dish.description}"
 			.price
-				= "#{@review.dish.price} #{@review.dish.currency}"
+				= "#{@review.dish.price} #{@review.dish.currency}" if @review.dish.price.to_i > 0
 			.sp
 			.rating
 				Raiting

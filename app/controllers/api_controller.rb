@@ -1489,39 +1489,7 @@ class ApiController < ApplicationController
         
               params[:review][:dish_id] = dish.id
               r = Review.save_review(params[:review])
-      end  
-       
-       
-      unless r.blank?
-        
-        if r.rtype == 'home_cooked'
-          dish_name = r.home_cook.name
-          restaurant_name = nil
-        elsif r.rtype == 'delivery'
-          dish_name = r.dish_delivery.name
-          restaurant_name = r.delivery.name 
-        else
-          dish_name = r.dish.name
-          restaurant_name = r.restaurant.name
-        end
-                   
-        Notification.send(r.user_id, 'dishin', nil, r)        
-
-        unless r.friends.blank?
-          Notification.send(r.user_id, 'tagged', nil, r)
-          Notification.send(r.user_id, 'tagged_by_friend', nil, r)
-        end
-
-        unless r.photo.iphone_retina.url.blank?
-          if params[:post_on_facebook] == '1'
-            system "rake facebook:dishin REVIEW_ID='#{r.id}' &"
-          end
-          if params[:post_on_twitter] == '1'
-            system "rake twitter:dishin REVIEW_ID='#{r.id}' &"
-          end
-        end  
-      end
-            
+      end   
     else
       $error = {:description => 'We\'re sorry, but we have some problems with your review, try to login/logout and post again', :code => 1515}  
     end
