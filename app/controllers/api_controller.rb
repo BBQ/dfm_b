@@ -1527,6 +1527,8 @@ class ApiController < ApplicationController
     end
     
     return render :json => {
+      :dish_id => params[:review][:dish_id],
+      :review_id => r.id,
       :error => $error
     }
   
