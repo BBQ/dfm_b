@@ -26,7 +26,7 @@ function pinme() {
 	var image = $('#full_photo')[0].outerHTML
 	var url = escape($('#full_photo')[0].baseURI)
 	var media = escape($('#full_photo')[0].src)
-	var button = '<a href="http://pinterest.com/pin/create/button?url='+url+'&media='+media+'&description='+title+'" class="pin-it-button" count-layout="horizontal">'+image+'<img id="pin_it" src="/images/pin_it.png" />'+'</a><img id="loading" src="/images/loader.gif" />'
+	var button = '<a href="http://m.pinterest.com/pin/create/button?url='+url+'&media='+media+'&description='+title+'" class="pin-it-button" count-layout="horizontal">'+image+'<img id="pin_it" src="/images/pin_it.png" />'+'</a><img id="loading" src="/images/loader.gif" />'
 	
 	$('body').append('<div id="pinme">'+'<div class="text">'+title+'</div>'+button+'</div>');
 	$('#container').css('display', 'none')
