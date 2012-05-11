@@ -178,7 +178,7 @@ class Review < ActiveRecord::Base
     where('user_id = ? && dish_id = ? && DATE(created_at) > CURDATE() - INTERVAL 1 DAY', user_id, dish_id).first
   end  
   
-  def self.save_review(user_review)
+  def self.save_review(user_review, post_on_facebook = 0, post_on_twitter = 0)
     rating = user_review[:rating].to_f
     
     if rating > 0
@@ -267,10 +267,10 @@ class Review < ActiveRecord::Base
           end
 
           unless r.photo.iphone_retina.url.blank?
-            if params[:post_on_facebook] == '1'
+            if post_on_facebook == '1'
               system "rake facebook:dishin REVIEW_ID='#{r.id}' &"
             end
-            if params[:post_on_twitter] == '1'
+            if post_on_twitter == '1'
               system "rake twitter:dishin REVIEW_ID='#{r.id}' &"
             end
           end  

@@ -1432,7 +1432,7 @@ class ApiController < ApplicationController
                 return render :json => {:error => {:description => 'Home Cooked is Missing', :code => 1015}}
               end
         
-            r = Review.save_review(params[:review])
+            r = Review.save_review(params[:review], params[:post_on_facebook], params[:post_on_twitter])
             
       elsif params[:review][:rtype] == 'delivery'
               
@@ -1460,7 +1460,7 @@ class ApiController < ApplicationController
               end
         
               params[:review][:dish_id] = dish.id
-              r = Review.save_review(params[:review])
+              r = Review.save_review(params[:review], params[:post_on_facebook], params[:post_on_twitter])
       
       else
               if r = Restaurant.find_by_id(params[:review][:restaurant_id])
@@ -1488,7 +1488,7 @@ class ApiController < ApplicationController
               end
         
               params[:review][:dish_id] = dish.id
-              r = Review.save_review(params[:review])
+              r = Review.save_review(params[:review], params[:post_on_facebook], params[:post_on_twitter])
       end   
     else
       $error = {:description => 'We\'re sorry, but we have some problems with your review, try to login/logout and post again', :code => 1515}  
