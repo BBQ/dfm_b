@@ -1,13 +1,13 @@
 class User < ActiveRecord::Base
   
   # attr_accessible :facebook_id, :name, :email, :password, :password_confirmation, :authentications_attributes
-  authenticates_with_sorcery! do |config|
-    config.authentications_class = Authentication
-  end
+  # authenticates_with_sorcery! do |config|
+  #   config.authentications_class = Authentication
+  # end
   
   has_many :authentications, :dependent => :destroy
   has_one :user_preference, :dependent => :destroy
-  accepts_nested_attributes_for :authentications
+  # accepts_nested_attributes_for :authentications
 
   # validates_confirmation_of :password
   # validates_presence_of :password, :on => :create
@@ -137,18 +137,40 @@ class User < ActiveRecord::Base
     id
   end
   
+  def self.authenticate_by_email_password(email, password, name = nil)
+    
+    require 'digest/md5'
+    md5 = Digest::MD5
+    
+    if user = find_by_email(email)
+      if user.crypted_password == md5.hexdigest(password + user.salt) 
+        token = Session.get_token(user)
+      end
+    elsif !name.nil?
+      require "base64"
+      
+      salt = Base64.encode64(password)
+      user = User.create(:email => email, :crypted_password => md5.hexdigest(password + salt), :salt => salt, :name => name)
+      token = Session.get_token(user)
+    end
+    if !token.nil?
+      {:name => user.name, :fb_access_token => user.fb_access_token, :fb_valid_to => user.fb_valid_to.to_i, :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0}
+    end
+    
+  end
+  
+  
   def self.authenticate_by_twitter(oauth_token, oauth_token_secret, email = nil)
     begin
       client = Twitter::Client.new(:oauth_token => oauth_token, :oauth_token_secret => oauth_token_secret)
       if user = User.find_by_twitter_id(client.user.id)
-        token = Session.get_token(user)
         user.oauth_token = oauth_token
         user.oauth_token_secret = oauth_token_secret
         user.save
       else
         user = create_user_from_twitter(client, email)
-        token = Session.get_token(user)        
       end
+      token = Session.get_token(user)
     rescue
       nil
     end

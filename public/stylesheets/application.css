@@ -1130,11 +1130,10 @@ ul li.first {
       list-style: none;
       float: left;
       display: block;
-      margin-right: 15px; }
-    #lp #slider #tw {
-      clear: both;
-      float: left;
-      margin-top: 6px; }
+      width: auto;
+      padding: 8px 5px 0 0; }
+    #lp #slider #nw {
+      margin-left: 67px; }
     #lp #slider h2 {
       font-family: "HelveticaNeueBlack", "HelveticaNeue-Black", "Helvetica Neue Black", "HelveticaNeue", "Helvetica Neue", "TeXGyreHerosBold", "Arial Black", sans-serif;
       font-weight: bold;
@@ -1144,22 +1143,22 @@ ul li.first {
       margin: 0 0 10px 0; }
     #lp #slider .text {
       font-family: Tahoma, Arial, sans-serif;
-      font-size: 21px;
+      font-size: 19px;
       margin-bottom: 25px;
-      height: 120px;
       list-style: none; }
       #lp #slider .text li {
         width: 590px;
+        height: 110px;
         display: none; }
       #lp #slider .text li.active {
         display: block; }
     #lp #slider .hr {
       border-top: 1px solid #bbb6b0;
       border-bottom: 1px solid #fffffa;
-      width: 470px;
-      margin-bottom: 25px;
+      width: 532px;
       display: block;
-      clear: both; }
+      clear: both;
+      margin-bottom: 5px; }
   #lp #pages {
     float: left;
     clear: both;
@@ -1170,8 +1169,8 @@ ul li.first {
         float: left;
         display: block;
         background: url("/images/dot_b.png") center 4px no-repeat;
-        width: 22px;
-        height: 23px;
+        width: 16px;
+        height: 16px;
         margin: 0;
         cursor: pointer; }
       #lp #pages ul li.active {
@@ -1225,6 +1224,7 @@ ul li.first {
     #footer #top_search ul {
       margin-left: 30px; }
       #footer #top_search ul li {
+        width: auto;
         float: left;
         display: block;
         background: white;
@@ -1244,8 +1244,9 @@ ul li.first {
     width: 575px;
     margin: 0 auto; }
     #footer #links ul {
-      margin: 10px 0 0 80px; }
+      margin: 10px 0 0 20px; }
       #footer #links ul li {
+        width: auto;
         float: left;
         display: block;
         margin: 0 5px; }

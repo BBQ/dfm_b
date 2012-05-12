@@ -8,6 +8,22 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def recover_password
+    if params[:email]
+      if user = User.find_by_email(params[:email])
+        UserMailer.email_password_recover(user).deliver
+      else
+        $error = {:description => 'User not found', :code => 16}
+      end
+    else
+      $error = {:description => 'Params missing', :code => 19}
+    end
+    return render :json => {
+      :error => $error
+    }
+  end
+  
+  
   def logout
     if Session.check_token(params[:user_id], params[:token]) && params[:push_token] 
       if device = APN::Device.find_by_token_and_user_id(params[:push_token],params[:user_id])
@@ -362,10 +378,17 @@ class ApiController < ApplicationController
           APN::Device.create(:token => params[:push_token], :user_id => session[:user_id])
         end
       end
-      
       user_preferences = UserPreference.for_user.find_by_user_id session[:user_id] if session
+      
+    elsif params[:email] && params[:password]
+      if session = User.authenticate_by_email_password(params[:email], params[:password], params[:name])
+        
+        user_preferences = UserPreference.for_user.find_by_user_id session[:user_id]
+        
+      end
+      $error = {:description => 'User not found!', :code => 373} if session.nil?
     else
-      $error = {:description => 'Parameters missing', :code => 8}
+      $error = {:description => 'Parameters missing', :code => 375}
     end
     
     return render :json => {

@@ -22,4 +22,14 @@ class UserMailer < ActionMailer::Base
     end
   end
   
+  def email_password_recover(user)
+    @url  = "http://test.dish.fm"
+    subject = "Dish.fm Password Recovery"
+
+    @user = user.name
+    @text = "To recover your password follow this link: #{@url}/users/recover/#{user.crypted_password}"
+
+    mail(:to => user.email, :subject => subject)
+  end
+  
 end
