@@ -143,7 +143,7 @@ class User < ActiveRecord::Base
     md5 = Digest::MD5
     
     if user = find_by_email(email)
-      if user.crypted_password == md5.hexdigest(password + user.salt) 
+      if user.salt && user.crypted_password == md5.hexdigest(password + user.salt) 
         token = Session.get_token(user)
       end
     elsif !name.nil?
