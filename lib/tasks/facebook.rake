@@ -10,8 +10,8 @@ namespace :facebook do
         
         graph = Koala::Facebook::API.new(u.fb_access_token)
       
-        p graph.put_connections('me', "dish_fm:Find", :dish => "#{$domain}dishes/#{ENV["DISH_ID"]}" ) if ENV["DISH_ID"]
-        p graph.put_connections('me', "dish_fm:Find", :restaurant => "#{$domain}restaurants/#{ENV["RESTAURANT_ID"]}" ) if ENV["RESTAURANT_ID"]
+        p graph.put_connections('me', "dish_fm:Find", :dish => "#{$domain_s}dishes/#{ENV["DISH_ID"]}" ) if ENV["DISH_ID"]
+        p graph.put_connections('me', "dish_fm:Find", :restaurant => "#{$domain_s}restaurants/#{ENV["RESTAURANT_ID"]}" ) if ENV["RESTAURANT_ID"]
       
       end
     end
@@ -32,7 +32,7 @@ namespace :facebook do
       if r && u
         if !u.fb_access_token.blank? && u.user_preference.share_my_like_to_facebook == true
           graph = Koala::Facebook::API.new(u.fb_access_token)
-          graph.put_connections('me', "dish_fm:Like", :review => "#{$domain}reviews/#{r.id}" )
+          graph.put_connections('me', "dish_fm:Like", :review => "#{$domain_s}reviews/#{r.id}" )
           
           if !r.facebook_share_id.blank?
             # graph.put_object("me", "feed", :message => "liked #{name} dish-in in #{r.dish.name}@#{r.restaurant.name} #{$domain}reviews/#{r.id}")
@@ -62,7 +62,7 @@ namespace :facebook do
       if r && u
         if !u.fb_access_token.blank? && u.user_preference.share_my_comments_to_facebook == true
           graph = Koala::Facebook::API.new(u.fb_access_token)
-          graph.put_connections('me', "dish_fm:Comment", :review => "#{$domain}reviews/#{r.id}" )
+          graph.put_connections('me', "dish_fm:Comment", :review => "#{$domain_s}reviews/#{r.id}" )
           
           if !r.facebook_share_id.blank?
             # graph.put_object("me", "feed", :message => "commented on #{name} dish-in in #{r.dish.name}@#{r.restaurant.name} \"#{c.text}\" #{$domain}reviews/#{r.id}")
@@ -89,8 +89,8 @@ namespace :facebook do
           graph = Koala::Facebook::API.new(u.fb_access_token)
           action = "dish_fm:Become_An_Expert"
                     
-          graph.put_connections('me', action, :dish => "#{$domain}dishes/#{d.id}") if d.top_user_id == u.id
-          graph.put_connections('me', action, :restaurant => "#{$domain}restaurants/#{r.id}") if r.top_user_id == u.id
+          graph.put_connections('me', action, :dish => "#{$domain_s}dishes/#{d.id}") if d.top_user_id == u.id
+          graph.put_connections('me', action, :restaurant => "#{$domain_s}restaurants/#{r.id}") if r.top_user_id == u.id
           
           # graph.put_object("me", "feed", :message => "became an expert on #{d.name}@#{r.name}")
           # graph.put_object("me", "feed", :message => "became an expert on #{r.name}")
@@ -139,7 +139,7 @@ namespace :facebook do
           albuminfo = graph.put_object('me','albums', :name => 'Dish.fm Photos') if albuminfo["id"].blank?
 
           if picture = graph.put_picture("#{$domain_s}#{r.photo.iphone_retina.url}", {:caption => caption}, albuminfo["id"])
-            # graph.put_connections('me', "dish_fm:Post", :review => "#{$domain_s}/reviews/#{r.id}")
+            graph.put_connections('me', "dish_fm:Post", :review => "#{$domain_s}/reviews/#{r.id}")
             
             review = Review.find_by_id(r.id) 
             review.facebook_share_id = picture['id']
