@@ -262,18 +262,9 @@ namespace :ylp do
     end
   end  
   
-  task :get_fsq  => :environment do
+  task :update_yelp_with_fsq  => :environment do
     YlpRestaurant.where('id >=1 AND id < 50000 && has_menu = 0').order(:id).each do |r|
-      # p r.id
-      match_fsq(r)
-    end
-    p "Done!"
-  end
-  
-  task :get_fsq_menu  => :environment do
-    YlpRestaurant.where('id >=1  AND id < 50000 && has_menu = 0').order(:id).each do |r|
-      p r.id
-      fsq_get_menu(r)
+      update_yelp_with_fsq(r)
     end
     p "Done!"
   end
@@ -282,18 +273,6 @@ namespace :ylp do
     parse
   end
   
-end
-
-def get_fsq(r)
-  begin
-    client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)  
-    
-    if 
-  
-  rescue Exception => e
-    p e.message
-    get_fsq(r)
-  end
 end
 
 def update_yelp_with_fsq(r)
