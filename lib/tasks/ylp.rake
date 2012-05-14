@@ -298,7 +298,7 @@ def update_yelp_with_fsq(r)
     
   rescue Exception => e
     p e.message
-    update_yelp_with_fsq(r)
+    # update_yelp_with_fsq(r)
   end
 end
 
