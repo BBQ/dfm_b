@@ -283,8 +283,12 @@ def update_yelp_with_fsq(r)
       if r.lat && r.lng && r.name 
         
         if fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lng}", :query => r.name, :intent => 'checkin')    
-          if fsq_r = match_yelp_and_fsq_restaurants(r,fsq_hash) if fsq_hash.groups[0].items.any?
-            update_yelp_restaurant_with_fsq_info!(r, fsq_r)
+          if fsq_hash.groups[0].items.any?
+            
+            if fsq_r = match_yelp_and_fsq_restaurants(r,fsq_hash)
+              update_yelp_restaurant_with_fsq_info!(r, fsq_r)
+            end
+            
           end
         end    
         
