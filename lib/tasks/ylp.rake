@@ -121,7 +121,7 @@ namespace :ylp do
   end
   
   task :copy => :environment do
-    id_start = 44000
+    id_start = 0
     id_end = 50000
     
     restaurants = YlpRestaurant.select([:id, :name, :city, :ylp_uri]).group(:name).order('id')
@@ -262,21 +262,20 @@ namespace :ylp do
     end
   end  
   
-  #3873, 4158, 4322, 6841, 16972, 15921, 17127, 17587, 21682, 22639, 22644 
   task :get_fsq  => :environment do
-    YlpRestaurant.where('id >= 0 AND id < 10000 && has_menu = 0').order(:id).each do |r|
+    YlpRestaurant.where('id >=1 AND id < 50000 && has_menu = 0').order(:id).each do |r|
       # p r.id
       match_fsq(r)
     end
-    p "Done!Done!Done!"
+    p "Done!"
   end
   
   task :get_fsq_menu  => :environment do
-    YlpRestaurant.where('id >=40000  AND id < 50000 && has_menu = 0').order(:id).each do |r|
+    YlpRestaurant.where('id >=1  AND id < 50000 && has_menu = 0').order(:id).each do |r|
       p r.id
       fsq_get_menu(r)
     end
-    p "Done!Done!Done!"
+    p "Done!"
   end
   
   task :parse => :environment do
@@ -285,173 +284,112 @@ namespace :ylp do
   
 end
 
-def fsq_get_menu(r)
+def get_fsq(r)
+  begin
+    client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)  
+    
+    if 
+  
+  rescue Exception => e
+    p e.message
+    get_fsq(r)
+  end
+end
+
+def update_yelp_with_fsq(r)
   begin
     client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)  
     
     if r.fsq_id.nil?
-      fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lng}", :query => r.name, :intent => 'match') if r.lat && r.lng && r.name
-      
-      fsq_rest = nil
-      if fsq_hash && fsq_hash.groups[0].items.count > 0
-        fsq_hash.groups[0].items.each do |i|
-          if i.contact.formattedPhone.to_s == r.phone.to_s
-            fsq_rest = i
-          elsif i.name == r.name
-            fsq_rest = i
-          elsif i.categories.count > 0 && i.categories[0].name =~ /Afghan|African|American|Argentine|Asian Fusion|Bagels|Bakeries|Barbeque|Bars|Basque|Beer|Wine|Spirits|Belgian|Bowling|Brasseries|Brazilian|Breakfast|Brunch|Breweries|British|Buffets|Burgers|Burmese|Butcher|Cafes|Cajun|Creole|Cambodian|Candy|Caribbean|Caterers|Cheese|Cheesesteaks|Chicken|Chinese|Chocolatiers|Coffee|Tea|Creperies|Cuban|Delis|Desserts|Dim Sum|Diners|Doctors|Donuts|Employment Agencies|Ethiopian|Farmers Market|Filipino|Fish|Fondue|Food|French|Fruits & Veggies|Gastropubs|German|Gluten-Free|Greek|Grocery|Halal|Hawaiian|Himalayan|Nepalese|Hookah Bars|Hot|Hungarian|Ice Cream|Indian|Indonesian|Irish|Italian|Japanese|Juice|Karaoke|Korean|Kosher|Lawyers|Magicians|Malaysian|Meat|Mediterranean|Mexican|Eastern|European|Mongolian|Moroccan|Nightlife|Pakistani|Peruvian|Pizza|Polish|Portuguese|Pubs|Restaurant|Restaurants|Russian|Salad|Sandwiches|Scandinavian|Seafood|Singaporean|Soul Food|Soup|Southern|Spanish|Specialty Food|Steakhouses|Sushi|Taiwanese|Tapas|Tea|Thai|Tobacco Shops|Turkish|Ukrainian|Vegan|Vegetarian|Vietnamese|/
-            fsq_rest = i
-          elsif i.name.to_s =~ /#{r.name}/
-            fsq_rest = i
-          end
-        end
+      if r.lat && r.lng && r.name 
         
-        if !fsq_rest.nil?
-          category = []
-        
-          fsq_rest.categories.each do |v|
-            category.push(v.name)
+        if fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lng}", :query => r.name, :intent => 'checkin')    
+          if fsq_r = match_yelp_and_fsq_restaurants(r,fsq_hash) if fsq_hash.groups[0].items.any?
+            update_yelp_restaurant_with_fsq_info!(r, fsq_r)
           end
-
-          r.fsq_id = fsq_rest.id        
-          r.fsq_name = fsq_rest.name
-          r.fsq_address = fsq_rest.location.address
-          r.fsq_lat = fsq_rest.location.lat
-          r.fsq_lng = fsq_rest.location.lng
-          r.fsq_checkins_count = fsq_rest.stats.checkinsCount
-          r.fsq_users_count = fsq_rest.stats.usersCount
-          r.fsq_tip_count = fsq_rest.stats.tipCount
-          r.restaurant_categories = category.count > 0 ? category.join(',') : 0
-          r.has_menu = 0
-          r.save  
-          p "add #{r.fsq_id} #{r.name} #{r.address}"
-          
-        end
+        end    
+        
       end
     end
+    update_yelp_restaurant_with_fsq_menu!(r) if !r.fsq_id.nil? && r.has_menu == false
     
-    if !r.fsq_id.nil? && r.has_menu == false
-      client.venue_menu(r.fsq_id).each do |m| 
-                  
-        m.entries.fourth.second.items.each do |i|
-          i.entries.third.second.items.each do |d|  
-
-            if d.prices
-              if price = /(.)(\d+\.\d+)/.match(d.prices.first)
-                price = price[2]
-                currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
-              else
-                price = /(.)(\d+\.\d+)/.match(d.prices.second)[2]
-                currency = /(.)(\d+\.\d+)/.match(d.prices.second)[1]
-              end
-            end
-
-            data = {
-            :ylp_restaurant_id => r.id,
-            :name => d.name,
-            :price => price ||= 0,
-            :currency => currency ||= '',
-            :description => d.description,
-            :dish_category => i.name,
-            }
-            YlpDish.create(data) unless YlpDish.find_by_name_and_ylp_restaurant_id(d.name, r.id)
-
-          end
-        end
-        r.has_menu = 1
-        r.save
-        p "add menu"
-        
-      end      
-    end
   rescue Exception => e
     p e.message
-    fsq_get_menu(r)
+    update_yelp_with_fsq(r)
   end
 end
 
+def match_yelp_and_fsq_restaurants(r,fsq_hash)
+  fsq_r = nil
+  
+  fsq_hash.groups[0].items {|i| fsq_r = i if i.name.downcase == r.name.downcase}        
+  fsq_hash.groups[0].items {|i| fsq_r = i if i.contact.formattedPhone.to_s == r.phone.to_s} if fsq_r.nil?
 
-def match_fsq(r)
-  if r.has_menu == false
-    begin
-      client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)  
-      fsq_hash = client.search_venues(:ll => "#{r.lat},#{r.lng}", :query => r.name, :intent => 'match') if r.lat && r.lng && r.name
+  if fsq_r.nil?
+    categories = 'Afghan|African|American|Argentine|Asian Fusion|Bagels|Bakeries|Barbeque|Bars|Basque|Beer|Wine|Spirits|Belgian|Bowling|Brasseries|Brazilian|Breakfast|Brunch|Breweries|British|Buffets|Burgers|Burmese|Butcher|Cafes|Cajun|Creole|Cambodian|Candy|Caribbean|Caterers|Cheese|Cheesesteaks|Chicken|Chinese|Chocolatiers|Coffee|Tea|Creperies|Cuban|Delis|Desserts|Dim Sum|Diners|Doctors|Donuts|Employment Agencies|Ethiopian|Farmers Market|Filipino|Fish|Fondue|Food|French|Fruits & Veggies|Gastropubs|German|Gluten-Free|Greek|Grocery|Halal|Hawaiian|Himalayan|Nepalese|Hookah Bars|Hot|Hungarian|Ice Cream|Indian|Indonesian|Irish|Italian|Japanese|Juice|Karaoke|Korean|Kosher|Lawyers|Magicians|Malaysian|Meat|Mediterranean|Mexican|Eastern|European|Mongolian|Moroccan|Nightlife|Pakistani|Peruvian|Pizza|Polish|Portuguese|Pubs|Restaurant|Restaurants|Russian|Salad|Sandwiches|Scandinavian|Seafood|Singaporean|Soul Food|Soup|Southern|Spanish|Specialty Food|Steakhouses|Sushi|Taiwanese|Tapas|Tea|Thai|Tobacco Shops|Turkish|Ukrainian|Vegan|Vegetarian|Vietnamese'          
+    fsq_hash.groups[0].items {|i| fsq_r = i if i.categories.count > 0 && i.categories[0].name =~ /#{categories}/}
+  end
+  
+  fsq_hash.groups[0].items {|i| fsq_r = i if i.name.to_s =~ /#{r.name}/} if fsq_r.nil?
+end
 
-      fsq_rest = nil
-      if fsq_hash && fsq_hash.groups[0].items.count > 0
-        fsq_hash.groups[0].items.each do |i|
-          if i.contact.formattedPhone.to_s == r.phone.to_s
-            fsq_rest = i
-          elsif i.name == r.name
-            fsq_rest = i
-          elsif i.categories.count > 0 && i.categories[0].name =~ /Afghan|African|American|Argentine|Asian Fusion|Bagels|Bakeries|Barbeque|Bars|Basque|Beer|Wine|Spirits|Belgian|Bowling|Brasseries|Brazilian|Breakfast|Brunch|Breweries|British|Buffets|Burgers|Burmese|Butcher|Cafes|Cajun|Creole|Cambodian|Candy|Caribbean|Caterers|Cheese|Cheesesteaks|Chicken|Chinese|Chocolatiers|Coffee|Tea|Creperies|Cuban|Delis|Desserts|Dim Sum|Diners|Doctors|Donuts|Employment Agencies|Ethiopian|Farmers Market|Filipino|Fish|Fondue|Food|French|Fruits & Veggies|Gastropubs|German|Gluten-Free|Greek|Grocery|Halal|Hawaiian|Himalayan|Nepalese|Hookah Bars|Hot|Hungarian|Ice Cream|Indian|Indonesian|Irish|Italian|Japanese|Juice|Karaoke|Korean|Kosher|Lawyers|Magicians|Malaysian|Meat|Mediterranean|Mexican|Eastern|European|Mongolian|Moroccan|Nightlife|Pakistani|Peruvian|Pizza|Polish|Portuguese|Pubs|Restaurant|Restaurants|Russian|Salad|Sandwiches|Scandinavian|Seafood|Singaporean|Soul Food|Soup|Southern|Spanish|Specialty Food|Steakhouses|Sushi|Taiwanese|Tapas|Tea|Thai|Tobacco Shops|Turkish|Ukrainian|Vegan|Vegetarian|Vietnamese|/
-            fsq_rest = i
-          elsif i.name.to_s =~ /#{r.name}/
-            fsq_rest = i
+def update_yelp_restaurant_with_fsq_info!(r,fsq_r)
+  category = []
+  fsq_r.categories {|v| category.push(v.name)}
+
+  r.fsq_id = fsq_r.id        
+  r.fsq_name = fsq_r.name
+  
+  r.fsq_address = fsq_r.location.address
+  r.fsq_lat = fsq_r.location.lat
+  r.fsq_lng = fsq_r.location.lng
+  
+  r.fsq_checkins_count = fsq_r.stats.checkinsCount
+  r.fsq_users_count = fsq_r.stats.usersCount
+  r.fsq_tip_count = fsq_r.stats.tipCount
+  
+  r.restaurant_categories = category.count > 0 ? category.join(',') : 0
+  r.has_menu = 0
+  
+  r.save  
+  p "add #{r.fsq_id} #{r.name} #{r.address}"
+end
+
+def update_yelp_restaurant_with_fsq_menu!(r)
+  client.venue_menu(r.fsq_id).each do |m| 
+
+    m.entries.fourth.second.items.each do |i|
+      i.entries.third.second.items.each do |d|  
+
+        if d.prices
+          if price = /(.)(\d+\.\d+)/.match(d.prices.first)
+            price = price[2]
+            currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
+          else
+            price = /(.)(\d+\.\d+)/.match(d.prices.second)[2]
+            currency = /(.)(\d+\.\d+)/.match(d.prices.second)[1]
           end
         end
-      
-        if !fsq_rest.nil?
-          category = []
+
+        data = {
+        :ylp_restaurant_id => r.id,
+        :name => d.name,
+        :price => price ||= 0,
+        :currency => currency ||= '',
+        :description => d.description,
+        :dish_category => i.name,
+        }
         
-          fsq_rest.categories.each do |v|
-            category.push(v.name)
-          end
-
-          r.fsq_id = fsq_rest.id        
-          r.fsq_name = fsq_rest.name
-          r.fsq_address = fsq_rest.location.address
-          r.fsq_lat = fsq_rest.location.lat
-          r.fsq_lng = fsq_rest.location.lng
-          r.fsq_checkins_count = fsq_rest.stats.checkinsCount
-          r.fsq_users_count = fsq_rest.stats.usersCount
-          r.fsq_tip_count = fsq_rest.stats.tipCount
-          r.restaurant_categories = category.count > 0 ? category.join(',') : 0
-          r.has_menu = 0
-          r.save  
-          p "#{r.id}:#{r.fsq_id} #{r.name} #{r.address}"
-
-          client.venue_menu(r.fsq_id).each do |m|           
-            m.entries.fourth.second.items.each do |i|
-              i.entries.third.second.items.each do |d|  
-
-                if d.prices
-                  if price = /(.)(\d+\.\d+)/.match(d.prices.first)
-                    price = price[2]
-                    currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
-                  else
-                    price = /(.)(\d+\.\d+)/.match(d.prices.second)[2]
-                    currency = /(.)(\d+\.\d+)/.match(d.prices.second)[1]
-                  end
-                end
-
-                data = {
-                :ylp_restaurant_id => r.id,
-                :name => d.name,
-                :price => price ||= 0,
-                :currency => currency ||= '',
-                :description => d.description,
-                :dish_category => i.name,
-                }
-                YlpDish.create(data) unless YlpDish.find_by_name_and_ylp_restaurant_id(d.name, r.id)
-
-              end
-            end
-            r.has_menu = 1
-            p "   --- menu found! #{r.id}"
-          end
-          r.save
-        end
-      
+        YlpDish.create(data) unless YlpDish.find_by_name_and_ylp_restaurant_id(d.name, r.id)
+        
       end
-    rescue Exception => e
-      p e.message
-      match_fsq(r)
-    
     end
+    r.has_menu = 1
+    r.save
+    p "add menu"
+    
   end
 end
-
 
 def parse
   
@@ -536,7 +474,7 @@ def parse
       go_sub(url+"&sortby=rating")
       go_sub(url)
     end
-    p "This done!"
+    p "Done!"
   
 end
 
@@ -554,28 +492,10 @@ end
 def go_sub(url)
   p url
   
-  # url.split('&').each do |param|
-  #   set = param.scan /(.+)=(.+)/
-  #   
-  #   find_loc = set[0][1] if set[0][0] == 'find_loc'
-  #   cflt = set[0][1] if set[0][0] == 'cflt'
-  #   
-  #   if cflt && find_loc
-  #     if data = ParserStat.find_by_cflt_and_find_loc(cflt, find_loc)
-  #       url = data.url
-  #     end
-  #   elsif find_loc
-  #     if data = ParserStat.find_by_find_loc(find_loc)
-  #       url = data.url
-  #     end
-  #   end
-  # 
-  # end
-  
   proxy = 'http://200.186.179.215:80'
   # proxy = 'http://183.82.97.186:3128'
-  # username = 'asurin'
-  # password = 'Pirai3tooBie6Roo'
+  # username = 'user'
+  # password = 'password'
 
   # if src = open(url.gsub("/search?", "/search/snippet?"))
   
