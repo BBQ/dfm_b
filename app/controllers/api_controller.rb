@@ -466,98 +466,18 @@ class ApiController < ApplicationController
     lon = params[:lon] ||= '37.609239'
     
     top_user_id = params[:top_user_id].to_i
-    user_id = params[:user_id].to_i
+    current_user_id = params[:user_id].to_i
     favourite = 0    
     
     if top_user_id > 0
-      dishes_array = []      
       
-      dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count, :created_at]).where("top_user_id = ?",top_user_id).order('id DESC')
-      dishes.each do |d|
-        network_data = Network.select([:id, :name]).find_by_id(d.network_id)
-        if user_id > 0
-          favourite = 1 if Favourite.find_by_user_id_and_dish_id(user_id, d.id)
-        end
-        dishes_array.push({
-          :id => d.id,
-          :name => d.name,
-          :rating => d.rating,
-          :votes => d.votes,
-          :image_sd => d.image_sd,
-          :image_hd => d.image_hd,
-          :favourite => favourite,
-          :network => {
-            :id => network_data.id,
-            :name => network_data.name,
-          },
-          :created_at => d.created_at,
-          :type => nil
-        })
-      end
-
-      dish_delivery = DishDelivery.select([:id, :name, :rating, :votes, :photo, :delivery_id, :created_at]).where("top_user_id = ?",top_user_id).order('id DESC')
-      dish_delivery.each do |d|
-        if user_id > 0
-          favourite = 1 if Favourite.find_by_user_id_and_dish_delivery_id(user_id, d.id)
-        end
-        dishes_array.push({
-          :id => d.id,
-          :name => d.name,
-          :rating => d.rating,
-          :votes => d.votes,
-          :image_sd => d.image_sd,
-          :image_hd => d.image_hd,
-          :favourite => favourite,
-          :network => {
-            :id => d.delivery_id,
-            :name => d.delivery.name,
-          },
-          :created_at => d.created_at,
-          :type => 'delivery'
-        })
+      if user = User.find_by_id(top_user_id)
+        dishes_array = user.dish_expert(current_user_id)
+        restaurants_array = Restaurant.for_dish_expert_in(dishes_array, lat, lon) if dishes_array.any?
       end
       
-      home_cooked = HomeCook.select([:id, :name, :rating, :votes, :photo, :created_at]).where("top_user_id = ?",top_user_id).order('id DESC')
-      home_cooked.each do |d|
-        if user_id > 0
-          favourite = 1 if Favourite.find_by_user_id_and_home_cook_id(user_id, d.id)
-        end
-        dishes_array.push({
-          :id => d.id,
-          :name => d.name,
-          :rating => d.rating,
-          :votes => d.votes,
-          :image_sd => d.image_sd,
-          :image_hd => d.image_hd,
-          :network => {},
-          :created_at => d.created_at,
-          :type => 'home_cooked',
-          :favourite => favourite
-        })
-      end
-      
-      dishes_array = dishes_array.sort_by { |k| k[:created_at] }.reverse
-      
-      restaurants_array = []
-      dishes_array.index_by {|r| r[:network][:id]}.values.each do |dish|
-        
-        if dish[:type] == 'delivery' && dish[:type] != 'home_cooked'          
-
-          Restaurant.select([:id, :name, :lat, :lon, :address, :network_id]).where(:network_id => dish[:network][:id]).by_distance(lat, lon).take(3).each do |r|
-            restaurants_array.push({
-              :id => r.id,
-              :name => r.name,
-              :lat => r.lat,
-              :lon => r.lon,
-              :address => r.address,
-              :network_id => r.network_id,
-            })
-          end
-        end
-      end
-      
-
     else    
+      
       if params[:radius].to_f != 0 
         radius = params[:radius].to_f
       else
@@ -588,6 +508,7 @@ class ApiController < ApplicationController
             dishes = dishes.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
             dishes = dishes.search(params[:search]) unless params[:search].blank?
           end
+          
           if params[:dish_id] && params[:dish_id].to_i > 0
         
             if params[:type] == 'home_cooked'
@@ -631,8 +552,8 @@ class ApiController < ApplicationController
                     dishes_between.each do |d|
                       if start == 1
                         if dishes_array.count < limit
-                          if user_id > 0
-                            favourite = 1 if Favourite.find_by_user_id_and_dish_id(user_id, d.id)
+                          if current_user_id > 0
+                            favourite = 1 if Favourite.find_by_user_id_and_dish_id(current_user_id, d.id)
                           end
                           network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked' && params[:type] != 'delivery' 
                           dishes_array.push({
@@ -669,8 +590,8 @@ class ApiController < ApplicationController
                 dishes_between.each do |d|
               
                   if dishes_array.count < limit
-                    if user_id > 0
-                      favourite = 1 if Favourite.find_by_user_id_and_dish_id(user_id, d.id)
+                    if current_user_id > 0
+                      favourite = 1 if Favourite.find_by_user_id_and_dish_id(current_user_id, d.id)
                     end
                   
                     dishes_array.push({
@@ -715,8 +636,8 @@ class ApiController < ApplicationController
                       if start == 1
                         if dishes_array.count < limit
                           network_data = Network.select([:id, :name]).find_by_id(d.network_id) 
-                          if user_id > 0
-                            favourite = 1 if Favourite.find_by_user_id_and_dish_id(user_id, d.id)
+                          if current_user_id > 0
+                            favourite = 1 if Favourite.find_by_user_id_and_dish_id(current_user_id, d.id)
                           end
                           dishes_array.push({
                             :id => d.id,

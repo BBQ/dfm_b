@@ -21,6 +21,17 @@ class User < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
+  def dish_expert(current_user_id)
+    dishes_array = []    
+    
+    dishes_array |= Dish.expert(id, current_user_id)
+    dishes_array |= DishDelivery.expert(id, current_user_id)
+    dishes_array |= HomeCook.expert(id, current_user_id)
+    
+    dishes_array = dishes_array.sort_by { |k| k[:created_at] }.reverse if dishes_array.any?
+  end
+  
+  
   def self.migrate(old_user, new_user)
 
     Review.where(:user_id => old_user.id).update_all(:user_id => new_user.id)

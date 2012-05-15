@@ -264,6 +264,7 @@ namespace :ylp do
   
   task :update_yelp_with_fsq  => :environment do
     YlpRestaurant.where('id >=1 AND id < 50000 && has_menu = 0').order(:id).each do |r|
+      p "#{r.id}:#{r.name} - #{r.address}"
       update_yelp_with_fsq(r)
     end
     p "Done!"
@@ -294,10 +295,10 @@ def update_yelp_with_fsq(r)
         
       end
     end
-    update_yelp_restaurant_with_fsq_menu!(r) if !r.fsq_id.nil? && r.has_menu == false
+    update_yelp_restaurant_with_fsq_menu!(r,client) if !r.fsq_id.nil? && r.has_menu == false
     
   rescue Exception => e
-    p e.message
+    p e
     # update_yelp_with_fsq(r)
   end
 end
@@ -305,24 +306,20 @@ end
 def match_yelp_and_fsq_restaurants(r,fsq_hash)
   fsq_r = nil
   
-  fsq_hash.groups[0].items {|i| fsq_r = i if i.name.downcase == r.name.downcase}        
-  fsq_hash.groups[0].items {|i| fsq_r = i if i.contact.formattedPhone.to_s == r.phone.to_s} if fsq_r.nil?
-
-  if fsq_r.nil?
-    categories = 'Afghan|African|American|Argentine|Asian Fusion|Bagels|Bakeries|Barbeque|Bars|Basque|Beer|Wine|Spirits|Belgian|Bowling|Brasseries|Brazilian|Breakfast|Brunch|Breweries|British|Buffets|Burgers|Burmese|Butcher|Cafes|Cajun|Creole|Cambodian|Candy|Caribbean|Caterers|Cheese|Cheesesteaks|Chicken|Chinese|Chocolatiers|Coffee|Tea|Creperies|Cuban|Delis|Desserts|Dim Sum|Diners|Doctors|Donuts|Employment Agencies|Ethiopian|Farmers Market|Filipino|Fish|Fondue|Food|French|Fruits & Veggies|Gastropubs|German|Gluten-Free|Greek|Grocery|Halal|Hawaiian|Himalayan|Nepalese|Hookah Bars|Hot|Hungarian|Ice Cream|Indian|Indonesian|Irish|Italian|Japanese|Juice|Karaoke|Korean|Kosher|Lawyers|Magicians|Malaysian|Meat|Mediterranean|Mexican|Eastern|European|Mongolian|Moroccan|Nightlife|Pakistani|Peruvian|Pizza|Polish|Portuguese|Pubs|Restaurant|Restaurants|Russian|Salad|Sandwiches|Scandinavian|Seafood|Singaporean|Soul Food|Soup|Southern|Spanish|Specialty Food|Steakhouses|Sushi|Taiwanese|Tapas|Tea|Thai|Tobacco Shops|Turkish|Ukrainian|Vegan|Vegetarian|Vietnamese'          
-    fsq_hash.groups[0].items {|i| fsq_r = i if i.categories.count > 0 && i.categories[0].name =~ /#{categories}/}
-  end
+  fsq_hash.groups[0].items.each {|i| fsq_r = i if i.downcase == r.name.downcase}        
+  fsq_hash.groups[0].items.each {|i| fsq_r = i if i.contact.formattedPhone.to_s == r.phone.to_s} if fsq_r.nil?  
+  fsq_hash.groups[0].items.each {|i| fsq_r = i if i.name.to_s =~ /#{r.name}/} if fsq_r.nil?
   
-  fsq_hash.groups[0].items {|i| fsq_r = i if i.name.to_s =~ /#{r.name}/} if fsq_r.nil?
+  fsq_r
 end
 
 def update_yelp_restaurant_with_fsq_info!(r,fsq_r)
   category = []
-  fsq_r.categories {|v| category.push(v.name)}
+  fsq_r.categories.each {|v| category.push(v.name)}
 
   r.fsq_id = fsq_r.id        
   r.fsq_name = fsq_r.name
-  
+    
   r.fsq_address = fsq_r.location.address
   r.fsq_lat = fsq_r.location.lat
   r.fsq_lng = fsq_r.location.lng
@@ -335,10 +332,10 @@ def update_yelp_restaurant_with_fsq_info!(r,fsq_r)
   r.has_menu = 0
   
   r.save  
-  p "add #{r.fsq_id} #{r.name} #{r.address}"
+  p " find #{r.fsq_id}:#{r.fsq_name} - #{r.fsq_address}"
 end
 
-def update_yelp_restaurant_with_fsq_menu!(r)
+def update_yelp_restaurant_with_fsq_menu!(r,client)
   client.venue_menu(r.fsq_id).each do |m| 
 
     m.entries.fourth.second.items.each do |i|
@@ -369,7 +366,7 @@ def update_yelp_restaurant_with_fsq_menu!(r)
     end
     r.has_menu = 1
     r.save
-    p "add menu"
+    p " menu found"
     
   end
 end

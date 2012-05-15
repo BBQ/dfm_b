@@ -10,6 +10,34 @@ class HomeCook < ActiveRecord::Base
     
     mount_uploader :photo, ImageUploader
     
+    def self.expert(top_user_id, current_user_id = 0)
+      
+      dishes_array = []
+      home_cooked = select([:id, :name, :rating, :votes, :photo, :created_at]).where("top_user_id = ?",top_user_id).order('id DESC')
+
+      home_cooked.each do |d|
+
+        if current_user_id > 0
+          favourite = 1 if Favourite.find_by_user_id_and_home_cook_id(current_user_id, d.id)
+        end
+
+        dishes_array.push({
+          :id => d.id,
+          :name => d.name,
+          :rating => d.rating,
+          :votes => d.votes,
+          :image_sd => d.image_sd,
+          :image_hd => d.image_hd,
+          :network => {},
+          :created_at => d.created_at,
+          :type => 'home_cooked',
+          :favourite => favourite
+        })
+      end
+      
+      dishes_array
+    end
+    
     def find_image
       if photo.blank?
         if review = Review.where("dish_id = ? AND photo IS NOT NULL", id).order('count_likes DESC').first

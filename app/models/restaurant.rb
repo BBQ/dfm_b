@@ -23,6 +23,31 @@ class Restaurant < ActiveRecord::Base
   # geocoded_by :geo_address, :latitude  => :lat, :longitude => :lon
   # after_validation :geocode, :if => :address_changed?
   
+  def self.for_dish_expert_in(dishes_array, lat, lon)
+    
+    restaurants_array = []
+    dishes_array.index_by {|r| r[:network][:id]}.values.each do |dish|
+      
+      if dish[:type] != 'delivery' && dish[:type] != 'home_cooked'      
+        select([:id, :name, :lat, :lon, :address, :network_id]).where(:network_id => dish[:network][:id]).by_distance(lat, lon).take(3).each do |r|
+          
+          restaurants_array.push(
+            :id => r.id,
+            :name => r.name,
+            :lat => r.lat,
+            :lon => r.lon,
+            :address => r.address,
+            :network_id => r.network_id,
+          )
+          
+        end
+      end
+
+    end
+    restaurants_array
+    
+  end
+  
   def self.add_from_4sq_with_menu(foursquare_venue_id)
     
      dish_category_id = ''

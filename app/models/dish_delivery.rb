@@ -16,6 +16,38 @@ class DishDelivery < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
+  def self.expert(top_user_id, current_user_id = 0)
+    
+    dishes_array = []
+    dish_delivery = select([:id, :name, :rating, :votes, :photo, :delivery_id, :created_at]).where("top_user_id = ?",top_user_id).order('id DESC')
+    
+    dish_delivery.each do |d|
+      
+      if current_user_id > 0
+        favourite = 1 if Favourite.find_by_user_id_and_dish_delivery_id(current_user_id, d.id)
+      end
+      
+      dishes_array.push({
+        :id => d.id,
+        :name => d.name,
+        :rating => d.rating,
+        :votes => d.votes,
+        :image_sd => d.image_sd,
+        :image_hd => d.image_hd,
+        :favourite => favourite,
+        :network => {
+          :id => d.delivery_id,
+          :name => d.delivery.name,
+        },
+        :created_at => d.created_at,
+        :type => 'delivery'
+      })
+    end
+    
+    dishes_array
+  end
+  
+  
   def self.search_by_tag_id(id)
     where("dish_deliveries.id IN (SELECT dish_id FROM dish_tags WHERE tag_id = ?)", id)
   end
