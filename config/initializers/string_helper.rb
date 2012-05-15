@@ -3,7 +3,7 @@ require "unicode";
 class String
   
     def is_json?
-      self[0..0] == '{'
+      self[0..0] == '{' || self[0..0] == '['
     end
     
     def downcase

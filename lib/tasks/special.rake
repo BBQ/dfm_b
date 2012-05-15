@@ -33,7 +33,7 @@ end
 
 def get_iiko_token(http)  
   url = "/api/0/auth/access_token?user_id=dishfm&user_secret=dishfm"
-  request_iiko(http, url)
+  request_iiko(http, url).gsub('"', '')
 end
 
 def get_iiko_organization_list(http,access_token)  
