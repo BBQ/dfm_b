@@ -263,8 +263,8 @@ namespace :ylp do
   end  
   
   task :update_yelp_with_fsq  => :environment do
-    YlpRestaurant.where('id >=1 AND id < 50000 && has_menu = 0').order(:id).each do |r|
-      p "#{r.id}:#{r.name} - #{r.address}"
+    YlpRestaurant.where('id >=45000 && id < 50000 && fsq_id is NULL').order(:id).each do |r|
+      p "#{r.id}: #{r.name} - #{r.address}"
       update_yelp_with_fsq(r)
     end
     p "Done!"
@@ -298,8 +298,8 @@ def update_yelp_with_fsq(r)
     update_yelp_restaurant_with_fsq_menu!(r,client) if !r.fsq_id.nil? && r.has_menu == false
     
   rescue Exception => e
-    p e
-    # update_yelp_with_fsq(r)
+    p e.message
+    update_yelp_with_fsq(r)
   end
 end
 
@@ -332,7 +332,7 @@ def update_yelp_restaurant_with_fsq_info!(r,fsq_r)
   r.has_menu = 0
   
   r.save  
-  p " find #{r.fsq_id}:#{r.fsq_name} - #{r.fsq_address}"
+  p " found #{r.fsq_id}: #{r.fsq_name} - #{r.fsq_address}"
 end
 
 def update_yelp_restaurant_with_fsq_menu!(r,client)
