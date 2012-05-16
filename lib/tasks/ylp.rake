@@ -12,6 +12,7 @@ namespace :ylp do
 
     all_r = Restaurant.select([:id, :fsq_id, :network_id]).where(:source => 'ylp').order(:id)
     count = all_r.count
+   
     p "Overall: #{count}"
     i = 0
 
