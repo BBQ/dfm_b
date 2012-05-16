@@ -23,7 +23,7 @@ class Restaurant < ActiveRecord::Base
   # geocoded_by :geo_address, :latitude  => :lat, :longitude => :lon
   # after_validation :geocode, :if => :address_changed?
   
-  def self.for_dish_expert_in(dishes_array, lat, lon)
+  def self.for_dish_expert(dishes_array, lat, lon)
     
     restaurants_array = []
     dishes_array.index_by {|r| r[:network][:id]}.values.each do |dish|
@@ -171,13 +171,9 @@ class Restaurant < ActiveRecord::Base
   end
   
   def self.bill(bill)
-    bill_array = []
-    bill_array.push('bill = "до 500 руб"') if bill[0] == '1'
-    bill_array.push('bill = "500 - 1000 руб"') if bill[1] == '1'
-    bill_array.push('bill = "1000 - 2000 руб"') if bill[2] == '1'
-    bill_array.push('bill = "2000 - 5000 руб"') if bill[3] == '1'
-    bill_array.push('bill = "более 5000 руб"') if bill[4] == '1'
-    where(bill_array.join(' OR '))
+    array = []
+    5.times {|i| array.push(i+1) if bill[i] == '1'} 
+    where(array.join(' OR '))
   end
   
   def self.search_by_word(keyword)

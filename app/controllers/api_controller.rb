@@ -473,7 +473,7 @@ class ApiController < ApplicationController
       
       if user = User.find_by_id(top_user_id)
         dishes_array = user.dish_expert(current_user_id)
-        restaurants_array = Restaurant.for_dish_expert_in(dishes_array, lat, lon) if dishes_array.any?
+        restaurants_array = Restaurant.for_dish_expert(dishes_array, lat, lon) if dishes_array.any?
       end
       
     else    
