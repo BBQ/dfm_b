@@ -122,7 +122,7 @@ namespace :ylp do
   end
   
   task :copy => :environment do
-    id_start = 1
+    id_start = 3800
     id_end = 10000
     
     copy_restaurants(id_start,id_end)
