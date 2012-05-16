@@ -6,3 +6,4 @@ import/
 public/uploads/
 .sass-cache/
 .idea
+Gemfile.lock
