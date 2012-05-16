@@ -23,7 +23,7 @@ gem "mini_magick"
 gem "sorcery"
 
 gem "koala"
-gem "foursquare2", "~> 1.3.6"
+gem "foursquare2", "~> 1.4.2"
 gem "geocoder"
 
 gem "kaminari"
