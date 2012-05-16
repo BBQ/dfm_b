@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120515124604) do
+ActiveRecord::Schema.define(:version => 20120516170927) do
 
   create_table "apn_devices", :force => true do |t|
     t.string   "token",              :default => "",   :null => false
@@ -92,6 +92,7 @@ ActiveRecord::Schema.define(:version => 20120515124604) do
     t.string   "name_eng"
     t.integer  "top_user_id", :default => 0
     t.string   "fsq_id"
+    t.integer  "bill",        :default => 0
   end
 
   add_index "deliveries", ["address"], :name => "index_deliveries_on_address"
@@ -637,6 +638,13 @@ ActiveRecord::Schema.define(:version => 20120515124604) do
   add_index "sessions", ["user_id"], :name => "index_sessions_on_user_id"
 
   create_table "specials", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.string   "restaurant"
+    t.string   "address"
+    t.string   "phone"
+    t.string   "url"
+    t.datetime "valid_until"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -798,6 +806,7 @@ ActiveRecord::Schema.define(:version => 20120515124604) do
     t.boolean  "has_menu"
     t.integer  "db_status"
     t.integer  "our_network_id"
+    t.boolean  "menu_copied",           :default => false
   end
 
   add_index "ylp_restaurants", ["fsq_id"], :name => "index_ylp_restaurants_on_fsq_id"

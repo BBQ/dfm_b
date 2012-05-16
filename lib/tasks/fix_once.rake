@@ -24,6 +24,16 @@ end
 
 namespace :fixup do
   
+  desc "Fill Dilevery with :bill"
+  task :delivery_bill => :environment do
+    Delivery.all.each do |d|
+      if r = Restaurant.find_by_name(d.name)
+        p "#{r.name}: #{r.bill}"
+        d.update_attributes(:bill => r.bill) if r.bill
+      end
+    end
+  end
+  
   desc "Find similar categories in RestaurantCategory"
   task :rc_sim => :environment do
     p "Getting Restaurants ... "

@@ -5,6 +5,13 @@ class Delivery < ActiveRecord::Base
   has_many :deliveries_tags, :dependent => :destroy
   has_many :tags, :through => :deliveries_tags
   
+  def self.near(lat, lon, rad = 1)
+    where("((ACOS(
+    	SIN(lat * PI() / 180) * SIN(? * PI() / 180) + 
+    	COS(lat * PI() / 180) * COS(? * PI() / 180) * 
+    	COS((? - lon) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) * 1.609344 <= ?", lat, lat, lon, rad)
+  end
+  
   def self.add_from_4sq_with_menu(foursquare_venue_id)
     
      dish_category_id = ''
@@ -28,7 +35,7 @@ class Delivery < ActiveRecord::Base
              # :fsq_users_count => venue.stats.usersCount,
              # :fsq_name => venue.name,
              # :fsq_address => venue.location.address,
-             :source => 'foursquare',
+             :source => 'foursquare_venue_iduare',
              :phone => venue.contact.formattedPhone,
            }
 
