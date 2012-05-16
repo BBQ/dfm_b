@@ -123,7 +123,7 @@ namespace :ylp do
   
   task :copy => :environment do
     id_start = 1
-    id_end = 50000
+    id_end = 10000
     
     copy_restaurants(id_start,id_end)
   end
@@ -144,7 +144,7 @@ end
 
 def copy_restaurants(id_start, id_end)
   restaurants = YlpRestaurant.order('id')
-  restaurants = restaurants.where("id > ? AND id <= ? and has_menu = 1",id_start,id_end) if id_start > 0 && id_end > id_start
+  restaurants = restaurants.where("id > ? AND id <= ?",id_start,id_end) if id_start > 0 && id_end > id_start
   
   restaurants.each do |r|
     data = collect_restaurant_data(r)
@@ -208,6 +208,8 @@ def copy_menu(restaurant)
       end
     end
     res = " menu copied to #{restaurant.network_id}"
+  else
+    res = " menu is empty"
   end
   YlpRestaurant.where("name = ?", restaurant.name).update_all(:menu_copied => true)
   res
