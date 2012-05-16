@@ -4,8 +4,11 @@ class CreateSpecials < ActiveRecord::Migration
       t.column :id, ID_COLUMN
       t.column :name, :string
       t.column :description, :string
+      t.column :restaurant, :string
+      t.column :address, :string
+      t.column :phone, :string
       t.column :url, :string
-      t.column :status, :boolean, :default => false
+      t.column :valid_until, :datetime
       
       t.timestamps
     end
