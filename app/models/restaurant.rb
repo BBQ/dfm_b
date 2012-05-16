@@ -172,7 +172,7 @@ class Restaurant < ActiveRecord::Base
   
   def self.bill(bill)
     array = []
-    4.times {|i| array.push(i+1) if bill[i] == '1'} 
+    4.times {|i| array.push("bill = #{i+1}") if bill[i] == '1'} 
     where(array.join(' OR '))
   end
   
