@@ -7,7 +7,12 @@ namespace :ylp do
     access_token = get_iiko_token(http)
     
     restaurants = get_iiko_organization_list(http,access_token) 
-    specials = get_iiko_specials(http,access_token,restaurants[:id])
+
+    restaurants.each do |r|
+      
+      specials = get_iiko_specials(http,access_token,r['id'])
+    end
+    
   end
   
 end
@@ -37,7 +42,7 @@ def get_iiko_token(http)
 end
 
 def get_iiko_organization_list(http,access_token)  
-  url = "api/0/organization/list?access_token=#{access_token}"
+  url = "/api/0/organization/list?access_token=#{access_token}"
   request_iiko(http, url)
 end
 

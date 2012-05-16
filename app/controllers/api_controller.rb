@@ -1296,7 +1296,7 @@ class ApiController < ApplicationController
         types = []
       
         dishes.select(:dish_category_id).group(:dish_category_id).each do |dish|
-          sort = DishCategoryOrder.find_by_restaurant_id_and_dish_category_id(restaurant.id, dish.dish_category_id)
+          sort = DishCategoryOrder.find_by_network_id_and_dish_category_id(restaurant.network_id, dish.dish_category_id)
           categories.push({
             :id => dish.dish_category_id, 
             :name => dish.dish_category.name_eng.nil? ? dish.dish_category.name : dish.dish_category.name_eng, 

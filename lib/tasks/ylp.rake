@@ -121,6 +121,195 @@ namespace :ylp do
   end
   
   task :copy => :environment do
+    id_start = 1
+    id_end = 50000
+    
+    copy_restaurants(id_start,id_end)
+  end
+  
+  def copy_restaurants(id_start, id_end)
+    restaurants = YlpRestaurant.order('id')
+    restaurants = restaurants.where("id > ? AND id <= ? and has_menu = 1",id_start,id_end) if id_start > 0 && id_end > id_start
+    
+    restaurants.each do |r|
+      data = collect_restaurant_data(r)
+      
+      p "#{r.id} #{r.name}"
+      p " address: #{data[:address]}"     
+      p " network: #{data[:network_id]}"
+      
+      if restaurant_existed = Restaurant.find_by_address_and_network_id(data[:address],data[:network_id])
+        restaurant_existed.update_attributes(data)        
+        if r.menu_copied == false
+          clear_dishes(restaurant_existed)
+          p copy_menu(restaurant_existed)
+        end 
+      else
+        new_restaurant = Restaurant.create(data)
+        p copy_menu(new_restaurant) if r.menu_copied == false
+      end      
+    end
+    
+  end
+  
+  def copy_menu(restaurant)
+    if r_menu = YlpRestaurant.where("name = ? AND has_menu = 1", restaurant.name).first
+      
+      i = 0
+      dish_category_id_new = 0
+      r_menu.ylp_dishes.each do |yd|
+        unless Dish.find_by_name_and_network_id(yd.name, restaurant.network_id)
+        
+          if dish_category = DishCategory.find_by_name(yd.name)
+            dish_category_id = dish_category.id
+          else
+            dish_category_id = DishCategory.create(:name => yd.name).id
+          end
+       
+          if dish_category_id_new != dish_category_id
+            i += 1
+
+            dish_category_order_data = {
+              :network_id => restaurant.network_id,
+              :dish_category_id => dish_category_id,
+              :order => i
+            }
+            
+            DishCategoryOrder.create(dish_category_order_data)
+            dish_category_id_new = dish_category_id
+          end
+      
+          data = {
+            :network_id => restaurant.network_id,
+            :name => yd.name,
+            :price => yd.price ||= 0,
+            :currency => yd.currency ||= '',
+            :description => yd.description,
+            :dish_category_id => dish_category_id,
+            :fsq_checkins_count => restaurant.fsq_checkins_count
+          }
+          Dish.create(data)
+        
+        end
+      end
+      res = " menu copied to #{restaurant.network_id}"
+    end
+    YlpRestaurant.where("name = ?", restaurant.name).update_all(:menu_copied => true)
+    res
+  end
+  
+  
+  def clear_dishes(restaurant_existed)
+    if restaurant_existed.network.dishes.any?
+      reviews = restaurant_existed.network.reviews.group(:dish_id).all
+    
+      if reviews.any?
+        r_ids = []
+        reviews.each {|rw| r_ids.push(rw.dish_id)}      
+        restaurant_existed.network.dishes.where("id NOT IN (#{r_ids.join(',')})").destroy_all
+      else
+        restaurant_existed.network.dishes.destroy_all
+      end
+    
+    end
+  end
+  
+  
+  def set_network_id(name, city)
+    if n = Network.find_by_name_and_city(name, city)
+      network_id = n.id
+    elsif n = Network.create(:name => name, :city => city)
+      network_id = n.id
+    end
+    network_id
+  end
+  
+  def set_categories(restaurant)
+    categories = []  
+    cat = restaurant.category || restaurant.restaurant_categories
+    
+    unless cat.nil?
+      cat.split(',').each do |name|
+        
+        if category = RestaurantCategory.find_by_name(name)
+          categories.push(category.id)
+        else
+          categories.push(RestaurantCategory.create(:name => name).id)
+        end
+        
+      end
+    end
+    categories.join(',')
+  end
+  
+  def collect_restaurant_data(restaurant)
+    
+    if restaurant.cc == 'Yes'
+      restaurant.cc = 1
+    elsif restaurant.cc == 'No'
+      restaurant.cc = 0
+    end
+    
+    if restaurant.outdoor_seating == 'Yes'
+      restaurant.outdoor_seating = 1
+    elsif restaurant.outdoor_seating == 'No'
+      restaurant.outdoor_seating = 0
+    end
+    
+    data = {}
+    data = f_hours(restaurant.hours) unless restaurant.hours.nil?
+    
+    data[:network_id] = set_network_id(restaurant.name, restaurant.city)
+    data[:address] = restaurant.address || restaurant.fsq_address
+    
+    data[:transit] = restaurant.transit
+    data[:attire] = restaurant.attire
+    data[:caters] = restaurant.caters
+    data[:ambience] = restaurant.ambience
+
+    data[:name] = restaurant.name
+    data[:city] = restaurant.city
+
+    data[:lon] = restaurant.lng
+    data[:lat] = restaurant.lat
+    data[:fsq_lng] = restaurant.fsq_lng || restaurant.fsq_lng
+    data[:fsq_lat] = restaurant.fsq_lat || restaurant.fsq_lat
+    data[:phone] = restaurant.phone
+    data[:web] = restaurant.web             
+
+    data[:wifi] = restaurant.wifi
+    data[:terrace] = restaurant.outdoor_seating
+    data[:cc] = restaurant.cc
+    data[:source] = 'ylp'
+    data[:time] = restaurant.hours
+
+    data[:reservation] = restaurant.reservation
+    data[:delivery] = restaurant.delivery
+    data[:takeaway] = restaurant.takeout
+    data[:service] = restaurant.table_service
+    data[:good_for_kids] = restaurant.kids
+    data[:good_for_meal] = restaurant.meal
+    data[:good_for_groups] = restaurant.groups
+    data[:alcohol] = restaurant.alcohol
+    data[:noise] = restaurant.noise
+    data[:tv] = restaurant.tv
+    data[:disabled] = restaurant.wheelchair_accessible
+    data[:parking] = restaurant.parking
+    data[:bill] = restaurant.price
+    data[:fsq_checkins_count] = restaurant.fsq_checkins_count
+    data[:fsq_tip_count] = restaurant.fsq_tip_count
+    data[:fsq_users_count] = restaurant.fsq_users_count
+    data[:fsq_name] = restaurant.fsq_name
+    data[:fsq_address] = restaurant.fsq_address
+    data[:fsq_id] = restaurant.fsq_id
+    data[:restaurant_categories] = set_categories(restaurant)
+    
+    data
+  end
+  
+  
+
+  task :copy_old => :environment do
     id_start = 0
     id_end = 50000
     
@@ -137,7 +326,7 @@ namespace :ylp do
       
       p "Network #{network_id} #{n.name}"
       
-      YlpRestaurant.where("name = ? AND city = ? ",r.name,r.city).each do |d|
+      YlpRestaurant.where("name = ? AND city = ?",r.name,r.city).each do |d|
         category_id = []  
         cat = d.category unless cat = d.restaurant_categories
         

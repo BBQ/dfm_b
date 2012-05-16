@@ -95,7 +95,7 @@ class Dish < ActiveRecord::Base
       if dtype = DishType.select(:name).find_by_id(data[:dish_type_id])
         data[:dish_category_id] = DishCategory.get_id(dtype.name)
       end
-      dish.match_tags if dish = super(data)    
+      # dish.match_tags if dish = super(data)    
       
     end
     dish
