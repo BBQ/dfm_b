@@ -492,7 +492,7 @@ class ApiController < ApplicationController
         bill = params[:bill] || ''
         
         restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).group(:network_id)
-        restaurants = restaurants.bill(params[:bill]) if bill.to_i != 0 && bill != '11111' && bill.length == 5
+        restaurants = restaurants.bill(bill) if bill.to_i != 0 && bill != '11111' && bill.length == 5
     
         networks = []
         restaurants.each {|r| networks.push(r.network_id)}

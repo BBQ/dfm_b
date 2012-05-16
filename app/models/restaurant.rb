@@ -170,7 +170,7 @@ class Restaurant < ActiveRecord::Base
     where("restaurants.id IN (SELECT restaurant_id FROM restaurant_tags WHERE tag_id = ?)", id)
   end
   
-  def bill(bill)
+  def self.bill(bill)
     array = []
     4.times {|i| array.push(i+1) if bill[i] == '1'} 
     where(array.join(' OR '))
