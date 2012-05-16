@@ -489,11 +489,12 @@ class ApiController < ApplicationController
       
         limit = params[:limit] ? params[:limit].to_i : 25
         offset = params[:offset] ? params[:offset].to_i : 0
-    
+        bill = params[:bill] || ''
+        
         restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).group(:network_id)
-        restaurants = restaurants.bill(params[:bill]) if params[:bill] && params[:bill].length == 5 && params[:bill] != '00000' && params[:bill] != '11111'
+        restaurants = restaurants.bill(params[:bill]) if bill.to_i != 0 && bill != '11111' && bill.length == 5
     
-        networks = []  
+        networks = []
         restaurants.each {|r| networks.push(r.network_id)}
         
         if networks.any?
