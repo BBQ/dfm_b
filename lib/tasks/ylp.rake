@@ -273,6 +273,12 @@ def collect_restaurant_data(restaurant)
     restaurant.outdoor_seating = 0
   end
   
+  if restaurant.delivery == 'Yes'
+    restaurant.delivery = 1
+  elsif restaurant.delivery == 'No'
+    restaurant.delivery = 0
+  end
+  
   data = {}
   data = f_hours(restaurant.hours) unless restaurant.hours.nil?
   

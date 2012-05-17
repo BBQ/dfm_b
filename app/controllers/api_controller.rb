@@ -493,25 +493,20 @@ class ApiController < ApplicationController
         limit = params[:limit] ? params[:limit].to_i : 25
         offset = params[:offset] ? params[:offset].to_i : 0
         bill = params[:bill] || ''
+        networks = []
+        
+        restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).group(:network_id)
+        restaurants = restaurants.bill(bill) if bill.to_i != 0 && bill != '11111'
           
         if params[:type] == 'home_cooked'
           dishes = HomeCook.select([:id, :name, :rating, :votes, :photo]).order("votes DESC, photo DESC")
         elsif params[:type] == 'delivery'
-          
-          restaurants = Delivery
-          restaurants = restaurants.bill(bill) if bill.to_i != 0 && bill != '11111'
-          
-          delivery = []
-          restaurants.each {|r| delivery.push(r.id)}
+          restaurants = restaurants.where(:delivery => 1)
+          restaurants.each {|r| networks.push(r.network_id)}
           
           dishes = DishDelivery.select([:id, :name, :rating, :votes, :photo, :price, :currency, :delivery_id]).order("votes DESC, photo DESC")
-          dishes = dishes.where("delivery_id IN (#{delivery.join(',')})") if delivery.any?
+          dishes = dishes.where("delivery_id IN (#{delivery.join(',')})") if networks.any?
         else    
-          
-          restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).group(:network_id)
-          restaurants = restaurants.bill(bill) if bill.to_i != 0 && bill != '11111'
-
-          networks = []
           restaurants.each {|r| networks.push(r.network_id)}
             
           dishes = Dish.select([:id, :name, :rating, :votes, :photo, :network_id, :price, :currency, :fsq_checkins_count]).order("votes DESC, photo DESC, fsq_checkins_count DESC")
