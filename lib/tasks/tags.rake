@@ -1,7 +1,7 @@
 # encoding: utf-8
 namespace :tags do
     
-  desc "Match Restaurant Tags"
+  desc "Match Restaurant Tags RUN ONLY AFTER :match_dishes"
   task :match_rest => :environment do
     restaurants = ENV["TYPE"] == 'Delivery' ? Delivery : Restaurant
     
@@ -33,7 +33,7 @@ namespace :tags do
   task :match_dishes => :environment do
     
     Tag.all.each do |t|
-      p t.name
+      p t.name_a
       
       names_array = []      
       names_array.push(t.name_a.downcase) unless t.name_a.blank? 
