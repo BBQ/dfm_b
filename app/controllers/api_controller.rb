@@ -498,8 +498,8 @@ class ApiController < ApplicationController
           dishes = HomeCook.select([:id, :name, :rating, :votes, :photo]).order("votes DESC, photo DESC")
         elsif params[:type] == 'delivery'
           
-          restaurants = Delivery.select(:id).near(params[:lat], params[:lon], radius)
-          restaurants = restaurants.bill(bill) if bill.to_i != 0 && bill != '11111' && bill.length == 5
+          restaurants = Delivery
+          restaurants = restaurants.bill(bill) if bill.to_i != 0 && bill != '11111'
           
           delivery = []
           restaurants.each {|r| delivery.push(r.id)}
@@ -509,7 +509,7 @@ class ApiController < ApplicationController
         else    
           
           restaurants = Restaurant.select(:network_id).near(params[:lat], params[:lon], radius).group(:network_id)
-          restaurants = restaurants.bill(bill) if bill.to_i != 0 && bill != '11111' && bill.length == 5
+          restaurants = restaurants.bill(bill) if bill.to_i != 0 && bill != '11111'
 
           networks = []
           restaurants.each {|r| networks.push(r.network_id)}
