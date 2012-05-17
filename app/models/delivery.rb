@@ -5,6 +5,12 @@ class Delivery < ActiveRecord::Base
   has_many :deliveries_tags, :dependent => :destroy
   has_many :tags, :through => :deliveries_tags
   
+  def self.bill(bill)
+    array = []
+    4.times {|i| array.push("bill = #{i+1}") if bill[i] == '1'} 
+    where(array.join(' OR '))
+  end
+  
   def self.near(lat, lon, rad = 1)
     where("((ACOS(
     	SIN(lat * PI() / 180) * SIN(? * PI() / 180) + 
