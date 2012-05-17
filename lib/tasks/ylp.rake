@@ -144,7 +144,7 @@ end
 
 def copy_restaurants(id_start, id_end)
   restaurants = YlpRestaurant.order('id')
-  restaurants = restaurants.where("id > ? AND id <= ?",id_start,id_end) if id_start > 0 && id_end > id_start
+  restaurants = restaurants.where("id > ? AND id <= ? AND has_menu = 1",id_start,id_end) if id_start > 0 && id_end > id_start
   
   restaurants.each do |r|
     data = collect_restaurant_data(r)
@@ -169,29 +169,24 @@ end
 
 def copy_menu(restaurant)
   if r_menu = YlpRestaurant.where("name = ? AND has_menu = 1", restaurant.name).first
-    
+    dish_category_id_old = 0
     i = 0
-    dish_category_id_new = 0
+    
     r_menu.ylp_dishes.each do |yd|
-      unless Dish.find_by_name_and_network_id(yd.name, restaurant.network_id)
-      
-        if dish_category = DishCategory.find_by_name(yd.name)
-          dish_category_id = dish_category.id
-        else
-          dish_category_id = DishCategory.create(:name => yd.name).id
-        end
-     
-        if dish_category_id_new != dish_category_id
+      unless Dish.find_by_name_and_network_id(yd.name, restaurant.network_id)      
+        dish_category = DishCategory.find_by_name(yd.dish_category) || DishCategory.create(:name => yd.dish_category)
+
+        if dish_category_id_old != dish_category.id
           i += 1
 
           dish_category_order_data = {
             :network_id => restaurant.network_id,
-            :dish_category_id => dish_category_id,
+            :dish_category_id => dish_category.id,
             :order => i
           }
           
           DishCategoryOrder.create(dish_category_order_data)
-          dish_category_id_new = dish_category_id
+          dish_category_id_old = dish_category.id
         end
     
         data = {
@@ -200,7 +195,7 @@ def copy_menu(restaurant)
           :price => yd.price ||= 0,
           :currency => yd.currency ||= '',
           :description => yd.description,
-          :dish_category_id => dish_category_id,
+          :dish_category_id => dish_category.id,
           :fsq_checkins_count => restaurant.fsq_checkins_count
         }
         Dish.create(data)

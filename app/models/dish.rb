@@ -20,15 +20,23 @@ class Dish < ActiveRecord::Base
   mount_uploader :photo, ImageUploader
   
   def self.create(data)
-    unless dish = find_by_name_and_network_id(data[:name], data[:network_id])
-      if dtype = DishType.select(:name).find_by_id(data[:dish_type_id])
-        data[:dish_category_id] = DishCategory.get_id(dtype.name)
-      end
-      # dish.match_tags if dish = super(data)
-      dish = super(data)    
-    end
     
+    unless dish = find_by_name_and_network_id(data[:name], data[:network_id])  
+      if data[:created_by_user]
+        
+        if dish_type = DishType.select(:name).find_by_id(data[:dish_type_id])
+          data[:dish_category_id] = DishCategory.get_id_for dish_type.name
+        end      
+        dish.match_tags if dish = super(data)
+        
+      else
+        
+        dish = super(data) 
+        
+      end       
+    end
     dish
+  
   end
   
   def self.expert(top_user_id, current_user_id = 0)
