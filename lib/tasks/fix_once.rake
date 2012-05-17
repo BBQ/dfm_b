@@ -23,6 +23,17 @@ def set_offset
 end
 
 namespace :fixup do
+
+
+  desc "Copy Dishes to DishDelivery"
+  task :cp_dish_dlv => :environment do
+    Restaurant.where(:delivery => 1).group(network_id).each do |r|
+      r.network.dishes.each do |d|
+        DishDelivery.create(d)
+      end
+    end
+  end  
+  
   
   desc "Fill Dilevery with :bill"
   task :delivery_bill => :environment do
