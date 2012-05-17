@@ -227,7 +227,7 @@ class API < ActiveRecord::Base
       description.push("Accept Credit Card: #{restaurant.cc.to_s.sub('false','no').sub('true','yes')}") unless restaurant.cc.blank?
       description.push("Terrace: #{restaurant.terrace.to_s.sub('false','no').sub('true','yes')}") unless restaurant.terrace.blank?
 
-      description.push("Delivery: #{restaurant.delivery.sub('0','no').sub('1','yes')}") unless restaurant.delivery.blank?           
+      description.push("Delivery: #{restaurant.delivery.to_s.sub('false','no').sub('true','yes')}") unless restaurant.delivery.blank?           
       description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
       description.push("Takeaway: #{restaurant.takeaway.to_s.sub('false','no').sub('true','yes')}") unless restaurant.takeaway.blank?      
      
