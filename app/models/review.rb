@@ -181,7 +181,8 @@ class Review < ActiveRecord::Base
   def self.save_review(user_review, post_on_facebook = 0, post_on_twitter = 0)
     rating = user_review[:rating].to_f
     
-    user_review[:photo] = Image.review_photo(user_review[:photo])
+    uuid = user_review[:photo]
+    user_review[:photo] = Image.review_photo(uuid)
     
     if rating > 0
     
