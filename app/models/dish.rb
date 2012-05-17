@@ -19,6 +19,18 @@ class Dish < ActiveRecord::Base
       
   mount_uploader :photo, ImageUploader
   
+  def self.create(data)
+    unless dish = find_by_name_and_network_id(data[:name], data[:network_id])
+      if dtype = DishType.select(:name).find_by_id(data[:dish_type_id])
+        data[:dish_category_id] = DishCategory.get_id(dtype.name)
+      end
+      # dish.match_tags if dish = super(data)
+      dish = super(data)    
+    end
+    
+    dish
+  end
+  
   def self.expert(top_user_id, current_user_id = 0)
     
     dishes_array = []
@@ -50,7 +62,6 @@ class Dish < ActiveRecord::Base
     
     dishes_array
   end
-  
   
   def self_review
     
@@ -87,19 +98,6 @@ class Dish < ActiveRecord::Base
         :comments => get_comments
       }
     }
-  end
-  
-  def self.create(data)
-    unless dish = find_by_name_and_network_id(data[:name], data[:network_id])
-      
-      if dtype = DishType.select(:name).find_by_id(data[:dish_type_id])
-        data[:dish_category_id] = DishCategory.get_id(dtype.name)
-      end
-      dish.match_tags if dish = super(data)    
-      
-    end
-    dish
-    
   end
   
   def match_tags
