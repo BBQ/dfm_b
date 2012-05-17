@@ -1366,11 +1366,10 @@ class ApiController < ApplicationController
   end
   
   def add_review
-    
     if params[:review] && Session.check_token(params[:review][:user_id], params[:token]) && params[:review][:rating].to_f > 0 && params[:review][:rating].to_f <= 5
       
-      params[:review][:photo] = Image.review_photo(params[:uuid]) if params[:uuid]
       params[:review][:friends] = User.put_friends(params[:fb_friends], params[:tw_friends]) if params[:fb_friends] || params[:tw_friends]
+      params[:review][:photo] ||= params[:uuid] #Delete on release
       
       if params[:review][:rtype] == 'home_cooked'
           

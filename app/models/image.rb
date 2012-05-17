@@ -4,11 +4,7 @@ class Image < ActiveRecord::Base
   
   def self.review_photo(uuid)
     if image = find_by_uuid(uuid)
-      
-      photo = File.open(image.photo.file.file)  
-      image.destroy
-      photo
-      
+      photo = File.open(image.photo.file.file)
     end
   end
   

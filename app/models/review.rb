@@ -181,6 +181,8 @@ class Review < ActiveRecord::Base
   def self.save_review(user_review, post_on_facebook = 0, post_on_twitter = 0)
     rating = user_review[:rating].to_f
     
+    user_review[:photo] = Image.review_photo(user_review[:photo])
+    
     if rating > 0
     
       if user_review[:rtype] == 'home_cooked'
@@ -194,7 +196,7 @@ class Review < ActiveRecord::Base
         network = Network.find_by_id(restaurant.network_id)
       end
   
-      if user_review[:photo].blank? && review = review_exist?(user_review[:user_id], user_review[:dish_id])
+      if user_review[:photo].nil? && review = review_exist?(user_review[:user_id], user_review[:dish_id])
         
         r = review
         dish.rating = dish.votes == 1?0 : (dish.rating * dish.votes - review.rating) / (dish.votes - 1)
@@ -218,7 +220,8 @@ class Review < ActiveRecord::Base
           
         review.rating = rating
         review.comment = user_review[:comment] unless user_review[:comment].blank?
-        review.save        
+        review.save 
+        Image.find_by_uuid(uuid).destroy if uuid      
         
       else
         
@@ -227,7 +230,9 @@ class Review < ActiveRecord::Base
           user_review[:lng] = restaurant.lon
         end
         
-        r = create(user_review)  
+        r = create(user_review)
+        Image.find_by_uuid(uuid).destroy if uuid
+        
         dish.rating = (dish.rating * dish.votes + rating) / (dish.votes + 1)
         dish.votes += 1
         dish.save
