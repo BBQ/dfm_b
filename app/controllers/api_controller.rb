@@ -505,7 +505,7 @@ class ApiController < ApplicationController
           restaurants.each {|r| networks.push(r.network_id)}
           
           dishes = DishDelivery.select([:id, :name, :rating, :votes, :photo, :price, :currency, :delivery_id]).order("votes DESC, photo DESC")
-          dishes = dishes.where("delivery_id IN (#{delivery.join(',')})") if networks.any?
+          dishes = dishes.where("delivery_id IN (#{networks.join(',')})") if networks.any?
         else    
           restaurants.each {|r| networks.push(r.network_id)}
             
