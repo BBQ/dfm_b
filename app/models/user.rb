@@ -154,8 +154,14 @@ class User < ActiveRecord::Base
     md5 = Digest::MD5
     
     if user = find_by_email(email)
-      if user.salt && user.crypted_password == md5.hexdigest(password + user.salt) 
-        token = Session.get_token(user)
+      if user.salt
+        if user.crypted_password == md5.hexdigest(password + user.salt) 
+          token = Session.get_token(user)
+        else
+          {:description => 'Email or password incorrect'}
+        end
+      else
+        {:description => 'Email already registered'}
       end
     elsif !name.nil?
       require "base64"

@@ -361,11 +361,14 @@ class ApiController < ApplicationController
         session = User.authenticate_by_twitter(params[:oauth_token], params[:oauth_token_secret], params[:email])
       end      
     elsif params[:email] && params[:password]
-      if session = User.authenticate_by_email_password(params[:email], params[:password], params[:name])
+      session = User.authenticate_by_email_password(params[:email], params[:password], params[:name])
+      
+      if session[:user_id]
         user_preferences = UserPreference.for_user.find_by_user_id session[:user_id]
       else
-        $error = {:description => 'Incorrect email or password!', :code => 367} if session.nil?
+        $error = {:description => session[:description], :code => 367} if session.nil?
       end
+      
     else
       $error = {:description => 'Parameters missing', :code => 370}
     end
