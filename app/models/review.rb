@@ -199,8 +199,13 @@ class Review < ActiveRecord::Base
   
       if user_review[:photo].nil? && review = review_exist?(user_review[:user_id], user_review[:dish_id])
         
-        dish.rating = dish.votes <= 1 ? 0 : (dish.rating * dish.votes - review.rating) / (dish.votes - 1)
-        dish.rating = (dish.rating * (dish.votes - 1) + rating) / dish.votes
+        if dish.votes <= 1
+          dish.rating = rating
+        else          
+          dish.rating = (dish.rating * dish.votes - review.rating) / (dish.votes - 1)
+          dish.rating = (dish.rating * (dish.votes - 1) + rating) / dish.votes
+        end
+        
         dish.save
         
         if user_review[:rtype] != 'home_cooked'
