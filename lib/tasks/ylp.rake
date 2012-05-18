@@ -154,14 +154,14 @@ def copy_restaurants(id_start, id_end)
     p " network: #{data[:network_id]}"
     
     if restaurant_existed = Restaurant.find_by_address_and_network_id(data[:address],data[:network_id])
-      # restaurant_existed.update_attributes(data)        
+      restaurant_existed.update_attributes(data)        
       if r.menu_copied == false
         clear_dishes(restaurant_existed)
         p copy_menu(restaurant_existed)
       end 
-    # else
-    #   new_restaurant = Restaurant.create(data)
-    #   p copy_menu(new_restaurant) if r.menu_copied == false
+    else
+      new_restaurant = Restaurant.create(data)
+      p copy_menu(new_restaurant) if r.menu_copied == false
     end      
   end
   

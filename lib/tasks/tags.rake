@@ -32,6 +32,11 @@ namespace :tags do
   desc "Match Dish Tags"
   task :match_dishes => :environment do
     
+    id_start = 1
+    id_end = 100 #306
+    
+    tags = Tag.where("id > ? AND id <= ?",id_start,id_end) if id_start > 0 && id_end > id_start
+    
     Tag.all.each do |t|
       p t.name_a
       
