@@ -2,7 +2,7 @@
 namespace :tags do
 
   desc "Delete Tags with No Dishes"
-  task :clean_d => :environment do  
+  task :clean_r => :environment do  
     RestaurantTag.all do |rtag|
       unless rtag.restaurant
         p rtag
