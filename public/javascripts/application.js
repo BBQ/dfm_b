@@ -22,7 +22,7 @@ $(document).ready(function() {
 
 function pinme() {
 
-	var title = $('.side_div .hd2')[0].innerText +' '+ $('.side_div .hd3')[0].innerText
+	var title = $('.data .desc')[0].innerText +' - '+ $('.side_div .hd2')[0].innerText +' '+ $('.side_div .hd3')[0].innerText + ' via www.dish.fm'
 	var image = $('#full_photo')[0].outerHTML
 	var url = escape($('#full_photo')[0].baseURI)
 	var media = escape($('#full_photo')[0].src)

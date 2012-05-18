@@ -33,7 +33,7 @@ class ReviewsController < ApplicationController
       end
         
       if @review
-        @r_categories = RestaurantCategory.where("id IN (#{@review.restaurant.restaurant_categories})").collect { |c| c.name}.join(', ')
+        @r_categories = RestaurantCategory.where("id IN (#{@review.restaurant.restaurant_categories})").collect { |c| c.name}.join(', ') if @review.rtype.nil?
     
         @bill = []
         @review.restaurant.bill.to_i.times do
