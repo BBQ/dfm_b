@@ -199,6 +199,7 @@ class Review < ActiveRecord::Base
   
       if user_review[:photo].nil? && review = review_exist?(user_review[:user_id], user_review[:dish_id])
         
+        r = review
         if dish.votes <= 1
           dish.rating = rating
         else          
