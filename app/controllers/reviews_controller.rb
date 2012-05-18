@@ -33,18 +33,21 @@ class ReviewsController < ApplicationController
       end
         
       if @review
-        @r_categories = RestaurantCategory.where("id IN (#{@review.restaurant.restaurant_categories})").collect { |c| c.name}.join(', ') if @review.rtype.nil?
+        
+        if @review.rtype.nil?
+          @r_categories = RestaurantCategory.where("id IN (#{@review.restaurant.restaurant_categories})").collect { |c| c.name}.join(', ')
     
-        @bill = []
-        @review.restaurant.bill.to_i.times do
-          @bill.push('$')
+          @bill = []
+          @review.restaurant.bill.to_i.times do
+            @bill.push('$')
+          end
+          @bill = @bill.join('')
+    
+          @markers = []
+          @review.network.restaurants.select([:name, :lat, :lon]).each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
+          @markers = "[#{@markers.join(',')}]"
         end
-        @bill = @bill.join('')
-    
-        @markers = []
-        @review.network.restaurants.select([:name, :lat, :lon]).each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
-        @markers = "[#{@markers.join(',')}]"
-      
+        
         @fb_obj = @review
       
         r_arr = Review.where("dish_id = ? AND photo IS NOT NULL",@review.dish_id).collect {|r| r.id}
