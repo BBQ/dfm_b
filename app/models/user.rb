@@ -158,10 +158,10 @@ class User < ActiveRecord::Base
         if user.crypted_password == md5.hexdigest(password + user.salt) 
           token = Session.get_token(user)
         else
-          {:description => 'Email or password incorrect'}
+         res = {:description => 'Email or password incorrect'}
         end
       else
-        {:description => 'Email already registered'}
+        res = {:description => 'Email already registered'}
       end
     elsif !name.nil?
       require "base64"
@@ -172,9 +172,10 @@ class User < ActiveRecord::Base
     end
     
     unless token.nil?
-      {:name => user.name, :fb_access_token => user.fb_access_token, :fb_valid_to => user.fb_valid_to.to_i, :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0}
+      res = {:name => user.name, :fb_access_token => user.fb_access_token, :fb_valid_to => user.fb_valid_to.to_i, :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0}
     end
     
+    res
   end
   
   
