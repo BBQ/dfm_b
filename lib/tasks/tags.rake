@@ -1,7 +1,7 @@
 # encoding: utf-8
 namespace :tags do
 
-  desc "Delete Tags with No Dishes"
+  desc "Delete Tags with No Restaurants"
   task :clean_r => :environment do  
     RestaurantTag.all do |rtag|
       unless rtag.restaurant
@@ -11,7 +11,16 @@ namespace :tags do
     end
   end
   
-    
+  desc "Delete Tags with No Dishes"
+  task :clean_d => :environment do  
+    DishTag.all do |dtag|
+      unless dtag.dish
+        p dtag
+        dtag.delete 
+      end
+    end
+  end
+  
   desc "Match Restaurant Tags RUN ONLY AFTER :match_dishes"
   task :match_rest => :environment do
     restaurants = ENV["TYPE"] == 'Delivery' ? Delivery : Restaurant
