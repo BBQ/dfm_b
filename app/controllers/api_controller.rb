@@ -364,10 +364,10 @@ class ApiController < ApplicationController
       if session = User.authenticate_by_email_password(params[:email], params[:password], params[:name])
         user_preferences = UserPreference.for_user.find_by_user_id session[:user_id]
       else
-        $error = {:description => 'User not found!', :code => 373} if session.nil?
+        $error = {:description => 'Incorrect email or password!', :code => 367} if session.nil?
       end
     else
-      $error = {:description => 'Parameters missing', :code => 375}
+      $error = {:description => 'Parameters missing', :code => 370}
     end
     
     if session

@@ -156,8 +156,6 @@ class User < ActiveRecord::Base
     if user = find_by_email(email)
       if user.salt && user.crypted_password == md5.hexdigest(password + user.salt) 
         token = Session.get_token(user)
-      else
-        'incorrect email or password'
       end
     elsif !name.nil?
       require "base64"
