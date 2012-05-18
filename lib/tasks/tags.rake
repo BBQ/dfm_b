@@ -1,5 +1,16 @@
 # encoding: utf-8
 namespace :tags do
+
+  desc "Delete Tags with No Dishes"
+  task :clean_d => :environment do  
+    RestaurantTag.all do |rtag|
+      unless rtag.restaurant
+        p rtag
+        rtag.delete 
+      end
+    end
+  end
+  
     
   desc "Match Restaurant Tags RUN ONLY AFTER :match_dishes"
   task :match_rest => :environment do
@@ -33,11 +44,11 @@ namespace :tags do
   task :match_dishes => :environment do
     
     id_start = 1
-    id_end = 100 #306
+    id_end = 298 #298
     
     tags = Tag.where("id > ? AND id <= ?",id_start,id_end) if id_start > 0 && id_end > id_start
     
-    Tag.all.each do |t|
+    tags.all.each do |t|
       p t.name_a
       
       names_array = []      
