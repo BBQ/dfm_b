@@ -366,14 +366,14 @@ class ApiController < ApplicationController
       if session[:user_id]
         user_preferences = UserPreference.for_user.find_by_user_id session[:user_id]
       else
-        $error = {:description => session[:description], :code => 367} if session.nil?
+        $error = {:description => session[:description], :code => 367}
       end
       
     else
       $error = {:description => 'Parameters missing', :code => 370}
     end
     
-    if session
+    if session[:user_id]
       if params[:push_token]
         
         #Add push token
@@ -397,7 +397,7 @@ class ApiController < ApplicationController
     end
     
     return render :json => {
-          :session => session ||= nil,
+          :session => session[:user_id] ? session : nil,
           :user_preferences => user_preferences ||= nil,
           :error => $error
     }
