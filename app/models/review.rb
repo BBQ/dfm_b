@@ -226,7 +226,6 @@ class Review < ActiveRecord::Base
         review.rating = rating
         review.comment = user_review[:comment] unless user_review[:comment].blank?
         review.save 
-        Image.find_by_uuid(uuid).destroy if uuid      
         
       else
         
