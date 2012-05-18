@@ -33,8 +33,8 @@ class ReviewsController < ApplicationController
       end
         
       if @review
-        
         if @review.rtype.nil?
+ 
           @r_categories = RestaurantCategory.where("id IN (#{@review.restaurant.restaurant_categories})").collect { |c| c.name}.join(', ')
     
           @bill = []
@@ -49,17 +49,6 @@ class ReviewsController < ApplicationController
         end
         
         @fb_obj = @review
-      
-        r_arr = Review.where("dish_id = ? AND photo IS NOT NULL",@review.dish_id).collect {|r| r.id}
-        r_arr.push("-#{@review.dish_id}".to_i) unless @review.dish.photo.blank?
-      
-        if next_index = r_arr.find_index(@review.id)
-          @review_next_id = r_arr[0] unless @review_next_id = r_arr[next_index + 1]           
-        end
-      
-        if prev_index = r_arr.find_index(@review.id)
-          @review_prev_id = r_arr[prev_index - 1]
-        end
     
         @friends_with = []
         if @review.friends
