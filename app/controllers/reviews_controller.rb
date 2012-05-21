@@ -50,11 +50,16 @@ class ReviewsController < ApplicationController
           @r_categories = ''
           @bill = ''
           @markers = []
+          
           @review.dish = Dish.new
           @review.dish.name = ''
+          @review.restaurant = Restaurant.new
+          @review.restaurant.name = ''
           if hc = HomeCook.find_by_id(@review.dish_id)
             @review.dish.name = hc.name
+            @review.restaurant.name = 'Home Cooked'
           end
+
           
         end
         
