@@ -46,6 +46,15 @@ class ReviewsController < ApplicationController
           @markers = []
           @review.network.restaurants.select([:name, :lat, :lon]).each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
           @markers = "[#{@markers.join(',')}]"
+        elsif @review.rtype == 'home_cooked'
+          @r_categories = ''
+          @bill = ''
+          @markers = []
+          @review.dish.name = ''
+          if hc = HomeCook.find_by_id(@review.dish_id)
+            @review.dish.name = hc.name
+          end
+          
         end
         
         @fb_obj = @review
