@@ -1074,7 +1074,7 @@ class ApiController < ApplicationController
           when 'delivery'
             dish_name = r.dish_delivery.name
           else
-            dish_name = r.dish.name
+            dish_name = r.dish ? r.dish.name : ''
           end
           
           reviews[:data].push(
