@@ -110,10 +110,13 @@ class User < ActiveRecord::Base
   end
   
   def user_photo
+    domain = 'http://test.dish.fm'
     if facebook_id
       ph = "http://graph.facebook.com/#{facebook_id}/picture?type=square" unless facebook_id.blank?
+    elsif photo.thumb.url != '/images/noimage.jpg'
+      ph = "#{domain}#{photo.thumb.url}"
     else
-      ph = "http://test.dish.fm#{photo.thumb.url}"
+      ph = "#{domain}/images/avatar@2x.png"
     end
     ph ||= ""
   end
