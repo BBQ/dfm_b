@@ -19,7 +19,7 @@ module ApplicationHelper
           image = "#{domain}#{@fb_obj.thumb}"
         when 'review' 
           title = "#{@fb_obj.dish.name}"
-          description = "#{@fb_obj.dish.name} in #{@fb_obj.restaurant.name}"
+          description = "#{@fb_obj.dish.name} in #{@fb_obj.restaurant ? @fb_obj.restaurant.name : 'Home Cooked'}"
           image = "#{domain}#{@fb_obj.photo.iphone.url}"
       end
       
