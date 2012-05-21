@@ -1049,7 +1049,7 @@ class ApiController < ApplicationController
           when 'delivery'
             dish_name = l.dish_delivery.name
           else
-            dish_name = l.dish.name
+            dish_name = l.dish ? l.dish.name : ''
           end
           
           likes[:data].push(
