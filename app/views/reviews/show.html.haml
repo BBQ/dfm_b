@@ -28,16 +28,16 @@
 			.hd3
 				- if @review.restaurant
 					= "@ #{@review.restaurant.name}"
-				#rest_desc
-					= [ @r_categories, 
-						"#{@review.restaurant.rating.round(1)}(#{@review.restaurant.votes}votes)", 
-						"#{@review.restaurant.fsq_checkins_count} checkins",
-						@bill ].reject(&:empty?).join(', ')
-				#map_canvas_popup
-				%script
-					= "load_map(#{@markers})"
-				.addr_phone
-					= "#{@review.restaurant.address} Тел:#{@review.restaurant.phone}"
+					#rest_desc
+						= [ @r_categories, 
+							"#{@review.restaurant.rating.round(1)}(#{@review.restaurant.votes}votes)", 
+							"#{@review.restaurant.fsq_checkins_count} checkins",
+							@bill ].reject(&:empty?).join(', ')
+					#map_canvas_popup
+					%script
+						= "load_map(#{@markers})"
+					.addr_phone
+						= "#{@review.restaurant.address} Тел:#{@review.restaurant.phone}"
 				- else
 					= "@ Home Cooked"
 		.center_div
