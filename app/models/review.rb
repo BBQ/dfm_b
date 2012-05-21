@@ -236,7 +236,9 @@ class Review < ActiveRecord::Base
         end
         
         r = create(user_review)
-        Image.find_by_uuid(uuid).destroy if uuid
+        if Image.find_by_uuid(uuid)
+          Image.find_by_uuid(uuid).destroy
+        end
         
         dish.rating = (dish.rating * dish.votes + rating) / (dish.votes + 1)
         dish.votes += 1
