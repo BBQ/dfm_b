@@ -168,10 +168,12 @@ class User < ActiveRecord::Base
       end
     elsif !name.nil?
       require "base64"
-      
       salt = Base64.encode64(password)
-      user = User.create(:email => email, :crypted_password => md5.hexdigest(password + salt), :salt => salt, :name => name)
-      token = Session.get_token(user)
+      
+      if user = User.create(:email => email, :crypted_password => md5.hexdigest(password + salt), :salt => salt, :name => name)
+        UserPreference.create({:user_id => user.id})
+        token = Session.get_token(user)
+      end
     end
     
     unless token.nil?
