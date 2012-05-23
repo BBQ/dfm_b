@@ -50,120 +50,116 @@ class Restaurant < ActiveRecord::Base
   
   def self.add_from_4sq_with_menu(foursquare_venue_id)
     
-     dish_category_id = ''
-     client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
-     # client = Foursquare2::Client.new(:client_id => 'AJSJN50PXKBBTY0JZ0Q1RUWMMMDB0DFCLGMN11LBX4TVGAPV', :client_secret => '5G13AELMDZPY22QO5QSDPNKL05VT1SUOV5WJNGMDNWGCAESX')
-     venue = client.venue(foursquare_venue_id)
-
-     unless r = find_by_fsq_id(foursquare_venue_id)
-
-       category_id = []
-       venue.categories.each do |v|
-         if category = RestaurantCategory.find_by_name(v.name)
-           category_id.push(category.id)
-         else
-           category_id.push(RestaurantCategory.create(:name => v.name).id)
-         end
-       end
-
-       if network = Network.find_by_name_and_city(venue.name, venue.location.city)
-         network_id = network.id
-       else
-         network_id = Network.create({:name => venue.name, :city =>venue.location.city}).id
-       end
+     unless foursquare_venue_id.blank?
        
-      begin
-        Timezone::Configure.begin do |c|
-          c.username = 'innty'
-          c.url = 'api.geonames.org'
-        end
-        if timezone = Timezone::Zone.new(:latlon => [venue.location.lat.to_f,venue.location.lng.to_f])
-          time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
-        end
-      rescue
-      end
+       client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)
+       dish_category_id = ''
        
-       begin
-         if address = Geocoder.search("#{venue.location.lat.to_f},#{venue.location.lng.to_f}")       
-           venue.location.address = address[0].address if venue.location.address.blank?
-           venue.location.city = address[0].city if venue.location.city.blank?
+       venue = client.venue(foursquare_venue_id)
+       unless r = find_by_fsq_id(foursquare_venue_id)
+         category_id = []
+         
+         venue.categories.each do |v|
+           category = RestaurantCategory.find_by_name(v.name) || RestaurantCategory.create(:name => v.name)
+           category_id.push(category.id) if category
          end
-       rescue
-       end
+         
+         network = Network.find_by_name_and_city(venue.name, venue.location.city) || Network.create({:name => venue.name, :city =>venue.location.city})
+         network_id = network.id if network
+       
+        begin
+          Timezone::Configure.begin do |c|
+            c.username = 'innty'
+            c.url = 'api.geonames.org'
+          end
+          if timezone = Timezone::Zone.new(:latlon => [venue.location.lat.to_f,venue.location.lng.to_f])
+            time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
+          end
+        rescue
+        end
+       
+         begin
+           if address = Geocoder.search("#{venue.location.lat.to_f},#{venue.location.lng.to_f}")       
+             venue.location.address = address[0].address if venue.location.address.blank?
+             venue.location.city = address[0].city if venue.location.city.blank?
+           end
+         rescue
+         end
 
-       data = {
-         :name => venue.name,
-         :address => venue.location.address,
-         :city => venue.location.city,
-         :lat => venue.location.lat.to_f,
-         :lon => venue.location.lng.to_f,
-         :fsq_id => venue.id,
-         :fsq_lng => venue.location.lng,
-         :fsq_lat => venue.location.lat,
-         :fsq_checkins_count => venue.stats.checkinsCount,
-         :fsq_tip_count => venue.stats.tipCount,
-         :fsq_users_count => venue.stats.usersCount,
-         :fsq_name => venue.name,
-         :fsq_address => venue.location.address,
-         :source => 'foursquare',
-         :phone => venue.contact.formattedPhone,
-         :restaurant_categories => category_id.join(','),
-         :network_id => network_id,
-         :time_zone_offset => time_zone_offset ||= "00:00"
-       }
+         data = {
+           :name => venue.name,
+           :address => venue.location.address,
+           :city => venue.location.city,
+           :lat => venue.location.lat.to_f,
+           :lon => venue.location.lng.to_f,
+           :fsq_id => venue.id,
+           :fsq_lng => venue.location.lng,
+           :fsq_lat => venue.location.lat,
+           :fsq_checkins_count => venue.stats.checkinsCount,
+           :fsq_tip_count => venue.stats.tipCount,
+           :fsq_users_count => venue.stats.usersCount,
+           :fsq_name => venue.name,
+           :fsq_address => venue.location.address,
+           :source => 'foursquare',
+           :phone => venue.contact.formattedPhone,
+           :restaurant_categories => category_id.join(','),
+           :network_id => network_id,
+           :time_zone_offset => time_zone_offset ||= "00:00"
+         }
 
-       if r = create(data)
-         client.venue_menu(foursquare_venue_id).each do |m|
+         if r = create(data)
+           client.venue_menu(foursquare_venue_id).each do |m|
            
-           cat_ord = 0
-           m.entries.fourth.second.items.each do |i|
+             cat_ord = 0
+             m.entries.fourth.second.items.each do |i|
 
-             if dish_category = DishCategory.find_by_name(i.name)
-               dish_category_id = dish_category.id
-             else
-               dish_category_id = DishCategory.create({:name => i.name}).id
-             end
-
-             cat_ord += 1
-             DishCategoryOrder.create({
-               :restaurant_id => r.id, 
-               :network_id =>  r.network_id,
-               :dish_category_id => dish_category_id,
-               :order => cat_ord
-             })
-
-             i.entries.third.second.items.each do |d|  
-
-               if d.prices
-                 if price = /(.)(\d+\.\d+)/.match(d.prices.first)
-                   price = price[2]
-                   currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
-                 else
-                   price = /(.)(\d+\.\d+)/.match(d.prices.second)[2]
-                   currency = /(.)(\d+\.\d+)/.match(d.prices.second)[1]
-                 end
+               if dish_category = DishCategory.find_by_name(i.name)
+                 dish_category_id = dish_category.id
+               else
+                 dish_category_id = DishCategory.create({:name => i.name}).id
                end
 
-               data = {
-                 :network_id => r.network_id,
-                 :name => d.name,
-                 :price => price ||= 0,
-                 :currency => currency ||= '',
-                 :description => d.description,
+               cat_ord += 1
+               DishCategoryOrder.create({
+                 :restaurant_id => r.id, 
+                 :network_id =>  r.network_id,
                  :dish_category_id => dish_category_id,
-               }
-               Dish.create(data)
+                 :order => cat_ord
+               })
 
+               i.entries.third.second.items.each do |d|  
+
+                 if d.prices
+                   if price = /(.)(\d+\.\d+)/.match(d.prices.first)
+                     price = price[2]
+                     currency = /(.)(\d+\.\d+)/.match(d.prices.first)[1]
+                   else
+                     price = /(.)(\d+\.\d+)/.match(d.prices.second)[2]
+                     currency = /(.)(\d+\.\d+)/.match(d.prices.second)[1]
+                   end
+                 end
+
+                 data = {
+                   :network_id => r.network_id,
+                   :name => d.name,
+                   :price => price ||= 0,
+                   :currency => currency ||= '',
+                   :description => d.description,
+                   :dish_category_id => dish_category_id,
+                 }
+                 Dish.create(data)
+
+               end
              end
            end
+
+           system "rake tags:match_dishes NETWORK_ID='#{r.network_id}' &"
+           system "rake tags:match_rest NETWORK_ID='#{r.network_id}' &"
+
          end
-
-         system "rake tags:match_dishes NETWORK_ID='#{r.network_id}' &"
-         system "rake tags:match_rest NETWORK_ID='#{r.network_id}' &"
-
        end
+       r
      end
-     r
   end
   
   def self.search_by_tag_id(id)
