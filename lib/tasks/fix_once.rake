@@ -138,7 +138,9 @@ namespace :fixup do
   desc "Make user_preferences records for Users"
   task :make_u_pref => :environment do  
     User.all.each do |user|
-      UserPreference.create({:user_id => user.id})
+      unless UserPreference.find_by_user_id user.id
+        UserPreference.create({:user_id => user.id})
+        p "Prefs added for user #{user.id}:#{user.name}"
     end
   end
 
