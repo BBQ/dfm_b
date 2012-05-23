@@ -141,6 +141,7 @@ namespace :fixup do
       unless UserPreference.find_by_user_id user.id
         UserPreference.create({:user_id => user.id})
         p "Prefs added for user #{user.id}:#{user.name}"
+      end
     end
   end
 
