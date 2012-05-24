@@ -720,9 +720,12 @@ class ApiController < ApplicationController
     
     if offset.to_i > 25
       return render :json => {
-              :dishes => [],
-              :restaurants => [],
-              :error => $error
+        :load_additional => load_additional ||= 0,
+        :restaurants => [],
+        :deliveries => [],
+        :networks => [],
+        :favourite => [],
+        :error => $error
       }
     end
 
