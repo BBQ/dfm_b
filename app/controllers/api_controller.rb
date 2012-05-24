@@ -494,7 +494,15 @@ class ApiController < ApplicationController
       
         limit = 25
         offset = params[:offset] ? params[:offset].to_i : 0
-        offset = 25 if offset.to_i > 25
+        
+        if offset.to_i > 25
+          return render :json => {
+                  :dishes => [],
+                  :restaurants => [nil]],
+                  :error => $error
+          }
+        end
+        
         bill = params[:bill] || ''
         networks = []
         
@@ -709,7 +717,14 @@ class ApiController < ApplicationController
     
     limit = 25
     offset = params[:offset] ||= 0    
-    offset = 25 if offset.to_i > 25
+    
+    if offset.to_i > 25
+      return render :json => {
+              :dishes => [],
+              :restaurants => [nil]],
+              :error => $error
+      }
+    end
 
     top_user_id = params[:top_user_id].to_i
     user_id = params[:user_id].to_i
