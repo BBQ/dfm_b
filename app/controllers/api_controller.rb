@@ -498,7 +498,7 @@ class ApiController < ApplicationController
         if offset.to_i > 25
           return render :json => {
                   :dishes => [],
-                  :restaurants => [nil]],
+                  :restaurants => [],
                   :error => $error
           }
         end
@@ -721,7 +721,7 @@ class ApiController < ApplicationController
     if offset.to_i > 25
       return render :json => {
               :dishes => [],
-              :restaurants => [nil]],
+              :restaurants => [],
               :error => $error
       }
     end
