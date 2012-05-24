@@ -492,8 +492,9 @@ class ApiController < ApplicationController
     
       if radius
       
-        limit = params[:limit] ? params[:limit].to_i : 25
+        limit = 25
         offset = params[:offset] ? params[:offset].to_i : 0
+        offset = 25 if offset.to_i > 25
         bill = params[:bill] || ''
         networks = []
         
@@ -704,11 +705,12 @@ class ApiController < ApplicationController
     }
   end
   
-  def get_restaurants
+  def get_restaurants    
     
-    limit = params[:limit] ||= 25
-    offset = params[:offset] ||= 0
-    
+    limit = 25
+    offset = params[:offset] ||= 0    
+    offset = 25 if offset.to_i > 25
+
     top_user_id = params[:top_user_id].to_i
     user_id = params[:user_id].to_i
     
