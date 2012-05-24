@@ -1,0 +1,14 @@
+#edit_user
+	-if @user
+		= form_for @user, :url => '/users/recover/' do |f|
+			= f.label :password, 'New Password:'
+			= f.password_field :password
+			= f.label :password_confirmation, 'Repeat Password:'
+			= f.password_field :password_confirmation
+			= f.hidden_field :id
+			= f.hidden_field :crypted_password
+			= f.submit 'Update'
+	-elsif @message
+		= @message
+	-else
+		User not found

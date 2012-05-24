@@ -5,6 +5,8 @@ class User < ActiveRecord::Base
   #   config.authentications_class = Authentication
   # end
   
+  attr_accessor :password, :password_confirmation
+  
   has_many :authentications, :dependent => :destroy
   has_one :user_preference, :dependent => :destroy
   # accepts_nested_attributes_for :authentications
@@ -181,6 +183,19 @@ class User < ActiveRecord::Base
     end
     
     res
+  end
+  
+  def update_password(password)
+    require "base64"
+    salt = Base64.encode64(password)
+    
+    require 'digest/md5'
+    md5 = Digest::MD5
+    
+    self.crypted_password = md5.hexdigest(password + salt)
+    self.salt = salt
+    self.save
+    
   end
   
   

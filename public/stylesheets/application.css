@@ -1285,3 +1285,15 @@ ul li.first {
     border-radius: 3px 3px 0 0;
     width: 300px;
     margin: 0 auto; }
+
+#edit_user {
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  color: #4f2914;
+  font-size: 14px; }
+  #edit_user #user_password, #edit_user #user_password_confirmation {
+    border-radius: 5px;
+    height: 25px; }
+  #edit_user #user_submit {
+    background-color: white;
+    border-radius: 5px;
+    height: 30px; }

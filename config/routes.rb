@@ -1,6 +1,4 @@
 Dishfm::Application.routes.draw do
-  
-  get "users/recover"
 
   get "autocomplete_searches/Index"
 
