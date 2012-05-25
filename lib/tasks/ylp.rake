@@ -9,14 +9,14 @@ namespace :ylp do
   require 'time'
   
   task :work_hour_c => :environment do
-    Restaurant.where(:source => 'ylp').each do |r|
+    Restaurant.select(:name, :lat, :lon).where(:source => 'ylp').each do |r|
       
-      if yr = YlpRestaurant.find_by_name_and_lat_and_lng(r.name, r.lat, r.lon)
+      if yr = YlpRestaurant.select(:hours)find_by_name_and_lat_and_lng(r.name, r.lat, r.lon)
         if yr.hours
           f_hours(yr.hours).each do |h|
             h[:restaurant_id] = r.id
-            WorkHour.create(h)
             puts h
+            WorkHour.create(h)
           end
         end
       end
@@ -641,7 +641,7 @@ def f_hours(restaurant_hours)
           t_to =Time.parse(m[3]).strftime("%H:%M")
         
           t_to.gsub!(/^\d{2}/, "#{t_to.to_i+24}") if t_from.to_i > t_to.to_i
-          data[:"#{wd}"] = "#{t_from}-#{t_to}"    
+          data[:"#{wd.downcase}"] = "#{t_from}-#{t_to}"    
           
         end
       end
