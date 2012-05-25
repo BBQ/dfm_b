@@ -7,6 +7,14 @@ namespace :ylp do
   require 'open-uri'
   require 'nokogiri'
   require 'time'
+
+  task :time_zone => :environment do
+    WorkHour.select(:restaurant_id).each do |wh|
+      p wh.time_zone_offset
+      wh.time_zone_offset = Restaurant.find_by_id(wh.restaurant_id).time_zone_offset
+      wh.save
+    end
+  end
   
   task :work_hour_c => :environment do
     Restaurant.select([:id, :name, :lat, :lon]).where(:source => 'ylp').each do |r|
