@@ -46,7 +46,7 @@ namespace :fixup do
         WorkHour.where(:restaurant_id => wh.restaurant_id).update_all({:time_zone_offset => tzo})
         p "#{r.name}: #{tzo}"
       else
-        p "#{r.name}: NO ZONE!"
+        p "#{r.id}:#{r.name}: NO ZONE!"
       end
     end
   end
