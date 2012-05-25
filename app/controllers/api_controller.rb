@@ -815,7 +815,7 @@ class ApiController < ApplicationController
             open_now = "(#{open_now} OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', ''))"
           end
           
-          open_now_id = "restaurant.id IN (#{WorkHour.select(:restaurant_id).where(open_now).collect {|r| r.restaurant_id}.join(',')})"
+          open_now_id = "restaurants.id IN (#{WorkHour.select(:restaurant_id).where(open_now).collect {|r| r.restaurant_id}.join(',')})"
           filters.push(open_now_id)
           
         end  
