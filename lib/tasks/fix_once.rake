@@ -24,7 +24,7 @@ namespace :fixup do
     WorkHour.where('time_zone_offset IS NULL').each do |wh|
       r = Restaurant.find_by_id(wh.restaurant_id)
       if tzo = set_offset(r.lat,r.lon)
-        p "#{r.name}: #{r.time_zone_offset}"
+        p "#{r.name}: #{tzo}"
         wh.time_zone_offset = tzo
         wh.save
       else
