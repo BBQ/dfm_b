@@ -9,7 +9,7 @@ namespace :ylp do
   require 'time'
   
   task :work_hour_c => :environment do
-    Restaurant.select(:name, :lat, :lon).where(:source => 'ylp').each do |r|
+    Restaurant.select([:name, :lat, :lon]).where(:source => 'ylp').each do |r|
       
       if yr = YlpRestaurant.select(:hours).find_by_name_and_lat_and_lng(r.name, r.lat, r.lon)
         if yr.hours
