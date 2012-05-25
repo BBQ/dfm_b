@@ -2,7 +2,7 @@
 
 def set_offset(lat,lon)
   Timezone::Configure.begin do |c|
-    c.username = 'innty'
+    c.username = 'innty1'
     c.url = 'api.geonames.org'
   end
   
