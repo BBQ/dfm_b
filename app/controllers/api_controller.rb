@@ -814,7 +814,9 @@ class ApiController < ApplicationController
             now24 = now.to_i + 2400
             open_now = "(#{open_now} OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', ''))"
           end    
-          filters.push(open_now)
+          
+          open_now_id = "id IN (#{WorkHour.select(:restaurant_id).where(open_now).join(',')})"
+          filters.push(open_now_id)
           
         end  
         all_filters = filters.join(' AND ') if filters.count > 0

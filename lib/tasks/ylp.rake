@@ -646,7 +646,7 @@ def f_hours(restaurant_hours)
         end
       end
       
-      all_data.push(data)  
+      all_data << data  
     end
   end
   
