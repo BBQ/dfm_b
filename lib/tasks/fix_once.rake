@@ -19,11 +19,30 @@ end
 
 namespace :fixup do
   
+  task :work_hour_c => :environment do
+    Restaurant.select([:id, :name, :lat, :lon]).where("source != 'ylp'").each do |r|
+      
+      if yr = YlpRestaurant.select(:hours).find_by_name_and_lat_and_lng(r.name, r.lat, r.lon)
+        if yr.hours
+          
+          f_hours(yr.hours).each do |h|
+            h[:restaurant_id] = r.id
+            h[:time_zone_offset] = set_offset(r.lat,r.lon)
+            puts h
+            WorkHour.create(h)
+          end
+          
+        end
+      end
+      
+    end
+  end
+  
   desc "Set TimeZone offset for work hours"
   task :wh_set_offset => :environment do
     WorkHour.where('time_zone_offset IS NULL').group(:restaurant_id).each do |wh|
       r = Restaurant.find_by_id(wh.restaurant_id)
-      if tzo = set_offset(r.lat,r.lon)
+      if r.lat && r.lon && tzo = set_offset(r.lat,r.lon)
         WorkHour.where(:restaurant_id => wh.restaurant_id).update_all({:time_zone_offset => tzo})
         p "#{r.name}: #{tzo}"
       else
