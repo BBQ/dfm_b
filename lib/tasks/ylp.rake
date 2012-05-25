@@ -11,12 +11,15 @@ namespace :ylp do
   task :work_hour_c => :environment do
     Restaurant.where(:source => 'ylp').each do |r|
       
-      yr = YlpRestaurant.find_by_name_and_lat_and_lng(r.name, r.lat, r.lon)
-      f_hours(yr).each do |h|
-        h[:restaurant_id] = r.id
-        WorkHour.create(h)
+      if yr = YlpRestaurant.find_by_name_and_lat_and_lng(r.name, r.lat, r.lon)
+        if yr.hours
+          f_hours(yr.hours).each do |h|
+            h[:restaurant_id] = r.id
+            WorkHour.create(h)
+            puts h
+          end
+        end
       end
-      
     end
   end
   
