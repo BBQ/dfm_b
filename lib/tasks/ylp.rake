@@ -9,7 +9,7 @@ namespace :ylp do
   require 'time'
 
   task :time_zone => :environment do
-    WorkHour.select(:restaurant_id).each do |wh|
+    WorkHour.select([:restaurant_id, :time_zone_offset]).each do |wh|
       p wh.time_zone_offset
       wh.time_zone_offset = Restaurant.find_by_id(wh.restaurant_id).time_zone_offset
       wh.save
