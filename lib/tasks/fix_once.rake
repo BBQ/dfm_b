@@ -22,7 +22,7 @@ namespace :fixup do
   desc "Set TimeZone offset for work hours"
   task :wh_set_offset => :environment do
     WorkHour.where('time_zone_offset IS NULL').each do |wh|
-      r = Restauramt.find_by_id(wh.restaurant_id)
+      r = Restaurant.find_by_id(wh.restaurant_id)
       if tzo = set_offset(r.lat,r.lon)
         p "#{r.name}: #{r.time_zone_offset}"
         wh.time_zone_offset = tzo
