@@ -12,7 +12,7 @@ def set_offset(lat,lon)
     end
   rescue Exception => e
     p e.message
-    set_offset(lat,lon)
+    set_offset(lat,lon) if e.message != 'No zone was found. Please specify a zone.'
   end
   
   time_zone_offset || nil
