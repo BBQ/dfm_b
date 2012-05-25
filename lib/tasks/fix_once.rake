@@ -1,29 +1,51 @@
 # encoding: utf-8
 
-def set_offset
+def set_offset(lat,lon)
   Timezone::Configure.begin do |c|
     c.username = 'innty'
     c.url = 'api.geonames.org'
   end
+  
   begin
-    Restaurant.where('time_zone_offset IS NULL AND lat IS NOT NULL AND lon IS NOT NULL').each do |r|
-      p "#{r.id}: #{r.lat},#{r.lon}"
-      if timezone = Timezone::Zone.new(:latlon => [r.lat,r.lon])
-        r.time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
-        r.save
-        p "#{r.name}: #{r.time_zone_offset}"
-      else
-        p "#{r.name}: NO ZONE!"
-      end
+    if timezone = Timezone::Zone.new(:latlon => [lat,lon])
+      time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
     end
   rescue
     set_offset
   end
-    
+  
+  time_zone_offset || nil
 end
 
 namespace :fixup do
-
+  
+  desc "Set TimeZone offset for work hours"
+  task :wh_set_offset => :environment do
+    WorkHours.where('time_zone_offset IS NULL').each do |wh|
+      r = Restauramt.find_by_id(wh.restaurant_id)
+      if tzo = set_offset(r.lat,r.lon)
+        p "#{r.name}: #{r.time_zone_offset}"
+        wh.time_zone_offset = tzo
+        wh.save
+      else
+        p "#{r.name}: NO ZONE!"
+      end
+    end
+  end
+  
+  desc "Set TimeZone offset for restaurants"
+  task :set_offset => :environment do
+    Restaurant.where('time_zone_offset IS NULL AND lat IS NOT NULL AND lon IS NOT NULL').each do |r|
+      p "#{r.id}: #{r.lat},#{r.lon}"
+      if tzo = set_offset(r.lat,r.lon)
+        p "#{r.name}: #{r.time_zone_offset}"
+        r.time_zone_offset = tzo
+        r.save
+      else
+        p "#{r.name}: NO ZONE!"
+      end
+    end
+  end
 
   desc "Copy Dishes to DishDelivery"
   task :cp_dish_dlv => :environment do
@@ -101,11 +123,6 @@ namespace :fixup do
       RestaurantTag.delete_all("restaurant_id not IN (#{all_restaurants})")
     end
     
-  end
-  
-  desc "Set TimeZone offset for restaurants"
-  task :set_offset => :environment do
-    set_offset
   end
   
   task :set_rev_loc => :environment do
