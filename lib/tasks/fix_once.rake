@@ -42,7 +42,7 @@ namespace :fixup do
   task :wh_set_offset => :environment do
     WorkHour.where('time_zone_offset IS NULL').group(:restaurant_id).each do |wh|
       r = Restaurant.find_by_id(wh.restaurant_id)
-      if r.lat && r.lon && tzo = set_offset(r.lat,r.lon)
+      if !r.lat.blank? && r.lon.blank? && tzo = set_offset(r.lat,r.lon)
         WorkHour.where(:restaurant_id => wh.restaurant_id).update_all({:time_zone_offset => tzo})
         p "#{r.name}: #{tzo}"
       else
