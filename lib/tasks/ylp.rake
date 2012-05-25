@@ -8,6 +8,18 @@ namespace :ylp do
   require 'nokogiri'
   require 'time'
   
+  task :work_hour_c => :environment do
+    Restaurant.where(:source => 'ylp').each do |r|
+      yr = YlpRestaurant.find_by_name_and_lat_and_lon(r.name, r.lat, r.lon)
+      
+      f_hours(yr).each do |h|
+        h[:restaurant_id] = r.id
+        WorkHour.create(h)
+      end
+      
+    end
+  end
+  
   task :fix_menu_categories => :environment do
 
     all_r = Restaurant.select([:id, :fsq_id, :network_id]).where(:source => 'ylp').order(:id)
@@ -604,46 +616,36 @@ def go_sub(url)
   end
 end
 
-def f_hours(restarant_hours)   
-  days_data = []
-  hours_data = []
-  
-  data = {}
+def f_hours(restaurant_hours)   
   week = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
   
-  restarant_hours.split(' ').each do |h|
-    dd = 0
+  all_data = []  
+  
+  restaurant_hours.split("\n\t\t\t").each do |l|
+    l.split(',').each do |lp|
+      data = {}
+      from = ''
+      to = ''
+      
+      week.each {|wd| from = week.index(wd) if lp =~ /^ ?#{wd}/}
+      week.each {|wd| to = week.index(wd) if lp =~ /-#{wd}/}
+      to = from if to.blank?
     
-    week.each do |wd|
-      if h =~ /#{wd}/
-        if h.count('-') > 0
-          from = week.index(h[0..2])
-          to = week.index(h[4..6])
-          week[from..to].each do |wdc|
-            days_data.push(wdc)
-          end
-        else
-          days_data.push(wd)
+      week[from..to].each do |wd|
+        if m = l.match(/(\d{1,2}:?\d{0,2} ?(pm|am)) ?- ?(\d{1,2}:?\d{0,2} ?(pm|am))/)
+        
+          t_from = Time.parse(m[1]).strftime("%H:%M")
+          t_to =Time.parse(m[3]).strftime("%H:%M")
+        
+          t_to.gsub!(/^\d{2}/, "#{t_to.to_i+24}") if t_from.to_i > t_to.to_i
+          data[:"#{wd}"] = "#{t_from}-#{t_to}"    
+          
         end
-        dd =1
-        break
       end
+      
+      all_data.push(data)  
     end
-    
-    hours_data.push(h) if dd == 0
-    hours = hours_data.join('')
-    
-    if hours =~ /\d{1,2}(:\d{2})?(pm|am)-\d{1,2}(:\d{2})?(pm|am)/
-      days_data.each do |dd|
-        t_from = Time.parse(hours[0..hours.index('-')-1]).strftime("%H:%M")
-        t_to = Time.parse(hours[hours.index('-')+1..hours.length]).strftime("%H:%M")
-        t_to.gsub!(/^\d{2}/, "#{t_to.to_i+24}") if t_from.to_i > t_to.to_i
-        data[:"#{dd.downcase}"] = "#{t_from}-#{t_to}"
-      end
-      days_data = []
-      hours_data = []
-    end
-    
   end
-  data
+  
+  all_data
 end

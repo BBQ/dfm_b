@@ -168,7 +168,7 @@ class User < ActiveRecord::Base
       else
         res = {:description => 'Email already registered'}
       end
-    elsif !name.nil?
+    elsif !name.blank?
       require "base64"
       salt = Base64.encode64(password)
       
@@ -176,6 +176,8 @@ class User < ActiveRecord::Base
         UserPreference.create({:user_id => user.id})
         token = Session.get_token(user)
       end
+    else
+      res = {:description => 'Empty name is not allowed'}
     end
     
     unless token.nil?

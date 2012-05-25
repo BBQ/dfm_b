@@ -493,15 +493,6 @@ class ApiController < ApplicationController
       if radius
       
         limit = 25
-        offset = params[:offset] ? params[:offset].to_i : 0
-        
-        if offset.to_i > 25
-          return render :json => {
-                  :dishes => [],
-                  :restaurants => [],
-                  :error => $error
-          }
-        end
         
         bill = params[:bill] || ''
         networks = []

@@ -2,6 +2,7 @@
 class Restaurant < ActiveRecord::Base
   
   has_many :dishes, :dependent => :destroy
+  has_many :work_hours
   has_many :reviews
   belongs_to :network
   has_many :dishes, :through => :network 
