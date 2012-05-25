@@ -10,8 +10,9 @@ def set_offset(lat,lon)
     if timezone = Timezone::Zone.new(:latlon => [lat,lon])
       time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
     end
-  rescue
-    set_offset
+  rescue Exception => e
+    p e.message
+    set_offset(lat,lon)
   end
   
   time_zone_offset || nil
