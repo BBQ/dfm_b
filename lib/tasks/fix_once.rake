@@ -41,12 +41,13 @@ namespace :fixup do
   desc "Set TimeZone offset for work hours"
   task :wh_set_offset => :environment do
     WorkHour.where('time_zone_offset IS NULL').group(:restaurant_id).each do |wh|
-      r = Restaurant.find_by_id(wh.restaurant_id)
-      if !r.lat.blank? && !r.lon.blank? && tzo = set_offset(r.lat,r.lon)
-        WorkHour.where(:restaurant_id => wh.restaurant_id).update_all({:time_zone_offset => tzo})
-        p "#{r.name}: #{tzo}"
-      else
-        p "#{r.id}:#{r.name}: NO ZONE!"
+      if r = Restaurant.where('lat IS NOT NULL AND lon IS NOT NULL AND id = ?', wh.restaurant_id)
+        if tzo = set_offset(r.first.lat,r.first.lon)
+          WorkHour.where(:restaurant_id => wh.restaurant_id).update_all({:time_zone_offset => tzo})
+          p "#{r.first.name}: #{tzo}"
+        else
+          p "#{r.first.id}:#{r.first.name}: NO ZONE!"
+        end
       end
     end
   end
