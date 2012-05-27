@@ -1,21 +1,22 @@
 # encoding: utf-8
 
 def set_offset(lat,lon)
-  Timezone::Configure.begin do |c|
-    c.username = 'innty1'
-    c.url = 'api.geonames.org'
-  end
+    
+  server = 'earthtools.org'
+  port = '80'
+  url = "/timezone/#{lat}/#{lon}"
   
-  begin
-    if timezone = Timezone::Zone.new(:latlon => [lat,lon])
-      time_zone_offset = ActiveSupport::TimeZone.create(timezone.zone).formatted_offset
-    end
-  rescue Exception => e
-    p e.message
-    set_offset(lat,lon) if e.message != 'No zone was found. Please specify a zone.'
-  end
+  http = Net::HTTP.new(server, port)
+  req = Net::HTTP::Get.new(url)
   
-  time_zone_offset || nil
+  response = http.request(req)
+  data = response.body
+  
+  if match =/<offset>(.)(.)<\/offset>/.match(data)
+    offset = "#{match[1]}0#{match[2]}:00".strip
+  end
+
+  offset
 end
 
 namespace :fixup do
