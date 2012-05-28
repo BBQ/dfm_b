@@ -1,7 +1,7 @@
 class AddYelpFieldsToRestaurants < ActiveRecord::Migration
   def self.up
     add_column :restaurants, :ylp_rating, :float
-    add_column :restaurants, :ylp_r_count, :integer
+    add_column :restaurants, :ylp_reviews_count, :integer
     add_column :restaurants, :attire, :string
     add_column :restaurants, :transit, :string
     add_column :restaurants, :caters, :string
@@ -17,7 +17,7 @@ class AddYelpFieldsToRestaurants < ActiveRecord::Migration
 
   def self.down
     remove_column :restaurants, :ylp_r_count
-    remove_column :restaurants, :ylp_rating
+    remove_column :restaurants, :ylp_reviews_count
     remove_column :restaurants, :attire
     remove_column :restaurants, :transit
     remove_column :restaurants, :caters
