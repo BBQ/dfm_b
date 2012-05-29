@@ -22,7 +22,7 @@ end
 namespace :fixup do
   
   task :ylp_score => :environment do
-    Restaurant.select([:id, :name, :lat, :lon]).where("source != 'ylp'").each do |r|
+    Restaurant.select([:id, :name, :lat, :lon]).where("source = 'ylp'").each do |r|
       
       if yr = YlpRestaurant.select([:rating, :review_count]).find_by_name_and_lat_and_lng(r.name, r.lat, r.lon)
         if yr.rating
