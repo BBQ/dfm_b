@@ -56,7 +56,7 @@ class DishDelivery < ActiveRecord::Base
     unless dish = find_by_name_and_delivery_id(data[:name], data[:delivery_id])
 
       if dtype = DishType.select(:name).find_by_id(data[:dish_type_id])
-        data[:dish_category_id] = DishCategory.get_id(dtype.name)
+        data[:dish_category_id] = DishCategory.get_id_for dtype.name
       end
       dish.match_tags if dish = super(data)    
       
