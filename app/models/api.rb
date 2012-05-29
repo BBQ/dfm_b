@@ -260,6 +260,8 @@ class API < ActiveRecord::Base
       favourite = Favourite.find_by_user_id_and_network_id(user_id, restaurant.network_id) ? 1 : 0
       
       data = {
+          :ylp_ratings => restaurant.ylp_rating,
+          :ylp_reviews_count => restaurant.ylp_reviews_count,
           :network_ratings => data_r.rating,
           :network_reviews_count => data_r.reviews.count,
           :popularity => type == 'delivery' ? 0 : restaurant.fsq_checkins_count ||= 0,

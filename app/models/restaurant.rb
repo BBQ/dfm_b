@@ -226,8 +226,7 @@ class Restaurant < ActiveRecord::Base
     self[:rating] = self.network.rating
     self[:votes] = self.network.votes
     self[:fsq_id] = self.fsq_id || ''
-        
-    super(:only => [:id, :bill, :name, :address, :rating, :votes, :lat, :lon, :network_id, :fsq_id, :fsq_checkins_count], :methods => [:has_menu, :thumb, :categories])
+    super(:only => [:id, :ylp_reviews_count, :ylp_rating, :bill, :name, :address, :rating, :votes, :lat, :lon, :network_id, :fsq_id, :fsq_checkins_count], :methods => [:has_menu, :thumb, :categories])
   end
   
   def favourite(id)
