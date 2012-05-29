@@ -28,7 +28,7 @@ namespace :fixup do
         if yr.rating
           
           r.ylp_rating = yr.rating
-          r.ylp_r_count = yr.review_count
+          r.ylp_reviews_count = yr.review_count
           r.save
           p "#{r.id}:#{r.name} #{r.ylp_rating}, #{r.ylp_r_count}"
           
