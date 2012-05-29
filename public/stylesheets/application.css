@@ -1137,18 +1137,18 @@ ul li.first {
     #lp #slider h2 {
       font-family: "HelveticaNeueBlack", "HelveticaNeue-Black", "Helvetica Neue Black", "HelveticaNeue", "Helvetica Neue", "TeXGyreHerosBold", "Arial Black", sans-serif;
       font-weight: bold;
-      font-size: 21px;
+      font-size: 23px;
       color: #c34316;
       text-transform: uppercase;
       margin: 0 0 10px 0; }
     #lp #slider .text {
       font-family: Tahoma, Arial, sans-serif;
-      font-size: 19px;
+      font-size: 21px;
       margin-bottom: 25px;
       list-style: none; }
       #lp #slider .text li {
         width: 590px;
-        height: 110px;
+        height: 145px;
         display: none; }
       #lp #slider .text li.active {
         display: block; }
