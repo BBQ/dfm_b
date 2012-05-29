@@ -21,6 +21,23 @@ end
 
 namespace :fixup do
   
+  task :ylp_score => :environment do
+    Restaurant.select([:id, :name, :lat, :lon]).where("source != 'ylp'").each do |r|
+      
+      if yr = YlpRestaurant.select([:rating, :review_count]).find_by_name_and_lat_and_lng(r.name, r.lat, r.lon)
+        if yr.rating
+          
+          r.ylp_rating = yr.rating
+          r.ylp_r_count = yr.review_count
+          r.save
+          p "#{r.id}:#{r.name} #{r.ylp_rating}, #{r.ylp_r_count}"
+          
+        end
+      end
+      
+    end
+  end
+  
   task :work_hour_c => :environment do
     Restaurant.select([:id, :name, :lat, :lon]).where("source != 'ylp'").each do |r|
       
