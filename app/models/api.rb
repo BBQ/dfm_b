@@ -270,8 +270,8 @@ class API < ActiveRecord::Base
       end
       
       data = {
-          :ylp_rating => restaurant.ylp_rating,
-          :ylp_reviews_count => restaurant.ylp_reviews_count,
+          :ylp_rating => type == 'delivery' ? 0 : restaurant.ylp_rating,
+          :ylp_reviews_count => type == 'delivery' ? 0 : restaurant.ylp_reviews_count,
           :network_ratings => data_r.rating,
           :network_reviews_count => data_r.reviews.count,
           :popularity => type == 'delivery' ? 0 : restaurant.fsq_checkins_count ||= 0,
