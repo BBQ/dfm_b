@@ -59,6 +59,7 @@ Dishfm::Application.configure do
 
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
+  configatron.apn.passphrase = 'dish.fm'
   
   Sass::Plugin.options[:never_update] = true
 end

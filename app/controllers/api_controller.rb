@@ -8,6 +8,32 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def get_pinterest_share_url
+    domain = 'test.dish.fm'
+    if params[:review_id]
+      if rw = Review.find_by_id(params[:review_id])
+        url = "http://m.pinterest.com/pin/create/button/?url=http://#{domain}/reviews/#{rw.id}&media=http://#{domain}#{rw.photo_iphone}&description=#{"-" + rw.text + " " unless rw.text.blank?}#{rw.dish.name}@#{rw.restaurant.name} via www.dish.fm"
+      else
+        $error = {:description => 'Review not found', :code => 17}
+      end
+      
+    elsif params[:restaurant_id]
+      if rt = Restaurant.find_by_id(params[:restaurant_id])
+        url = "http://m.pinterest.com/pin/create/button/?url=http://#{domain}/restaurants/#{rt.id}&media=http://#{domain}#{rt.thumb}&description=#{rt.name} via www.dish.fm"
+      else
+        $error = {:description => 'Restaurant not found', :code => 23}
+      end
+      
+    else
+      $error = {:description => 'Params missing', :code => 26}
+    end
+    
+    return render :json => {
+      :url => url,
+      :error => $error
+    }
+  end
+  
   def recover_password
     if params[:email]
       if user = User.find_by_email(params[:email])
