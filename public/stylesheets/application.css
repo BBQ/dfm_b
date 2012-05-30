@@ -1200,7 +1200,7 @@ ul li.first {
   position: relative;
   z-index: 4;
   clear: both;
-  height: 200px;
+  height: 250px;
   width: 100%;
   background: #f2efe6;
   background: -moz-linear-gradient(top, #f2efe6 75%, #d9d2bd 100%);
