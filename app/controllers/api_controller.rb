@@ -10,11 +10,13 @@ class ApiController < ApplicationController
   
   def get_pinterest_share_url
     domain = 'test.dish.fm'
-    require 'uri'
+    require 'cgi'
     
     if params[:review_id]
       if rw = Review.find_by_id(params[:review_id])
-        url = "http://m.pinterest.com/pin/create/button/?url=http://#{domain}/reviews/#{rw.id}&media=http://#{domain}#{rw.photo.iphone.url}&description=#{"-" + rw.text + " " unless rw.text.blank?}#{rw.dish.name}@#{rw.restaurant.name} via www.dish.fm"
+        text = rw.text.blank? ? "" : "-" + rw.text + " "
+        text += rw.dish.name + "@" + rw.restaurant.name + " via www.dish.fm"
+        url = "http://m.pinterest.com/pin/create/button/?url=http://#{domain}/reviews/#{rw.id}&media=http://#{domain}#{rw.photo.iphone.url}&description=#{CGI.escape(text).gsub("+", "%20")}"
       else
         $error = {:description => 'Review not found', :code => 17}
       end
@@ -31,7 +33,7 @@ class ApiController < ApplicationController
     end
     
     return render :json => {
-      :url => url ? URI.escape(url) : '',
+      :url => url,
       :error => $error
     }
   end
