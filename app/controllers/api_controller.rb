@@ -12,7 +12,7 @@ class ApiController < ApplicationController
     domain = 'test.dish.fm'
     if params[:review_id]
       if rw = Review.find_by_id(params[:review_id])
-        url = "http://m.pinterest.com/pin/create/button/?url=http://#{domain}/reviews/#{rw.id}&media=http://#{domain}#{rw.photo_iphone}&description=#{"-" + rw.text + " " unless rw.text.blank?}#{rw.dish.name}@#{rw.restaurant.name} via www.dish.fm"
+        url = "http://m.pinterest.com/pin/create/button/?url=http://#{domain}/reviews/#{rw.id}&media=http://#{domain}#{rw.photo.iphone.url}&description=#{"-" + rw.text + " " unless rw.text.blank?}#{rw.dish.name}@#{rw.restaurant.name} via www.dish.fm"
       else
         $error = {:description => 'Review not found', :code => 17}
       end
