@@ -224,40 +224,44 @@ class API < ActiveRecord::Base
       
       description = []
       description.push(restaurant.description) unless restaurant.description.blank?
+      
+      if type != 'delivery'
+        
+        description.push("Wi-Fi: #{restaurant.wifi.sub('0','no').sub('1','yes').sub('2','paid')}") unless restaurant.wifi.blank?
+        description.push("Accept Credit Card: #{restaurant.cc.to_s.sub('false','no').sub('true','yes')}") unless restaurant.cc.blank?
+        description.push("Terrace: #{restaurant.terrace.to_s.sub('false','no').sub('true','yes')}") unless restaurant.terrace.blank?
 
-      description.push("Wi-Fi: #{restaurant.wifi.sub('0','no').sub('1','yes').sub('2','paid')}") unless restaurant.wifi.blank?
-      description.push("Accept Credit Card: #{restaurant.cc.to_s.sub('false','no').sub('true','yes')}") unless restaurant.cc.blank?
-      description.push("Terrace: #{restaurant.terrace.to_s.sub('false','no').sub('true','yes')}") unless restaurant.terrace.blank?
-
-      description.push("Delivery: #{restaurant.delivery.to_s.sub('false','no').sub('true','yes')}") unless restaurant.delivery.blank?           
-      description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
-      description.push("Takeaway: #{restaurant.takeaway.to_s.sub('false','no').sub('true','yes')}") unless restaurant.takeaway.blank?      
+        description.push("Delivery: #{restaurant.delivery.to_s.sub('false','no').sub('true','yes')}") unless restaurant.delivery.blank?           
+        description.push("Reservation: #{restaurant.reservation.sub('0','no').sub('1','yes')}") unless restaurant.reservation.blank?
+        description.push("Takeaway: #{restaurant.takeaway.to_s.sub('false','no').sub('true','yes')}") unless restaurant.takeaway.blank?      
      
-      description.push("Ambience: #{restaurant.ambience}") if restaurant.ambience.to_i != 0
-      description.push("Service: waiters") if restaurant.service == true
-      description.push("Attire: #{restaurant.attire}") if restaurant.attire.to_i != 0
+        description.push("Ambience: #{restaurant.ambience}") if restaurant.ambience.to_i != 0
+        description.push("Service: waiters") if restaurant.service == true
+        description.push("Attire: #{restaurant.attire}") if restaurant.attire.to_i != 0
 
-      description.push("Breakfast: #{restaurant.breakfast.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.breakfast.blank?
-      description.push("Business lunch: #{restaurant.businesslunch.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.businesslunch.blank?
-      description.push("Alcohol: #{restaurant.alcohol}") if restaurant.alcohol.to_i != 0
+        description.push("Breakfast: #{restaurant.breakfast.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.breakfast.blank?
+        description.push("Business lunch: #{restaurant.businesslunch.sub(/^0$/,'no').sub(/^1$/,'yes')}") unless restaurant.businesslunch.blank?
+        description.push("Alcohol: #{restaurant.alcohol}") if restaurant.alcohol.to_i != 0
 
-      description.push("Parking: #{restaurant.parking.sub('0','no').sub('1','yes')}") unless restaurant.parking.blank?
-      description.push("Music: #{restaurant.music.sub('0','no').sub('1','yes')}") unless restaurant.music.blank?
-      description.push("Transit: #{restaurant.transit}") if restaurant.transit.to_i != 0
+        description.push("Parking: #{restaurant.parking.sub('0','no').sub('1','yes')}") unless restaurant.parking.blank?
+        description.push("Music: #{restaurant.music.sub('0','no').sub('1','yes')}") unless restaurant.music.blank?
+        description.push("Transit: #{restaurant.transit}") if restaurant.transit.to_i != 0
       
-      description.push("Shisha: #{restaurant.chillum.sub('0','no').sub('1','yes')}") unless restaurant.chillum.blank?
-      description.push("Noise: #{restaurant.noise}") if restaurant.noise.to_i != 0
-      description.push("TV: #{restaurant.tv.to_s.sub('false','no').sub('true','yes')}") unless restaurant.tv.blank?
+        description.push("Shisha: #{restaurant.chillum.sub('0','no').sub('1','yes')}") unless restaurant.chillum.blank?
+        description.push("Noise: #{restaurant.noise}") if restaurant.noise.to_i != 0
+        description.push("TV: #{restaurant.tv.to_s.sub('false','no').sub('true','yes')}") unless restaurant.tv.blank?
      
-      description.push("Disabled: #{restaurant.disabled.sub('0','no').sub('1','yes')}") unless restaurant.disabled.blank?
-      description.push("Caters: #{restaurant.caters.sub('0','no').sub('1','yes')}") unless restaurant.caters.blank?
+        description.push("Disabled: #{restaurant.disabled.sub('0','no').sub('1','yes')}") unless restaurant.disabled.blank?
+        description.push("Caters: #{restaurant.caters.sub('0','no').sub('1','yes')}") unless restaurant.caters.blank?
       
-      description.push("Good for meal: #{restaurant.good_for_meal}") if restaurant.good_for_meal.to_i  != 0
-      description.push("Good for groups: #{restaurant.good_for_groups.to_s.sub('false','no').sub('true','yes')}") unless restaurant.good_for_groups.blank?      
-      description.push("Good For Kids: #{restaurant.good_for_kids.sub('1','yes')}") if restaurant.good_for_kids.to_i  != 0
+        description.push("Good for meal: #{restaurant.good_for_meal}") if restaurant.good_for_meal.to_i  != 0
+        description.push("Good for groups: #{restaurant.good_for_groups.to_s.sub('false','no').sub('true','yes')}") unless restaurant.good_for_groups.blank?      
+        description.push("Good For Kids: #{restaurant.good_for_kids.sub('1','yes')}") if restaurant.good_for_kids.to_i  != 0
       
-      description.push("Cuisines: #{restaurant.cuisines.map{|k| k.name}.join(', ')}") unless restaurant.cuisines.blank?      
-
+        description.push("Cuisines: #{restaurant.cuisines.map{|k| k.name}.join(', ')}") unless restaurant.cuisines.blank?      
+        
+      end
+      
       description = description.join("\n") if description.count > 0                  
       favourite = Favourite.find_by_user_id_and_network_id(user_id, restaurant.network_id) ? 1 : 0
       
