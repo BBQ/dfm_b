@@ -1145,7 +1145,8 @@ ul li.first {
       font-family: Tahoma, Arial, sans-serif;
       font-size: 21px;
       margin-bottom: 25px;
-      list-style: none; }
+      list-style: none;
+      text-align: center; }
       #lp #slider .text li {
         width: 590px;
         height: 145px;
@@ -1155,14 +1156,14 @@ ul li.first {
     #lp #slider .hr {
       border-top: 1px solid #bbb6b0;
       border-bottom: 1px solid #fffffa;
-      width: 532px;
+      width: 620px;
       display: block;
       clear: both;
       margin-bottom: 5px; }
   #lp #pages {
     float: left;
     clear: both;
-    margin: 10px 0; }
+    margin: 10px 210px; }
     #lp #pages ul {
       list-style: none; }
       #lp #pages ul li {
@@ -1253,6 +1254,9 @@ ul li.first {
       #footer #links ul a {
         font-size: 14px;
         color: #554747; }
+
+.store {
+  margin: 0 28px; }
 
 #pinme {
   position: absolute;

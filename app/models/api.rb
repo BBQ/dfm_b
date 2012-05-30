@@ -213,11 +213,13 @@ class API < ActiveRecord::Base
       rc.push(restaurant_categories.join(', ')) if restaurant_categories.count > 0
       rc = rc.join(', ') if rc.count > 0
       
-      wday = Date.today.strftime("%a").downcase
-      open_now = 0
-      unless restaurant.send(wday).blank?
-        now = Time.now.strftime("%H%M")
-        open_now = 1 if now > restaurant.send(wday)[0,5].gsub(':','') && now < restaurant.send(wday)[-5,5].gsub(':','')
+      if type != 'delivery'
+        wday = Date.today.strftime("%a").downcase
+        open_now = 0
+        unless restaurant.send(wday).blank?
+          now = Time.now.strftime("%H%M")
+          open_now = 1 if now > restaurant.send(wday)[0,5].gsub(':','') && now < restaurant.send(wday)[-5,5].gsub(':','')
+        end
       end
       
       description = []
