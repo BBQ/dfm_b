@@ -13,21 +13,37 @@ class ApiController < ApplicationController
     require 'cgi'
     
     if params[:review_id]
-      if rw = Review.find_by_id(params[:review_id])
+      if params[:self] == '1'
+        if rw = Dish.find_by_id(params[:review_id])
+          url = CGI.escape("http://#{domain}/dishes/#{rw.id}").gsub("+", "%20")
+          media = CGI.escape("http://#{domain}#{rw.photo.iphone.url}").gsub("+", "%20")
+          text = CGI.escape("#{rw.name}@#{rw.network.name} via www.dish.fm").gsub("+", "%20")                    
+          share_url = "http://m.pinterest.com/pin/create/button/?url=#{url}&media=#{media}&description=#{text}" 
+        end
+      elsif rw = Review.find_by_id(params[:review_id])
         url = CGI.escape("http://#{domain}/reviews/#{rw.id}").gsub("+", "%20")
         media = CGI.escape("http://#{domain}#{rw.photo.iphone.url}").gsub("+", "%20")
+
+        if rw.text.blank?
+          text = "#{rw.dish.name}@#{rw.restaurant.name} via www.dish.fm"
+        else
+          text = "#{rw.text} - #{rw.dish.name}@#{rw.restaurant.name} via www.dish.fm"
+        end
+        text = CGI.escape(text).gsub("+", "%20")
         
-        text = rw.text.blank? ? "" : "-" + rw.text + " "
-        text += rw.dish.name + "@" + rw.restaurant.name + " via www.dish.fm"
-        
-        url = "http://m.pinterest.com/pin/create/button/?url=#{url}&media=#{media}&description=#{CGI.escape(text).gsub("+", "%20")}"
+        share_url = "http://m.pinterest.com/pin/create/button/?url=#{url}&media=#{media}&description=#{text}"        
       else
         $error = {:description => 'Review not found', :code => 17}
       end
       
     elsif params[:restaurant_id]
       if rt = Restaurant.find_by_id(params[:restaurant_id])
-        url = "http://m.pinterest.com/pin/create/button/?url=http://#{domain}/restaurants/#{rt.id}&media=http://#{domain}#{rt.thumb}&description=#{rt.name} via www.dish.fm"
+
+        url = CGI.escape("http://#{domain}/restaurants/#{rt.id}").gsub("+", "%20")
+        media = CGI.escape("http://#{domain}#{rt.thumb}").gsub("+", "%20")
+        text = CGI.escape("#{rt.name} via www.dish.fm").gsub("+", "%20")
+        
+        share_url = "http://m.pinterest.com/pin/create/button/?url=#{url}&media=#{media}&description=#{text}"
       else
         $error = {:description => 'Restaurant not found', :code => 23}
       end
@@ -37,7 +53,7 @@ class ApiController < ApplicationController
     end
     
     return render :json => {
-      :url => url,
+      :url => share_url,
       :error => $error
     }
   end
