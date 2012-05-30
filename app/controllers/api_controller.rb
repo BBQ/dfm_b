@@ -14,9 +14,13 @@ class ApiController < ApplicationController
     
     if params[:review_id]
       if rw = Review.find_by_id(params[:review_id])
+        url = CGI.escape("http://#{domain}/reviews/#{rw.id}").gsub("+", "%20")
+        media = CGI.escape("http://#{domain}#{rw.photo.iphone.url}").gsub("+", "%20")
+        
         text = rw.text.blank? ? "" : "-" + rw.text + " "
         text += rw.dish.name + "@" + rw.restaurant.name + " via www.dish.fm"
-        url = "http://m.pinterest.com/pin/create/button/?url=http://#{domain}/reviews/#{rw.id}&media=http://#{domain}#{rw.photo.iphone.url}&description=#{CGI.escape(text).gsub("+", "%20")}"
+        
+        url = "http://m.pinterest.com/pin/create/button/?url=#{url}&media=#{media}&description=#{CGI.escape(text).gsub("+", "%20")}"
       else
         $error = {:description => 'Review not found', :code => 17}
       end
