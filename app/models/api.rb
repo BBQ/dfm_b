@@ -263,7 +263,11 @@ class API < ActiveRecord::Base
       end
       
       description = description.join("\n") if description.count > 0                  
-      favourite = Favourite.find_by_user_id_and_network_id(user_id, restaurant.network_id) ? 1 : 0
+      if type != 'delivery'
+        favourite = Favourite.find_by_user_id_and_network_id(user_id, restaurant.network_id) ? 1 : 0
+      else
+        favourite = Favourite.find_by_user_id_and_restaurant_id(user_id, restaurant.id) ? 1 : 0
+      end
       
       data = {
           :ylp_rating => restaurant.ylp_rating,
