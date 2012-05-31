@@ -1145,8 +1145,7 @@ ul li.first {
       font-family: Tahoma, Arial, sans-serif;
       font-size: 21px;
       margin-bottom: 25px;
-      list-style: none;
-      text-align: center; }
+      list-style: none; }
       #lp #slider .text li {
         width: 590px;
         height: 145px;
@@ -1257,6 +1256,14 @@ ul li.first {
 
 .store {
   margin: 0 28px; }
+
+#social {
+  margin-top: -30px; }
+  #social li {
+    width: 200px;
+    float: right;
+    margin-right: 300px;
+    text-align: right; }
 
 #pinme {
   position: absolute;
