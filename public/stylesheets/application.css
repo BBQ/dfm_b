@@ -1179,7 +1179,7 @@ ul li.first {
     position: absolute;
     height: 693px;
     width: 325px;
-    right: 86px;
+    left: 790px;
     top: 35px;
     padding: 133px 0 0 43px;
     background: url("/images/iphone.png") top left no-repeat;
@@ -1199,7 +1199,7 @@ ul li.first {
   position: relative;
   z-index: 4;
   clear: both;
-  height: 250px;
+  height: 200px;
   width: 100%;
   background: #f2efe6;
   background: -moz-linear-gradient(top, #f2efe6 75%, #d9d2bd 100%);
