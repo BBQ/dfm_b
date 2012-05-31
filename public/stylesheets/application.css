@@ -1120,7 +1120,7 @@ ul li.first {
   #lp #slider {
     clear: both;
     width: 836px;
-    height: 322px;
+    height: 280px;
     padding: 25px;
     float: left;
     position: relative;
@@ -1192,7 +1192,7 @@ ul li.first {
     display: block; }
   #lp #berries {
     float: left;
-    margin: -127px 0 0 -120px; }
+    margin: -60px 0 0 -120px; }
 
 #footer {
   text-align: center;
@@ -1257,13 +1257,17 @@ ul li.first {
 .store {
   margin: 0 28px; }
 
-#social {
-  margin-top: -30px; }
-  #social li {
-    width: 200px;
-    float: right;
-    margin-right: 300px;
-    text-align: right; }
+#social li {
+  width: auto;
+  text-align: right;
+  padding: 5px 0 0 0;
+  margin-left: -15px; }
+#social li.tw {
+  margin-top: 160px;
+  padding-right: 20px; }
+#social li.gplus {
+  margin-top: 163px;
+  padding-right: 20px; }
 
 #pinme {
   position: absolute;
