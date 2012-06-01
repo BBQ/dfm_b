@@ -3,9 +3,9 @@ class UserMailer < ActionMailer::Base
   default :from => "Dish.FM <hello@mail.dish.fm>"
   
   def feedback(data)
-    mail_to = 'a.surin@dish.fm'
+    mail_to = 'hello@dish.fm'
     subject = "Feedback message from website"
-    @email_from = "#{data[:name]} #{data[:email]}"
+    @email_from = "#{data[:name]} (#{data[:email]})"
     @text = data[:body]    
     mail(:to => mail_to, :subject => subject)
   end
