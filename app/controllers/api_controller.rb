@@ -24,10 +24,22 @@ class ApiController < ApplicationController
         url = CGI.escape("http://#{domain}/reviews/#{rw.id}").gsub("+", "%20")
         media = CGI.escape("http://#{domain}#{rw.photo.iphone_retina.url}").gsub("+", "%20")
 
-        if rw.text.blank?
-          text = "#{rw.dish.name}@#{rw.rtype == 'home_cooked' ? 'Home-cooked' : rw.restaurant.name} via www.dish.fm"
+        case rw.rtype
+        when 'home_cooked'
+          dish_name = rw.home_cook.name
+          restaurant_name = 'Home-cooked'
+        when 'delivery'
+          dish_name = rw.dish_delivery.name
+          restaurant_name = rw.delivery.name 
         else
-          text = "#{rw.text} - #{rw.dish.name}@#{rw.rtype == 'home_cooked' ? 'Home-cooked' : rw.restaurant.name} via www.dish.fm"
+          dish_name = rw.dish.name
+          restaurant_name = rw.restaurant.name
+        end
+        
+        if rw.text.blank?
+          text = "#{dish_name}@#{restaurant_name} via www.dish.fm"
+        else
+          text = "#{dish_name} - #{restaurant_name} via www.dish.fm"
         end
         text = CGI.escape(text).gsub("+", "%20")
         
