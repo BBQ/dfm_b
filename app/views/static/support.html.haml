@@ -1,0 +1,18 @@
+-if @message
+	#message=@message
+#feedback
+	%h2 Contact Us
+	%form{ :action => "", :method => "post"}
+		%fieldset
+			%ul
+				%li
+					%label{:for => "name"} Name:
+					%input{:type => "text", :name => "name", :class => "text"}
+				%li
+					%label{:for => "email"} Email:
+					%input{:type => "text", :name => "email", :class => "text"}
+				%li
+					%label{:for => "body"} Message:
+					%textarea{:name => "body"}
+				%li
+					%input{:type => "submit", :value => "Send", :class => "button"}

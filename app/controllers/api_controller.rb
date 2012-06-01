@@ -16,13 +16,13 @@ class ApiController < ApplicationController
       if params[:self] == '1'
         if rw = Dish.find_by_id(params[:review_id])
           url = CGI.escape("http://#{domain}/dishes/#{rw.id}").gsub("+", "%20")
-          media = CGI.escape("http://#{domain}#{rw.photo.iphone.url}").gsub("+", "%20")
+          media = CGI.escape("http://#{domain}#{rw.photo.iphone_retina.url}").gsub("+", "%20")
           text = CGI.escape("#{rw.name}@#{rw.network.name} via www.dish.fm").gsub("+", "%20")                    
           share_url = "http://m.pinterest.com/pin/create/button/?url=#{url}&media=#{media}&description=#{text}" 
         end
       elsif rw = Review.find_by_id(params[:review_id])
         url = CGI.escape("http://#{domain}/reviews/#{rw.id}").gsub("+", "%20")
-        media = CGI.escape("http://#{domain}#{rw.photo.iphone.url}").gsub("+", "%20")
+        media = CGI.escape("http://#{domain}#{rw.photo.iphone_retina.url}").gsub("+", "%20")
 
         if rw.text.blank?
           text = "#{rw.dish.name}@#{rw.restaurant.name} via www.dish.fm"

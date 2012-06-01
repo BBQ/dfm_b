@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120525134650) do
+ActiveRecord::Schema.define(:version => 20120531144339) do
 
   create_table "admins", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
@@ -545,15 +545,17 @@ ActiveRecord::Schema.define(:version => 20120525134650) do
 
   create_table "restaurants", :force => true do |t|
     t.string   "name"
-    t.string   "city"
     t.integer  "network_id",                                             :null => false
     t.float    "rating",                :limit => 21, :default => 0.0
     t.string   "name_eng"
+    t.datetime "created_at"
     t.float    "lon"
     t.float    "lat"
+    t.string   "time_zone_offset"
     t.string   "fsq_lng"
     t.string   "fsq_lat"
     t.string   "address"
+    t.string   "city"
     t.string   "time"
     t.string   "phone"
     t.string   "web"
@@ -564,15 +566,14 @@ ActiveRecord::Schema.define(:version => 20120525134650) do
     t.integer  "votes",                               :default => 0
     t.string   "wifi",                                :default => "0"
     t.string   "chillum",                             :default => "0"
-    t.string   "terrace",                             :default => "0"
-    t.string   "cc",                                  :default => "0"
+    t.boolean  "terrace",                             :default => false
+    t.boolean  "cc",                                  :default => false
     t.string   "source"
-    t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "good_for_kids",                       :default => "0"
     t.boolean  "banquet",                             :default => false
     t.string   "reservation",                         :default => "0"
-    t.string   "delivery",                            :default => "0"
+    t.boolean  "delivery",                            :default => false
     t.boolean  "takeaway",                            :default => false
     t.boolean  "service",                             :default => false
     t.string   "alcohol",                             :default => "0"
@@ -582,7 +583,7 @@ ActiveRecord::Schema.define(:version => 20120525134650) do
     t.string   "music",                               :default => "0"
     t.string   "parking",                             :default => "0"
     t.string   "menu_url"
-    t.string   "bill"
+    t.integer  "bill"
     t.string   "sun",                                 :default => ""
     t.string   "mon",                                 :default => ""
     t.string   "tue",                                 :default => ""
@@ -600,19 +601,22 @@ ActiveRecord::Schema.define(:version => 20120525134650) do
     t.integer  "top_user_id",                         :default => 0
     t.string   "restaurant_categories",               :default => "0"
     t.boolean  "delivery_only"
+    t.float    "ylp_rating"
+    t.integer  "ylp_reviews_count"
     t.string   "attire",                              :default => "0"
     t.string   "transit",                             :default => "0"
     t.string   "caters",                              :default => "0"
     t.string   "ambience",                            :default => "0"
     t.boolean  "good_for_groups",                     :default => false
     t.string   "good_for_meal",                       :default => "0"
-    t.string   "time_zone_offset"
+    t.boolean  "checked",                             :default => false, :null => false
   end
 
   add_index "restaurants", ["address"], :name => "index_restaurants_on_address"
   add_index "restaurants", ["cc"], :name => "index_restaurants_on_cc"
   add_index "restaurants", ["chillum"], :name => "index_restaurants_on_chillum"
   add_index "restaurants", ["city"], :name => "index_restaurants_on_city"
+  add_index "restaurants", ["fsq_id"], :name => "fsq_id"
   add_index "restaurants", ["id"], :name => "index_restaurants_on_id"
   add_index "restaurants", ["lat"], :name => "index_restaurants_on_lat"
   add_index "restaurants", ["lon"], :name => "index_restaurants_on_lon"
@@ -620,6 +624,7 @@ ActiveRecord::Schema.define(:version => 20120525134650) do
   add_index "restaurants", ["name_eng"], :name => "index_restaurants_on_name_eng"
   add_index "restaurants", ["network_id"], :name => "index_restaurants_on_network_id"
   add_index "restaurants", ["terrace"], :name => "index_restaurants_on_terrace"
+  add_index "restaurants", ["top_user_id"], :name => "top_user_id"
   add_index "restaurants", ["wifi"], :name => "index_restaurants_on_wifi"
 
   create_table "reviews", :force => true do |t|
@@ -668,10 +673,17 @@ ActiveRecord::Schema.define(:version => 20120525134650) do
   create_table "specials", :force => true do |t|
     t.string   "name"
     t.string   "description"
+    t.integer  "restaurant_id", :default => 0
+    t.string   "address"
+    t.string   "phone"
     t.string   "url"
-    t.boolean  "status",      :default => false
+    t.datetime "date_end"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "date_start"
+    t.string   "partner"
+    t.integer  "out_id",        :default => 0
+    t.string   "photo"
   end
 
   create_table "stations", :force => true do |t|
@@ -770,7 +782,7 @@ ActiveRecord::Schema.define(:version => 20120525134650) do
   add_index "users", ["twitter_id"], :name => "index_users_on_twitter_id"
 
   create_table "work_hours", :force => true do |t|
-    t.integer  "restaurant_id", :null => false
+    t.integer  "restaurant_id",    :null => false
     t.string   "sun"
     t.string   "mon"
     t.string   "tue"
@@ -780,5 +792,86 @@ ActiveRecord::Schema.define(:version => 20120525134650) do
     t.string   "sat"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "time_zone_offset"
   end
 
+  add_index "work_hours", ["fri"], :name => "index_work_hours_on_fri"
+  add_index "work_hours", ["mon"], :name => "index_work_hours_on_mon"
+  add_index "work_hours", ["sat"], :name => "index_work_hours_on_sat"
+  add_index "work_hours", ["sun"], :name => "index_work_hours_on_sun"
+  add_index "work_hours", ["thu"], :name => "index_work_hours_on_thu"
+  add_index "work_hours", ["tue"], :name => "index_work_hours_on_tue"
+  add_index "work_hours", ["wed"], :name => "index_work_hours_on_wed"
+
+  create_table "ylp_dishes", :force => true do |t|
+    t.integer  "ylp_restaurant_id"
+    t.string   "name"
+    t.string   "price"
+    t.string   "currency"
+    t.string   "description"
+    t.string   "dish_category"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "ylp_dishes", ["id"], :name => "index_ylp_dishes_on_id"
+  add_index "ylp_dishes", ["name"], :name => "index_ylp_dishes_on_name"
+  add_index "ylp_dishes", ["ylp_restaurant_id"], :name => "index_ylp_dishes_on_ylp_restaurant_id"
+
+  create_table "ylp_restaurants", :force => true do |t|
+    t.string   "name"
+    t.string   "ylp_uri"
+    t.datetime "updated_at"
+    t.string   "lat"
+    t.string   "lng"
+    t.string   "rating"
+    t.string   "review_count"
+    t.string   "category"
+    t.string   "address"
+    t.string   "phone"
+    t.string   "web"
+    t.string   "transit"
+    t.string   "hours"
+    t.string   "parking"
+    t.string   "cc"
+    t.string   "price"
+    t.string   "attire"
+    t.string   "groups"
+    t.string   "kids"
+    t.string   "reservation"
+    t.string   "delivery"
+    t.string   "takeout"
+    t.string   "table_service"
+    t.string   "outdoor_seating"
+    t.string   "wifi"
+    t.string   "meal"
+    t.string   "alcohol"
+    t.string   "noise"
+    t.string   "ambience"
+    t.string   "tv"
+    t.string   "caters"
+    t.string   "wheelchair_accessible"
+    t.datetime "created_at"
+    t.string   "fsq_id"
+    t.string   "fsq_name"
+    t.string   "fsq_address"
+    t.string   "fsq_lat"
+    t.string   "fsq_lng"
+    t.string   "fsq_checkins_count"
+    t.string   "fsq_users_count"
+    t.string   "fsq_tip_count"
+    t.string   "restaurant_categories"
+    t.string   "city"
+    t.boolean  "has_menu",              :default => false
+    t.integer  "db_status"
+    t.integer  "our_network_id"
+    t.boolean  "menu_copied"
+  end
+
+  add_index "ylp_restaurants", ["city"], :name => "city"
+  add_index "ylp_restaurants", ["fsq_id"], :name => "index_ylp_restaurants_on_fsq_id"
+  add_index "ylp_restaurants", ["has_menu"], :name => "has_menu"
+  add_index "ylp_restaurants", ["name"], :name => "name"
+  add_index "ylp_restaurants", ["ylp_uri"], :name => "index_ylp_restaurants_on_ylp_uri"
+
+end

@@ -4,7 +4,7 @@ class CreateSpecials < ActiveRecord::Migration
       t.column :id, ID_COLUMN
       t.column :name, :string
       t.column :description, :string
-      t.column :restaurant, :string
+      t.column :restaurant_id, INT_UNSIGNED
       t.column :address, :string
       t.column :phone, :string
       t.column :url, :string

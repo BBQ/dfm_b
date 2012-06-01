@@ -108,13 +108,12 @@ class User < ActiveRecord::Base
       end
     end
     friends.join(',')
-    
   end
   
   def user_photo
     domain = 'http://test.dish.fm'
     if facebook_id
-      ph = "http://graph.facebook.com/#{facebook_id}/picture?type=square" unless facebook_id.blank?
+      ph = "http://graph.facebook.com/#{facebook_id}/picture?type=large" unless facebook_id.blank?
     elsif photo.thumb.url != '/images/noimage.jpg'
       ph = "#{domain}#{photo.thumb.url}"
     else
