@@ -16,7 +16,7 @@ class StaticController < ApplicationController
           :body => params[:body]
         }
         if UserMailer.feedback(data).deliver
-          @message = "Thank You! Your message successfully send! We will answer You ASAP!"
+          @message = "Thank You! Your message was successfully sent! We will answer You ASAP!"
         end
       else
         @message = "Please fill in all fields!"

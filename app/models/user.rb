@@ -77,6 +77,7 @@ class User < ActiveRecord::Base
     end
     APN::Device.where("user_id = ?", old_user.id).update_all(:user_id => new_user.id)
     
+    Session.destroy(:user_id => old_user.id)
     old_user.destroy  
   end
   

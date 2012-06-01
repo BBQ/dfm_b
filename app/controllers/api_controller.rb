@@ -9,7 +9,7 @@ class ApiController < ApplicationController
   end
   
   def get_pinterest_share_url
-    domain = 'test.dish.fm'
+    domain = 'dish.fm'
     require 'cgi'
     
     if params[:review_id]
@@ -25,9 +25,9 @@ class ApiController < ApplicationController
         media = CGI.escape("http://#{domain}#{rw.photo.iphone_retina.url}").gsub("+", "%20")
 
         if rw.text.blank?
-          text = "#{rw.dish.name}@#{rw.restaurant.name} via www.dish.fm"
+          text = "#{rw.dish.name}@#{rw.rtype == 'home_cooked' ? 'Home-cooked' : rw.restaurant.name} via www.dish.fm"
         else
-          text = "#{rw.text} - #{rw.dish.name}@#{rw.restaurant.name} via www.dish.fm"
+          text = "#{rw.text} - #{rw.dish.name}@#{rw.rtype == 'home_cooked' ? 'Home-cooked' : rw.restaurant.name} via www.dish.fm"
         end
         text = CGI.escape(text).gsub("+", "%20")
         
@@ -203,13 +203,19 @@ class ApiController < ApplicationController
               user.fb_valid_to = old_user.fb_valid_to
             end
           end
-
+          
+          # fb
           user.fb_access_token = params[:access_token]
           user.facebook_id = result["id"]                    
           user.email = result["email"]
           user.name = result["name"]
           user.gender = result["gender"]
           user.current_city = result["location"] ? result["location"]["name"] : ''
+          
+          # twitter
+          user.oauth_token_secret = old_user.oauth_token_secret if user.oauth_token_secret.blank?
+          user.oauth_token = old_user.oauth_token if user.oauth_token.blank?        
+          user.twitter_id = old_user.twitter_id if user.twitter_id.blank?  
           
           user.save
         end
@@ -221,9 +227,19 @@ class ApiController < ApplicationController
             User.migrate(old_user,user) if user.id != old_user.id
           end
           
+          # twitter
           user.oauth_token_secret = params[:oauth_token_secret]
           user.oauth_token = params[:oauth_token]          
           user.twitter_id = client.user.id
+          
+          # fb
+          user.fb_access_token = old_user.fb_access_token if user.fb_access_token.blank?
+          user.facebook_id = old_user.facebook_id if user.facebook_id.blank?                
+          user.email = old_user.email if user.email.blank?
+          user.name = old_user.name if user.name.blank?
+          user.gender = old_user.gender if user.gender.blank?
+          user.current_city = old_user.current_city if user.current_city.blank?
+          
           user.save
         end
       end
@@ -1428,82 +1444,86 @@ class ApiController < ApplicationController
   def add_review
     if params[:review] && Session.check_token(params[:review][:user_id], params[:token]) && params[:review][:rating].to_f > 0 && params[:review][:rating].to_f <= 5
       
-      params[:review][:friends] = User.put_friends(params[:fb_friends], params[:tw_friends]) if params[:fb_friends] || params[:tw_friends]
-      params[:review][:photo] ||= params[:uuid] #Delete on release
+      if User.find_by_id(params[:review][:user_id])
+        params[:review][:friends] = User.put_friends(params[:fb_friends], params[:tw_friends]) if params[:fb_friends] || params[:tw_friends]
+        params[:review][:photo] ||= params[:uuid] #Delete on release
       
-      if params[:review][:rtype] == 'home_cooked'
+        if params[:review][:rtype] == 'home_cooked'
           
-              if params[:dish] && params[:dish][:name] && params[:dish][:dish_type_id]   
-                unless dish = HomeCook.find_by_name(params[:dish][:name])
+                if params[:dish] && params[:dish][:name] && params[:dish][:dish_type_id]   
+                  unless dish = HomeCook.find_by_name(params[:dish][:name])
             
-                  unless dish = HomeCook.create(params[:dish])
-                    return render :json => {:error => {:description => 'Dish create error', :code => 6}}
-                  end
+                    unless dish = HomeCook.create(params[:dish])
+                      return render :json => {:error => {:description => 'Dish create error', :code => 6}}
+                    end
 
+                  end
+                  params[:review][:dish_id] = dish.id
+                else
+                  return render :json => {:error => {:description => 'Home Cooked is Missing', :code => 1015}}
                 end
-                params[:review][:dish_id] = dish.id
-              else
-                return render :json => {:error => {:description => 'Home Cooked is Missing', :code => 1015}}
-              end
         
-            r = Review.save_review(params[:review], params[:post_on_facebook], params[:post_on_twitter])
+              r = Review.save_review(params[:review], params[:post_on_facebook], params[:post_on_twitter])
             
-      elsif params[:review][:rtype] == 'delivery'
+        elsif params[:review][:rtype] == 'delivery'
               
-              if r = Delivery.find_by_id(params[:review][:restaurant_id])
-                params[:review][:restaurant_id] = r.id
-              elsif params[:foursquare_venue_id]
-                if r = Delivery.add_from_4sq_with_menu(params[:foursquare_venue_id])        
+                if r = Delivery.find_by_id(params[:review][:restaurant_id])
                   params[:review][:restaurant_id] = r.id
-                end
-              else
-                return render :json => {:error => {:description => 'Delivery not found', :code => 1}}
-              end
-        
-              unless dish = DishDelivery.find_by_id(params[:review][:dish_id])
-                if params[:dish] && params[:dish][:name]
-                  params[:dish][:delivery_id] = r.id  
-
-                  unless dish = DishDelivery.create(params[:dish])
-                    return render :json => {:error => {:description => 'DishDelivery create error', :code => 6}}
+                elsif params[:foursquare_venue_id]
+                  if r = Delivery.add_from_4sq_with_menu(params[:foursquare_venue_id])        
+                    params[:review][:restaurant_id] = r.id
                   end
-
                 else
-                  return render :json => {:error => {:description => 'DishDelivery find error', :code => 6}}
+                  return render :json => {:error => {:description => 'Delivery not found', :code => 1}}
                 end
-              end
         
-              params[:review][:dish_id] = dish.id
-              r = Review.save_review(params[:review], params[:post_on_facebook], params[:post_on_twitter])
+                unless dish = DishDelivery.find_by_id(params[:review][:dish_id])
+                  if params[:dish] && params[:dish][:name]
+                    params[:dish][:delivery_id] = r.id  
+
+                    unless dish = DishDelivery.create(params[:dish])
+                      return render :json => {:error => {:description => 'DishDelivery create error', :code => 6}}
+                    end
+
+                  else
+                    return render :json => {:error => {:description => 'DishDelivery find error', :code => 6}}
+                  end
+                end
+        
+                params[:review][:dish_id] = dish.id
+                r = Review.save_review(params[:review], params[:post_on_facebook], params[:post_on_twitter])
       
-      else
-              if r = Restaurant.find_by_id(params[:review][:restaurant_id])
-                params[:review][:network_id] = r.network_id
-              elsif r = Restaurant.add_from_4sq_with_menu(params[:foursquare_venue_id])        
-                params[:review][:restaurant_id] = r.id
-                params[:review][:network_id] = r.network_id
-              else
-                return render :json => {:error => {:description => 'Restaurant not found', :code => 1}}
-              end
-        
-              unless dish = Dish.find_by_id(params[:review][:dish_id])
-                if params[:dish] && params[:dish][:name]  
-
-                  params[:dish][:network_id] = r.network_id
-                  params[:dish][:created_by_user] = params[:review][:user_id]
-
-                  unless dish = Dish.create(params[:dish])
-                    return render :json => {:error => {:description => 'Dish create error', :code => 6}}
-                  end
-            
+        else
+                if r = Restaurant.find_by_id(params[:review][:restaurant_id])
+                  params[:review][:network_id] = r.network_id
+                elsif r = Restaurant.add_from_4sq_with_menu(params[:foursquare_venue_id])        
+                  params[:review][:restaurant_id] = r.id
+                  params[:review][:network_id] = r.network_id
                 else
-                  return render :json => {:error => {:description => 'Dish find error', :code => 6}}
+                  return render :json => {:error => {:description => 'Restaurant not found', :code => 1}}
                 end
-              end
         
-              params[:review][:dish_id] = dish.id
-              r = Review.save_review(params[:review], params[:post_on_facebook], params[:post_on_twitter])
-      end   
+                unless dish = Dish.find_by_id(params[:review][:dish_id])
+                  if params[:dish] && params[:dish][:name]  
+
+                    params[:dish][:network_id] = r.network_id
+                    params[:dish][:created_by_user] = params[:review][:user_id]
+
+                    unless dish = Dish.create(params[:dish])
+                      return render :json => {:error => {:description => 'Dish create error', :code => 6}}
+                    end
+            
+                  else
+                    return render :json => {:error => {:description => 'Dish find error', :code => 6}}
+                  end
+                end
+        
+                params[:review][:dish_id] = dish.id
+                r = Review.save_review(params[:review], params[:post_on_facebook], params[:post_on_twitter])
+        end   
+      else
+        $error = {:description => 'User not found', :code => 1515}  
+      end
     else
       $error = {:description => 'We\'re sorry, but we have some problems with your review, try to login/logout and post again', :code => 1515}  
     end
