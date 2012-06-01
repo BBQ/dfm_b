@@ -3,6 +3,7 @@ class UserMailer < ActionMailer::Base
   default :from => "Dish.FM <hello@mail.dish.fm>"
   
   def feedback(data)
+    
     mail_to = 'a.surin@dish.fm'
     subject = "Feedback message from #{data[:name]} #{data[:email]} via www.dish.fm"
 
