@@ -24,22 +24,22 @@
 					= @review.dish.votes.to_i != 0 ? @review.dish.rating.round(1) : 0
 				.voices
 					(#{@review.dish.votes} vote(s))
-			.sp
-			.hd3
-				- if @review.restaurant
+			.sp			
+			- if @review.restaurant
+				.hd3
 					= "@ #{@review.restaurant.name}"
-					#rest_desc
-						= [ @r_categories, 
-							"#{@review.restaurant.rating.round(1)}(#{@review.restaurant.votes}votes)", 
-							"#{@review.restaurant.fsq_checkins_count} checkins",
-							@bill ].reject(&:empty?).join(', ')
-					#map_canvas_popup
-					%script
-						= "load_map(#{@markers})"
-					.addr_phone
-						= "#{@review.restaurant.address} Тел:#{@review.restaurant.phone}"
-				- else
-					= "@ Home Cooked"
+				#rest_desc
+					= [ @r_categories, 
+						"#{@review.restaurant.rating.round(1)}(#{@review.restaurant.votes}votes)", 
+						"#{@review.restaurant.fsq_checkins_count} checkins",
+						@bill ].reject(&:empty?).join(', ')
+				#map_canvas_popup
+				%script
+					= "load_map(#{@markers})"
+				.addr_phone
+					= "#{@review.restaurant.address} Тел:#{@review.restaurant.phone}"
+			- else
+				= "@ Home Cooked"
 		.center_div
 			#review_content
 				= render 'popup/review'
