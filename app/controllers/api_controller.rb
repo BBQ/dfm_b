@@ -98,7 +98,11 @@ class ApiController < ApplicationController
   
   def add_to_favourite
     if Session.check_token(params[:user_id], params[:token]) && (params[:dish_id] || params[:restaurant_id])
-      network_id = Network.find_by_restaurant_id(params[:restaurant_id]) unless params[:restaurant_id].blank?
+      unless params[:restaurant_id].blank?
+        if network = Network.find_by_restaurant_id(params[:restaurant_id])
+          network_id = network.id
+        end
+      end
       
       Favourite.create(
         :user_id => params[:user_id].to_i,
