@@ -11,28 +11,19 @@ class UserMailer < ActionMailer::Base
   end
   
    
-  def email_notification
-    @url  = "http://test.dish.fm"
+  def email_notification(to_user, message)
     subject = "Dish.fm Notifications"
-    
-    APN::Notification.where("mailed_at IS NULL").each do |n|
-      if user_to = User.find_by_id(n.user_id_to)
-
-        if email = user_to.email
-          @user = user_to.name
-          @text = "#{User.find_by_id(n.user_id_from).name.split(' ')[0]} #{n.alert.downcase}"
-          mail(:to => email, :subject => subject)
-          
-          n.mailed_at = Time.now
-          n.save
-        end
-        
-      end
-    end
+    @url  = "http://dish.fm"
+    @user = to_user.name
+    @text = message
+    mail(:to => to_user.email, :subject => subject)
+  
+    n.mailed_at = Time.now
+    n.save
   end
   
   def email_password_recover(user)
-    @url  = "http://test.dish.fm"
+    @url  = "http://dish.fm"
     subject = "Dish.fm Password Recovery"
 
     @user = user.name
