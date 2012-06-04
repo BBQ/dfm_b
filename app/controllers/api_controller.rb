@@ -97,22 +97,36 @@ class ApiController < ApplicationController
   end
   
   def add_to_favourite
-    if Session.check_token(params[:user_id], params[:token]) && (params[:dish_id] || params[:restaurant_id])
-      unless params[:restaurant_id].blank?
-        if network = Network.find_by_restaurant_id(params[:restaurant_id])
-          network_id = network.id
+    if Session.check_token(params[:user_id], params[:token]) && (params[:dish_id] || params[:restaurant_id] || params[:delivery_id] || params[:home_cook_id] || params[:dish_delivery_id])
+      if !params[:restaurant_id].blank?
+        if restaurant = Restaurant.find_by_id(params[:restaurant_id])
+          network_id = restaurant.network_id
+          restaurant_id = restaurant.id
         end
+      elsif !params[:dish_id].blank?
+        dish_id = Dish.find_by_id(params[:dish_id])
+      elsif !params[:delivery_id].blank?
+        delivery_id = Delivery.find_by_id(params[:delivery_id])
+      elsif !params[:dish_delivery_id].blank?
+        dish_delivery_id = DishDelivery.find_by_id(params[:dish_delivery_id])
+      elsif !params[:dish_id].blank?
+        home_cook_id = HomeCooked.find_by_id(params[:home_cook_id])              
       end
       
-      Favourite.create(
-        :user_id => params[:user_id].to_i,
-        :dish_id => params[:dish_id].to_i,
-        :restaurant_id => params[:restaurant_id].to_i,
-        :delivery_id => params[:delivery_id].to_i,
-        :dish_delivery_id => params[:dish_delivery_id].to_i,
-        :home_cook_id => params[:home_cook_id].to_i,
-        :network_id => network_id ||= nil
-      )
+      if dish_id || restaurant_id || delivery_id || dish_delivery_id || home_cook_id
+        Favourite.create(
+          :user_id => params[:user_id].to_i,
+          :dish_id => dish_id,
+          :restaurant_id => restaurant_id,
+          :delivery_id => delivery_id,
+          :dish_delivery_id => dish_delivery_id,
+          :home_cook_id => home_cook_id,
+          :network_id => network_id ||= nil
+        )
+      else
+        $error = {:description => 'Object not found', :code => 127}
+      end
+      
     end
     return render :json => {
       :error => $error
