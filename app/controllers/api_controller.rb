@@ -104,13 +104,21 @@ class ApiController < ApplicationController
           restaurant_id = restaurant.id
         end
       elsif !params[:dish_id].blank?
-        dish_id = Dish.find_by_id(params[:dish_id])
+        if dish = Dish.find_by_id(params[:dish_id])
+          dish_id = dish.id
+        end
       elsif !params[:delivery_id].blank?
-        delivery_id = Delivery.find_by_id(params[:delivery_id])
+        if delivery = Delivery.find_by_id(params[:delivery_id])
+          delivery_id = delivery.id
+        end
       elsif !params[:dish_delivery_id].blank?
-        dish_delivery_id = DishDelivery.find_by_id(params[:dish_delivery_id])
+        if dish_delivery = DishDelivery.find_by_id(params[:dish_delivery_id])
+          dish_delivery_id = dish_delivery.id
+        end
       elsif !params[:home_cook_id].blank?
-        home_cook_id = HomeCook.find_by_id(params[:home_cook_id])              
+        if home_cook = HomeCook.find_by_id(params[:home_cook_id])              
+          home_cook_id = home_cook.id
+        end
       end
       
       if dish_id || restaurant_id || delivery_id || dish_delivery_id || home_cook_id
@@ -656,9 +664,7 @@ class ApiController < ApplicationController
                   dishes_between.each do |d|
                     if start == 1
                       if dishes_array.count < limit
-                        if current_user_id > 0
-                          favourite = 1 if Favourite.find_by_user_id_and_dish_id(current_user_id, d.id)
-                        end
+                        favourite = 1 if Favourite.find_by_user_id_and_dish_id(current_user_id, d.id)
                         network_data = Network.select([:id, :name]).find_by_id(d.network_id) if params[:type] != 'home_cooked' && params[:type] != 'delivery' 
                         dishes_array.push({
                           :id => d.id,
@@ -694,9 +700,7 @@ class ApiController < ApplicationController
               dishes_between.each do |d|
             
                 if dishes_array.count < limit
-                  if current_user_id > 0
-                    favourite = 1 if Favourite.find_by_user_id_and_dish_id(current_user_id, d.id)
-                  end
+                  favourite = 1 if Favourite.find_by_user_id_and_dish_id(current_user_id, d.id)
                 
                   dishes_array.push({
                     :id => d.id,
@@ -1346,7 +1350,7 @@ class ApiController < ApplicationController
     reviews = reviews.where("id < ?", params[:review_id]) if params[:review_id]
     
     review_data = []
-    reviews.each {|r| review_data.push(r.format_review_for_api(params[:user_id]))}    
+    reviews.each {|rw| review_data.push(rw.format_review_for_api(params[:user_id]))}    
     
     if !params[:user_id].blank?    
       if n = APN::Notification.where(:user_id_to => params[:user_id], :read => 0).last  
