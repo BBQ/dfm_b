@@ -110,7 +110,7 @@ class ApiController < ApplicationController
       elsif !params[:dish_delivery_id].blank?
         dish_delivery_id = DishDelivery.find_by_id(params[:dish_delivery_id])
       elsif !params[:home_cook_id].blank?
-        home_cook_id = HomeCooked.find_by_id(params[:home_cook_id])              
+        home_cook_id = HomeCook.find_by_id(params[:home_cook_id])              
       end
       
       if dish_id || restaurant_id || delivery_id || dish_delivery_id || home_cook_id
