@@ -17,9 +17,6 @@ class UserMailer < ActionMailer::Base
     @user = to_user.name
     @text = message
     mail(:to => to_user.email, :subject => subject)
-  
-    n.mailed_at = Time.now
-    n.save
   end
   
   def email_password_recover(user)
