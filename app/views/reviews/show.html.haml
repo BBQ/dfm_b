@@ -24,7 +24,7 @@
 					= @review.dish.votes.to_i != 0 ? @review.dish.rating.round(1) : 0
 				.voices
 					(#{@review.dish.votes} vote(s))
-			.sp			
+			.sp
 			- if @review.restaurant
 				.hd3
 					= "@ #{@review.restaurant.name}"

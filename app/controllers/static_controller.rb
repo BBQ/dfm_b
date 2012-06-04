@@ -1,4 +1,8 @@
 class StaticController < ApplicationController
+  def fb_redirect
+    
+  end
+  
   def terms
     
   end

@@ -12,6 +12,7 @@ Dishfm::Application.routes.draw do
   
   root :to => "landing_page#index"
   
+  match 'redirect' => 'static#fb_redirect', :as => :fb_redirect
   match 'about/terms' => 'static#terms', :as => :terms
   match 'about/privacy' => 'static#privacy', :as => :privacy
   match 'about' => 'static#about', :as => :about
