@@ -8,7 +8,7 @@ namespace :email do
       APN::Notification.where("mailed_at IS NULL").each do |n|
         if to_user = User.find_by_id(n.user_id_to)
           if email = to_user.email
-            text = "#{User.find_by_id(n.user_id_from).name.split(' ')[0]} #{n.alert.downcase}"
+            message = "#{User.find_by_id(n.user_id_from).name.split(' ')[0]} #{n.alert.downcase}"
             p UserMailer.email_notification(to_user, message).deliver
           end
         end
