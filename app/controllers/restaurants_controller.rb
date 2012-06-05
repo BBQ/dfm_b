@@ -17,10 +17,34 @@ class RestaurantsController < ApplicationController
       @fb_obj = @restaurant
             
       @best_dishes = Dish.select([:id, :photo, :name]).where("network_id = ? AND rating > 0", @restaurant.network_id).limit(21).order("rating/votes DESC")
+      @dishes_wimg = Dish.select([:id, :photo, :name]).where("network_id = ? AND photo IS NOT NULL", @restaurant.network_id).limit(21).order("rating/votes DESC") unless @best_dishes.any?
+      @any_dishes = Dish.select([:id, :photo, :name]).where("network_id = ?", @restaurant.network_id).limit(21).order("rating/votes DESC") unless @dishes_wimg.any?
+
       
       @markers = []
       @restaurant.network.restaurants.select([:name, :lat, :lon]).each { |r| @markers.push("['#{r.name}', #{r.lat}, #{r.lon}, 1]")}
       @markers = "[#{@markers.join(',')}]"
+      
+      web = "http://dish.fm"
+      url = "#{web}/restaurants/#{@restaurant.id}"
+      
+      @restaurant_img = @restaurant.restaurant_images.first.photo.iphone.url
+      img = "#{web}#{@restaurant_img}" unless @restaurant_img.blank?
+      
+      @share_data = {
+        :pinit => {
+          :url => url,
+          :media => img,
+          :description => "#{@restaurant.description}"[0 .. 220]
+        },
+        :facebook => {
+          :url => url
+        },
+        :twitter => {
+          :description => "#{@restaurant.description}"[0 .. 100]
+        }
+      }
+      
     end
   end
   
