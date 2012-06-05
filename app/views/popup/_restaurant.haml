@@ -23,7 +23,7 @@
 			%ul#best_dishes
 				-@best_dishes.each do |d|
 					%li
-						=image_tag(d.image_p120)
+						= link_to image_tag(d.image_p120), dish_path(d.id)
 						%br
 						= link_to truncate(d.name, :length => 10), dish_path(d.id)
 		-elsif @dishes_wimg.any?
@@ -31,7 +31,7 @@
 			%ul#best_dishes
 				-@dishes_wimg.each do |d|
 					%li
-						=image_tag(d.image_p120)
+						= link_to image_tag(d.image_p120), dish_path(d.id)
 						%br
 						= link_to truncate(d.name, :length => 10), dish_path(d.id)
 		-elsif @any_dishes.any?
