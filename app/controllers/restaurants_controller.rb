@@ -35,7 +35,7 @@ class RestaurantsController < ApplicationController
         :pinit => {
           :url => url,
           :media => img,
-          :description => "#{@restaurant.description}"[0 .. 220]
+          :description => "#{@restaurant.description}"[0 .. 250]
         },
         :facebook => {
           :url => url
