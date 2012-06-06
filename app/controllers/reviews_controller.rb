@@ -106,6 +106,26 @@ class ReviewsController < ApplicationController
             :text => c.text
           })
         end
+        web = "http://dish.fm"
+        url = "#{web}/reviews/#{@review.id}"
+
+        @review_img = @review.photo.iphone_retina.url
+        img = "#{web}#{@review_img}" unless @review_img.blank?
+
+        @share_data = {
+          :pinit => {
+            :url => url,
+            :media => img,
+            :description => "#{@review.dish.name}. #{@review.text}"[0 .. 250]
+          },
+          :facebook => {
+            :url => url
+          },
+          :twitter => {
+            :description => "#{@review.dish.name}. #{@review.text}"[0 .. 100]
+          }
+        }
+        
       end
             
     end

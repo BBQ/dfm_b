@@ -1,73 +1,69 @@
-=render '/shared/share_links'
-#popup
-	.center_div
-		- if @restaurant.restaurant_images.first
-			=image_tag @restaurant_img, :id => 'r_img'
-		.hd2r=@restaurant.name
-		.info
-			= @r_categories
-			%br
-			- if @restaurant.rating	
-				= "rating: #{@restaurant.rating.round(1)} (#{@restaurant.votes} vote(s)),"
-			-if @restaurant.fsq_checkins_count 
-				=	"#{@restaurant.fsq_checkins_count} checkins"	
-			- if @bill 	
+-if if @restaurant
+	=render '/shared/share_links'
+	#popup
+		.center_div
+			- if @restaurant.restaurant_images.first
+				=image_tag @restaurant_img, :id => 'r_img'
+			.hd2r=@restaurant.name
+			.info
+				= @r_categories
 				%br
-				= "bill: #{@bill}"
-		.info
-			- if @restaurant.description
-				= @restaurant.description.capitalize_first_letter
-		.sp
-		-if @best_dishes.any?
-			.hd3r Best dishes
-			%ul#best_dishes
-				-@best_dishes.each do |d|
-					%li
-						= link_to image_tag(d.image_p120), dish_path(d.id)
-						%br
-						= link_to truncate(d.name, :length => 10), dish_path(d.id)
-		-elsif @dishes_wimg.any?
-			.hd3r Dishes
-			%ul#best_dishes
-				-@dishes_wimg.each do |d|
-					%li
-						= link_to image_tag(d.image_p120), dish_path(d.id)
-						%br
-						= link_to truncate(d.name, :length => 10), dish_path(d.id)
-		-elsif @any_dishes.any?
-			.hd3r Dishes
-			%ul#best_dishes
-				-@any_dishes.each do |d|
-					%li
-						= link_to truncate(d.name, :length => 10), dish_path(d.id)
-	.side_div
-		.block
-			.hd1s="Popularity: #{@restaurant.fsq_checkins_count} check-ins"
+				- if @restaurant.rating	
+					= "rating: #{@restaurant.rating.round(1)} (#{@restaurant.votes} vote(s)),"
+				-if @restaurant.fsq_checkins_count 
+					=	"#{@restaurant.fsq_checkins_count} checkins"	
+				- if @bill 	
+					%br
+					= "bill: #{@bill}"
+			.info
+				- if @restaurant.description
+					= @restaurant.description.capitalize_first_letter
 			.sp
-			.hd1s Rating:
-			.rate
-				- if @restaurant.rating != 0
-					- @restaurant.rating.round.times do
-						= image_tag 'star_filled.png', :class => 'star'
-					- (5 - @restaurant.rating).to_i.times do
-						= image_tag 'star_empty.png', :class => 'star'
-				- else
-					- 5.times do
-						= image_tag 'star_empty.png', :class => 'star'
-				.mark
-					= @restaurant.votes.to_i != 0 ? @restaurant.rating.round(1) : 0
-				.voices
-					(#{@restaurant.votes} votes)
-			.sp
-			%ul.info_list
-				%li="#{ @restaurant.city + ',' if @restaurant.city} #{@restaurant.address}"
-				%li="Phone: #{@restaurant.phone}" unless @restaurant.phone.nil?
-				%li=raw"Opening hours: #{@restaurant.time}" unless @restaurant.time.nil?
-			#map_canvas_popup
-			%script
-				= "load_map(#{@markers})"
-
-		
-	
-			
-			
+			-if @best_dishes.any?
+				.hd3r Best dishes
+				%ul#best_dishes
+					-@best_dishes.each do |d|
+						%li
+							= link_to image_tag(d.image_p120), dish_path(d.id)
+							%br
+							= link_to truncate(d.name, :length => 10), dish_path(d.id)
+			-elsif @dishes_wimg.any?
+				.hd3r Dishes
+				%ul#best_dishes
+					-@dishes_wimg.each do |d|
+						%li
+							= link_to image_tag(d.image_p120), dish_path(d.id)
+							%br
+							= link_to truncate(d.name, :length => 10), dish_path(d.id)
+			-elsif @any_dishes.any?
+				.hd3r Dishes
+				%ul#best_dishes
+					-@any_dishes.each do |d|
+						%li
+							= link_to truncate(d.name, :length => 10), dish_path(d.id)
+		.side_div
+			.block
+				.hd1s="Popularity: #{@restaurant.fsq_checkins_count} check-ins"
+				.sp
+				.hd1s Rating:
+				.rate
+					- if @restaurant.rating != 0
+						- @restaurant.rating.round.times do
+							= image_tag 'star_filled.png', :class => 'star'
+						- (5 - @restaurant.rating).to_i.times do
+							= image_tag 'star_empty.png', :class => 'star'
+					- else
+						- 5.times do
+							= image_tag 'star_empty.png', :class => 'star'
+					.mark
+						= @restaurant.votes.to_i != 0 ? @restaurant.rating.round(1) : 0
+					.voices
+						(#{@restaurant.votes} votes)
+				.sp
+				%ul.info_list
+					%li="#{ @restaurant.city + ',' if @restaurant.city} #{@restaurant.address}"
+					%li="Phone: #{@restaurant.phone}" unless @restaurant.phone.nil?
+					%li=raw"Opening hours: #{@restaurant.time}" unless @restaurant.time.nil?
+				#map_canvas_popup
+				%script
+					= "load_map(#{@markers})"
