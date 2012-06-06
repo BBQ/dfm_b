@@ -150,11 +150,11 @@ class ApiController < ApplicationController
           :home_cook_id => home_cook_id,
           :network_id => network_id ||= nil
         )
-      else
-        $error = {:description => 'Object not found', :code => 127}
       end
-      
+    else
+      $error = {:description => 'Params missing', :code => 155}  
     end
+    
     return render :json => {
       :error => $error
     }
