@@ -85,7 +85,6 @@ class ApiController < ApplicationController
     }
   end
   
-  
   def logout
     if Session.check_token(params[:user_id], params[:token]) && params[:push_token] 
       if device = APN::Device.find_by_token_and_user_id(params[:push_token],params[:user_id])
@@ -99,25 +98,45 @@ class ApiController < ApplicationController
   def add_to_favourite
     if Session.check_token(params[:user_id], params[:token]) && (params[:dish_id] || params[:restaurant_id] || params[:delivery_id] || params[:home_cook_id] || params[:dish_delivery_id])
       if !params[:restaurant_id].blank?
-        if restaurant = Restaurant.find_by_id(params[:restaurant_id])
-          network_id = restaurant.network_id
-          restaurant_id = restaurant.id
+        if f = Favourite.find_by_user_id_and_restaurant_id(params[:user_id], params[:restaurant_id])
+          f.destroy
+        else
+          if restaurant = Restaurant.find_by_id(params[:restaurant_id])
+            network_id = restaurant.network_id
+            restaurant_id = restaurant.id
+          end
         end
-      elsif !params[:dish_id].blank?
-        if dish = Dish.find_by_id(params[:dish_id])
-          dish_id = dish.id
+      elsif !params[:dish_id].blank?    
+        if f = Favourite.find_by_user_id_and_dish_id(params[:user_id], params[:dish_id])
+          f.destroy
+        else
+          if dish = Dish.find_by_id(params[:dish_id])
+            dish_id = dish.id
+          end
         end
       elsif !params[:delivery_id].blank?
-        if delivery = Delivery.find_by_id(params[:delivery_id])
-          delivery_id = delivery.id
+        if f = Favourite.find_by_user_id_and_delivery_id(params[:user_id], params[:delivery_id])
+          f.destroy
+        else   
+          if delivery = Delivery.find_by_id(params[:delivery_id])       
+            delivery_id = delivery.id
+          end
         end
       elsif !params[:dish_delivery_id].blank?
-        if dish_delivery = DishDelivery.find_by_id(params[:dish_delivery_id])
-          dish_delivery_id = dish_delivery.id
+        if f = Favourite.find_by_user_id_and_dish_delivery_id(params[:user_id], params[:dish_delivery_id])
+          f.destroy
+        else
+          if dish_delivery = DishDelivery.find_by_id(params[:dish_delivery_id])
+            dish_delivery_id = dish_delivery.id
+          end
         end
       elsif !params[:home_cook_id].blank?
-        if home_cook = HomeCook.find_by_id(params[:home_cook_id])              
-          home_cook_id = home_cook.id
+        if f = Favourite.find_by_user_id_and_home_cook_id(params[:user_id], params[:home_cook_id])
+          f.destroy
+        else
+          if home_cook = HomeCook.find_by_id(params[:home_cook_id])              
+            home_cook_id = home_cook.id
+          end
         end
       end
       
