@@ -584,6 +584,7 @@ ul li.first {
   #review .data .photo {
     float: left;
     width: 30px;
+    height: 30px;
     margin: 0 5px 5px 0; }
   #review .data .desc {
     width: 195px;
