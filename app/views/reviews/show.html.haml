@@ -5,7 +5,7 @@
 			.hd2
 				= "#{@review.dish.name}"
 				.price
-					= "#{@review.dish.price} #{@review.dish.currency}" if @review.dish.price.to_i > 0
+					= "#{@review.dish.price} #{@review.dish.currency || '$'}" if @review.dish.price.to_i > 0
 			.desc
 				= "#{@review.dish.description}"
 			.sp

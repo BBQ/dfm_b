@@ -5,7 +5,7 @@
 			.hd2
 				= "#{@dish.name}"
 				.price
-					= "#{@dish.price} #{@dish.currency}"
+					= "#{@dish.price} #{@dish.currency || '$'}"
 			.desc
 				= "#{@dish.description}"
 			.sp
