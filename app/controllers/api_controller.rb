@@ -1273,20 +1273,92 @@ class ApiController < ApplicationController
       top_in_dishes[:count] = top_in_dishes[:data].count
       top_in_dishes[:data] = top_in_dishes[:data].sort_by { |k| k[:created_at] }.reverse
       
+      favourite_dishes = {:data => [], :count => 0}
+      favourite_restaurants = {:data => [], :count => 0}
+      if favourite = Favourite.where(:user_id => user.id)
+        favourite.each do |f|
+          
+          if !f.restaurant_id.blank?
+            if d = Restaurant.select([:id, :name, :photo, :network_id]).find_by_id(f.restaurant_id)
+              favourite_restaurants[:data].push(
+                :id => d.id,
+                :name => d.name ? d.name : '',
+                :photo => d.thumb,
+                :favourite => 1,
+                :type => nil
+              )
+            end
+          elsif !f.delivery_id.blank?
+            if d = Delivery.select([:id, :name, :photo]).find_by_id(f.delivery_id)
+              favourite_restaurants[:data].push(
+                :id => d.id,
+                :name => d.name ? d.name : '',
+                :photo => d.thumb,
+                :favourite => 1,
+                :type => 'delivery'
+              )
+            end
+          elsif !f.dish_id.blank?
+            if d = Dish.select([:id, :name, :photo, :created_at]).find_by_id(f.dish_id)
+              favourite_dishes[:data].push(
+                :id => d.id,
+                :name => d.name ? d.name : '',
+                :photo => d.image_sd,
+                :type => nil,
+                :favourite => 1,
+                :created_at => d.created_at
+              )
+            end
+          elsif !f.dish_delivery_id.blank?
+            if d = DishDelivery.select([:id, :name, :photo, :created_at]).find_by_id(f.dish_delivery_id)
+              favourite_dishes[:data].push(
+                :id => d.id,
+                :name => d.name ? d.name : '',
+                :photo => d.image_sd,
+                :type => 'delivery',
+                :favourite => favourite,
+                :created_at => d.created_at
+              )
+            end
+          elsif !f.home_cook_id.blank?
+            if d = HomeCook.select([:id, :name, :photo, :created_at]).find_by_id(f.home_cook_id)
+              favourite_dishes[:data].push(
+                :id => d.id,
+                :name => d.name ? d.name : '',
+                :photo => d.image_sd,
+                :type => 'home_cooked',
+                :favourite => 1,
+                :created_at => d.created_at
+              )
+            end
+          end
+          
+        end
+      end
+      favourite_dishes[:count] = favourite_dishes[:data].count
+      favourite_dishes[:data] = favourite_dishes[:data].sort_by { |k| k[:created_at] }.reverse
+      
+      favourite_restaurants[:count] = favourite_restaurants[:data].count
+      favourite_restaurants[:data] = favourite_restaurants[:data].sort_by { |k| k[:created_at] }.reverse
+      
+      return render :json => {
+            :favourite_dishes => favourite_dishes,
+            :favourite_restaurants => favourite_restaurants,
+            :likes => likes,
+            :dish_ins => reviews,
+            :top_in_dishes => top_in_dishes,
+            :top_in_restaurants => top_in_restaurants,
+            :following_count => following_count,
+            :followers_count => followers_count,
+            :photo => user.user_photo,
+            :error => $error
+      }
     else
       $error = {:description => 'Parameters missing', :code => 941}
+      return render :json => {
+            :error => $error
+      }
     end
-    return render :json => {
-          :likes => likes,
-          :dish_ins => reviews,
-          :top_in_dishes => top_in_dishes,
-          :top_in_restaurants => top_in_restaurants,
-          :following_count => following_count,
-          :followers_count => followers_count,
-          :photo => user.user_photo,
-          :error => $error
-    }
-      
   end
   
   def get_notifications
