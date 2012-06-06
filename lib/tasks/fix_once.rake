@@ -21,6 +21,36 @@ end
 
 namespace :fixup do
   
+  task :mg_cat => :environment do
+    file_name = "rc.xls"
+
+    directory = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import/'
+    file = directory + file_name
+    
+    parser = Excelx.new(file, false, :ignore)  
+    dish_sheet = parser.sheets[0]
+    
+    1.upto(parser.last_row(dish_sheet)) do |line|
+      c2 = parser.cell(line,'A', dish_sheet)
+      c1 = parser.cell(line,'F', dish_sheet)
+      
+      unless c1.blank?
+        if r = Restaurant.where("restaurant_categories REGEXP '(^#{c2},|,#{c2},|,#{c2}$|^#{c2}$)'")
+          b = r.restaurant_categories.match /(^#{c2},|,#{c2},|,#{c2}$|^#{c2}$)/
+          if b.any?
+            c = b[0].gsub(c2,c1)
+            r.restaurant_categories.gsub!(b[0], c)
+            # r.save
+            # RestaurantCategory.find_by_id(c2).destroy
+          end
+        end
+        p "replaced #{c2} with #{c1}"
+      end
+      
+    end
+  
+  end
+  
   task :ylp_score => :environment do
     Restaurant.select([:id, :name, :lat, :lon, :ylp_rating, :ylp_reviews_count]).where("source = 'ylp'").each do |r|
       
