@@ -385,8 +385,7 @@ img {
   .side_div .price {
     font-weight: bold;
     font-size: 0.6em;
-    font-family: arial;
-    float: left; }
+    font-family: arial; }
   .side_div .rating {
     font-family: bell_bold;
     font-size: 1em; }
@@ -520,10 +519,6 @@ ul li.first {
 
 .name {
   float: left; }
-
-.price {
-  float: right;
-  text-align: right; }
 
 .votes, .desc {
   font-family: bell;
