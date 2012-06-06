@@ -1032,6 +1032,7 @@ class ApiController < ApplicationController
       restaurants = restaurants.search_by_tag_id(params[:tag_id]) if params[:tag_id].to_i > 0
       restaurants = restaurants.where(all_filters) unless all_filters.blank?
       restaurants = restaurants.where("network_id IN (#{params[:network_id]})") unless params[:network_id].blank?
+      restaurants = restaurants.where(:active => true)
     
       if params[:type] != 'delivery'
         restaurants = restaurants.select('restaurants.ylp_rating, restaurants.ylp_reviews_count, restaurants.bill, restaurants.fsq_checkins_count, restaurant_categories, restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')    

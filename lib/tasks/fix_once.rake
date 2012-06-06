@@ -31,29 +31,39 @@ namespace :fixup do
     dish_sheet = parser.sheets[0]
     
     1.upto(parser.last_row(dish_sheet)) do |line|
+      
       c2 = parser.cell(line,'A', dish_sheet).to_i.to_s
       c1 = parser.cell(line,'F', dish_sheet).to_i.to_s
+      e = parser.cell(line,'E', dish_sheet).to_i
       
-      if c1 != '0'
-        rsts = Restaurant.where("restaurant_categories REGEXP '(^#{c2},|,#{c2},|,#{c2}$|^#{c2}$)'")
-        rstsc = rsts.count
+      # Merge
+      # if c1 != '0'
+      #   rsts = Restaurant.where("restaurant_categories REGEXP '(^#{c2},|,#{c2},|,#{c2}$|^#{c2}$)'")
+      #   rstsc = rsts.count
+      #   rsts.each do |r|
+      #     b = r.restaurant_categories.match /(^#{c2},|,#{c2},|,#{c2}$|^#{c2}$)/
+      #     unless b.nil?
+      #       c = b[0].gsub(c2,c1)
+      #       r.restaurant_categories = r.restaurant_categories.gsub(b[0], c)
+      #       r.save
+      #       if rc = RestaurantCategory.find_by_id(c2)
+      #         rc.destroy
+      #       end
+      #     end
+      #     
+      #   end
+      #   p "#{rstsc} replaced #{c2} with #{c1}"
+      # end
+      
+      # Clean
+      if e == 0
+        rsts = Restaurant.where("restaurant_categories = '#{c2}'")
         rsts.each do |r|
-          b = r.restaurant_categories.match /(^#{c2},|,#{c2},|,#{c2}$|^#{c2}$)/
-          unless b.nil?
-            c = b[0].gsub(c2,c1)
-            r.restaurant_categories = r.restaurant_categories.gsub(b[0], c)
-            r.save
-            if rc = RestaurantCategory.find_by_id(c2)
-              rc.destroy
-            end
-          end
-          
+          r.update_attributes(:active => 0)
         end
-        p "#{rstsc} replaced #{c2} with #{c1}"
       end
       
     end
-  
   end
   
   task :ylp_score => :environment do
