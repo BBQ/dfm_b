@@ -57,7 +57,7 @@ namespace :fixup do
       
       # Clean
       if e == 0
-        rsts = Restaurant.where("restaurant_categories = '#{c2}'")
+        rsts = Restaurant.where("restaurant_categories = '#{c2}' AND source = 'ylp'")
         rsts.each do |r|
           p "#{r.id} #{r.name} #{r.address}"
           r.update_attributes(:active => 0)
