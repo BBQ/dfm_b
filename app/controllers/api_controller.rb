@@ -8,6 +8,15 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
+  def get_favourite_dishes
+    if params[:user_id]
+      
+    else
+      $error = {:description => 'Params missing', :code => 26}
+    end  
+  end
+  
+  
   def get_pinterest_share_url
     domain = 'dish.fm'
     require 'cgi'

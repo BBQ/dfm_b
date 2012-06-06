@@ -31,22 +31,25 @@ namespace :fixup do
     dish_sheet = parser.sheets[0]
     
     1.upto(parser.last_row(dish_sheet)) do |line|
-      c2 = parser.cell(line,'A', dish_sheet)
-      c1 = parser.cell(line,'F', dish_sheet)
+      c2 = parser.cell(line,'A', dish_sheet).to_i.to_s
+      c1 = parser.cell(line,'F', dish_sheet).to_i.to_s
       
-      unless c1.blank?
-        Restaurant.where("restaurant_categories REGEXP '(^#{c2},|,#{c2},|,#{c2}$|^#{c2}$)'").each do |r|  
+      if c1 != '0'
+        rsts = Restaurant.where("restaurant_categories REGEXP '(^#{c2},|,#{c2},|,#{c2}$|^#{c2}$)'")
+        rstsc = rsts.count
+        rsts.each do |r|
           b = r.restaurant_categories.match /(^#{c2},|,#{c2},|,#{c2}$|^#{c2}$)/
-          
-          if b.any?
+          unless b.nil?
             c = b[0].gsub(c2,c1)
-            r.restaurant_categories.gsub!(b[0], c)
-            # r.save
-            # RestaurantCategory.find_by_id(c2).destroy
+            r.restaurant_categories = r.restaurant_categories.gsub(b[0], c)
+            r.save
+            if rc = RestaurantCategory.find_by_id(c2)
+              rc.destroy
+            end
           end
           
         end
-        p "replaced #{c2} with #{c1}"
+        p "#{rstsc} replaced #{c2} with #{c1}"
       end
       
     end
