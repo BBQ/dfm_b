@@ -29,7 +29,8 @@
 			.set.likes
 				.title #{likes.count} like(s)
 				- likes.each do |l|
-					= image_tag l[:photo], :class => 'photo'
+					.photo{:style => "background-image: url(#{l[:photo]})"}
+					/ = image_tag l[:photo], :class => 'photo'
 					
 		- comments = comments(@review)
 		- if comments.any?
