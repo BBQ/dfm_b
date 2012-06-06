@@ -1,13 +1,13 @@
-/ = render 'shared/redirect'
+=render '/shared/share_links'
 -unless @dish.nil?
 	#popup
-		.side_div
+		.side_div#dish_div
 			.hd2
 				= "#{@dish.name}"
+				.price
+					= "#{@dish.price} #{@dish.currency}"
 			.desc
 				= "#{@dish.description}"
-			.price
-				= "#{@dish.price} #{@dish.currency}"
 			.sp
 			.rating
 				Raiting
@@ -26,7 +26,8 @@
 					(#{@dish.votes} голосов)
 			.sp
 			.hd3
-				@ #{@dish.network.name}
+				@
+				=link_to @dish.network.name, restaurant_path(@dish.network.restaurants.first.id)
 			#rest_desc
 				= [@r_categories, 
 					"#{@restaurant.rating.round(1)}(#{@restaurant.votes}votes)", 
@@ -36,7 +37,7 @@
 			%script
 				= "load_map(#{@markers})"
 			.addr_phone
-				= "#{@restaurant.address} Тел:#{@restaurant.phone}"
-		.center_div
+				= "#{@restaurant.city}, #{@restaurant.address}"
+		.center_div#dish_center
 			#review_content
 				= render 'popup/review'

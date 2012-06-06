@@ -61,8 +61,8 @@
 			.sp
 			%ul.info_list
 				%li="#{ @restaurant.city + ',' if @restaurant.city} #{@restaurant.address}"
-				%li="Phone #{@restaurant.phone}" unless @restaurant.phone.nil?
-				%li=raw"Opening hours: <br /> #{@restaurant.time}" unless @restaurant.time.nil?
+				%li="Phone: #{@restaurant.phone}" unless @restaurant.phone.nil?
+				%li=raw"Opening hours: #{@restaurant.time}" unless @restaurant.time.nil?
 			#map_canvas_popup
 			%script
 				= "load_map(#{@markers})"

@@ -353,9 +353,9 @@ img {
     margin: 0 10px; }
 
 #popup {
-  width: 960px;
+  width: 1000px;
   left: 50%;
-  margin-left: -480px;
+  margin-left: -500px;
   position: absolute;
   z-index: 6;
   background: #f5f2eb;
@@ -384,9 +384,9 @@ img {
     margin-bottom: 10px; }
   .side_div .price {
     font-weight: bold;
-    font-size: 1.1em;
-    float: right;
-    font-family: arial; }
+    font-size: 0.6em;
+    font-family: arial;
+    float: left; }
   .side_div .rating {
     font-family: bell_bold;
     font-size: 1em; }
@@ -407,6 +407,8 @@ img {
       margin-bottom: 5px; }
   .side_div .hd3 {
     font-size: 1.5em; }
+    .side_div .hd3 a {
+      color: #2b8da2; }
   .side_div #map_canvas_popup {
     width: 300px;
     height: 300px;
@@ -417,7 +419,7 @@ img {
     line-height: 1.2em; }
 
 .center_div {
-  width: 600px;
+  width: 640px;
   float: left;
   font-family: bell;
   background: #f7f5f0;
@@ -443,7 +445,7 @@ img {
 .sb {
   float: left;
   text-align: right;
-  margin-left: -25px;
+  margin-left: -45px;
   margin-top: -8px; }
   .sb li {
     float: none;
@@ -470,12 +472,12 @@ img {
 
 #best_dishes li {
   float: left;
-  padding: 0 0 0 2px;
-  width: 95px;
+  padding: 0 0 0 6px;
+  width: 100px;
   text-align: center; }
   #best_dishes li img {
-    width: 90px;
-    height: 90px; }
+    width: 100px;
+    height: 100px; }
   #best_dishes li a {
     font-size: 0.9em;
     color: #2b8da2; }
@@ -543,13 +545,22 @@ ul li.first {
     #restaurant_dishes .dish .rate {
       margin: 0; }
 
+#dish_div {
+  width: 240px; }
+  #dish_div #map_canvas_popup {
+    width: 240px;
+    height: 240px; }
+
+#dish_center {
+  width: 700px; }
+
 #review #full_photo {
   margin: 0 15px 0 0;
   width: 470px;
   height: 470px;
   float: left;
   position: relative;
-  background-size: 470px 470px; }
+  background-size: 400px 400px; }
 #review #review_nav {
   position: absolute;
   top: 0;
@@ -566,7 +577,7 @@ ul li.first {
   float: left;
   font-size: 0.9em;
   line-height: 1em;
-  width: 195px; }
+  width: 215px; }
   #review .data .user_link {
     font-family: bell_bold;
     color: #453624; }

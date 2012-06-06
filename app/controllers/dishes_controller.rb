@@ -62,8 +62,27 @@ class DishesController < ApplicationController
         @review_prev_id = r_arr[prev_index - 1]
       end
       
+      web = "http://dish.fm"
+      url = "#{web}/dishes/#{@dish.id}"
+      
+      @dish_img = @dish.photo.iphone_retina.url
+      img = "#{web}#{@dish_img}" unless @dish_img.blank?
+      
+      @share_data = {
+        :pinit => {
+          :url => url,
+          :media => img,
+          :description => "#{@dish.name}. #{@dish.description}"[0 .. 250]
+        },
+        :facebook => {
+          :url => url
+        },
+        :twitter => {
+          :description => "#{@dish.name}. #{@dish.description}"[0 .. 100]
+        }
+      }
+      
     end
-    
   end
   
   def delete
