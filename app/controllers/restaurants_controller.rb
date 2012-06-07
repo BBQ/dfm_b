@@ -28,7 +28,7 @@ class RestaurantsController < ApplicationController
       web = "http://dish.fm"
       url = "#{web}/restaurants/#{@restaurant.id}"
       
-      if @restaurant.restaurant_images
+      if @restaurant.restaurant_images.any?
         @restaurant_img = @restaurant.restaurant_images.first.photo.iphone.url
         img = "#{web}#{@restaurant_img}" unless @restaurant_img.blank?
       end
