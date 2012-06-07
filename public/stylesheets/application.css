@@ -1159,7 +1159,8 @@ ul li.first {
       font-size: 21px;
       color: #c34316;
       text-transform: uppercase;
-      margin: 0 0 10px 0; }
+      margin: 0 0 10px 0;
+      line-height: 1em; }
     #lp #slider .text {
       font-family: Tahoma, Arial, sans-serif;
       font-size: 20px;
