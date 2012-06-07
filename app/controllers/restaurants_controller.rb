@@ -28,13 +28,15 @@ class RestaurantsController < ApplicationController
       web = "http://dish.fm"
       url = "#{web}/restaurants/#{@restaurant.id}"
       
-      @restaurant_img = @restaurant.restaurant_images.first.photo.iphone.url
-      img = "#{web}#{@restaurant_img}" unless @restaurant_img.blank?
+      if @restaurant.restaurant_images
+        @restaurant_img = @restaurant.restaurant_images.first.photo.iphone.url
+        img = "#{web}#{@restaurant_img}" unless @restaurant_img.blank?
+      end
       
       @share_data = {
         :pinit => {
           :url => url,
-          :media => img,
+          :media => img || nil,
           :description => "#{@restaurant.description}"[0 .. 250]
         },
         :facebook => {
