@@ -1139,8 +1139,8 @@ ul li.first {
   #lp #slider {
     clear: both;
     width: 836px;
-    height: 280px;
-    padding: 25px;
+    height: 295px;
+    padding: 10px 25px 25px 25px;
     float: left;
     position: relative;
     z-index: 2;
@@ -1156,32 +1156,31 @@ ul li.first {
     #lp #slider h2 {
       font-family: "HelveticaNeueBlack", "HelveticaNeue-Black", "Helvetica Neue Black", "HelveticaNeue", "Helvetica Neue", "TeXGyreHerosBold", "Arial Black", sans-serif;
       font-weight: bold;
-      font-size: 23px;
+      font-size: 20px;
       color: #c34316;
       text-transform: uppercase;
       margin: 0 0 10px 0; }
     #lp #slider .text {
       font-family: Tahoma, Arial, sans-serif;
-      font-size: 21px;
-      margin-bottom: 25px;
+      font-size: 20px;
       list-style: none; }
       #lp #slider .text li {
-        width: 590px;
-        height: 145px;
+        width: 560px;
+        height: 110px;
         display: none; }
       #lp #slider .text li.active {
         display: block; }
     #lp #slider .hr {
       border-top: 1px solid #bbb6b0;
       border-bottom: 1px solid #fffffa;
-      width: 620px;
+      width: 550px;
       display: block;
       clear: both;
       margin-bottom: 5px; }
   #lp #pages {
     float: left;
     clear: both;
-    margin: 10px 210px; }
+    margin: 10px 0; }
     #lp #pages ul {
       list-style: none; }
       #lp #pages ul li {
@@ -1196,9 +1195,9 @@ ul li.first {
         background: url("/images/dot_a.png") top center no-repeat; }
   #lp #iphone {
     position: absolute;
-    height: 693px;
+    height: 580px;
     width: 325px;
-    left: 790px;
+    left: 750px;
     top: 35px;
     padding: 133px 0 0 43px;
     background: url("/images/iphone.png") top left no-repeat;
@@ -1211,14 +1210,14 @@ ul li.first {
     display: block; }
   #lp #berries {
     float: left;
-    margin: -60px 0 0 -120px; }
+    margin: -90px 0 0 -120px; }
 
 #footer {
   text-align: center;
   position: relative;
   z-index: 4;
   clear: both;
-  height: 200px;
+  height: 130px;
   width: 100%;
   background: #f2efe6;
   background: -moz-linear-gradient(top, #f2efe6 75%, #d9d2bd 100%);
@@ -1236,7 +1235,7 @@ ul li.first {
     font-size: 20px; }
   #footer #top_search {
     width: 575px;
-    height: 100px;
+    height: 50px;
     margin: 0 auto;
     padding-top: 20px;
     border-bottom: 1px solid #b8ac9a; }
@@ -1260,33 +1259,35 @@ ul li.first {
           text-decoration: none;
           color: #2b8da2; }
   #footer #links {
-    width: 575px;
+    width: 415px;
     margin: 0 auto; }
-    #footer #links ul {
-      margin: 10px 0 0 20px; }
-      #footer #links ul li {
-        width: auto;
-        float: left;
-        display: block;
-        margin: 0 5px; }
-      #footer #links ul a {
-        font-size: 14px;
-        color: #554747; }
+    #footer #links ul li {
+      width: auto;
+      float: left;
+      display: block;
+      margin: 25px 5px; }
+    #footer #links ul a {
+      font-size: 14px;
+      color: #554747; }
 
 .store {
-  margin: 0 28px; }
+  margin: 0 20px 0 0; }
 
-#social li {
-  width: auto;
-  text-align: right;
-  padding: 5px 0 0 0;
-  margin-left: -15px; }
-#social li.tw {
-  margin-top: 160px;
-  padding-right: 20px; }
-#social li.gplus {
-  margin-top: 163px;
-  padding-right: 20px; }
+#social {
+  margin: -15px 0 0 70px;
+  padding: 0; }
+  #social li {
+    width: auto;
+    padding: 0; }
+  #social li.tw {
+    margin-top: 25px; }
+  #social li.gplus {
+    margin-top: 28px; }
+
+#cright {
+  width: 100px;
+  margin: 0 auto;
+  display: block; }
 
 #pinme {
   position: absolute;

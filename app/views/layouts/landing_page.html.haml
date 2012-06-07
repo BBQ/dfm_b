@@ -8,26 +8,26 @@
 		= csrf_meta_tag
 		= favicon_link_tag
 	%body
-		= render "shared/fb_like_script"
+		= render "shared/social_scripts"
 		#container
 			#wrapper
 				= yield
 		#footer
-			#share
-				/ #top_search
-				/ 	%h2 Top searches
-				/ 	%ul
-				/ 		%li=raw"#{link_to 'tiramisu', ''} @ #{link_to 'New York', ''}"
-				/ 		%li=raw"#{link_to 'steak', ''} @ #{link_to 'San Francisco', ''}"
-				/ 		%li=raw"#{link_to 'something', ''} @ #{link_to 'somwhere', ''}"
+			/ #top_search
+			/ 	%h2 Top searches
+			/ 	%ul
+			/ 		%li=raw"#{link_to 'tiramisu', ''} @ #{link_to 'New York', ''}"
+			/ 		%li=raw"#{link_to 'steak', ''} @ #{link_to 'San Francisco', ''}"
+			/ 		%li=raw"#{link_to 'something', ''} @ #{link_to 'somwhere', ''}"
 			#links
 				%ul
 					%li=link_to 'About', ''
-					%li=link_to 'How it works', ''
-					%li=link_to 'FAQ', ''
 					%li=link_to 'Blog', ''
 					%li=link_to 'Facebook', ''
 					%li=link_to 'Twitter', ''
 					%li=link_to 'Terms', ''
 					%li=link_to 'Privacy', ''
+			#cright
+				Dish.Fm 2012
+				
 			

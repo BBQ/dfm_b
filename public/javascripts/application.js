@@ -13,36 +13,14 @@ $(document).ready(function() {
 		scroll($(this).index())
 		clearInterval(refreshIntervalId);	
 	})
-	
-	if(getHash() == 'pinme'){
-		pinme()
-	}
 
 })
 
-function pinme() {
-
-	var title = $('.data .desc')[0].innerText +' - '+ $('.side_div .hd2')[0].innerText +' '+ $('.side_div .hd3')[0].innerText + ' via www.dish.fm'
-	var image = $('#full_photo')[0].outerHTML
-	var url = escape($('#full_photo')[0].baseURI)
-	var media = escape($('#full_photo')[0].src)
-	var button = '<a href="http://m.pinterest.com/pin/create/button?url='+url+'&media='+media+'&description='+title+'" class="pin-it-button" count-layout="horizontal">'+image+'<img id="pin_it" src="/images/pin_it.png" />'+'</a><img id="loading" src="/images/loader.gif" />'
-	
-	$('body').append('<div id="pinme">'+'<div class="text">'+title+'</div>'+button+'</div>');
-	$('#container').css('display', 'none')
-	$('#header').css('display', 'none')
-	$('#pinme a').live("click", function(){$('#loading').show();});
-}
-
-function getHash() {
-  var hash = window.location.hash;
-  return hash.substring(1); // remove #
-}
-
 function slide() {
 		var i = 0
+		var num_pages = 4
     id = setInterval(function () {
-			i = (i + 1) % 8;
+			i = (i + 1) % num_pages;
 			scroll(i);
     }, 6000); // repeat forever, polling every 3 seconds
 		return id

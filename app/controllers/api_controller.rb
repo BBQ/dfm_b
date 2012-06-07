@@ -48,7 +48,7 @@ class ApiController < ApplicationController
         if rw.text.blank?
           text = "#{dish_name}@#{restaurant_name} via www.dish.fm"
         else
-          text = "#{dish_name} - #{restaurant_name} via www.dish.fm"
+          text = "#{rw.text[0 .. 240]} - #{dish_name}@#{restaurant_name} via www.dish.fm"
         end
         text = CGI.escape(text).gsub("+", "%20")
         
