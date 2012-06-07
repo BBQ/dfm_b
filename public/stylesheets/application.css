@@ -1260,7 +1260,7 @@ ul li.first {
           text-decoration: none;
           color: #2b8da2; }
   #footer #links {
-    width: 350px;
+    width: 345px;
     margin: 0 auto; }
     #footer #links ul li {
       width: auto;
@@ -1268,7 +1268,7 @@ ul li.first {
       display: block;
       margin: 25px 5px; }
     #footer #links ul a {
-      font-size: 14px;
+      font-size: 0.9em;
       color: #554747; }
 
 .store {
