@@ -1156,7 +1156,7 @@ ul li.first {
     #lp #slider h2 {
       font-family: "HelveticaNeueBlack", "HelveticaNeue-Black", "Helvetica Neue Black", "HelveticaNeue", "Helvetica Neue", "TeXGyreHerosBold", "Arial Black", sans-serif;
       font-weight: bold;
-      font-size: 19px;
+      font-size: 21px;
       color: #c34316;
       text-transform: uppercase;
       margin: 0 0 10px 0; }
@@ -1175,12 +1175,11 @@ ul li.first {
       border-bottom: 1px solid #fffffa;
       width: 550px;
       display: block;
-      clear: both;
-      margin-bottom: 5px; }
+      clear: both; }
   #lp #pages {
     float: left;
     clear: both;
-    margin: 20px 0 2px 0; }
+    margin: 30px 0 2px 0; }
     #lp #pages ul {
       list-style: none; }
       #lp #pages ul li {
@@ -1275,7 +1274,7 @@ ul li.first {
   margin: 0 20px 0 0; }
 
 #social {
-  margin: -15px 0 0 70px;
+  margin: -20px 0 0 70px;
   padding: 0; }
   #social li {
     width: auto;
