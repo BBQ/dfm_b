@@ -27,7 +27,8 @@
 			.sp
 			- if @review.restaurant
 				.hd3
-					= "@ #{@review.restaurant.name}"
+					@
+					=link_to @review.restaurant.name, restaurant_path(@review.restaurant_id)
 				#rest_desc
 					= [ @r_categories, 
 						"#{@review.restaurant.rating.round(1)}(#{@review.restaurant.votes}votes)", 
