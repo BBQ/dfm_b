@@ -21,7 +21,7 @@ class ApiController < ApplicationController
         Favourite.where(:user_id => params[:user_id]).each do |f|
           if !f.restaurant_id.nil?
             favourite_restaurants_ids.push(f.restaurant_id)
-          elsif !f.delivery_id?
+          elsif !f.delivery_id.nil?
             favourite_delivery_ids.push(f.delivery_id)
           end
         end
