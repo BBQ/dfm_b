@@ -290,9 +290,9 @@ class Review < ActiveRecord::Base
         
       end
     
-      if dish_top_uid = (Review.where('dish_id = ? AND photo IS NOT NULL', dish.id).group('user_id').count).max
+      if dish_top_uid = (Review.where('dish_id = ? AND photo IS NOT NULL', dish.id).group('user_id').count).max_by{|k,v| v}
         dish_top_uid = dish_top_uid[0]
-      elsif dish_top_uid = (Review.where('dish_id = ? AND photo IS NULL', dish.id).group('user_id').count).max
+      elsif dish_top_uid = (Review.where('dish_id = ? AND photo IS NULL', dish.id).group('user_id').count).max_by{|k,v| v}
         dish_top_uid = dish_top_uid[0]
       end
           
@@ -310,9 +310,9 @@ class Review < ActiveRecord::Base
     
       if restaurant  
         
-        if restaurant_top_uid = (Review.where('restaurant_id = ? AND photo IS NOT NULL', restaurant.id).group('user_id').count).max
+        if restaurant_top_uid = (Review.where('restaurant_id = ? AND photo IS NOT NULL', restaurant.id).group('user_id').count).max_by{|k,v| v}
           restaurant_top_uid = restaurant_top_uid[0]
-        elsif restaurant_top_uid = (Review.where('restaurant_id = ? AND photo IS NULL', restaurant.id).group('user_id').count).max
+        elsif restaurant_top_uid = (Review.where('restaurant_id = ? AND photo IS NULL', restaurant.id).group('user_id').count).max_by{|k,v| v}
           restaurant_top_uid = restaurant_top_uid[0]
         end
         
