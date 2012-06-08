@@ -10,7 +10,7 @@ task :top_exp => :environment do
       user_id = user_id[0]
     end
     
-    restaurant = Review.restaurant
+    restaurant = r.restaurant
     restaurant.update_attributes(:top_user_id => user_id)
     p restaurant.name
   end
@@ -41,7 +41,7 @@ task :top_exp => :environment do
       user_id = user_id[0]
     end
     
-    dish = Review.dish
+    dish = d.dish
     dish.update_attributes(:top_user_id => user_id)
     p dish.name
   end
