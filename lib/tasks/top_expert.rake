@@ -10,9 +10,9 @@ task :top_exp => :environment do
       user_id = user_id[0]
     end
     
-    restaurant = Restaurant.find_by_id(r.restaurant_id)
-    restaurant.top_user_id = user_id
-    p restaurant.save
+    restaurant = Review.restaurant
+    restaurant.update_attributes(:top_user_id => user_id)
+    p restaurant.name
   end
   
   # Delivery expert
@@ -27,7 +27,7 @@ task :top_exp => :environment do
     
     user_id = Review.where("restaurant_id = ? AND rtype = 'delivery'", r.restaurant_id).group(:user_id).order('COUNT(user_id) DESC').first.user_id
     restaurant = Delivery.find_by_id(r.restaurant_id)
-    restaurant.top_user_id = user_id
+    restaurant.update_attributes(:top_user_id => user_id)
     p restaurant.name
   end
   
@@ -41,8 +41,8 @@ task :top_exp => :environment do
       user_id = user_id[0]
     end
     
-    dish = Dish.find_by_id(d.dish_id)
-    dish.top_user_id = user_id
+    dish = Review.dish
+    dish.update_attributes(:top_user_id => user_id)
     p dish.name
   end
   
@@ -57,7 +57,7 @@ task :top_exp => :environment do
     end
 
     dish = HomeCook.find_by_id(d.dish_id)
-    dish.top_user_id = user_id
+    dish.update_attributes(:top_user_id => user_id)
     p dish.name
   end
   
@@ -72,7 +72,7 @@ task :top_exp => :environment do
     end
     
     dish = Delivery.find_by_id(d.dish_id)
-    dish.top_user_id = user_id
+    dish.update_attributes(:top_user_id => user_id)
     p dish.name
   end
   
