@@ -552,7 +552,6 @@ def fill_4sq_with_yel
     name = CGI.escape(r.name)
     url = "http://www.yelp.com/search/snippet?find_desc=#{name}&find_loc=#{location}&mapsize=small&ns=1&rpp=40&sortby=best_match&start=0"
     
-    p url
     if src = open(url.gsub("/search?", "/search/snippet?")) 
       json = JSON.parse(src.read)
       
@@ -632,8 +631,8 @@ def fill_4sq_with_yel
         data[:tv] = doc.css('dd.attr-HasTV')[0].text unless doc.css('dd.attr-HasTV').blank?
         data[:caters] = doc.css('dd.attr-Caters')[0].text unless doc.css('dd.attr-Caters').blank?
         data[:disabled] = doc.css('dd.attr-WheelchairAccessible')[0].text unless doc.css('dd.attr-WheelchairAccessible').blank?
-        p data
-        # r.update_attributes(data)
+        p r.name
+        r.update_attributes(data)
       end
     end
   end
