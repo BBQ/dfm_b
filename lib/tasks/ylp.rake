@@ -548,9 +548,9 @@ end
 def fill_4sq_with_yel
   Restaurant.where("source = 'foursquare' and city != 'Minsk' and city != 'Санкт-Петербург' and city != 'Калуга' and city != 'Домодедовский район' and city != 'город Калуга'").each do |r|
     
-    location = "#{r.city} #{r.address}"
-    name = r.name
-    url = CGI.escape("http://www.yelp.com/search/snippet?find_desc=#{name}&find_loc=#{location}&mapsize=small&ns=1&rpp=40&sortby=best_match&start=0")
+    location = CGI.escape("#{r.city} #{r.address}")
+    name = CGI.escape(r.name)
+    url = "http://www.yelp.com/search/snippet?find_desc=#{name}&find_loc=#{location}&mapsize=small&ns=1&rpp=40&sortby=best_match&start=0"
     
     p url
     if src = open(url.gsub("/search?", "/search/snippet?")) 
