@@ -7,6 +7,10 @@ namespace :ylp do
   require 'open-uri'
   require 'nokogiri'
   require 'time'
+  
+  task :fill_4sq_with_yel
+    fill_4sq_with_yel
+  end
 
   task :time_zone => :environment do
     WorkHour.all.each do |wh|
