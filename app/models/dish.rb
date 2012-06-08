@@ -39,6 +39,38 @@ class Dish < ActiveRecord::Base
   
   end
   
+  def self.saved(ids_array)
+    
+    dishes_array = []
+    dishes = select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count, :created_at]).where("id in (#{ids_array})").order('id DESC')
+
+    dishes.each do |d|
+      network_data = Network.select([:id, :name]).find_by_id(d.network_id)
+
+      if current_user_id > 0
+        favourite = 1 if Favourite.find_by_user_id_and_dish_id(current_user_id, d.id)
+      end
+      
+      dishes_array.push(
+        :id => d.id,
+        :name => d.name,
+        :rating => d.rating,
+        :votes => d.votes,
+        :image_sd => d.image_sd,
+        :image_hd => d.image_hd,
+        :favourite => favourite,
+        :network => {
+          :id => network_data.id,
+          :name => network_data.name,
+        },
+        :created_at => d.created_at,
+        :type => nil
+      )
+    end
+    
+    dishes_array
+  end
+  
   def self.expert(top_user_id, current_user_id = 0)
     
     dishes_array = []

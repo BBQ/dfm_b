@@ -23,6 +23,29 @@ class User < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
+  def favourite_dishes(user_id)
+    dishes_array = []    
+    favourite_dish_ids = []
+    favourite_dish_delivery_ids = []
+    favourite_home_cook_ids = []
+    
+    Favourite.where(:user_id => user_id).each do |f|
+      if !f.dish_id.nil?
+        favourite_dish_ids.push(f.dish_id)
+      elsif !f.home_cook_id?
+        favourite_home_cook_ids.push(f.home_cook_id)
+      elsif !f.dish_delivery_id?
+        favourite_dish_delivery_ids.push(f.dish_delivery_id)
+      end
+    end
+
+    dishes_array |= Dish.favourite(favourite_dish_ids.join(','))
+    dishes_array |= DishDelivery.favourite(favourite_dish_delivery_ids.join(','))
+    dishes_array |= HomeCook.favourite(favourite_home_cook_ids.join(','))
+    
+    dishes_array = dishes_array.sort_by { |k| k[:created_at] }.reverse if dishes_array.any?
+  end
+  
   def dish_expert(current_user_id)
     dishes_array = []    
     
