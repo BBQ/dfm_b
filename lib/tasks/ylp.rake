@@ -10,7 +10,7 @@ namespace :ylp do
   require 'cgi'
   
   task :recov_cat => :environment do
-    fill_4sq_with_yel
+    recov_cat
   end
   
   task :fill_4sq_with_yel => :environment do
@@ -561,6 +561,7 @@ def recov_cat
         end
         r.restaurant_categories = categories.join(',')
         r.save
+        p r.restaurant_categories
       end
       
     end
