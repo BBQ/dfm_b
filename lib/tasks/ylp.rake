@@ -551,6 +551,8 @@ end
 
 def recov_cat
   Restaurant.where(:source => 'fsq_upd_ylp').each do |r|
+
+    categories = []
     r.restaurant_categories.split(',').each do |name|
       
       if name != "#{name.to_i}"
