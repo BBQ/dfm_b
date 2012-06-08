@@ -10,18 +10,93 @@ class ApiController < ApplicationController
   
   def get_favourite_restaurants
     if params[:user_id]
-      
-      lat = params[:lat] ||= '55.753548'
-      lon = params[:lon] ||= '37.609239'
-      
       if user = User.find_by_id(params[:user_id])
-        dishes_array = user.favourite_dishes(params[:user_id])
-        restaurants_array = Restaurant.for_dish_expert(dishes_array, lat, lon) if dishes_array.any?
+      
+        lat = params[:lat] ||= '55.753548'
+        lon = params[:lon] ||= '37.609239'
+        
+        favourite_restaurants_ids = []
+        favourite_delivery_ids = []
+      
+        Favourite.where(:user_id => params[:user_id]).each do |f|
+          if !f.restaurant_id.nil?
+            favourite_restaurants_ids.push(f.restaurant_id)
+          elsif !f.delivery_id?
+            favourite_delivery_ids.push(f.delivery_id)
+          end
+        end
+      
+        networks = []
+        delivery = Delivery.select('deliveries.photo, deliveries.fsq_id, deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("id in (#{favourite_delivery_ids})").order('deliveries.updated_at DESC')
+      
+        delivery.each do |r|
+          dishes = []    
+          dishes_w_img = r.dish_deliveries.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
+    
+          dishes_w_img.each do |dish|
+            if user_id > 0
+              favourite = Favourite.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0
+            end
+              dishes.push({
+                :id => dish.id,
+                :name => dish.name,
+                :photo => dish.image_sd,
+                :rating => dish.rating,
+                :votes => dish.votes,
+                :favourite => favourite
+              })
+          end
+          networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery', :venues => r.fsq_id ? ["#{r.fsq_id}"] : []})
+        end    
+      
+        restaurants = Restaurant.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
+        #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
+        ON `restaurants`.`id` = `r1`.`id`").where("restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL AND id in (#{favourite_restaurants_ids})").order('restaurants.updated_at DESC').group('restaurants.name')
+
+        restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')  
+
+        restaurants.each do |r|
+          dont_add = 0
+          networks.each do |n|
+            dont_add = 1 && break if r.network_id == n[:network_id]
+          end
+          if dont_add == 0
+            dishes = []
+            dishes_w_img = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
+
+            dishes_w_img.each do |dish|
+              if user_id > 0
+                favourite = Favourite.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0
+              end
+              dishes.push({
+                :id => dish.id,
+                :name => dish.name,
+                :photo => dish.image_sd,
+                :rating => dish.rating,
+                :votes => dish.votes,
+                :favourite => favourite
+              })
+            end
+            networks.push({:network_id => r.network_id, :dishes => dishes, :type => nil, :venues => r.fsq_id ? ["#{r.fsq_id}"] : []}) 
+          end
+        end
       end
       
     else
       $error = {:description => 'Params missing', :code => 26}
     end  
+    if restaurants.first.class.name == 'Delivery'
+      delivery = restaurants
+      restaurants = nil
+    end
+      
+    return render :json => {
+          :load_additional => load_additional ||= 0,
+          :restaurants => restaurants ? restaurants.as_json({:keyword => params[:keyword] ||= nil}) : [],
+          :deliveries => delivery ? delivery.as_json : [],
+          :networks => networks,
+          :error => $error
+    }
   end
   
   def get_favourite_dishes
