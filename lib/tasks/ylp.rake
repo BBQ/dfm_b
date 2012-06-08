@@ -540,11 +540,97 @@ def make_categories(categories,find_loc)
   urls
 end
 
+def fill_4sq_with_yel
+  Restaurant.where("source = 'foursquare' and city != 'Minsk' and city != 'Санкт-Петербург' and city != 'Калуга' and city != 'Домодедовский район' and city != 'город Калуга'").each do |r|
+    
+    location = (r.city + ' ' + r.address).gsub!(' ', '+')
+    name = r.name
+    url = "http://www.yelp.com/search/snippet?find_desc=#{name}&find_loc=#{location}&mapsize=small&ns=1&rpp=40&sortby=best_match&start=0"
+    
+    json = JSON.parse(src.read)
+    ds = json['events']['search.map.overlays'].first
+    
+    doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}"))
+    data = {}  
+    cat = categories = []
+  
+    unless doc.css('span#cat_display a').blank? 
+      doc.css('span#cat_display a').each do |c|
+        cat.push(c.text.strip)
+      end
+    end
+
+    if cat.nil?
+      cat.split(',').each do |name|
+        if category = RestaurantCategory.find_by_name(name)
+          categories.push(category.id)
+        else
+          categories.push(RestaurantCategory.create(:name => name).id)
+        end
+      end
+    end
+    c1 = categories.any? ? categories.join(',') : ''
+    
+    data[:cc] = doc.css('dd.attr-BusinessAcceptsCreditCards')[0].text unless doc.css('dd.attr-BusinessAcceptsCreditCards').blank?
+    
+    if data[:cc] == 'Yes'
+      data[:cc] = 1
+    elsif data[:cc] == 'No'
+      data[:cc] = 0
+    end
+
+    data[:terrace] = doc.css('dd.attr-OutdoorSeating')[0].text unless doc.css('dd.attr-OutdoorSeating').blank?
+    if data[:terrace] == 'Yes'
+      data[:terrace] = 1
+    elsif data[:terrace] == 'No'
+      data[:terrace] = 0
+    end
+
+    if restaurant.delivery == 'Yes'
+      restaurant.delivery = 1
+    elsif restaurant.delivery == 'No'
+      restaurant.delivery = 0
+    end
+    
+    data = f_hours(doc.css('dd.attr-BusinessHours')[0].text) unless doc.css('dd.attr-BusinessHours').blank?
+          
+    data[:ylp_rating] = doc.css('img.rating.average')[0]["title"][0..2] unless doc.css('img.rating.average').blank? 
+    data[:ylp_reviews_count] = doc.css('span.review-count')[0].text.to_i unless doc.css('span.review-count').blank? 
+    
+    data[:restaurant_categories] = c1 if !c1.blank? 
+    data[:city] = doc.css('span.locality')[0].text if !doc.css('span.locality').blank? && data[:city.blank?
+    data[:phone] = doc.css('span#bizPhone')[0].text unless doc.css('span#bizPhone').blank? && data[:city.phone?
+    data[:web] = doc.css('div#bizUrl a')[0].text unless doc.css('div#bizUrl a').blank? && data[:city.web?
+    data[:transit] = doc.css('dd.attr-transit')[0].text.strip unless doc.css('dd.attr-transit').blank?
+    data[:parking] = doc.css('dd.attr-BusinessParking')[0].text unless doc.css('dd.attr-BusinessParking').blank?
+
+    data[:bill] = doc.css('span#price_tip')[0].text.count('$')  unless doc.css('span#price_tip').blank?
+    data[:attire] = doc.css('dd.attr-RestaurantsAttire')[0].text unless doc.css('dd.attr-RestaurantsAttire').blank?
+    data[:good_for_groups] = doc.css('dd.attr-RestaurantsGoodForGroups')[0].text unless doc.css('dd.attr-RestaurantsGoodForGroups').blank?
+    data[:good_for_kids] = doc.css('dd.attr-GoodForKids')[0].text unless doc.css('dd.attr-GoodForKids').blank?
+    data[:reservation] = doc.css('dd.attr-RestaurantsReservations')[0].text unless doc.css('dd.attr-RestaurantsReservations').blank?
+    data[:delivery] = doc.css('dd.attr-RestaurantsDelivery')[0].text unless doc.css('dd.attr-RestaurantsDelivery').blank?
+    data[:takeout] = doc.css('dd.attr-RestaurantsTakeOut')[0].text unless doc.css('dd.attr-RestaurantsTakeOut').blank?
+    data[:service] = doc.css('dd.attr-RestaurantsTableService')[0].text unless doc.css('dd.attr-RestaurantsTableService').blank?
+    
+    data[:wifi] = doc.css('dd.attr-WiFi')[0].text unless doc.css('dd.attr-WiFi').blank?
+    data[:good_for_meal] = doc.css('dd.attr-GoodForMeal')[0].text unless doc.css('dd.attr-GoodForMeal').blank?
+    data[:alcohol] = doc.css('dd.attr-Alcohol')[0].text unless doc.css('dd.attr-Alcohol').blank?
+    data[:noise] = doc.css('dd.attr-NoiseLevel')[0].text unless doc.css('dd.attr-NoiseLevel').blank?
+    data[:ambience] = doc.css('dd.attr-Ambience')[0].text unless doc.css('dd.attr-Ambience').blank?
+    data[:tv] = doc.css('dd.attr-HasTV')[0].text unless doc.css('dd.attr-HasTV').blank?
+    data[:caters] = doc.css('dd.attr-Caters')[0].text unless doc.css('dd.attr-Caters').blank?
+    data[:disabled] = doc.css('dd.attr-WheelchairAccessible')[0].text unless doc.css('dd.attr-WheelchairAccessible').blank?
+    p data
+    # r.update_attributes(data)
+  end
+  
+end
 
 def go_sub(url)
   p url
   
-  proxy = 'http://200.186.179.215:80'
+  # proxy = 'http://200.186.179.215:80'
   # proxy = 'http://183.82.97.186:3128'
   # username = 'user'
   # password = 'password'
