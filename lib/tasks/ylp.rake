@@ -600,7 +600,7 @@ def fill_4sq_with_yel
           data[:delivery] = 0
         end
     
-        if !doc.css('dd.attr-BusinessHours')[0].text.blank?
+        if !doc.css('dd.attr-BusinessHours')[0].nil?
           hours = f_hours(doc.css('dd.attr-BusinessHours')[0].text)
           hours.each{ |k| data.merge!(k)}
         end
