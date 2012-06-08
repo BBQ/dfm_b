@@ -28,13 +28,13 @@ task :top_exp => :environment do
     user_id = Review.where("restaurant_id = ? AND rtype = 'delivery'", r.restaurant_id).group(:user_id).order('COUNT(user_id) DESC').first.user_id
     restaurant = Delivery.find_by_id(r.restaurant_id)
     restaurant.top_user_id = user_id
-    p restaurant.save
+    p restaurant.name
   end
   
   # Dish expert
   Dish.update_all({:top_user_id => 0})
   Review.where('rtype IS NULL').group(:dish_id).each do |d|
-    
+    p d.id
     if user_id = (Review.where("dish_id = ? AND photo IS NOT NULL AND rtype IS NULL", d.dish_id).group(:user_id).count).max
       user_id = user_id[0]
     elsif user_id = (Review.where("dish_id = ? AND photo IS NULL AND rtype IS NULL", d.dish_id).group(:user_id).count).max
@@ -43,7 +43,7 @@ task :top_exp => :environment do
     
     dish = Dish.find_by_id(d.dish_id)
     dish.top_user_id = user_id
-    p dish.save
+    p dish.name
   end
   
   # Home cooked expert
@@ -58,7 +58,7 @@ task :top_exp => :environment do
 
     dish = HomeCook.find_by_id(d.dish_id)
     dish.top_user_id = user_id
-    p dish.save
+    p dish.name
   end
   
   # Delivery expert
@@ -73,7 +73,7 @@ task :top_exp => :environment do
     
     dish = Delivery.find_by_id(d.dish_id)
     dish.top_user_id = user_id
-    p dish.save
+    p dish.name
   end
   
 end
