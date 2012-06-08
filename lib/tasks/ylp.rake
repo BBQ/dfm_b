@@ -551,6 +551,7 @@ def fill_4sq_with_yel
     name = r.name
     url = "http://www.yelp.com/search/snippet?find_desc=#{name}&find_loc=#{location}&mapsize=small&ns=1&rpp=40&sortby=best_match&start=0".gsub!(' ', '+')
     
+    p url
     if src = open(url.gsub("/search?", "/search/snippet?")) 
       json = JSON.parse(src.read)
       ds = json['events']['search.map.overlays'].first
