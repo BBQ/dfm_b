@@ -29,7 +29,7 @@ class ApiController < ApplicationController
         networks = []
         if favourite_delivery_ids.any?
           
-          delivery = Delivery.select('deliveries.photo, deliveries.fsq_id, deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("id in (#{favourite_delivery_ids.join(',')})").order('deliveries.updated_at DESC')
+          delivery = Delivery.select('deliveries.photo, deliveries.fsq_id, deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("deliveries.id in (#{favourite_delivery_ids.join(',')})").order('deliveries.updated_at DESC')
       
           delivery.each do |r|
             dishes = []    
@@ -56,7 +56,7 @@ class ApiController < ApplicationController
           
           restaurants = Restaurant.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
           #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
-          ON `restaurants`.`id` = `r1`.`id`").where("restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL AND id in (#{favourite_restaurants_ids.join(',')})").order('restaurants.updated_at DESC').group('restaurants.name')
+          ON `restaurants`.`id` = `r1`.`id`").where("restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL AND restaurants.id in (#{favourite_restaurants_ids.join(',')})").order('restaurants.updated_at DESC').group('restaurants.name')
 
           restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')  
 
