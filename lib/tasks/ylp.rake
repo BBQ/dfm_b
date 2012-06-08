@@ -610,7 +610,7 @@ def fill_4sq_with_yel
     
         data[:restaurant_categories] = c1 if !c1.blank? 
         data[:city] = doc.css('span.locality')[0].text if !doc.css('span.locality').blank? && r.city.blank?
-        data[:phone] = doc.css('span#bizPhone')[0].text unless doc.css('span#bizPhone').blank? && r.phone.blank?
+        data[:phone] = doc.css('span#bizPhone')[0].text unless doc.css('span#bizPhone')[0].blank? && r.phone.blank?
         data[:web] = doc.css('div#bizUrl a')[0].text unless doc.css('div#bizUrl a').blank? && r.web.blank?
         data[:transit] = doc.css('dd.attr-transit')[0].text.strip unless doc.css('dd.attr-transit').blank?
         data[:parking] = doc.css('dd.attr-BusinessParking')[0].text unless doc.css('dd.attr-BusinessParking').blank?
