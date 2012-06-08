@@ -290,32 +290,44 @@ class Review < ActiveRecord::Base
         
       end
     
-      if top_uid = (Review.where('dish_id = ? AND photo IS NOT NULL', dish.id).group('user_id').count).max
-        top_uid = top_uid[0]
-      elsif top_uid = (Review.where('dish_id = ? AND photo IS NULL', dish.id).group('user_id').count).max
-        top_uid = top_uid[0]
+      if dish_top_uid = (Review.where('dish_id = ? AND photo IS NOT NULL', dish.id).group('user_id').count).max
+        dish_top_uid = dish_top_uid[0]
+      elsif dish_top_uid = (Review.where('dish_id = ? AND photo IS NULL', dish.id).group('user_id').count).max
+        dish_top_uid = dish_top_uid[0]
       end
           
-      if top_uid
-        if dish.top_user_id != top_uid
-          dish.top_user_id = top_uid
+      if dish_top_uid
+        if dish.top_user_id != dish_top_uid
+          dish.top_user_id = dish_top_uid
           dish.save
           
           system "rake facebook:expert REVIEW_ID='#{r.id}' &"
           system "rake twitter:expert REVIEW_ID='#{r.id}' &"
         end
       end
+      
+      
     
-      if restaurant
-        if top_uid = (Review.where('restaurant_id = ?', restaurant.id).group('user_id').count).max[0]
-          if restaurant.top_user_id != top_uid
+      if restaurant  
+        
+        if restaurant_top_uid = (Review.where('restaurant_id = ? AND photo IS NOT NULL', restaurant.id).group('user_id').count).max
+          restaurant_top_uid = restaurant_top_uid[0]
+        elsif restaurant_top_uid = (Review.where('restaurant_id = ? AND photo IS NULL', restaurant.id).group('user_id').count).max
+          restaurant_top_uid = restaurant_top_uid[0]
+        end
+        
+        if restaurant_top_uid
+          if restaurant.top_user_id != restaurant_top_uid
+            restaurant.top_user_id = restaurant_top_uid
+            restaurant.save
+            
             system "rake facebook:expert REVIEW_ID='#{r.id}' &"
             system "rake twitter:expert REVIEW_ID='#{r.id}' &"
           end
-          restaurant.top_user_id = top_uid
-          restaurant.save
-        end
+        end  
+        
       end
+      
       r
     end
   end 
