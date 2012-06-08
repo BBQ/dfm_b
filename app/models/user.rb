@@ -39,9 +39,9 @@ class User < ActiveRecord::Base
       end
     end
 
-    dishes_array |= Dish.favourite(favourite_dish_ids.join(','))
-    dishes_array |= DishDelivery.favourite(favourite_dish_delivery_ids.join(','))
-    dishes_array |= HomeCook.favourite(favourite_home_cook_ids.join(','))
+    dishes_array |= Dish.favourite(favourite_dish_ids.join(',')) if favourite_dish_ids.any?
+    dishes_array |= DishDelivery.favourite(favourite_dish_delivery_ids.join(',')) if favourite_home_cook_ids.any?
+    dishes_array |= HomeCook.favourite(favourite_home_cook_ids.join(',')) if favourite_dish_delivery_ids.any?
     
     dishes_array = dishes_array.sort_by { |k| k[:created_at] }.reverse if dishes_array.any?
   end
