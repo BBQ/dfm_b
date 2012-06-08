@@ -8,7 +8,7 @@ namespace :ylp do
   require 'nokogiri'
   require 'time'
   
-  task :fill_4sq_with_yel
+  task :fill_4sq_with_yel => :environment do
     fill_4sq_with_yel
   end
 
