@@ -1220,7 +1220,7 @@ class ApiController < ApplicationController
           
           reviews[:data].push(
             :id => r.id,
-            :dish_id => l.dish_id,
+            :dish_id => r.dish_id,
             :photo => r.photo.iphone.url == '/images/noimage.jpg' ? '' : r.photo.iphone.url,
             :name => dish_name ||= '',
             :favourite => favourite
