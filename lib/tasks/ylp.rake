@@ -603,7 +603,8 @@ def fill_4sq_with_yel
           hours = f_hours(doc.css('dd.attr-BusinessHours')[0].text)
           hours.each{ |k| data.merge!(k)}
         end
-          
+        data[:source] = 'fsq_upd_ylp'
+        
         data[:ylp_rating] = "#{doc.css('img.rating.average')[0]["title"][0..2]}" unless doc.css('img.rating.average').blank? 
         data[:ylp_reviews_count] = "#{doc.css('span.review-count')[0].text.to_i}" unless doc.css('span.review-count').blank? 
     
