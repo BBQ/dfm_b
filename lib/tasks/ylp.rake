@@ -9,6 +9,10 @@ namespace :ylp do
   require 'time'
   require 'cgi'
   
+  task :recov_cat => :environment do
+    fill_4sq_with_yel
+  end
+  
   task :fill_4sq_with_yel => :environment do
     fill_4sq_with_yel
   end
@@ -544,6 +548,25 @@ def make_categories(categories,find_loc)
   end
   urls
 end
+
+def recov_cat
+  Restaurant.where(:source => 'fsq_upd_ylp').each do |r|
+    r.restaurant_categories.split(',').each do |name|
+      
+      if name != "#{name.to_i}"
+        if category = RestaurantCategory.find_by_name(name)
+          categories.push(category.id)
+        else
+          categories.push(RestaurantCategory.create(:name => name).id)
+        end
+        r.restaurant_categories = categories.join(',')
+        r.save
+      end
+      
+    end
+  end
+end
+
 
 def fill_4sq_with_yel
   Restaurant.where("source = 'foursquare' and city != 'Minsk' and city != 'Санкт-Петербург' and city != 'Калуга' and city != 'Домодедовский район' and city != 'город Калуга'").each do |r|
