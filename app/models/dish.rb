@@ -39,7 +39,7 @@ class Dish < ActiveRecord::Base
   
   end
   
-  def self.saved(ids_array)
+  def self.favourite(ids_array)
     
     dishes_array = []
     dishes = select([:id, :name, :rating, :votes, :photo, :network_id, :fsq_checkins_count, :created_at]).where("id in (#{ids_array})").order('id DESC')
