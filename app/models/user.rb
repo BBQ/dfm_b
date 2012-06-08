@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
-  def get_favourite_dishes(user_id)
+  def favourite_dishes(user_id)
     dishes_array = []    
     favourite_dish_ids = []
     favourite_dish_delivery_ids = []
