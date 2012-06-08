@@ -7,6 +7,7 @@ namespace :ylp do
   require 'open-uri'
   require 'nokogiri'
   require 'time'
+  require 'cgi'
   
   task :fill_4sq_with_yel => :environment do
     fill_4sq_with_yel
@@ -549,7 +550,7 @@ def fill_4sq_with_yel
     
     location = "#{r.city} #{r.address}"
     name = r.name
-    url = "http://www.yelp.com/search/snippet?find_desc=#{name}&find_loc=#{location}&mapsize=small&ns=1&rpp=40&sortby=best_match&start=0".gsub!(' ', '+')
+    url = CGI.escape("http://www.yelp.com/search/snippet?find_desc=#{name}&find_loc=#{location}&mapsize=small&ns=1&rpp=40&sortby=best_match&start=0")
     
     p url
     if src = open(url.gsub("/search?", "/search/snippet?")) 
