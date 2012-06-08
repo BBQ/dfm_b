@@ -12,6 +12,8 @@ class ApiController < ApplicationController
     if params[:user_id]
       if user = User.find_by_id(params[:user_id])
       
+        num_images = 20
+         
         lat = params[:lat] ||= '55.753548'
         lon = params[:lon] ||= '37.609239'
         
