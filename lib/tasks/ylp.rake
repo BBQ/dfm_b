@@ -551,8 +551,8 @@ def fill_4sq_with_yel
     name = r.name
     url = "http://www.yelp.com/search/snippet?find_desc=#{name}&find_loc=#{location}&mapsize=small&ns=1&rpp=40&sortby=best_match&start=0"
     
-    json = JSON.parse(src.read)
-    if src = open(url.gsub("/search?", "/search/snippet?"), :proxy => proxy) 
+    if src = open(url.gsub("/search?", "/search/snippet?")) 
+      json = JSON.parse(src.read)
       ds = json['events']['search.map.overlays'].first
     
       doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}"))
