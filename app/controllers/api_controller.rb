@@ -8,7 +8,7 @@ class ApiController < ApplicationController
     $error = {:description => nil, :code => nil}
   end
   
-  def get_favourite_dishes
+  def get_favourite_restaurants
     if params[:user_id]
       
       lat = params[:lat] ||= '55.753548'
@@ -19,6 +19,20 @@ class ApiController < ApplicationController
         restaurants_array = Restaurant.for_dish_expert(dishes_array, lat, lon) if dishes_array.any?
       end
       
+    else
+      $error = {:description => 'Params missing', :code => 26}
+    end  
+  end
+  
+  def get_favourite_dishes
+    if params[:user_id]
+      lat = params[:lat] ||= '55.753548'
+      lon = params[:lon] ||= '37.609239'
+      
+      if user = User.find_by_id(params[:user_id])
+        favourite_dishes = user.favourite_dishes(params[:user_id])
+        restaurants_array = Restaurant.for_dish_expert(dishes_array, lat, lon) if dishes_array.any?
+      end
     else
       $error = {:description => 'Params missing', :code => 26}
     end  

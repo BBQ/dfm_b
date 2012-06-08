@@ -23,10 +23,6 @@ class DishDelivery < ActiveRecord::Base
     
     dish_delivery.each do |d|
       
-      if current_user_id > 0
-        favourite = 1 if Favourite.find_by_user_id_and_dish_delivery_id(current_user_id, d.id)
-      end
-      
       dishes_array.push({
         :id => d.id,
         :name => d.name,
@@ -34,7 +30,7 @@ class DishDelivery < ActiveRecord::Base
         :votes => d.votes,
         :image_sd => d.image_sd,
         :image_hd => d.image_hd,
-        :favourite => favourite,
+        :favourite => 1,
         :network => {
           :id => d.delivery_id,
           :name => d.delivery.name,

@@ -17,11 +17,7 @@ class HomeCook < ActiveRecord::Base
       home_cooked = select([:id, :name, :rating, :votes, :photo, :created_at]).where("id in (#{ids_array})").order('id DESC')
 
       home_cooked.each do |d|
-
-        if current_user_id > 0
-          favourite = 1 if Favourite.find_by_user_id_and_home_cook_id(current_user_id, d.id)
-        end
-
+        
         dishes_array.push({
           :id => d.id,
           :name => d.name,
@@ -32,7 +28,7 @@ class HomeCook < ActiveRecord::Base
           :network => {},
           :created_at => d.created_at,
           :type => 'home_cooked',
-          :favourite => favourite
+          :favourite => 1
         })
       end
       
