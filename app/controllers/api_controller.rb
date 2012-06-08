@@ -15,7 +15,7 @@ class ApiController < ApplicationController
       lon = params[:lon] ||= '37.609239'
       
       if user = User.find_by_id(params[:user_id])
-        favourite_dishes = user.favourite_dishes(params[:user_id])
+        dishes_array = user.favourite_dishes(params[:user_id])
         restaurants_array = Restaurant.for_dish_expert(dishes_array, lat, lon) if dishes_array.any?
       end
       
@@ -30,12 +30,17 @@ class ApiController < ApplicationController
       lon = params[:lon] ||= '37.609239'
       
       if user = User.find_by_id(params[:user_id])
-        favourite_dishes = user.favourite_dishes(params[:user_id])
+        dishes_array = user.favourite_dishes(params[:user_id])
         restaurants_array = Restaurant.for_dish_expert(dishes_array, lat, lon) if dishes_array.any?
       end
     else
       $error = {:description => 'Params missing', :code => 26}
-    end  
+    end
+    return render :json => {
+            :dishes => dishes_array || nil,
+            :restaurants => restaurants_array || nil,
+            :error => $error
+    }
   end
   
   
