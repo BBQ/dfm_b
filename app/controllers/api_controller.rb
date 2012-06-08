@@ -27,31 +27,34 @@ class ApiController < ApplicationController
         end
       
         networks = []
-        delivery = Delivery.select('deliveries.photo, deliveries.fsq_id, deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("id in (#{favourite_delivery_ids})").order('deliveries.updated_at DESC')
+        if favourite_restaurants_ids.any?
+          
+          delivery = Delivery.select('deliveries.photo, deliveries.fsq_id, deliveries.id, deliveries.name, deliveries.address, deliveries.city, deliveries.lat, deliveries.lon, deliveries.rating, deliveries.votes').where("id in (#{favourite_delivery_ids.join(',')})").order('deliveries.updated_at DESC')
       
-        delivery.each do |r|
-          dishes = []    
-          dishes_w_img = r.dish_deliveries.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
+          delivery.each do |r|
+            dishes = []    
+            dishes_w_img = r.dish_deliveries.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
     
-          dishes_w_img.each do |dish|
-            if user_id > 0
-              favourite = Favourite.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0
+            dishes_w_img.each do |dish|
+              if user_id > 0
+                favourite = Favourite.find_by_user_id_and_dish_id(user_id, dish.id) ? 1 : 0
+              end
+                dishes.push({
+                  :id => dish.id,
+                  :name => dish.name,
+                  :photo => dish.image_sd,
+                  :rating => dish.rating,
+                  :votes => dish.votes,
+                  :favourite => favourite
+                })
             end
-              dishes.push({
-                :id => dish.id,
-                :name => dish.name,
-                :photo => dish.image_sd,
-                :rating => dish.rating,
-                :votes => dish.votes,
-                :favourite => favourite
-              })
-          end
-          networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery', :venues => r.fsq_id ? ["#{r.fsq_id}"] : []})
-        end    
+            networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery', :venues => r.fsq_id ? ["#{r.fsq_id}"] : []})
+          end    
+        end
       
         restaurants = Restaurant.joins("LEFT OUTER JOIN `networks` ON `networks`.`id` = `restaurants`.`network_id` JOIN (
         #{Restaurant.select('id, address').where('restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL').order('restaurants.fsq_checkins_count DESC').to_sql}) r1
-        ON `restaurants`.`id` = `r1`.`id`").where("restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL AND id in (#{favourite_restaurants_ids})").order('restaurants.updated_at DESC').group('restaurants.name')
+        ON `restaurants`.`id` = `r1`.`id`").where("restaurants.lat IS NOT NULL AND restaurants.lon IS NOT NULL AND id in (#{favourite_restaurants_ids.join(',')})").order('restaurants.updated_at DESC').group('restaurants.name')
 
         restaurants.select('restaurants.id, restaurants.name, restaurants.address, restaurants.city, restaurants.lat, restaurants.lon, restaurants.rating, restaurants.votes, restaurants.network_id, restaurants.fsq_id')  
 
