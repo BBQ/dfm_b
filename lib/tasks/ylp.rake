@@ -594,10 +594,10 @@ def fill_4sq_with_yel
           data[:terrace] = 0
         end
 
-        if restaurant.delivery == 'Yes'
-          restaurant.delivery = 1
-        elsif restaurant.delivery == 'No'
-          restaurant.delivery = 0
+        if data[:delivery] == 'Yes'
+          data[:delivery] = 1
+        elsif data[:delivery] == 'No'
+          data[:delivery] = 0
         end
     
         data = f_hours(doc.css('dd.attr-BusinessHours')[0].text) unless doc.css('dd.attr-BusinessHours').blank?
