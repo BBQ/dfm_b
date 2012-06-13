@@ -210,16 +210,23 @@ class API < ActiveRecord::Base
         restaurant.bill.to_i.times {b << '$'}
         rc.push(b)
       end 
+      
       rc.push(restaurant_categories.join(', ')) if restaurant_categories.count > 0
       rc = rc.join(', ') if rc.count > 0
       
       if type != 'delivery'
+        
         wday = Date.today.strftime("%a").downcase
+        now = Time.now.strftime("%H%M")
         open_now = 0
-        unless restaurant.send(wday).blank?
-          now = Time.now.strftime("%H%M")
-          open_now = 1 if now > restaurant.send(wday)[0,5].gsub(':','') && now < restaurant.send(wday)[-5,5].gsub(':','')
-        end
+        
+        WorkHours.where(:restaurant_id => restaurant.id).each do |wh|
+          
+          unless wh.send(wday).blank?
+            open_now = 1 if now > wh.send(wday)[0,5].gsub(':','') && now < wh.send(wday)[-5,5].gsub(':','')
+          end
+          
+        end  
       end
       
       description = []
