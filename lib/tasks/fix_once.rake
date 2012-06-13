@@ -503,6 +503,8 @@ namespace :fixup do
     Restaurant.select(:time).where("time IS NOT NULL").each do |r|
       work_hours(r.time).each do |wh|
         wh[:restaurant_id] = r.id
+        wh[:time_zone_offset] = r.time_zone_offset
+        p wh
         WorkHour.create(wh)
       end
     end
@@ -524,14 +526,14 @@ def work_hours(restaurant_hours)
   restaurant_hours.split(sp).each do |l|
     l.split(',').each do |lp|
       data = {}
-      from = ''
-      to = ''
+      from = 0
+      to = 0
       
       week.each {|wd| from = week.index(wd) if lp =~ /^ ?#{wd}/}
       week.each {|wd| to = week.index(wd) if lp =~ /-#{wd}/}
       to = from if to.blank?
 
-      if from && to
+      if from != 0 && to != 0
         week[from..to].each do |wd|
           if m = l.match(/(\d{1,2}:?\d{0,2} ?(pm|am)) ?- ?(\d{1,2}:?\d{0,2} ?(pm|am))/)
         
