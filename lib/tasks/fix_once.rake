@@ -500,7 +500,7 @@ namespace :fixup do
   end
   
   task :wh => :environment do
-    Restaurant.select(:time).where("time IS NOT NULL").each do |r|
+    Restaurant.select([:time, :id, :time_zone_offset]).where("time IS NOT NULL").each do |r|
       work_hours(r.time).each do |wh|
         wh[:restaurant_id] = r.id
         wh[:time_zone_offset] = r.time_zone_offset
