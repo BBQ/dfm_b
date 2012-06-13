@@ -129,15 +129,17 @@ def work_hours(restaurant_hours)
       week.each {|wd| to = week.index(wd) if lp =~ /-#{wd}/}
       to = from if to.blank?
 
-      week[from..to].each do |wd|
-        if m = l.match(/(\d{1,2}:?\d{0,2} ?(pm|am)) ?- ?(\d{1,2}:?\d{0,2} ?(pm|am))/)
+      if from && to
+        week[from..to].each do |wd|
+          if m = l.match(/(\d{1,2}:?\d{0,2} ?(pm|am)) ?- ?(\d{1,2}:?\d{0,2} ?(pm|am))/)
         
-          t_from = Time.parse(m[1]).strftime("%H:%M")
-          t_to =Time.parse(m[3]).strftime("%H:%M")
+            t_from = Time.parse(m[1]).strftime("%H:%M")
+            t_to =Time.parse(m[3]).strftime("%H:%M")
         
-          t_to.gsub!(/^\d{2}/, "#{t_to.to_i+24}") if t_from.to_i > t_to.to_i
-          data[:"#{wd.downcase}"] = "#{t_from}-#{t_to}"    
+            t_to.gsub!(/^\d{2}/, "#{t_to.to_i+24}") if t_from.to_i > t_to.to_i
+            data[:"#{wd.downcase}"] = "#{t_from}-#{t_to}"    
 
+          end
         end
       end
 
