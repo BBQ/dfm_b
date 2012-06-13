@@ -156,6 +156,7 @@ class Restaurant < ActiveRecord::Base
 
            system "rake tags:match_dishes NETWORK_ID='#{r.network_id}' &"
            system "rake tags:match_rest NETWORK_ID='#{r.network_id}' &"
+           system "rake system:get_yelp_info RESTAURANT_ID='#{r.id}' &"
 
          end
        end

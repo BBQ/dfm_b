@@ -499,4 +499,50 @@ namespace :fixup do
     end
   end
   
+  task :wh => :environment do
+    Restaurant.all.select(:time).where("time IS NOT NULL").each do |r|
+      work_hours(r.time).each{|wh| WorkHour.create(wh)}
+    end
+  end
+  
+end
+
+def work_hours(restaurant_hours)   
+  
+  all_data = []
+  week = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+  
+  if restaurant_hours.scan("\n\t\t\t")
+    sp = "\n\t\t\t"
+  elsif restaurant_hours.scan("\r\n")
+    sp = "\r\n"
+  end  
+  
+  restaurant_hours.split(sp).each do |l|
+    l.split(',').each do |lp|
+      data = {}
+      from = ''
+      to = ''
+      
+      week.each {|wd| from = week.index(wd) if lp =~ /^ ?#{wd}/}
+      week.each {|wd| to = week.index(wd) if lp =~ /-#{wd}/}
+      to = from if to.blank?
+
+      week[from..to].each do |wd|
+        if m = l.match(/(\d{1,2}:?\d{0,2} ?(pm|am)) ?- ?(\d{1,2}:?\d{0,2} ?(pm|am))/)
+        
+          t_from = Time.parse(m[1]).strftime("%H:%M")
+          t_to =Time.parse(m[3]).strftime("%H:%M")
+        
+          t_to.gsub!(/^\d{2}/, "#{t_to.to_i+24}") if t_from.to_i > t_to.to_i
+          data[:"#{wd.downcase}"] = "#{t_from}-#{t_to}"    
+
+        end
+      end
+
+      all_data << data
+    end
+  end
+  
+  all_data
 end
