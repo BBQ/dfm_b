@@ -12,9 +12,11 @@ class DishType < ActiveRecord::Base
   end
   
   def self.format_for_api(timestamp = nil)
-    dtss = timestamp ? DishType.where("id NOT IN(4,6,7,14,16,19,25) AND updated_at >= ?", timestamp) : DishType.where("id NOT IN(4,6,7,14,16,19,25)")
+    if timestamp.nil? || (timestamp && DishType.where("updated_at >= ?", timestamp).any?)
+      dtss = DishType.where("id NOT IN(4,6,7,14,16,19,25)")
+    end
     
-    if dtss.count > 0
+    if dtss && dtss.any?
       
       dish_types = [:type => {
         :photo => DishType.find_by_id(16).photo.url,
@@ -73,7 +75,7 @@ class DishType < ActiveRecord::Base
             :subtype_id => 0
           },
           {
-            :title => 'Shisha',
+            :title => 'Hookah',
             :type_id => 19,
             :subtype_id => 0
           }
