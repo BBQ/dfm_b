@@ -102,7 +102,6 @@ def get_yelp_info(restaurant_id)
         time = doc.css('dd.attr-BusinessHours')[0].text
         work_hours(time).each{|wh| WorkHour.create(wh)}
         
-        end
       end
     end
     
