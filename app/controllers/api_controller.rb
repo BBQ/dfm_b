@@ -38,16 +38,18 @@ class ApiController < ApplicationController
             dishes_w_img = r.dish_deliveries.select('DISTINCT dish_deliveries.id, dish_deliveries.name, dish_deliveries.photo, dish_deliveries.rating, dish_deliveries.votes, dish_deliveries.dish_type_id').order("(dish_deliveries.rating - 3)*dish_deliveries.votes DESC, dish_deliveries.photo DESC").includes(:reviews).where("dish_deliveries.photo IS NOT NULL OR (dish_deliveries.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
     
             dishes_w_img.each do |dish|
-                dishes.push({
-                  :id => dish.id,
-                  :name => dish.name,
-                  :photo => dish.image_sd,
-                  :rating => dish.rating,
-                  :votes => dish.votes,
-                  :favourite => 1
-                })
+              favourite = Favourite.find_by_user_id_and_dish_id(user.id, dish.id) ? 1 : 0
+              
+              dishes.push({
+                :id => dish.id,
+                :name => dish.name,
+                :photo => dish.image_sd,
+                :rating => dish.rating,
+                :votes => dish.votes,
+                :favourite => favourite
+              })
             end
-            networks.push({:network_id => r.id, :dishes => dishes, :type => 'delivery', :venues => r.fsq_id ? ["#{r.fsq_id}"] : []})
+            networks.push({:favourite => 1, :network_id => r.id, :dishes => dishes, :type => 'delivery', :venues => r.fsq_id ? ["#{r.fsq_id}"] : []})
           end    
         end
       
@@ -69,16 +71,18 @@ class ApiController < ApplicationController
               dishes_w_img = r.network.dishes.select('DISTINCT dishes.id, dishes.name, dishes.photo, dishes.rating, dishes.votes, dishes.dish_type_id').order("(dishes.rating - 3)*dishes.votes DESC, dishes.photo DESC").includes(:reviews).where("dishes.photo IS NOT NULL OR (dishes.rating > 0 AND reviews.photo IS NOT NULL)").limit(num_images)
 
               dishes_w_img.each do |dish|
+                favourite = Favourite.find_by_user_id_and_dish_id(user.id, dish.id) ? 1 : 0
+                
                 dishes.push({
                   :id => dish.id,
                   :name => dish.name,
                   :photo => dish.image_sd,
                   :rating => dish.rating,
                   :votes => dish.votes,
-                  :favourite => 1
+                  :favourite => favourite
                 })
               end
-              networks.push({:network_id => r.network_id, :dishes => dishes, :type => nil, :venues => r.fsq_id ? ["#{r.fsq_id}"] : []}) 
+              networks.push({:favourite => 1, :network_id => r.network_id, :dishes => dishes, :type => nil, :venues => r.fsq_id ? ["#{r.fsq_id}"] : []}) 
             end
           end
         end
