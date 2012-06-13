@@ -220,7 +220,7 @@ class API < ActiveRecord::Base
         now = Time.now.strftime("%H%M")
         open_now = 0
         
-        WorkHours.where(:restaurant_id => restaurant.id).each do |wh|
+        WorkHour.where(:restaurant_id => restaurant.id).each do |wh|
           
           unless wh.send(wday).blank?
             open_now = 1 if now > wh.send(wday)[0,5].gsub(':','') && now < wh.send(wday)[-5,5].gsub(':','')
