@@ -501,7 +501,10 @@ namespace :fixup do
   
   task :wh => :environment do
     Restaurant.select(:time).where("time IS NOT NULL").each do |r|
-      work_hours(r.time).each{|wh| WorkHour.create(wh)}
+      work_hours(r.time).each do |wh|
+        wh[:restaurant_id] = r.id
+        WorkHour.create(wh)
+      end
     end
   end
   

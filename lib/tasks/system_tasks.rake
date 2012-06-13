@@ -100,7 +100,10 @@ def get_yelp_info(restaurant_id)
         r.update_attributes(data)
         
         time = doc.css('dd.attr-BusinessHours')[0].text
-        work_hours(time).each{|wh| WorkHour.create(wh)}
+        work_hours(time).each do |wh|
+          wh[:restaurant_id] = r.id
+          WorkHour.create(wh)
+        end
         
       end
     end
