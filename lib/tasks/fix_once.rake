@@ -525,7 +525,7 @@ def work_hours_ru(restaurant)
   days_ru = ['пн','вт','ср','чт','пт','сб','вс']
   days_en = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
   
-  trace = []
+  trace = {}
   start = finish = []
   start_time = close_time = ''
   restaurant_hours = restaurant.time
