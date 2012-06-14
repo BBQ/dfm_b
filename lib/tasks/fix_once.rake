@@ -570,22 +570,22 @@ def work_hours_ru(restaurant)
         if s[0] > f[0]
           f1 = 6
           days_en[s..f1].each do |wd|
-            p trace[wd.to_sym] = "#{start_time}-#{close_time}"
+            p trace[wd.downcase.to_sym] = "#{start_time}-#{close_time}"
           end
           s1 = 0
           days_en[s1..f].each do |wd|
-            trace[wd.to_sym] = "#{start_time}-#{close_time}"
+            trace[wd.downcase.to_sym] = "#{start_time}-#{close_time}"
           end
         else  
           days_en[s..f].each do |wd|
-            trace[wd.to_sym] = "#{start_time}-#{close_time}"
+            trace[wd.downcase.to_sym] = "#{start_time}-#{close_time}"
           end
         end
         i += 1
       end
       if !start.any?
         days_en[0..6].each do |wd|
-          trace[wd.to_sym] = "#{start_time}-#{close_time}"
+          trace[wd.downcase.to_sym] = "#{start_time}-#{close_time}"
         end
       end
       start = []
