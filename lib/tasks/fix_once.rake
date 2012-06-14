@@ -526,22 +526,24 @@ def work_hours_ru(restaurant)
   days_en = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
   
   trace = {}
-  start = finish = []
+  start = []
+  finish = []
   start_time = close_time = ''
   restaurant_hours = restaurant.time
   
   data = restaurant_hours.scan(/(пн|вт|ср|чт|пт|сб|вс|,|-|\d{1,2}[.:]\d{1,2}|последнего|круглосуточно)/i)
-  data.each do |d|
+  k = 0
   
+  data.each do |d|
     if pos = days_ru.index(d[0].downcase)
       if !start.any?
         start.push(pos)
       else
-        if days_en[pos-1] = '-'
+        if data[k-1][0] == '-'
           finish.push(pos)            
-        elsif days_en[pos-1] = ','
+        elsif data[k-1][0] == ','
           start.push(pos)
-          finish.push(0) if (start.count - finis.count) == 2
+          finish.push(0) if (start.count - finish.count) == 2
         end
       end
       
@@ -564,30 +566,40 @@ def work_hours_ru(restaurant)
     if !start_time.blank? && !close_time.blank?
       i = 0
       start.each do |s|
-        data = {}
         f = finish[i].to_i != 0 ? finish[i] : s
-        days_en[s..f].each do |wd|
-          trace[wd.to_sym] = "#{start_time}-#{close_time}"
+        if s[0] > f[0]
+          f1 = 6
+          days_en[s..f1].each do |wd|
+            p trace[wd.to_sym] = "#{start_time}-#{close_time}"
+          end
+          s1 = 0
+          days_en[s1..f].each do |wd|
+            trace[wd.to_sym] = "#{start_time}-#{close_time}"
+          end
+        else  
+          days_en[s..f].each do |wd|
+            trace[wd.to_sym] = "#{start_time}-#{close_time}"
+          end
         end
         i += 1
       end
       if !start.any?
-        data = {}
         days_en[0..6].each do |wd|
           trace[wd.to_sym] = "#{start_time}-#{close_time}"
         end
       end
-      start = finish = []
+      start = []
+      finish = []
       start_time = close_time = ''
     end
-    
+    k += 1
   end
   
   if trace.any?
     trace[:restaurant_id] = restaurant.id
     trace[:time_zone_offset] = restaurant.time_zone_offset
+    WorkHour.create(trace)
   end
-
   p trace
 end
 
