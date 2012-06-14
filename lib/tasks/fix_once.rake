@@ -533,7 +533,7 @@ def work_hours_ru(restaurant)
   data = restaurant_hours.scan(/(пн|вт|ср|чт|пт|сб|вс|,|-|\d{1,2}[.:]\d{1,2}|последнего|круглосуточно)/i)
   data.each do |d|
     
-    if pos = days_ru.index(d.downcase)
+    if pos = days_ru.index(d[0].downcase)
       if !from.any?
         start = push(days_en[pos])
       else
@@ -546,15 +546,15 @@ def work_hours_ru(restaurant)
       end
       
     else
-      if d =~ /\d{1,2}[.:]\d{1,2}/
+      if d[0] =~ /\d{1,2}[.:]\d{1,2}/
         if start_time.nil?
-          start_time = d
+          start_time = d[0]
         else
-          close_time = d
+          close_time = d[0]
         end
-      elsif d == 'последнего'
+      elsif d[0] == 'последнего'
         close_time = '24:00'
-      elsif d == 'круглосуточно'
+      elsif d[0] == 'круглосуточно'
         start_time = '00:00'
         close_time = '24:00'
       end  
@@ -588,7 +588,7 @@ def work_hours_ru(restaurant)
         end
       end
     end
-    trace
+    p trace
   end
   
   # if days_ru.index(data[0])
