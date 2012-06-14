@@ -570,7 +570,7 @@ def work_hours_ru(restaurant)
             data[wd.to_sym] = "#{start_time}-#{close_time}"
             data[:restaurant_id] = restaurant.id
             data[:time_zone_offset] = restaurant.time_zone_offset
-            p data
+            # p data
             trace << data
             # WorkHour.create(data)
           end
@@ -582,7 +582,7 @@ def work_hours_ru(restaurant)
           data[wd.to_sym] = "#{start_time}-#{close_time}"
           data[:restaurant_id] = restaurant.id
           data[:time_zone_offset] = restaurant.time_zone_offset
-          p data
+          # p data
           trace << data
           # WorkHour.create(data)
         end
