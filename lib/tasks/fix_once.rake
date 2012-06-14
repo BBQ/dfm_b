@@ -571,28 +571,24 @@ def work_hours_ru(restaurant)
         p s
         p f
         days_en[s..f].each do |wd|
-          data[wd.to_sym] = "#{start_time}-#{close_time}"
+          trace[wd.to_sym] = "#{start_time}-#{close_time}"
         end
-        
-        data[:restaurant_id] = restaurant.id
-        data[:time_zone_offset] = restaurant.time_zone_offset
-        trace << data
         i += 1
       end
       if !start.any?
         data = {}
         days_en[0..6].each do |wd|
-          data[wd.to_sym] = "#{start_time}-#{close_time}"
+          trace[wd.to_sym] = "#{start_time}-#{close_time}"
         end
-        data[:restaurant_id] = restaurant.id
-        data[:time_zone_offset] = restaurant.time_zone_offset
-        trace << data
       end
       start = finish = []
       start_time = close_time = ''
     end
     
   end
+  trace[:restaurant_id] = restaurant.id
+  trace[:time_zone_offset] = restaurant.time_zone_offset
+
   p trace
 end
 
