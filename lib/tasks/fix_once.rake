@@ -514,6 +514,7 @@ namespace :fixup do
   
   task :wh_ru => :environment do
     Restaurant.select([:time, :id, :time_zone_offset]).where("time IS NOT NULL").each do |r|
+      p r.id
       work_hours_ru(r)
     end
   end
@@ -568,23 +569,21 @@ def work_hours_ru(restaurant)
         data = {}
         days_en[s..f].each do |wd|
           data[wd.to_sym] = "#{start_time}-#{close_time}"
-          data[:restaurant_id] = restaurant.id
-          data[:time_zone_offset] = restaurant.time_zone_offset
-          # p data
-          trace << data
-          # WorkHour.create(data)
         end
+        data[:restaurant_id] = restaurant.id
+        data[:time_zone_offset] = restaurant.time_zone_offset
+        trace << data
+        # WorkHour.create(data)
       end
       if !start.any?
         data = {}
         days_en[0..6].each do |wd|
           data[wd.to_sym] = "#{start_time}-#{close_time}"
-          data[:restaurant_id] = restaurant.id
-          data[:time_zone_offset] = restaurant.time_zone_offset
-          # p data
-          trace << data
-          # WorkHour.create(data)
         end
+        data[:restaurant_id] = restaurant.id
+        data[:time_zone_offset] = restaurant.time_zone_offset
+        trace << data
+        # WorkHour.create(data)
       end
     end
     
