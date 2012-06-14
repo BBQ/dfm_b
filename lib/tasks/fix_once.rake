@@ -532,8 +532,7 @@ def work_hours_ru(restaurant)
   
   data = restaurant_hours.scan(/(пн|вт|ср|чт|пт|сб|вс|,|-|\d{1,2}[.:]\d{1,2}|последнего|круглосуточно)/i)
   data.each do |d|
-
-    
+  
     if pos = days_ru.index(d[0].downcase)
       if !start.any?
         start.push(pos)
@@ -564,12 +563,9 @@ def work_hours_ru(restaurant)
     
     if !start_time.blank? && !close_time.blank?
       i = 0
-      p start
       start.each do |s|
         data = {}
         f = finish[i].to_i != 0 ? finish[i] : s
-        p s
-        p f
         days_en[s..f].each do |wd|
           trace[wd.to_sym] = "#{start_time}-#{close_time}"
         end
@@ -586,8 +582,11 @@ def work_hours_ru(restaurant)
     end
     
   end
-  trace[:restaurant_id] = restaurant.id
-  trace[:time_zone_offset] = restaurant.time_zone_offset
+  
+  if trace.any?
+    trace[:restaurant_id] = restaurant.id
+    trace[:time_zone_offset] = restaurant.time_zone_offset
+  end
 
   p trace
 end
