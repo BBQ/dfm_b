@@ -512,6 +512,12 @@ namespace :fixup do
     end
   end
   
+  task :wh_ru => :environment do
+    Restaurant.select([:time, :id, :time_zone_offset]).where("time IS NOT NULL").each do |r|
+      work_hours_ru(r)
+    end
+  end
+  
 end
 
 def work_hours_ru(restaurant)
