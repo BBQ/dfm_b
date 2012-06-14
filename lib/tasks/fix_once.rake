@@ -526,12 +526,13 @@ def work_hours_ru(restaurant)
   days_en = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
   
   trace = []
+  start = finish = []
+  start_time = close_time = ''
   restaurant_hours = restaurant.time
   
   data = restaurant_hours.scan(/(пн|вт|ср|чт|пт|сб|вс|,|-|\d{1,2}[.:]\d{1,2}|последнего|круглосуточно)/i)
   data.each do |d|
-    start = finish = []
-    start_time = close_time = ''
+
     
     if pos = days_ru.index(d[0].downcase)
       if !start.any?
@@ -587,6 +588,8 @@ def work_hours_ru(restaurant)
         data[:time_zone_offset] = restaurant.time_zone_offset
         trace << data
       end
+      start = finish = []
+      start_time = close_time = ''
     end
     
   end
