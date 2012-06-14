@@ -534,7 +534,7 @@ def work_hours_ru(restaurant)
   data.each do |d|
     
     if pos = days_ru.index(d[0].downcase)
-      if !from.any?
+      if !start.any?
         start = push(days_en[pos])
       else
         if days_en[pos-1] = '-'
