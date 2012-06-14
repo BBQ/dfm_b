@@ -514,6 +514,91 @@ namespace :fixup do
   
 end
 
+def work_hours_ru(restaurant)
+  days_ru = ['пн','вт','ср','чт','пт','сб','вс']
+  days_en = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+  
+  trace = []
+  
+  start = finish = []
+  close_time = close_time = ''
+  restaurant_hours = restaurant.time
+  
+  data = restaurant_hours.scan(/(пн|вт|ср|чт|пт|сб|вс|,|-|\d{1,2}[.:]\d{1,2}|последнего|круглосуточно)/i)
+  data.each do |d|
+    
+    if pos = days_ru.index(d.downcase)
+      if !from.any?
+        start = push(days_en[pos])
+      else
+        if days_en[pos-1] = '-'
+          finish = push(days_en[pos])            
+        elsif days_en[pos-1] = ','
+          start = push(days_en[pos])
+          finish = push('') if (start.count - finis.count) == 2
+        end
+      end
+      
+    else
+      if d =~ /\d{1,2}[.:]\d{1,2}/
+        if start_time.nil?
+          start_time = d
+        else
+          close_time = d
+        end
+      elsif d == 'последнего'
+        close_time = '24:00'
+      elsif d == 'круглосуточно'
+        start_time = '00:00'
+        close_time = '24:00'
+      end  
+       
+    end
+    
+    if start_time && close_time
+      start.each do |s|
+        f = finish[start.index(s)]
+        if !f.blank?
+          data = {}
+          days_en[s..f].each do |wd|
+            data[wd.to_sym] = "#{start_time}-#{close_time}"
+            data[:restaurant_id] = restaurant.id
+            data[:time_zone_offset] = restaurant.time_zone_offset
+            p data
+            trace << data
+            # WorkHour.create(data)
+          end
+        end
+      end
+      if !start.any?
+        data = {}
+        days_en[0..6].each do |wd|
+          data[wd.to_sym] = "#{start_time}-#{close_time}"
+          data[:restaurant_id] = restaurant.id
+          data[:time_zone_offset] = restaurant.time_zone_offset
+          p data
+          trace << data
+          # WorkHour.create(data)
+        end
+      end
+    end
+    trace
+  end
+  
+  # if days_ru.index(data[0])
+  #   if data[0] == '-'
+  #     
+  #   elsif data[0] == ','
+  #     
+  #   elsif data[0] =~ /\d{1,2}[.:]\d{1,2}/
+  #     
+  #   end
+  # elsif data[0] =~ /\d{1,2}[.:]\d{1,2}/
+  #   
+  # end
+  
+end
+
 def work_hours(restaurant_hours)   
   
   all_data = []

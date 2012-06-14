@@ -219,6 +219,11 @@ img {
   width: 1070px;
   margin: 0 auto; }
 
+.static li {
+  float: none; }
+.static li:before {
+  content: "- "; }
+
 #add_review {
   width: 470px;
   left: 50%;

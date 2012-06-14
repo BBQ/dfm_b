@@ -82,6 +82,7 @@ class ApiController < ApplicationController
                   :favourite => favourite
                 })
               end
+
               networks.push({:favourite => 1, :network_id => r.network_id, :dishes => dishes, :type => nil, :venues => r.fsq_id ? ["#{r.fsq_id}"] : []}) 
             end
           end
