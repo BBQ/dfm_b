@@ -564,6 +564,7 @@ def work_hours_ru(restaurant)
     
     if !start_time.blank? && !close_time.blank?
       i = 0
+      p start
       start.each do |s|
         data = {}
         f = finish[i].to_i != 0 ? finish[i] : s
