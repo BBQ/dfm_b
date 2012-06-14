@@ -567,7 +567,7 @@ def work_hours_ru(restaurant)
         data = {}
         f = finish[s] != 0 ? finish[s] : s
         
-        days_en[s..days_en.index(f)].each do |wd|
+        days_en[s..f].each do |wd|
           data[wd.to_sym] = "#{start_time}-#{close_time}"
         end
         
