@@ -561,7 +561,7 @@ def work_hours_ru(restaurant)
        
     end
     
-    if start_time && close_time
+    if !start_time.blank? && !close_time.blank?
       start.each do |s|
         f = finish[start.index(s)]
         f = s if !f.blank?
@@ -587,9 +587,9 @@ def work_hours_ru(restaurant)
         end
       end
     end
-    p trace
+    
   end
-  
+  p trace
 end
 
 def work_hours(restaurant_hours)   
