@@ -564,13 +564,14 @@ def work_hours_ru(restaurant)
     
     if !start_time.blank? && !close_time.blank?
       start.each do |s|
+        
         f = finish[start.index(s)] || s
         data = {}
-        p s
-        p f
-        days_en[s..f].each do |wd|
+        
+        days_en[days_en.index(s)..days_en.index(f)].each do |wd|
           data[wd.to_sym] = "#{start_time}-#{close_time}"
         end
+        
         data[:restaurant_id] = restaurant.id
         data[:time_zone_offset] = restaurant.time_zone_offset
         trace << data
