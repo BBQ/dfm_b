@@ -536,13 +536,13 @@ def work_hours_ru(restaurant)
     
     if pos = days_ru.index(d[0].downcase)
       if !start.any?
-        start.push(days_en[pos])
+        start.push(pos)
       else
         if days_en[pos-1] = '-'
-          finish.push(days_en[pos])            
+          finish.push(pos)            
         elsif days_en[pos-1] = ','
-          start.push(days_en[pos])
-          finish.push('') if (start.count - finis.count) == 2
+          start.push(pos)
+          finish.push(0) if (start.count - finis.count) == 2
         end
       end
       
@@ -564,11 +564,10 @@ def work_hours_ru(restaurant)
     
     if !start_time.blank? && !close_time.blank?
       start.each do |s|
-        
-        f = finish[start.index(s)] || s
         data = {}
+        f = finish[s] != 0 ? finish[s] : s
         
-        days_en[days_en.index(s)..days_en.index(f)].each do |wd|
+        days_en[s..days_en.index(f)].each do |wd|
           data[wd.to_sym] = "#{start_time}-#{close_time}"
         end
         
