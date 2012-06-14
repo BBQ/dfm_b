@@ -565,10 +565,10 @@ def work_hours_ru(restaurant)
     if !start_time.blank? && !close_time.blank?
       i = 0
       start.each do |s|
-        p s
-        p f
         data = {}
         f = finish[i].to_i != 0 ? finish[i] : s
+        p s
+        p f
         days_en[s..f].each do |wd|
           data[wd.to_sym] = "#{start_time}-#{close_time}"
         end
