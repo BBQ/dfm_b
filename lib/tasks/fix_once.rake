@@ -535,13 +535,13 @@ def work_hours_ru(restaurant)
     
     if pos = days_ru.index(d[0].downcase)
       if !start.any?
-        start = push(days_en[pos])
+        start.push(days_en[pos])
       else
         if days_en[pos-1] = '-'
-          finish = push(days_en[pos])            
+          finish.push(days_en[pos])            
         elsif days_en[pos-1] = ','
-          start = push(days_en[pos])
-          finish = push('') if (start.count - finis.count) == 2
+          start.push(days_en[pos])
+          finish.push('') if (start.count - finis.count) == 2
         end
       end
       
