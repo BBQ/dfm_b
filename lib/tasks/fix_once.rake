@@ -527,7 +527,7 @@ def work_hours_ru(restaurant)
   trace = []
   
   start = finish = []
-  close_time = close_time = ''
+  start_time = close_time = ''
   restaurant_hours = restaurant.time
   
   data = restaurant_hours.scan(/(пн|вт|ср|чт|пт|сб|вс|,|-|\d{1,2}[.:]\d{1,2}|последнего|круглосуточно)/i)
