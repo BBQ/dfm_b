@@ -513,7 +513,7 @@ namespace :fixup do
   end
   
   task :wh_ru => :environment do
-    Restaurant.select([:time, :id, :time_zone_offset]).where("time IS NOT NULL").each do |r|
+    Restaurant.select([:time, :id, :time_zone_offset]).where("time IS NOT NULL AND source != ylp AND source != fsq_upd_ylp").each do |r|
       p r.id
       work_hours_ru(r)
     end
