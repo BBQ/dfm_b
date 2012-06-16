@@ -151,7 +151,7 @@ class Notification < ActiveRecord::Base
         end
   
         if send == 1
-          system "rake apn:notifications:deliver &"
+          system "rake apn:notifications:deliver RAILS_ENV=production &"
           system "rake email:notifications:deliver &"
         end
       
