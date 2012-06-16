@@ -10,11 +10,10 @@ GIT
       spreadsheet (>= 0.6.4)
 
 GIT
-  remote: https://github.com/natescherer/apn_on_rails.git
-  revision: 18f5d37397e3f003152c51b257d9da939b70438f
-  branch: rails3
+  remote: https://github.com/ramigg/apn_on_rails.git
+  revision: da7ae813d4f1dca394ef684f31e685080fa72f3b
   specs:
-    apn_on_rails (0.3.1rails3)
+    apn_on_rails (0.4.2)
       configatron
 
 GEM
@@ -57,7 +56,7 @@ GEM
     carrierwave (0.5.8)
       activesupport (~> 3.0)
     chronic (0.6.7)
-    configatron (2.9.0)
+    configatron (2.9.1)
       yamler (>= 0.1.0)
     erubis (2.6.6)
       abstract (>= 1.0.0)
