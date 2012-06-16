@@ -12,7 +12,7 @@ namespace :twitter do
         if !u.oauth_token_secret.blank? && !u.oauth_token.blank? && u.user_preferences.share_my_like_to_twitter == true
           client = Twitter::Client.new(:oauth_token => u.oauth_token, :oauth_token_secret => u.oauth_token_secret)
           
-          caption = "liked #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} http://test.dish.fm/reviews/#{r.id}"
+          caption = "liked #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} http://dish.fm/reviews/#{r.id}"
           client.update(caption)
         end
       end
@@ -31,7 +31,7 @@ namespace :twitter do
         if !u.oauth_token_secret.blank? && !u.oauth_token.blank? && u.user_preferences.share_my_comments_to_twitter == true
           client = Twitter::Client.new(:oauth_token => u.oauth_token, :oauth_token_secret => u.oauth_token_secret)
                     
-          caption = "commented on #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} \"#{c.text}\" http://test.dish.fm/reviews/#{r.id}"
+          caption = "commented on #{r.user.name.join(' ')[0]}'s dish-in in #{r.dish.name}@#{r.restaurant.name} \"#{c.text}\" http://dish.fm/reviews/#{r.id}"
           client.update(caption)
           
         end

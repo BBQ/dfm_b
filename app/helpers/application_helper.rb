@@ -3,7 +3,7 @@ module ApplicationHelper
   def fb_opengraph_meta_tag
     if @fb_obj
       
-      domain = "http://test.dish.fm"
+      domain = "http://dish.fm"
       app_id = Rails.application.config.sorcery.facebook.key
       type = @fb_obj.class.name.downcase
       url = "#{domain}#{eval "#{type}_path(#{@fb_obj.id})" }"

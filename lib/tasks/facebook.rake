@@ -2,7 +2,7 @@
 namespace :facebook do
   
   $domain = 'http://dish.fm/'
-  $domain_s = 'http://test.dish.fm/' 
+  $domain_s = 'http://dish.fm/' 
   
   task :find => :environment do
     if u = User.find_by_id(ENV["USER_ID"])    
