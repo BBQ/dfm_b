@@ -59,7 +59,10 @@ Dishfm::Application.configure do
 
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
+  
   configatron.apn.passphrase = 'dish.fm'
+  configatron.apn.host  => 'gateway.push.apple.com'
+  configatron.apn.cert => File.join(Rails.root, 'config', 'apple_push_notification_production.pem')
   
   Sass::Plugin.options[:never_update] = true
 end

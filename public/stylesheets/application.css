@@ -1284,11 +1284,10 @@ ul li.first {
   padding: 0; }
   #social li {
     width: auto;
-    padding: 0; }
+    padding: 0;
+    line-height: 7.7em; }
   #social li.tw {
-    margin-top: 36px; }
-  #social li.gplus {
-    margin-top: 39px; }
+    margin-top: 3px; }
 
 #cright {
   font-size: 13px;
