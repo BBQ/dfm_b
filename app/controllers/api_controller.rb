@@ -1511,7 +1511,7 @@ class ApiController < ApplicationController
       offset = params[:offset] ? params[:offset] : 0
       
       data = []
-      APN::Notification.where("user_id_to = ?", params[:user_id]).limit(limit).order("id DESC").each do |n|
+      APN::Notification.where("user_id_to = ?", params[:user_id]).group('review_id, user_id_to, notification_type, user_id_from').limit(limit).order("id DESC").each do |n|
         user = User.find_by_id(n.user_id_from)
         data.push({
           :date => n.created_at.to_i,
