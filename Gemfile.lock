@@ -10,10 +10,11 @@ GIT
       spreadsheet (>= 0.6.4)
 
 GIT
-  remote: https://github.com/ramigg/apn_on_rails.git
-  revision: da7ae813d4f1dca394ef684f31e685080fa72f3b
+  remote: https://github.com/natescherer/apn_on_rails.git
+  revision: 18f5d37397e3f003152c51b257d9da939b70438f
+  branch: rails3
   specs:
-    apn_on_rails (0.4.2)
+    apn_on_rails (0.3.1rails3)
       configatron
 
 GEM

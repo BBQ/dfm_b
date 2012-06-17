@@ -1525,9 +1525,9 @@ class ApiController < ApplicationController
             :photo => user.user_photo
           }
         })
-        n.read = 1
-        n.save
-      end   
+      end
+      APN::Notification.where("user_id_to = ?", params[:user_id]).limit(limit).each { |n| n.update_attributes(:read => 1)}
+      
       return render :json => {
             :notifications => data,
             :error => $error
