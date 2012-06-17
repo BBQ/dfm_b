@@ -622,7 +622,7 @@ class ApiController < ApplicationController
         
         #Add push token
         if !APN::Device.find_by_token_and_user_id(params[:push_token], session[:user_id])
-          push_token = APN::Device.find_by_token(params[:push_token])
+          push_token = APN::Device.find_by_token_and_user_id(params[:push_token], session[:user_id])
           if push_token && push_token.user_id == 0
             push_token.user_id = session[:user_id]
             push_token.save
