@@ -1526,7 +1526,7 @@ class ApiController < ApplicationController
           }
         })
       end
-      APN::Notification.where("user_id_to = ?", params[:user_id]).limit(limit).each { |n| n.update_attributes(:read => 1)}
+      APN::Notification.where("user_id_to = ?", params[:user_id]).limit(limit).order("id DESC").each { |n| n.update_attributes(:read => 1)}
       
       return render :json => {
             :notifications => data,
