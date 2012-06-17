@@ -28,6 +28,7 @@ APN::Notification.class_eval do
   #   message
   # end
   
+  
   def self.send_notifications(notifications = APN::Notification.where("sent_at IS NULL AND device_id != 0"))
     unless notifications.nil? || notifications.empty?
 
