@@ -28,13 +28,13 @@ APN::Notification.class_eval do
   #   message
   # end
   
-  def self.send_notifications(notifications = APN::Notification.where("sent_at IS NULL AND device_id != 0 AND user_id_to = '113'"))
+  def self.send_notifications(notifications = APN::Notification.where("sent_at IS NULL AND device_id != 0"))
     unless notifications.nil? || notifications.empty?
 
       APN::Connection.open_for_delivery do |conn, sock|
         notifications.each do |noty|
           conn.write(noty.message_for_sending)
-          # noty.sent_at = Time.now
+          noty.sent_at = Time.now
           noty.save
         end
       end
