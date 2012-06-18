@@ -6,7 +6,7 @@ namespace :email do
     task :deliver => [:environment] do
       
       email_notification = APN::Notification.where("mailed_at IS NULL").group('review_id, user_id_to, notification_type, user_id_from')
-      APN::Notification.where("mailed_at IS NULL").update_all('mailed_at = ?', Time.now)
+      APN::Notification.update_all "mailed_at = '#{Time.now}'", "mailed_at IS NULL"
       
       email_notification.each do |n|
         if to_user = User.find_by_id(n.user_id_to)
