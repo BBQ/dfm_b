@@ -5,7 +5,10 @@ namespace :email do
     desc "Email all unmailed APN notifications."
     task :deliver => [:environment] do
       
-      APN::Notification.where("mailed_at IS NULL").group('review_id, user_id_to, notification_type, user_id_from').each do |n|
+      email_notification = APN::Notification.where("mailed_at IS NULL").group('review_id, user_id_to, notification_type, user_id_from')
+      APN::Notification.where("mailed_at IS NULL").update_all('mailed_at = ?', Time.now)
+      
+      email_notification.each do |n|
         if to_user = User.find_by_id(n.user_id_to)
           if email = to_user.email
 
@@ -15,7 +18,6 @@ namespace :email do
           end
         end
       end
-      APN::Notification.where("mailed_at IS NULL").update_all('mailed_at = ?', Time.now)
       
     end
     
