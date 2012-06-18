@@ -15,7 +15,7 @@ namespace :email do
           end
         end
       end
-      APN::Notification.where("mailed_at IS NULL").each { |n| n.update_attributes(:mailed_at => Time.now)}
+      APN::Notification.where("mailed_at IS NULL").update_all('mailed_at = ?', Time.now)
       
     end
     
