@@ -4,7 +4,7 @@ APN::Notification.class_eval do
     user = User.find_by_id(self.user_id_from)   
     result = {}
     result['aps'] = {}
-    result['aps']['alert'] = "#{user.name.split.first} #{user.name.split.second[0]} #{self.alert}" if self.alert
+    result['aps']['alert'] = "#{user.name.split.first} #{user.name.split.second[0] if user.name.split.second} #{self.alert}" if self.alert
     result['aps']['alert'] = "#{result['aps']['alert'].slice 0 .. 40}..." if result['aps']['alert'].length > 40
   
     result['aps']['badge'] = self.badge.to_i if self.badge

@@ -597,8 +597,7 @@ class ApiController < ApplicationController
   end
   
   def authenticate_user
-    if params[:provider]
-      
+    if params[:provider]  
       if params[:provider] == 'facebook' && params[:access_token]
         session = User.authenticate_by_facebook(params[:access_token], params[:fb_valid_to]) 
       elsif params[:provider] == 'twitter' && params[:oauth_token] && params[:oauth_token_secret]
@@ -617,8 +616,8 @@ class ApiController < ApplicationController
       $error = {:description => 'Parameters missing', :code => 370}
     end
     
-    if session[:user_id]
-      if params[:push_token]
+    if session
+      if params[:push_token] && session[:user_id]
         
         #Add push token
         if !APN::Device.find_by_token_and_user_id(params[:push_token], session[:user_id])
