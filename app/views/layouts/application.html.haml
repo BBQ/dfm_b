@@ -1,7 +1,10 @@
 !!!
 %html
 	%head
-		%title= yield(:title) || "dish.fm"
+		%title Dish.fm is the easiest way to find the best dishes at any restaurant. It’s your personal guide to local favorites with menu listings, user photos, friend’s recommendations and ratings of each meal
+		%meta{:name => "keywords", :content => "Dishfm, menu, recommendation, San Francisco, bay area, local, business, review, friend, restaurant, share, read, community, steak, burger, sushi, pizza, dish, New York, Los Angeles, dinner, lunch, breakfast, dim sum, cook, gourmet, taste, chef, brunch, wine, food, guide, personal, photo, place, finder, rating, delivery, takeout, meal, eat, foodie, yummy, coffee, tiramisu, bar, drink, check-in, expert, top, Italian, Japanese, Chinese, American, SF, NY, NYC#{h yield(:keywords)}"}
+		%meta{:name => "description", :content => "Dish.fm is the easiest way to find the best dishes at any restaurant. It’s your personal guide to local favorites with menu listings, user photos, friend’s recommendations and ratings of each meal#{h yield(:description)}"}
+		%meta{:name => "author", :content => "Farminers Limited"}		
 		%meta{"http-equiv"=>"Content-Type", :content=>"text/html; charset=utf-8"}
 		= fb_opengraph_meta_tag
 		= stylesheet_link_tag :all
