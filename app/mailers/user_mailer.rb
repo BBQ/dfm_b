@@ -14,7 +14,8 @@ class UserMailer < ActionMailer::Base
   def email_notification(to_user, message)
     subject = "Dish.fm Notifications"
     @url  = "http://dish.fm"
-    @user = to_user.name
+    
+    @user = "#{to_user.name.split.first} #{to_user.name.split.second[0] if to_user.name.split.second}"
     @text = message
     mail(:to => to_user.email, :subject => subject)
   end
@@ -23,9 +24,8 @@ class UserMailer < ActionMailer::Base
     @url  = "http://dish.fm"
     subject = "Dish.fm Password Recovery"
 
-    @user = user.name
+    @user = "#{user.name.split.first} #{user.name.split.second[0] if user.name.split.second}"
     @text = "To recover your password follow this link: #{@url}/users/recover/#{user.crypted_password}"
-
     mail(:to => user.email, :subject => subject)
   end
   
