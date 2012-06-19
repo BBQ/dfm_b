@@ -241,7 +241,7 @@ class User < ActiveRecord::Base
     {:name => user.name, :fb_access_token =>user.fb_access_token, :fb_valid_to => user.fb_valid_to.to_i, :oauth_token => user.oauth_token, :oauth_token_secret => user.oauth_token_secret, :token => token, :user_id => user.id, :photo => user.user_photo, :facebook_id => user.facebook_id ||= 0, :twitter_id => user.twitter_id ||= 0} unless token.nil?
   end
   
-  def self.create_user_from_twitter(client, email)
+  def self.create_user_from_twitter(client, email = nil)
     user = User.create({
       :name => client.user.name,
       :email => email,  
