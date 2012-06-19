@@ -640,7 +640,7 @@ class ApiController < ApplicationController
     end
     
     return render :json => {
-          :session => session[:user_id] ? session : nil,
+          :session => session && session[:user_id] ? session : nil,
           :user_preferences => user_preferences ||= nil,
           :error => $error
     }
