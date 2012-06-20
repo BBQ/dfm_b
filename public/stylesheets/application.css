@@ -1221,9 +1221,9 @@ ul li.first {
   font-family: Tahoma, Arial, sans-serif;
   text-align: center;
   position: relative;
-  z-index: 4;
+  z-index: 1;
   clear: both;
-  height: 130px;
+  height: 195px;
   width: 100%;
   background: #f2efe6;
   background: -moz-linear-gradient(top, #f2efe6 75%, #d9d2bd 100%);
@@ -1265,13 +1265,13 @@ ul li.first {
           text-decoration: none;
           color: #2b8da2; }
   #footer #links {
-    width: 355px;
+    width: 660px;
     margin: 0 auto; }
     #footer #links ul li {
       width: auto;
       float: left;
       display: block;
-      margin: 25px 5px; }
+      margin: 75px 36px 20px 36px; }
     #footer #links ul a {
       font-size: 0.9em;
       color: #554747; }
