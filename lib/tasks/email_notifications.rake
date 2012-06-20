@@ -10,11 +10,10 @@ namespace :email do
           
           if email = to_user.email  
             if APN::Notification.find_by_id(n.id).mailed_at.nil?
+              APN::Notification.update_all ["mailed_at = '#{Time.now}'"], ["review_id = ? AND user_id_to = ? AND notification_type = ? AND user_id_from  = ?", n.review_id, n.user_id_to, n.notification_type, n.user_id_from]          
               
               message = "#{User.find_by_id(n.user_id_from).name.split(' ')[0]} #{n.alert.downcase}"
-              if mail = UserMailer.email_notification(to_user, message).deliver
-                APN::Notification.update_all ["mailed_at = '#{Time.now}'"], ["review_id = ? AND user_id_to = ? AND notification_type = ? AND user_id_from  = ?", n.review_id, n.user_id_to, n.notification_type, n.user_id_from]          
-              end
+              mail = UserMailer.email_notification(to_user, message).deliver
               
             end
           end
