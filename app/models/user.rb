@@ -258,19 +258,19 @@ class User < ActiveRecord::Base
     user
   end
   
-  def get_twitter_friends(client, user, next_cursor = -1)
+  def self.get_twitter_friends(client, user, next_cursor = -1)
     friends = client.friend_ids(next_cursor)
     follow_tw_users(friends)
     get_twitter_friends(client, user, friends.next_cursor) if friends.next_cursor > 0
   end
   
-  def get_twitter_followers(client, user, next_cursor = -1)
+  def self.get_twitter_followers(client, user, next_cursor = -1)
     followers = client.followers_ids(next_cursor)
     follow_tw_users(followers)
     get_twitter_followers(client, user, followers.next_cursor) if followers.next_cursor > 0
   end
   
-  def follow_tw_users(users)
+  def self.follow_tw_users(users)
     users.ids.each do |tw_id|
       if found_user = User.find_by_twitter_id(tw_id)
         if Follower.create({:user_id => user.id, :follow_user_id => found_user.id})
