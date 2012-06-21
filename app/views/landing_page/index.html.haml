@@ -7,7 +7,7 @@
 			/%li=# link_to 'Sign in', ''
 	= link_to (image_tag 'logo.png'), '', :id => 'logo'
 	#slider
-		#iphone
+		%a#iphone{:href => 'http://itunes.apple.com/app/id530449856'}
 			- num_pages = 4
 			- num_pages.times do |i|
 				= image_tag "screen#{i+1}.jpg", :class => "iscreen #{'active' if i == 0 }"
