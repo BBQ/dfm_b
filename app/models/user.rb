@@ -252,8 +252,32 @@ class User < ActiveRecord::Base
     })
     UserPreference.create({:user_id => user.id})
     
-    # User.get_user_tw_friends(client.user.id)
+    get_twitter_friends(client, user)
+    get_twitter_followers(client, user)
+    
     user
+  end
+  
+  def get_twitter_friends(client, user, next_cursor = -1)
+    friends = client.friend_ids(next_cursor)
+    follow_tw_users(friends)
+    get_twitter_friends(client, user, friends.next_cursor) if friends.next_cursor > 0
+  end
+  
+  def get_twitter_followers(client, user, next_cursor = -1)
+    followers = client.followers_ids(next_cursor)
+    follow_tw_users(followers)
+    get_twitter_followers(client, user, followers.next_cursor) if followers.next_cursor > 0
+  end
+  
+  def follow_tw_users(users)
+    users.ids.each do |tw_id|
+      if found_user = User.find_by_twitter_id(tw_id)
+        if Follower.create({:user_id => user.id, :follow_user_id => found_user.id})
+          Notification.send(user.id, 'following', found_user.id)
+        end
+      end
+    end
   end
   
   def self.authenticate_by_facebook(access_token, fb_valid_to = nil)
@@ -297,7 +321,6 @@ class User < ActiveRecord::Base
       
       rest.get_connections("me", "friends").each do |f|
         if user_friend = User.find_by_facebook_id(f['id'])
-          # Notification.send(user.id, 'new_fb_user', user_friend.id)
           if Follower.create({:user_id => user.id, :follow_user_id => user_friend.id})
             Notification.send(user.id, 'following', user_friend.id)
           end
