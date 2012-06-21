@@ -680,12 +680,12 @@ class ApiController < ApplicationController
             
     keywords = Tag.select("id, name_a as name").where("name_a IN ('steak','salad','soup','pasta','pizza','burger','sushi','dessert','drinks','meat','fish','vegetables')").order("`order`")
     locations = LocationTip.select([:id, :name])
-    rc = RestaurantCategory.select([:name])
+    rc = RestaurantCategory.select([:name]).where(:active => 1)
 
     return render :json => {
           :types => DishType.format_for_api(timestamp),
-          :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords.all,
-          :restaurant_categories => timestamp ? rc.where('updated_at >= ? AND active = 1', timestamp) : rc.all,
+          :keywords => timestamp ? keywords.where('updated_at >= ?', timestamp) : keywords,
+          :restaurant_categories => timestamp ? rc.where('updated_at >= ?', timestamp) : rc,
           # :cities => timestamp ? locations.where('updated_at >= ?', timestamp) : locations.all,
           :tags => Tag.get_all(timestamp),
           :force_logout => 0,
