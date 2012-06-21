@@ -68,7 +68,7 @@ namespace :fixup do
       if e == 0
         rsts = RestaurantCategory.where(:id => c2)
         rsts.each do |r|
-          p "#{r.id} #{r.name} #{r.address}"
+          p "#{r.id} #{r.name}"
           r.update_attributes(:active => 0)
         end
       end
