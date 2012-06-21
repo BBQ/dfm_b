@@ -259,13 +259,13 @@ class User < ActiveRecord::Base
   end
   
   def self.get_twitter_friends(client, user, next_cursor = -1)
-    friends = client.friend_ids(next_cursor)
+    friends = client.friend_ids(:next_cursor => next_cursor)
     follow_tw_users(friends)
     get_twitter_friends(client, user, friends.next_cursor) if friends.next_cursor > 0
   end
   
   def self.get_twitter_followers(client, user, next_cursor = -1)
-    followers = client.followers_ids(next_cursor)
+    followers = client.follower_ids(:next_cursor => next_cursor)
     follow_tw_users(followers)
     get_twitter_followers(client, user, followers.next_cursor) if followers.next_cursor > 0
   end
