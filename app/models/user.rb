@@ -260,17 +260,17 @@ class User < ActiveRecord::Base
   
   def self.get_twitter_friends(client, user, next_cursor = -1)
     friends = client.friend_ids(:next_cursor => next_cursor)
-    follow_tw_users(friends)
+    follow_tw_users(friends, user)
     get_twitter_friends(client, user, friends.next_cursor) if friends.next_cursor > 0
   end
   
   def self.get_twitter_followers(client, user, next_cursor = -1)
     followers = client.follower_ids(:next_cursor => next_cursor)
-    follow_tw_users(followers)
+    follow_tw_users(followers, user)
     get_twitter_followers(client, user, followers.next_cursor) if followers.next_cursor > 0
   end
   
-  def self.follow_tw_users(users)
+  def self.follow_tw_users(users, user)
     users.ids.each do |tw_id|
       if found_user = User.find_by_twitter_id(tw_id)
         if Follower.create({:user_id => user.id, :follow_user_id => found_user.id})
