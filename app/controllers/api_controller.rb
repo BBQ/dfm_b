@@ -532,7 +532,7 @@ class ApiController < ApplicationController
   def get_user_following
     if params[:user_id]
       following = []
-      User.select([:id, :photo, :name, :facebook_id]).where('id IN (SELECT follow_user_id FROM followers WHERE user_id = ?)', params[:user_id]).each do |f|
+      User.select([:id, :photo, :name, :facebook_id]).where('id IN (SELECT follow_user_id FROM followers WHERE user_id = ?)', params[:user_id]).order(:name).each do |f|
         following.push({
           :user_id => f.id,
           :name => f.name,
@@ -540,7 +540,7 @@ class ApiController < ApplicationController
         })
       end
       followers =  []
-      User.select([:id, :photo, :name, :facebook_id]).where('id IN (SELECT user_id FROM followers WHERE follow_user_id = ?)', params[:user_id]).each do |f|
+      User.select([:id, :photo, :name, :facebook_id]).where('id IN (SELECT user_id FROM followers WHERE follow_user_id = ?)', params[:user_id]).order(:name).each do |f|
           followers.push({
             :user_id => f.id,
             :name => f.name,

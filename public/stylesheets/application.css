@@ -227,6 +227,15 @@ img {
 .txt_cnt {
   text-align: center; }
 
+.cl_bth {
+  clear: both; }
+
+.s10 {
+  display: block;
+  clear: both;
+  height: 30px;
+  width: 100%; }
+
 #add_review {
   width: 470px;
   left: 50%;
@@ -588,7 +597,7 @@ ul li.first {
     float: left;
     width: 30px;
     height: 30px;
-    background-size: auto 30px;
+    background-size: cover;
     background: center, center;
     margin: 0 5px 5px 0; }
   #review .data .desc {
@@ -597,14 +606,14 @@ ul li.first {
     margin: 10px 0; }
 #review .friends {
   background: url("/images/user.png") no-repeat left top; }
-#review .likes {
-  background: url("/images/heart.png") no-repeat left top; }
-#review .set {
-  height: 25px;
-  clear: both; }
-  #review .set .title {
-    padding: 5px 0 10px 25px;
-    font-size: 0.8em; }
+  #review .friends .likes {
+    background: url("/images/heart.png") no-repeat left top; }
+  #review .friends .set {
+    height: 25px;
+    clear: both; }
+#review .title {
+  padding: 5px 0 10px 25px;
+  font-size: 0.8em; }
 #review #section-scroll {
   overflow: auto;
   height: 150px; }
@@ -1352,6 +1361,24 @@ ul li.first {
   background-repeat: no-repeat;
   background-size: cover;
   margin: 10px 20px 20px 20px; }
+
+.f_and_f {
+  text-align: left;
+  font-weight: bold;
+  font-size: 1.1em;
+  padding: 10px 0 5px 0;
+  display: block;
+  clear: both; }
+  .f_and_f .title {
+    display: block;
+    clear: both; }
+  .f_and_f .photo {
+    float: left;
+    width: 30px;
+    height: 30px;
+    background-size: cover;
+    background: center, center;
+    margin: 0 5px 5px 0; }
 
 fieldset {
   border: none; }

@@ -4,13 +4,33 @@
 		.side_div#dish_div.txt_cnt
 			#avatar{:style => "background-image: url('#{@user.user_photo}')"}
 			- user_name = @user.name.split(' ') 
-			%h2="#{user_name.first} #{user_name.second.first + '.' if user_name.second}"
-			- if followers.any?
-				.set.likes
-					.title #{likes.count} followers
-					- likes.each do |l|
+			%h2 #{user_name.first} #{user_name.second.first + '.' if user_name.second}
+			- if @followers.any?
+				.f_and_f
+					.title #{@followers.count} followers
+					- @followers.each do |l|
 						.photo{:style => "background-image: url(#{l[:photo]})"}
-						/ = image_tag l[:photo], :class => 'photo'
+			- if @friends.any?
+				.f_and_f
+					.title #{@friends.count} friends
+					- @friends.each do |l|
+						.photo{:style => "background-image: url(#{l[:photo]})"}
 		.center_div#dish_center
 			#review_content
-				LI
+			-if @dishins.any?
+				.hd3r Latest Dish-Ins
+				%ul#best_dishes
+					-@dishins.each do |d|
+						%li
+							= link_to image_tag(d[:photo]), dish_path(d[:id])
+							%br
+							= link_to truncate(d[:name], :length => 10), dish_path(d[:id])
+			.s10
+			-if @likes.any?
+				.hd3r.cl_bth Latest Likes
+				%ul#best_dishes
+					-@likes.each do |d|
+						%li
+							= link_to image_tag(d[:photo]), dish_path(d[:id])
+							%br
+							= link_to truncate(d[:name], :length => 10), dish_path(d[:id])
