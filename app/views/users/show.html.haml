@@ -1,0 +1,16 @@
+-if @user
+	/ =render '/shared/share_links'
+	#popup
+		.side_div#dish_div.txt_cnt
+			#avatar{:style => "background-image: url('#{@user.user_photo}')"}
+			- user_name = @user.name.split(' ') 
+			%h2="#{user_name.first} #{user_name.second.first + '.' if user_name.second}"
+			- if followers.any?
+				.set.likes
+					.title #{likes.count} followers
+					- likes.each do |l|
+						.photo{:style => "background-image: url(#{l[:photo]})"}
+						/ = image_tag l[:photo], :class => 'photo'
+		.center_div#dish_center
+			#review_content
+				LI

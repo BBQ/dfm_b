@@ -59,6 +59,7 @@
 						= @restaurant.votes.to_i != 0 ? @restaurant.rating.round(1) : 0
 					.voices
 						(#{@restaurant.votes} votes)
+					= link_to (image_tag 'app_store.png'), 'http://itunes.apple.com/app/id530449856'
 				.sp
 				%ul.info_list
 					%li="#{ @restaurant.city + ',' if @restaurant.city} #{@restaurant.address}"

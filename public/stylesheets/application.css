@@ -224,6 +224,9 @@ img {
 .static li:before {
   content: "- "; }
 
+.txt_cnt {
+  text-align: center; }
+
 #add_review {
   width: 470px;
   left: 50%;
@@ -1339,6 +1342,16 @@ ul li.first {
     background-color: white;
     border-radius: 5px;
     height: 30px; }
+
+#avatar {
+  width: 180px;
+  height: 180px;
+  border: 5px solid #f7f5f0;
+  border-radius: 50%;
+  margin: 0 auto;
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin: 10px 20px 20px 20px; }
 
 fieldset {
   border: none; }

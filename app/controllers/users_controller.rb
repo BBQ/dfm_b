@@ -1,4 +1,12 @@
 class UsersController < ApplicationController
+  
+  def show
+    if @user = User.find_by_id(params[:id])
+      
+      
+    end
+  end
+  
 
   def recover
     if params[:id]

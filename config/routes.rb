@@ -20,6 +20,8 @@ Dishfm::Application.routes.draw do
   
   match 'restaurants/:id' => 'restaurants#show', :as => :restaurant
   match 'restaurants' => 'restaurants#index', :as => :restaurants
+  
+  match 'users/:id' => 'users#show', :as => :user
 
   match 'networks/search' => 'networks#index', :as => :network_search  
   match 'networks/:id' => 'networks#show', :as => :network
