@@ -1355,8 +1355,9 @@ ul li.first {
 #avatar {
   width: 180px;
   height: 180px;
-  border: 5px solid #f7f5f0;
+  border: 5px solid #3aa0b6;
   border-radius: 50%;
+  box-shadow: 1px 1px 0px 1px #bbbbbb;
   margin: 0 auto;
   background-repeat: no-repeat;
   background-size: cover;

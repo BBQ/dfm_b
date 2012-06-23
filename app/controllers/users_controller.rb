@@ -30,6 +30,8 @@ class UsersController < ApplicationController
         end
       end
       
+      @fb_obj = @user
+      
     end
   end
   

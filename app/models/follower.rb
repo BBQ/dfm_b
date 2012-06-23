@@ -7,4 +7,10 @@ class Follower < ActiveRecord::Base
     end
     super
   end
+  
+  def crate(data)
+    system "rake facebook:follow USER_ID='#{data[:user_id]}' &"
+    super(data)
+  end
+  
 end

@@ -271,6 +271,8 @@ class ApiController < ApplicationController
           :home_cook_id => home_cook_id,
           :network_id => network_id ||= nil
         )
+        system "rake facebook:save DISH_ID='#{dish_id}' USER_ID='#{params[:user_id]}' &" if dish_id
+        system "rake facebook:save RESTAURANT_ID='#{restaurant_id}' USER_ID='#{params[:user_id]}' &" if restaurant_id
       end
     else
       $error = {:description => 'Params missing', :code => 155}  

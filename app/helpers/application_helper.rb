@@ -21,6 +21,10 @@ module ApplicationHelper
           title = "#{@fb_obj.dish.name}"
           description = "#{@fb_obj.dish.name} in #{@fb_obj.restaurant ? @fb_obj.restaurant.name : 'Home Cooked'}"
           image = "#{domain}#{@fb_obj.photo.iphone.url}"
+        when 'review' 
+          title = "#{@fb_obj.user.name}"
+          description = "#{@fb_obj.user.name} started following you"
+          image = "#{@fb_obj.user_photo}"
       end
       
       raw %Q{<meta property="fb:app_id" content="#{app_id}" />
