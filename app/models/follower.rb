@@ -1,10 +1,10 @@
 class Follower < ActiveRecord::Base
   validates :user_id, :uniqueness => {:scope => :follow_user_id}
   
-  after_create
+  after_create :post_on_facebook
 
-  def after_create(record)
-    system "rake facebook:follow ID='#{id}' &"
+  def post_on_facebook(record)
+    system "rake facebook:follow ID='#{record.id}' &"
   end
   
   def destroy
