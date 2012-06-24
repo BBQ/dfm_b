@@ -18,13 +18,17 @@ namespace :facebook do
   end
   
   task :follow => :environment do
-    if u = User.find_by_id(ENV["USER_ID"])
-      if !u.fb_access_token.blank?
-        
-        graph = Koala::Facebook::API.new(u.fb_access_token)
-        graph.put_connections('me', "dish_fm:Follow", :user => "#{$domain_s}users/#{u.id}")
-        
+    if f = Follower.find_by_id(ENV["ID"])
+      
+      if u = User.find_by_id(f.user_id)
+        if !u.fb_access_token.blank? && followed = User.find_by_id(f.follow_user_id)
+      
+          graph = Koala::Facebook::API.new(u.fb_access_token)
+          graph.put_connections('me', "dish_fm:Follow", :user => "#{$domain_s}users/#{u.id}")
+      
+        end
       end
+      
     end
   end
   

@@ -25,7 +25,7 @@ class UsersController < ApplicationController
         if review = Review.find_by_id(l.review_id)
           if dish = Dish.find_by_id(review.dish_id)          
               @likes.push({:id => dish.id, :photo => dish.image_p120, :name => dish.name})
-              break if @likes.count == 10
+              break if @likes.count == 12
           end
         end
       end
