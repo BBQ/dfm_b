@@ -8,7 +8,7 @@ class Follower < ActiveRecord::Base
     super
   end
   
-  def create(data)    
+  def self.create(data)    
     follow = super(data)
     system "rake facebook:follow ID='#{follow.id}' &"
   end
