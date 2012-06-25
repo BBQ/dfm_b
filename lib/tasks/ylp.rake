@@ -16,6 +16,10 @@ namespace :ylp do
   task :fill_4sq_with_yel => :environment do
     fill_4sq_with_yel
   end
+  
+  task :hours_4sq_with_yel => :environment do
+    hours_4sq_with_yel
+  end
 
   task :time_zone => :environment do
     WorkHour.all.each do |wh|
