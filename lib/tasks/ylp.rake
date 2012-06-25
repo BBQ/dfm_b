@@ -575,7 +575,7 @@ def recov_cat
 end
 
 def hours_4sq_with_yel
-  Restaurant.where("source = 'foursquare' and city != 'Minsk' and city != 'Санкт-Петербург' and city != 'Калуга' and city != 'Домодедовский район' and city != 'город Калуга'").each do |r|
+  Restaurant.where("source = 'fsq_upd_ylp' and city != 'Minsk' and city != 'Санкт-Петербург' and city != 'Калуга' and city != 'Домодедовский район' and city != 'город Калуга'").each do |r|
     
     location = CGI.escape("#{r.city} #{r.address}")
     name = CGI.escape(r.name)
