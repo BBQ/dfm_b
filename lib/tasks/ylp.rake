@@ -570,6 +570,34 @@ def recov_cat
   end
 end
 
+def hours_4sq_with_yel
+  Restaurant.where("source = 'foursquare' and city != 'Minsk' and city != 'Санкт-Петербург' and city != 'Калуга' and city != 'Домодедовский район' and city != 'город Калуга'").each do |r|
+    
+    location = CGI.escape("#{r.city} #{r.address}")
+    name = CGI.escape(r.name)
+    url = "http://www.yelp.com/search/snippet?find_desc=#{name}&find_loc=#{location}&mapsize=small&ns=1&rpp=40&sortby=best_match&start=0"
+    
+    if src = open(url.gsub("/search?", "/search/snippet?")) 
+      json = JSON.parse(src.read)
+      if ds = json['events']['search.map.overlays'].first
+
+        doc = Nokogiri::HTML(open("http://www.yelp.com#{ds['url']}"))
+        data = {}  
+        cat = categories = []
+        
+        if !doc.css('dd.attr-BusinessHours')[0].nil?
+          f_hours(doc.css('dd.attr-BusinessHours')[0].text).each do |h|
+            h[:restaurant_id] = r.id
+            p h
+            WorkHour.create(h)
+          end
+        end
+      
+      end
+    end
+    
+  end  
+end
 
 def fill_4sq_with_yel
   Restaurant.where("source = 'foursquare' and city != 'Minsk' and city != 'Санкт-Петербург' and city != 'Калуга' and city != 'Домодедовский район' and city != 'город Калуга'").each do |r|
@@ -626,8 +654,10 @@ def fill_4sq_with_yel
         end
     
         if !doc.css('dd.attr-BusinessHours')[0].nil?
-          hours = f_hours(doc.css('dd.attr-BusinessHours')[0].text)
-          hours.each{ |k| data.merge!(k)}
+          f_hours(doc.css('dd.attr-BusinessHours')[0].text).each do |h|
+            h[:restaurant_id] = r.id
+            WorkHour.create(h)
+          end
         end
         data[:source] = 'fsq_upd_ylp'
         
