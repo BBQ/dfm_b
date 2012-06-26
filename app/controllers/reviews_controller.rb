@@ -110,6 +110,19 @@ class ReviewsController < ApplicationController
         url = "#{web}/reviews/#{@review.id}"
 
         @review_img = @review.photo.iphone_retina.url
+        if @review_img == '/images/noimage.jpg' || @review_img.blank?
+          if @review.rtype.nil?
+            r_dish = @review.dish
+          elsif @review.rtype == 'home_cooked'
+            r_dish = HomeCook.find_by_id(@review.dish_id)
+          elsif @review.rtype == 'delivery'
+            r_dish = Delivery.find_by_id(@review.dish_id)
+          end
+          if dish_photo = r_dish.photo
+            @review_img = dish_photo.iphone_retina.url
+          end
+        end
+        
         img = "#{web}#{@review_img}" unless @review_img.blank?
 
         @share_data = {

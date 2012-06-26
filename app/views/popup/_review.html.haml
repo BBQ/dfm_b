@@ -1,6 +1,6 @@
 -unless @review.nil?
 	#review
-		=image_tag(@review.photo.iphone_retina.url, :id => "full_photo")
+		=image_tag(@review_img, :id => "full_photo")
 		#review_nav
 			= link_to(image_tag('prev.png'), "/reviews/#{@review_prev_id}", :class => 'prev') if @review_prev_id && @review_prev_id != @review.id
 			= link_to(image_tag('next.png'), "/reviews/#{@review_next_id}", :class => 'next') if @review_next_id && @review_next_id != @review.id
