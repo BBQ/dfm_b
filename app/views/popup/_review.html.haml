@@ -1,47 +1,45 @@
-#review
-	=image_tag(@review.photo.iphone_retina.url == '/images/noimage.jpg' ? @dish.photo.iphone_retina.url : @review.photo.iphone_retina.url, :id => "full_photo")
-	#review_nav
-		= link_to(image_tag('prev.png'), "/reviews/#{@review_prev_id}", :class => 'prev') if @review_prev_id && @review_prev_id != @review.id
-		= link_to(image_tag('next.png'), "/reviews/#{@review_next_id}", :class => 'next') if @review_next_id && @review_next_id != @review.id
-	.data
-		= image_tag @review.user.user_photo, :class => 'photo'
-		= link_to @review.user.name.split(' ')[0], '', :class => 'user_link'
-		.rate
-			- if @review.rating != 0
-				- @review.rating.round.times do
-					= image_tag 'star_filled.png', :class => 'star'
-				- (5 - @review.rating).to_i.times do
-					= image_tag 'star_empty.png', :class => 'star'
-			- else
-				- 5.times do
-					= image_tag 'star_empty.png', :class => 'star'
-		.desc
-			= @review.text
-		- friends = friends(@review)	
-		- if friends.any?
-			.set.friends
-				.title With #{friends.count} friend(s)
-				- friends.each do |f|
-					= image_tag f[:photo], :class => 'photo'
-		.sp
-		= link_to (image_tag 'app_store_sm.png'), 'http://itunes.apple.com/app/id530449856'
-		- likes = likes(@review)
-		- if likes.any?
-			.set.likes
-				.title #{likes.count} like(s)
-				- likes.each do |l|
-					.photo{:style => "background-image: url(#{l[:photo]})"}
-					/ = image_tag l[:photo], :class => 'photo'
-		- comments = comments(@review)
-		- if comments.any?
-			.set.comments
-				.title #{comments.count} comment(s)
-				- comments.each do |c|
-					.csp
-					= image_tag c[:photo]
-					= link_to c[:name]
-					.text
-						=c[:text]
-		
-				
-			
+-if @review
+	#review
+		=image_tag(@review.photo.iphone_retina.url == '/images/noimage.jpg' ? @dish.photo.iphone_retina.url : @review.photo.iphone_retina.url, :id => "full_photo")
+		#review_nav
+			= link_to(image_tag('prev.png'), "/reviews/#{@review_prev_id}", :class => 'prev') if @review_prev_id && @review_prev_id != @review.id
+			= link_to(image_tag('next.png'), "/reviews/#{@review_next_id}", :class => 'next') if @review_next_id && @review_next_id != @review.id
+		.data
+			= image_tag @review.user.user_photo, :class => 'photo'
+			= link_to @review.user.name.split(' ')[0], '', :class => 'user_link'
+			.rate
+				- if @review.rating != 0
+					- @review.rating.round.times do
+						= image_tag 'star_filled.png', :class => 'star'
+					- (5 - @review.rating).to_i.times do
+						= image_tag 'star_empty.png', :class => 'star'
+				- else
+					- 5.times do
+						= image_tag 'star_empty.png', :class => 'star'
+			.desc
+				= @review.text
+			- friends = friends(@review)	
+			- if friends.any?
+				.set.friends
+					.title With #{friends.count} friend(s)
+					- friends.each do |f|
+						= image_tag f[:photo], :class => 'photo'
+			.sp
+			= link_to (image_tag 'app_store_sm.png'), 'http://itunes.apple.com/app/id530449856'
+			- likes = likes(@review)
+			- if likes.any?
+				.set.likes
+					.title #{likes.count} like(s)
+					- likes.each do |l|
+						.photo{:style => "background-image: url(#{l[:photo]})"}
+						/ = image_tag l[:photo], :class => 'photo'
+			- comments = comments(@review)
+			- if comments.any?
+				.set.comments
+					.title #{comments.count} comment(s)
+					- comments.each do |c|
+						.csp
+						= image_tag c[:photo]
+						= link_to c[:name]
+						.text
+							=c[:text]
