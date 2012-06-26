@@ -18,7 +18,7 @@ module ApplicationHelper
           description = "Rating: #{@fb_obj.rating.round(1)} (#{@fb_obj.votes} vote(s)). Popularity: #{@fb_obj.fsq_checkins_count} checkins. #{@fb_obj.description}"
           image = "#{domain}#{@fb_obj.thumb}"
         when 'review' 
-          title = "#{@fb_obj.dish.name}"
+          title = "#{@fb_obj.dish.name} review by #{@fb_obj.user.name}"
           description = "#{@fb_obj.dish.name} in #{@fb_obj.restaurant ? @fb_obj.restaurant.name : 'Home Cooked'}"
           image = "#{domain}#{@fb_obj.photo.iphone.url}"
         when 'user' 
