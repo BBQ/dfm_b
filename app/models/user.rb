@@ -227,6 +227,7 @@ class User < ActiveRecord::Base
     dish_fm_user_id = 540
     Follower.create(:user_id => user_id, :follow_user_id => dish_fm_user_id)
     Follower.create(:user_id => dish_fm_user_id, :follow_user_id => user_id)
+    Notification.send(dish_fm_user_id, 'following', user_id)
   end
   
   
