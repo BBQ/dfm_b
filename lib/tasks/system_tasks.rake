@@ -21,7 +21,7 @@ end
 
 def clean_restaurants
   day_ago = (Time.now-1*24*60*60).strftime("%Y-%m-%d %H:%M:%S")
-  p Restaurant.destroy_all('source = "user" && rating = 0 && (updated_at is NULL || updated_at < ?)', day_ago)
+  p Restaurant.destroy_all("source = 'user' && rating = 0 && (updated_at is NULL || updated_at < '#{day_ago}')")
 end
 
 
