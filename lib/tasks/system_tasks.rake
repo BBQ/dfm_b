@@ -21,6 +21,7 @@ def update_4sq_restaurants_info
     restaurants = Restaurant.select([:id, :fsq_checkins_count, :fsq_tip_count, :fsq_users_count, :fsq_id]).where('fsq_id IS NOT NULL AND updated_at < ?', (Time.now-2*24*60*60).strftime("%Y-%m-%d %H:%M:%S"))
     restaurants.each do |r|
       if fsq_hash = client.venue(r.fsq_id)    
+        p r.fsq_id
         r.fsq_checkins_count = fsq_hash[:stats][:checkinsCount]
         r.fsq_tip_count = fsq_hash[:stats][:tipCount]
         r.fsq_users_count = fsq_hash[:stats][:usersCount]
