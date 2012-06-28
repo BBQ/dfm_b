@@ -35,7 +35,10 @@ def update_4sq_restaurants_info
       if fsq_hash = client.search_venues(:ll => "#{$r.fsq_lat},#{$r.fsq_lng}", :query => $r.name, :intent => 'checkin')    
 
         if fsq_hash.groups[0].items.any?
-          update_4sq($r, find_4sq($r, fsq_hash.groups[0].items))
+          if data = find_4sq($r, fsq_hash.groups[0].items)
+            update_4sq($r, data)
+          else
+            # $r.update_attributes(:fsq_id => nil, :fsq_checkins_count => nil, :fsq_tip_count => nil, :fsq_users_count => nil, :fsq_lat => nil, :fsq_lng => nil, :updated_at => Time.now)              
         end
         
       end
@@ -56,9 +59,15 @@ end
 def find_4sq(r,fsq_data)
   fsq_r = nil
   
-  fsq_data.each {|i| fsq_r = i if i.downcase == r.name.downcase}        
-  fsq_data.each {|i| fsq_r = i if i.contact.formattedPhone.to_s == r.phone.to_s} if fsq_r.nil?  
-  fsq_data.each {|i| fsq_r = i if i.name.to_s =~ /#{r.name}/} if fsq_r.nil?
+  fsq_data.each do |i|
+    if i.downcase == r.name.downcase
+      fsq_r = i
+    elsif i.contact.formattedPhone.to_s == r.phone.to_s
+      fsq_r = i
+    elsif i.name.to_s =~ /#{r.name}/
+      fsq_r = i
+    end
+  end
   
   fsq_r
 end
