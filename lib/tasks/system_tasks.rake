@@ -33,11 +33,12 @@ def update_4sq_restaurants_info
     
   rescue Exception => e
     msg = e.message
+    p msg
     if msg.count('has been deleted')
+      p msg.match(/Venue (.*) has/)[1]
       $r.fsq_id = msg.match(/Venue (.*) has/)[1]
       $r.save
     end
-    p msg
     update_4sq_restaurants_info
   end
 end
