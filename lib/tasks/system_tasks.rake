@@ -17,7 +17,7 @@ end
 def update_4sq_restaurants_info
   begin
     client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)  
-    restaurants = Restaurant.select([:id, :name, :fsq_checkins_count, :fsq_tip_count, :fsq_users_count, :fsq_id, :fsq_lat, :fsq_lng, :updated_at]).where('fsq_id IS NOT NULL AND fsq_id != 0 AND updated_at < ?', (Time.now-2*24*60*60).strftime("%Y-%m-%d %H:%M:%S")).order(:id)
+    restaurants = Restaurant.select([:id, :name, :phone, :fsq_checkins_count, :fsq_tip_count, :fsq_users_count, :fsq_id, :fsq_lat, :fsq_lng, :updated_at]).where('fsq_id IS NOT NULL AND fsq_id != 0 AND updated_at < ?', (Time.now-2*24*60*60).strftime("%Y-%m-%d %H:%M:%S")).order(:id)
     
     restaurants.each do |r|
       $r = r
