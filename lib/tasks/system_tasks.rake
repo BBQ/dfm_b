@@ -54,12 +54,13 @@ def update_4sq(restaurant, data)
 end
 
 def find_4sq(r,fsq_data)
+  fsq_r = nil
   
   fsq_data.each {|i| fsq_r = i if i.downcase == r.name.downcase}        
   fsq_data.each {|i| fsq_r = i if i.contact.formattedPhone.to_s == r.phone.to_s} if fsq_r.nil?  
   fsq_data.each {|i| fsq_r = i if i.name.to_s =~ /#{r.name}/} if fsq_r.nil?
   
-  fsq_r || nil
+  fsq_r
 end
 
 
