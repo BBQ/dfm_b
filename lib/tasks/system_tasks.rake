@@ -11,6 +11,11 @@ namespace :system do
     update_4sq_restaurants_info
   end
   
+  desc "Delete all restaurants created by user more than 1 day ago, without reviews"
+  task :clean_restaurants => :environment do
+    update_4sq_restaurants_info
+  end
+  
   
 end
 
