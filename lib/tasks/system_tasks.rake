@@ -35,9 +35,11 @@ def update_4sq_restaurants_info
       if fsq_hash = client.search_venues(:ll => "#{$r.fsq_lat},#{$r.fsq_lng}", :query => $r.fsq_name, :intent => 'checkin')    
 
         if fsq_hash.groups[0].items.any?
-          data[:stats][:checkinsCount] = fsq_hash.groups[0].items.stats.checkinsCount
-          data[:stats][:usersCount] = fsq_hash.groups[0].items.stats.usersCount
-          data[:stats][:tipCount] = fsq_hash.groups[0].items.stats.tipCount
+          data = {:stats => {
+            :checkinsCount => fsq_hash.groups[0].items.stats.checkinsCount,
+            :usersCount => fsq_hash.groups[0].items.stats.usersCount,
+            :tipCount => fsq_hash.groups[0].items.stats.tipCount
+          }}
           update_4sq($r, data)
         end
         
