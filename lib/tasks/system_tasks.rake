@@ -35,7 +35,7 @@ def update_4sq_restaurants_info
       if fsq_hash = client.search_venues(:ll => "#{$r.fsq_lat},#{$r.fsq_lng}", :query => $r.fsq_name, :intent => 'checkin')    
 
         if fsq_hash.groups[0].items.any?
-          update_4sq($r, find_4sq(fsq_hash.groups[0].items))
+          update_4sq($r, find_4sq($r, fsq_hash.groups[0].items))
         end
         
       end
