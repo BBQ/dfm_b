@@ -40,6 +40,7 @@ def update_4sq_restaurants_info
           else
             # $r.update_attributes(:fsq_id => nil, :fsq_checkins_count => nil, :fsq_tip_count => nil, :fsq_users_count => nil, :fsq_lat => nil, :fsq_lng => nil, :updated_at => Time.now)              
             $r.update_attributes(:updated_at => Time.now)              
+          end
         end
         
       end
