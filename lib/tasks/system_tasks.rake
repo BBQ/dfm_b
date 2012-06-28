@@ -23,25 +23,39 @@ def update_4sq_restaurants_info
       $r = r
       if fsq_hash = client.venue($r.fsq_id)    
         p "#{$r.id}: #{$r.fsq_id}: #{$r.updated_at}"
-        $r.fsq_checkins_count = fsq_hash[:stats][:checkinsCount]
-        $r.fsq_tip_count = fsq_hash[:stats][:tipCount]
-        $r.fsq_users_count = fsq_hash[:stats][:usersCount]
-        $r.updated_at = Time.now
-        $r.save
+        update_4sq($r, fsq_hash)
       end
     end     
     
   rescue Exception => e
     msg = e.message
     p msg
+    
     if msg.count('has been deleted')
-      p msg.match(/Venue (.*) has/)[1]
-      $r.fsq_id = msg.match(/Venue (.*) has/)[1]
-      $r.save
+      if fsq_hash = client.search_venues(:ll => "#{$r.lat},#{$r.lng}", :query => $r.name, :intent => 'checkin')    
+
+        if fsq_hash.groups[0].items.any?
+          data[:stats][:checkinsCount] = fsq_hash.groups[0].items.stats.checkinsCount
+          data[:stats][:usersCount] = fsq_hash.groups[0].items.stats.usersCount
+          data[:stats][:tipCount] = fsq_hash.groups[0].items.stats.tipCount
+          update_4sq($r, data)
+        end
+        
+      end
     end
+    
     update_4sq_restaurants_info
   end
 end
+
+def update_4sq(restaurant, data)
+  restaurant.fsq_checkins_count = data[:stats][:checkinsCount]
+  restaurant.fsq_tip_count = data[:stats][:tipCount]
+  restaurant.fsq_users_count = data[:stats][:usersCount]
+  restaurant.updated_at = Time.now
+  restaurant.save
+end
+
 
 def get_yelp_info(restaurant_id)
   if r = Restaurants.find_by_id(restaurant_id)
