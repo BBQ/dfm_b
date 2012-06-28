@@ -230,8 +230,6 @@ class User < ActiveRecord::Base
     Notification.send(dish_fm_user_id, 'following', user_id)
   end
   
-  
-  
   def self.authenticate_by_twitter(oauth_token, oauth_token_secret, email = nil)
     begin
       client = Twitter::Client.new(:oauth_token => oauth_token, :oauth_token_secret => oauth_token_secret)

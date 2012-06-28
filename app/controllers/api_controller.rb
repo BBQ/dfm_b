@@ -623,14 +623,14 @@ class ApiController < ApplicationController
       if params[:push_token] && session[:user_id]
         
         #Add push token
-        if !APN::Device.find_by_token_and_user_id(params[:push_token], session[:user_id])
-          push_token = APN::Device.find_by_token_and_user_id(params[:push_token], session[:user_id])
-          if push_token && push_token.user_id == 0
-            push_token.user_id = session[:user_id]
-            push_token.save
-          else
+        if push_token = APN::Device.find_by_token(params[:push_token])
+          if push_token.user_id == 0
+            push_token.update_attributes(:user_id => session[:user_id])
+          elsif push_token.user_id != session[:user_id]
             APN::Device.create(:token => params[:push_token], :user_id => session[:user_id])
           end
+        else
+          APN::Device.create(:token => params[:push_token], :user_id => session[:user_id])
         end
         
         #Alow send pushes on login
