@@ -13,7 +13,7 @@ namespace :system do
   
   desc "Delete all restaurants created by user more than 1 day ago, without reviews"
   task :clean_restaurants => :environment do
-    update_4sq_restaurants_info
+    clean_restaurants
   end
   
   
@@ -21,7 +21,7 @@ end
 
 def clean_restaurants
   day_ago = (Time.now-1*24*60*60).strftime("%Y-%m-%d %H:%M:%S")
-  Restaurant.destroy_all('source = "user" && rating = 0 && (updated_at is NULL || updated_at < ?)', day_ago)
+  p Restaurant.destroy_all('source = "user" && rating = 0 && (updated_at is NULL || updated_at < ?)', day_ago)
 end
 
 
