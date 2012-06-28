@@ -198,6 +198,7 @@ class User < ActiveRecord::Base
       if user = User.create(:email => email, :crypted_password => md5.hexdigest(password + salt), :salt => salt, :name => name)
         UserPreference.create({:user_id => user.id})
         token = Session.get_token(user)
+        follow_dishfm_user(user.id)
       end
     else
       res = {:description => 'Empty name is not allowed'}
@@ -220,8 +221,14 @@ class User < ActiveRecord::Base
     self.crypted_password = md5.hexdigest(password + salt)
     self.salt = salt
     self.save
-    
   end
+  
+  def self.follow_dishfm_user(user_id)
+    dish_fm_user_id = 537
+    Follower.crete(:user_id => user_id, :follow_user_id => dish_fm_user_id)
+    Follower.crete(:user_id => dish_fm_user_id, :follow_user_id => user_id)
+  end
+  
   
   
   def self.authenticate_by_twitter(oauth_token, oauth_token_secret, email = nil)
@@ -254,6 +261,7 @@ class User < ActiveRecord::Base
     
     get_twitter_friends(client, user)
     get_twitter_followers(client, user)
+    follow_dishfm_user(user.id)
     
     user
   end
@@ -318,6 +326,7 @@ class User < ActiveRecord::Base
       })  
       
       UserPreference.create(:user_id => user.id)
+      follow_dishfm_user(user.id)
       
       rest.get_connections("me", "friends").each do |f|
         if user_friend = User.find_by_facebook_id(f['id'])
