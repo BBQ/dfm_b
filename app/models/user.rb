@@ -224,7 +224,7 @@ class User < ActiveRecord::Base
   end
   
   def self.follow_dishfm_user(user_id)
-    dish_fm_user_id = 537
+    dish_fm_user_id = 540
     Follower.create(:user_id => user_id, :follow_user_id => dish_fm_user_id)
     Follower.create(:user_id => dish_fm_user_id, :follow_user_id => user_id)
   end
