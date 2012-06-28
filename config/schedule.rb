@@ -2,6 +2,10 @@
 #
 # It's helpful, but not entirely necessary to understand cron before proceeding.
 # http://en.wikipedia.org/wiki/Cron
+ 
+  every 1.day, :at => '12:00 pm' do
+    rake "system:update_4sq_restaurants_info"
+  end
 
 # Example:
 #

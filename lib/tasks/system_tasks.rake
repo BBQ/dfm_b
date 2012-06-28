@@ -6,6 +6,32 @@ namespace :system do
     get_yelp_info(ENV["RESTAURANT_ID"])
   end
   
+  desc "Update Foursquare Checkins and Restaurant Menu"
+  task :update_4sq_restaurants_info => :environment do
+    update_4sq_restaurants_info
+  end
+  
+  
+end
+
+def update_4sq_restaurants_info
+  begin
+    client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)  
+    
+    restaurants = Restaurants.select([:id, :fsq_checkins_count, :fsq_tip_count, :fsq_users_count]).where('fsq_id IS NOT NULL AND updated_at < ?', (Time.now-2*24*60*60).strftime("%Y-%m-%d %H:%M:%S"))
+    restaurants.each do |r|
+      if fsq_hash = client.venue(r.fsq_id)    
+        r.fsq_checkins_count = fsq_hash[:stats][:checkinsCount]
+        r.fsq_tip_count = fsq_hash[:stats][:tipCount]
+        r.fsq_users_count = fsq_hash[:stats][:usersCount]
+        r.save
+      end
+    end     
+  rescue Exception => e
+    p e.message
+    update_4sq_restaurants_info
+  end
+    
 end
 
 def get_yelp_info(restaurant_id)
