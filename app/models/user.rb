@@ -23,6 +23,19 @@ class User < ActiveRecord::Base
   
   mount_uploader :photo, ImageUploader
   
+  def self.link_push_token(push_token, user_id)
+    if push_token = APN::Device.find_by_token(push_token)
+      if push_token.user_id == 0
+        push_token.update_attributes(:user_id => user_id)
+      elsif push_token.user_id != user_id
+        APN::Device.create(:token => push_token, :user_id => user_id)
+      end
+    else
+      APN::Device.create(:token => push_token, :user_id => user_id)
+    end
+  end
+  
+  
   def favourite_dishes(user_id)
     dishes_array = []    
     favourite_dish_ids = []

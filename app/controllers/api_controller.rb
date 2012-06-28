@@ -207,7 +207,9 @@ class ApiController < ApplicationController
   end
   
   def logout
-    if Session.check_token(params[:user_id], params[:token]) && params[:push_token] 
+    if Session.check_token(params[:user_id], params[:token]) && params[:push_token]
+      User.link_push_token(params[:push_token], params[:user_id])
+      
       if device = APN::Device.find_by_token_and_user_id(params[:push_token],params[:user_id])
         device.active = 0
         device.save
@@ -623,15 +625,7 @@ class ApiController < ApplicationController
       if params[:push_token] && session[:user_id]
         
         #Add push token
-        if push_token = APN::Device.find_by_token(params[:push_token])
-          if push_token.user_id == 0
-            push_token.update_attributes(:user_id => session[:user_id])
-          elsif push_token.user_id != session[:user_id]
-            APN::Device.create(:token => params[:push_token], :user_id => session[:user_id])
-          end
-        else
-          APN::Device.create(:token => params[:push_token], :user_id => session[:user_id])
-        end
+        User.link_push_token(params[:push_token], session[:user_id])
         
         #Alow send pushes on login
         if device = APN::Device.find_by_token_and_user_id(params[:push_token], session[:user_id])
