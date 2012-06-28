@@ -353,6 +353,7 @@ class ApiController < ApplicationController
         end
       end
             
+      params[:restaurant][:source] = 'user'      
       if rest = Restaurant.create(params[:restaurant])
         r_id = rest.id 
       end

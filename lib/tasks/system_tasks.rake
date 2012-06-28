@@ -14,6 +14,12 @@ namespace :system do
   
 end
 
+def clean_restaurants
+  day_ago = (Time.now-1*24*60*60).strftime("%Y-%m-%d %H:%M:%S")
+  Restaurant.destroy_all('source = "user" && rating = 0 && (updated_at is NULL || updated_at < ?)', day_ago)
+end
+
+
 def update_4sq_restaurants_info
   begin
     client = Foursquare2::Client.new(:client_id => $client_id, :client_secret => $client_secret)  
@@ -38,14 +44,14 @@ def update_4sq_restaurants_info
           if data = find_4sq($r, fsq_hash.groups[0].items)
             update_4sq($r, data)
           else
-            # $r.update_attributes(:fsq_id => nil, :fsq_checkins_count => nil, :fsq_tip_count => nil, :fsq_users_count => nil, :fsq_lat => nil, :fsq_lng => nil, :updated_at => Time.now)              
-            $r.update_attributes(:updated_at => Time.now)              
+            # $r.update_attributes(:fsq_id => nil, :fsq_checkins_count => nil, :fsq_tip_count => nil, :fsq_users_count => nil, :fsq_lat => nil, :fsq_lng => nil, :updated_at => Time.now)                            
           end
         end
         
       end
     end
     
+    $r.update_attributes(:updated_at => Time.now)
     update_4sq_restaurants_info
   end
 end
