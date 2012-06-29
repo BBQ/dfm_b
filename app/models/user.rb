@@ -28,10 +28,10 @@ class User < ActiveRecord::Base
       if push_token.user_id == 0
         push_token.update_attributes(:user_id => user_id)
       elsif push_token.user_id != user_id
-        APN::Device.create(:token => push_token, :user_id => user_id)
+        APN::Device.create({:token => push_token, :user_id => user_id})
       end
     else
-      APN::Device.create(:token => push_token, :user_id => user_id)
+      APN::Device.create({:token => push_token, :user_id => user_id})
     end
   end
   
