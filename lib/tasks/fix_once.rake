@@ -21,6 +21,27 @@ end
 
 namespace :fixup do
   
+  desc "Parse push tokens from log"
+  task :push_token_update => :environment do  
+    dir = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import'
+    file_path = dir + "/push_token.log"
+    
+    file = File.open(file_path, "rb")
+    contents = file.read
+    
+    contents.split('--').each do |e|
+      if push_token = e.match(/push_token"=>"(.{71})"/)
+        push_token = push_token[1]
+        if user = e.match(/user_id"=>"(\d{3})"/)
+          user_id = user[1]
+          p "#{user_id}:#{push_token}"
+          User.link_push_token(push_token, user_id)
+        end
+      end
+
+    end
+  end
+  
   task :mg_cat => :environment do
     file_name = "rc.xls"
 
