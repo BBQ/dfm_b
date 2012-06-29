@@ -35,7 +35,17 @@ namespace :fixup do
         if user = e.match(/user_id"=>"(\d{3})"/)
           user_id = user[1]
           p "#{user_id}:#{push_token}"
-          User.link_push_token(push_token, user_id)
+          
+          if push_token = APN::Device.find_by_token(push_token)
+            if push_token.user_id == 0
+              push_token.update_attributes(:user_id => user_id)
+            elsif push_token.user_id != user_id
+              APN::Device.create({:token => push_token, :user_id => user_id})
+            end
+          else
+            APN::Device.create({:token => push_token, :user_id => user_id})
+          end
+          
         end
       end
 
