@@ -573,7 +573,7 @@ namespace :fixup do
        wh[:restaurant_id] = r.id
        wh[:time_zone_offset] = r.time_zone_offset
        p wh
-       # WorkHour.create(wh)
+       WorkHour.create(wh)
       end
     end
   end
