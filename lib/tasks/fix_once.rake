@@ -530,14 +530,49 @@ namespace :fixup do
   end
   
   task :wh => :environment do
-    Restaurant.select([:time, :id, :time_zone_offset]).where("id = 14843").each do |r|
-      work_hours(r.time).each do |wh|
-        unless wh.blank?
-          wh[:restaurant_id] = r.id
-          wh[:time_zone_offset] = r.time_zone_offset
-          p wh
-          # WorkHour.create(wh)
-        end
+    Restaurant.select([:time, :id, :time_zone_offset]).where("source = 'fsq_upd_ylp'").each do |r|
+      
+      restaurant_hours = r.time      
+      all_data = []
+      week = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+
+      if restaurant_hours.scan("\n\t\t\t")
+        sp = "\n\t\t\t"
+      elsif restaurant_hours.scan("\r\n")
+        sp = "\r\n"
+      end  
+
+     restaurant_hours.split(sp).each do |l|
+       
+       data = {}
+       from = nil
+       to = nil
+
+       week.each {|wd| from = week.index(wd) if l =~ /^ ?#{wd}/}
+       week.each {|wd| to = week.index(wd) if l =~ /-#{wd}/}
+       to = from if to.nil?
+
+       if from && to
+         week[from..to].each do |wd|
+           if m = l.match(/(\d{1,2}:?\d{0,2} ?(pm|am)) ?- ?(\d{1,2}:?\d{0,2} ?(pm|am))/)
+
+             t_from = Time.parse(m[1]).strftime("%H:%M")
+             t_to =Time.parse(m[3]).strftime("%H:%M")
+
+             t_to.gsub!(/^\d{2}/, "#{t_to.to_i+24}") if t_from.to_i > t_to.to_i
+             data[:"#{wd.downcase}"] = "#{t_from}-#{t_to}"    
+
+           end
+         end
+       end
+       all_data << data
+      end  
+
+      all_data.each do |wh|
+       wh[:restaurant_id] = r.id
+       wh[:time_zone_offset] = r.time_zone_offset
+       p wh
+       # WorkHour.create(wh)
       end
     end
   end
@@ -631,46 +666,4 @@ def work_hours_ru(restaurant)
     WorkHour.create(trace)
   end
   p trace
-end
-
-def work_hours(restaurant_hours)   
-  
-  all_data = []
-  week = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
-  
-  if restaurant_hours.scan("\n\t\t\t")
-    sp = "\n\t\t\t"
-  elsif restaurant_hours.scan("\r\n")
-    sp = "\r\n"
-  end  
-  
-  restaurant_hours.split(sp).each do |l|
-    l.split(',').each do |lp|
-      data = {}
-      from = 0
-      to = 0
-      
-      week.each {|wd| from = week.index(wd) if lp =~ /^ ?#{wd}/}
-      week.each {|wd| to = week.index(wd) if lp =~ /-#{wd}/}
-      to = from if to.blank?
-
-      if from != 0 && to != 0
-        week[from..to].each do |wd|
-          if m = l.match(/(\d{1,2}:?\d{0,2} ?(pm|am)) ?- ?(\d{1,2}:?\d{0,2} ?(pm|am))/)
-        
-            t_from = Time.parse(m[1]).strftime("%H:%M")
-            t_to =Time.parse(m[3]).strftime("%H:%M")
-        
-            t_to.gsub!(/^\d{2}/, "#{t_to.to_i+24}") if t_from.to_i > t_to.to_i
-            data[:"#{wd.downcase}"] = "#{t_from}-#{t_to}"    
-
-          end
-        end
-      end
-
-      all_data << data
-    end
-  end
-  
-  all_data
 end
