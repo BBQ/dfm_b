@@ -530,8 +530,9 @@ namespace :fixup do
   end
   
   task :wh => :environment do
-    Restaurant.select([:time, :id, :time_zone_offset]).where("source = 'fsq_upd_ylp'").each do |r|
+    Restaurant.select([:time, :id, :time_zone_offset]).where("source = 'fsq_upd_ylp' AND time IS NOT NULL").each do |r|
       
+      r.work_hours.delete_all
       restaurant_hours = r.time      
       all_data = []
       week = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
