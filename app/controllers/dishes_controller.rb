@@ -40,7 +40,9 @@ class DishesController < ApplicationController
       
       if @dish.photo.blank?
         @review = @dish.reviews.where('photo IS NOT NULL').order('count_likes DESC, rating DESC').first
-      else
+      end
+      
+      if !@review
         @review = Review.new
         @review.id = "-#{@dish.id}"
         @review.user_id = 1
