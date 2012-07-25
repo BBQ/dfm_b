@@ -759,7 +759,7 @@ class ApiController < ApplicationController
           end
         end
         
-        if dishes.any?
+        if dishes
           if params[:dish_id] && params[:dish_id].to_i > 0
       
             if params[:type] == 'home_cooked'
