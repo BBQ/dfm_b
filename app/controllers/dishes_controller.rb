@@ -67,7 +67,7 @@ class DishesController < ApplicationController
       web = "http://dish.fm"
       url = "#{web}/dishes/#{@dish.id}"
       
-      @review_img = @dish.photo.iphone_retina.url
+      @review_img = @dish.image_hd
       img = "#{web}#{@review_img}" unless @review_img.blank?
       
       @share_data = {
