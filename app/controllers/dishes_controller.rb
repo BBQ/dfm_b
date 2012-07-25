@@ -67,8 +67,8 @@ class DishesController < ApplicationController
       web = "http://dish.fm"
       url = "#{web}/dishes/#{@dish.id}"
       
-      @dish_img = @dish.photo.iphone_retina.url
-      img = "#{web}#{@dish_img}" unless @dish_img.blank?
+      @review_img = @dish.photo.iphone_retina.url
+      img = "#{web}#{@review_img}" unless @review_img.blank?
       
       @share_data = {
         :pinit => {
