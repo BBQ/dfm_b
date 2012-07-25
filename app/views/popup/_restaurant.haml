@@ -19,14 +19,14 @@
 				- if @restaurant.description
 					= @restaurant.description.capitalize_first_letter
 			.sp
-			-if @best_dishes.any?
+			-if @best_reviews.any?
 				.hd3r Best dishes
 				%ul#best_dishes
-					-@best_dishes.each do |d|
+					-@best_reviews.each do |r|
 						%li
-							= link_to image_tag(d.image_p120), dish_path(d.id)
+							= link_to image_tag(r.photo.thumb.url), dish_path(r.dish_id)
 							%br
-							= link_to truncate(d.name, :length => 10), dish_path(d.id)
+							= link_to truncate(r.dish.name, :length => 10), dish_path(r.dish_id)
 			-elsif @dishes_wimg.any?
 				.hd3r Dishes
 				%ul#best_dishes
