@@ -15,7 +15,7 @@ namespace :push do
         notification.alert = 'Ура Пятница! ЕДА ждет тебя на Dish.fm!'
         notification.notification_type = 'following'
         notification.review_id = 0
-        notification.user_id_from = 1
+        notification.user_id_from = 540
         notification.user_id_to = u.id
         notification.push_allow = 1
         notification.email_allow = 0
