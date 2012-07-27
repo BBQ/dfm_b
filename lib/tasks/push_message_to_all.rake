@@ -3,7 +3,7 @@ namespace :push do
   
   task :send_to_all => :environment do
     # users = User.where("`current_city` LIKE '%Moscow%' OR `email` LIKE '%.ru%'")
-    users = User.where("id = 113 || id = 149")
+    users = User.where("id = 149")
     users.each do |u|
       badge = APN::Notification.where("user_id_to = ? and `read` != 1", u.id).count(:id)
       
