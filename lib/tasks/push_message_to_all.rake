@@ -5,11 +5,12 @@ namespace :push do
     # users = User.where("`current_city` LIKE '%Moscow%' OR `email` LIKE '%.ru%'")
     users = User.where("id = 113 || id = 149")
     users.each do |u|
+      badge = APN::Notification.where("user_id_to = ? and `read` != 1", u.id).count(:id)
       
       APN::Device.where(:user_id => u.id).each do |device|
         notification = APN::Notification.new
         notification.device = device
-        notification.badge = u[:badge] + 1  
+        notification.badge = badge + 1  
         notification.sound = 'default'   
         notification.alert = 'Уррра Пятница! Лучшие стейки, паста и десерты ждут тебя на Dish.fm!'
         notification.notification_type = notification_type
