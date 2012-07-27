@@ -12,7 +12,7 @@ namespace :push do
         notification.device = device
         notification.badge = badge + 1  
         notification.sound = 'default'   
-        notification.alert = 'Уррра Пятница! Лучшие стейки, паста и десерты ждут тебя на Dish.fm!'
+        notification.alert = 'Уррра Пятница! Лучая ЕДА ждет тебя на Dish.fm!'
         notification.notification_type = 'following'
         notification.review_id = 0
         notification.user_id_from = 1
