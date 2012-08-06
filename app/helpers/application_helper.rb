@@ -23,7 +23,7 @@ module ApplicationHelper
           image = "#{domain}#{@fb_obj.photo.iphone.url}"
         when 'user' 
           title = "#{@fb_obj.name}"
-          description = "#{@fb_obj.name} started following you"
+          description = "#{@fb_obj.name} is using Dish.fm to find and share the best dishes around."
           image = "#{@fb_obj.user_photo}"
       end
       

@@ -16,7 +16,7 @@ class RestaurantsController < ApplicationController
       
       @fb_obj = @restaurant
       
-      @best_reviews = Review.select([:id, :photo, :dish_id]).where("network_id = ? AND photo IS NOT NULL", @restaurant.network_id).limit(18).order("rating DESC")      
+      @best_reviews = Review.select([:id, :photo, :dish_id]).where("network_id = ? AND photo IS NOT NULL", @restaurant.network_id).group("dish_id").limit(18).order("rating DESC")      
       @dishes_wimg = Dish.select([:id, :photo, :name]).where("network_id = ? AND photo IS NOT NULL", @restaurant.network_id).limit(18).order("rating/votes DESC") unless @best_dishes.nil?
       @any_dishes = Dish.select([:id, :photo, :name]).where("network_id = ?", @restaurant.network_id).limit(18).order("rating/votes DESC") unless @dishes_wimg.nil?
 
