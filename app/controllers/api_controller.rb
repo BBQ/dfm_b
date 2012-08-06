@@ -944,7 +944,8 @@ class ApiController < ApplicationController
   def get_restaurants    
     
     limit = 25
-    offset = params[:offset] ||= 0    
+    offset = params[:offset] ||= 0
+    load_additional = 1    
     
     if offset.to_i > 25
       return render :json => {
@@ -1062,11 +1063,6 @@ class ApiController < ApplicationController
       city_lat = 55.753548
       city_lon = 37.609239
       pi = Math::PI
-    
-      load_additional = 1 # if !params[:lat].blank? && !params[:lon].blank? && ((Math.acos(
-      #         Math.sin(city_lat * pi / 180) * Math.sin(params[:lat].to_f * pi / 180) + 
-      #         Math.cos(city_lat * pi / 180) * Math.cos(params[:lat].to_f * pi / 180) * 
-      #         Math.cos((params[:lon].to_f - city_lon) * pi / 180)) * 180 / pi) * 60 * 1.1515) * 1.609344 >= city_radius
     
       lat = !params[:lat].blank? ? params[:lat] : '55.753548'
       lon = !params[:lon].blank? ? params[:lon] : '37.609239'
