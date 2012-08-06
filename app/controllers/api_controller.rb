@@ -1039,9 +1039,8 @@ class ApiController < ApplicationController
         etc.push('cc = 1') if params[:accept_bank_cards] == '1'
         filters.push(etc.join(' AND ')) if etc.count > 0
         
-      
-    
         if params[:open_now].to_i == 1
+          load_additional = 0
           wday = Date.today.strftime("%a").downcase
           now = Time.now.utc.strftime("%H%M")
           open_now = "#{now} + REPLACE(time_zone_offset, ':', '') BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(SUBSTRING(#{wday},7,11), ':', '')"
