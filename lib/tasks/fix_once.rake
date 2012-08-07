@@ -588,7 +588,7 @@ namespace :fixup do
   end
   
   task :wh_fix => :environment do
-    WorkHour.where(:restaurant_id => '10677').each do |wh|
+    WorkHour.all.each do |wh|
       data = {}      
       
       data[:mon] = wh.mon.gsub('.', ':') unless wh.mon.nil?
