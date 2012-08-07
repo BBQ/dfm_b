@@ -1048,7 +1048,7 @@ class ApiController < ApplicationController
       
           if now.to_i < 1000
             now24 = now.to_i + 2400
-            open_now = "(#{open_now} OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},5), ':', ''))"
+            open_now = "(#{open_now} OR #{now24} BETWEEN REPLACE(LEFT(#{wday},5), ':', '') AND REPLACE(RIGHT(#{wday},7,11), ':', ''))"
           end
           
           open_now_id = "restaurants.id IN (#{WorkHour.select(:restaurant_id).where(open_now).collect {|r| r.restaurant_id}.join(',')})"
