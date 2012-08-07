@@ -655,6 +655,9 @@ def work_hours_ru(restaurant)
       start_time.gsub!('.', ':')
       close_time.gsub!('.', ':')
       
+      start_time = '0' + start_time if start_time.length == 4
+      close_time = '0' + close_time if close_time.length == 4
+      
       start.each do |s|
         f = finish[i].to_i != 0 ? finish[i] : s
         if s[0] > f[0]
