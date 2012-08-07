@@ -589,7 +589,7 @@ namespace :fixup do
   
   task :wh_fix => :environment do
     Restaurant.where("time IS NOT NULL AND source != 'ylp' AND source != 'fsq_upd_ylp'").each do |r|
-      r.work_hour.delete_all
+      r.work_hours.delete_all
     end
     # WorkHour.all.each do |wh|
     #   wh.destroy if (!wh.mon.nil? && wh.mon.length < 11) || 
