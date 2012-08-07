@@ -591,13 +591,13 @@ namespace :fixup do
     WorkHour.where(:restaurant_id => '10677').each do |wh|
       data = {}      
       
-      data[:mon] => wh.mon.gsub('.', ':') unless wh.mon.nil?
-      data[:tue] => wh.tue.gsub('.', ':') unless wh.tue.nil?
-      data[:wed] => wh.wed.gsub('.', ':') unless wh.wed.nil?
-      data[:thu] => wh.thu.gsub('.', ':') unless wh.thu.nil?
-      data[:fri]=> wh.fri.gsub('.', ':') unless wh.fri.nil?
-      data[:sat] => wh.sat.gsub('.', ':') unless wh.sat.nil?
-      data[:sun] => wh.sun.gsub('.', ':') unless wh.sun.nil?
+      data[:mon] = wh.mon.gsub('.', ':') unless wh.mon.nil?
+      data[:tue] = wh.tue.gsub('.', ':') unless wh.tue.nil?
+      data[:wed] = wh.wed.gsub('.', ':') unless wh.wed.nil?
+      data[:thu] = wh.thu.gsub('.', ':') unless wh.thu.nil?
+      data[:fri] = wh.fri.gsub('.', ':') unless wh.fri.nil?
+      data[:sat] = wh.sat.gsub('.', ':') unless wh.sat.nil?
+      data[:sun] = wh.sun.gsub('.', ':') unless wh.sun.nil?
       
       wh.update_attributes(data)
     end
