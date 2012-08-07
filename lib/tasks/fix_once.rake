@@ -589,13 +589,13 @@ namespace :fixup do
   
   task :wh_fix => :environment do
     WorkHour.all.each do |wh|
-      wh.mon.gsub!('.', ':')
-      wh.tue.gsub!('.', ':')
-      wh.wed.gsub!('.', ':')
-      wh.thu.gsub!('.', ':')
-      wh.fri.gsub!('.', ':')
-      wh.sat.gsub!('.', ':')
-      wh.sun.gsub!('.', ':')
+      wh.mon.gsub!('.', ':') unless wh.mon.nil?
+      wh.tue.gsub!('.', ':') unless wh.mon.nil?
+      wh.wed.gsub!('.', ':') unless wh.mon.nil?
+      wh.thu.gsub!('.', ':') unless wh.mon.nil?
+      wh.fri.gsub!('.', ':') unless wh.mon.nil?
+      wh.sat.gsub!('.', ':') unless wh.mon.nil?
+      wh.sun.gsub!('.', ':') unless wh.mon.nil?
       wh.save
     end
     
