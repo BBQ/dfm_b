@@ -667,9 +667,6 @@ def work_hours_ru(restaurant)
       
       start_time = '0' + start_time if start_time.length == 4
       close_time = '0' + close_time if close_time.length == 4
-      
-      t_from = Time.parse(start_time).strftime("%H:%M")
-      t_to =Time.parse(close_time).strftime("%H:%M")
 
       close_time.gsub!(/^\d{2}/, "#{close_time.to_i+24}") if start_time.to_i > close_time.to_i
       
