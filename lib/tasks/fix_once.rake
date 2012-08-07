@@ -589,9 +589,13 @@ namespace :fixup do
   
   task :wh_fix => :environment do
     WorkHour.all.each do |wh|
-      if wh.mon.length < 11 || wh.tue.length < 11 || wh.wed.length < 11 || wh.thu.length < 11 || wh.fri.length < 11 || wh.sat.length < 11 || wh.sun.length < 11
-        wh.destroy
-      end
+      wh.destroy if (wh.mon.nil? && wh.mon.length < 11) || 
+        (wh.tue.nil? && wh.tue.length < 11) || 
+        (wh.wed.nil? && wh.wed.length < 11) || 
+        (wh.thu.nil? && wh.thu.length < 11) || 
+        (wh.fri.nil? && wh.fri.length < 11) || 
+        (wh.sat.nil? && wh.sat.length < 11) || 
+        (wh.sun.nil? && wh.sun.length < 11)
       # data = {}      
       # 
       # data[:mon] = wh.mon.gsub('.', ':') unless wh.mon.nil?
