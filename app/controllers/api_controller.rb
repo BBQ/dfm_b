@@ -945,7 +945,7 @@ class ApiController < ApplicationController
     
     limit = 25
     offset = params[:offset] ||= 0
-    load_additional = 1    
+    load_additional = 1
     
     if offset.to_i > 25
       return render :json => {
