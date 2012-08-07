@@ -588,14 +588,15 @@ namespace :fixup do
   end
   
   task :wh_fix => :environment do
-    WorkHour.all.each do |wh|
-      wh.destroy if (!wh.mon.nil? && wh.mon.length < 11) || 
-        (!wh.tue.nil? && wh.tue.length < 11) || 
-        (!wh.wed.nil? && wh.wed.length < 11) || 
-        (!wh.thu.nil? && wh.thu.length < 11) || 
-        (!wh.fri.nil? && wh.fri.length < 11) || 
-        (!wh.sat.nil? && wh.sat.length < 11) || 
-        (!wh.sun.nil? && wh.sun.length < 11)
+    Restaurant.where("time IS NOT NULL AND source != 'ylp' AND source != 'fsq_upd_ylp'").work_hour.delete_all
+    # WorkHour.all.each do |wh|
+    #   wh.destroy if (!wh.mon.nil? && wh.mon.length < 11) || 
+    #     (!wh.tue.nil? && wh.tue.length < 11) || 
+    #     (!wh.wed.nil? && wh.wed.length < 11) || 
+    #     (!wh.thu.nil? && wh.thu.length < 11) || 
+    #     (!wh.fri.nil? && wh.fri.length < 11) || 
+    #     (!wh.sat.nil? && wh.sat.length < 11) || 
+    #     (!wh.sun.nil? && wh.sun.length < 11)
       # data = {}      
       # 
       # data[:mon] = wh.mon.gsub('.', ':') unless wh.mon.nil?
@@ -607,7 +608,7 @@ namespace :fixup do
       # data[:sun] = wh.sun.gsub('.', ':') unless wh.sun.nil?
       # 
       # wh.update_attributes(data)
-    end
+    # end
   end
   
 end
@@ -664,6 +665,11 @@ def work_hours_ru(restaurant)
       
       start_time = '0' + start_time if start_time.length == 4
       close_time = '0' + close_time if close_time.length == 4
+      
+      t_from = Time.parse(start_time).strftime("%H:%M")
+      t_to =Time.parse(close_time).strftime("%H:%M")
+
+      close_time.gsub!(/^\d{2}/, "#{close_time.to_i+24}") if start_time.to_i > close_time.to_i
       
       start.each do |s|
         f = finish[i].to_i != 0 ? finish[i] : s
