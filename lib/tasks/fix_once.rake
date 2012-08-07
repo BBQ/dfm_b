@@ -587,7 +587,23 @@ namespace :fixup do
     end
   end
   
+  task :wh_fix => :environment do
+    WorkHour.all.each do |wh|
+      wh.mon.gsub!('.', ':')
+      wh.tue.gsub!('.', ':')
+      wh.wed.gsub!('.', ':')
+      wh.thu.gsub!('.', ':')
+      wh.fri.gsub!('.', ':')
+      wh.sat.gsub!('.', ':')
+      wh.sun.gsub!('.', ':')
+      wh.save
+    end
+    
+  end
+  
 end
+
+
 
 def work_hours_ru(restaurant)
   days_ru = ['пн','вт','ср','чт','пт','сб','вс']
@@ -633,6 +649,10 @@ def work_hours_ru(restaurant)
     
     if !start_time.blank? && !close_time.blank?
       i = 0
+      
+      start_time.gsub!('.', ':')
+      close_time.gsub!('.', ':')
+      
       start.each do |s|
         f = finish[i].to_i != 0 ? finish[i] : s
         if s[0] > f[0]
