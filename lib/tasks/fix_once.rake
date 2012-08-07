@@ -589,17 +589,20 @@ namespace :fixup do
   
   task :wh_fix => :environment do
     WorkHour.all.each do |wh|
-      data = {}      
-      
-      data[:mon] = wh.mon.gsub('.', ':') unless wh.mon.nil?
-      data[:tue] = wh.tue.gsub('.', ':') unless wh.tue.nil?
-      data[:wed] = wh.wed.gsub('.', ':') unless wh.wed.nil?
-      data[:thu] = wh.thu.gsub('.', ':') unless wh.thu.nil?
-      data[:fri] = wh.fri.gsub('.', ':') unless wh.fri.nil?
-      data[:sat] = wh.sat.gsub('.', ':') unless wh.sat.nil?
-      data[:sun] = wh.sun.gsub('.', ':') unless wh.sun.nil?
-      
-      wh.update_attributes(data)
+      if wh.mon.length < 11 || wh.tue.length < 11 || wh.wed.length < 11 || wh.thu.length < 11 || wh.fri.length < 11 || wh.sat.length < 11 || wh.sun.length < 11
+        wh.destroy
+      end
+      # data = {}      
+      # 
+      # data[:mon] = wh.mon.gsub('.', ':') unless wh.mon.nil?
+      # data[:tue] = wh.tue.gsub('.', ':') unless wh.tue.nil?
+      # data[:wed] = wh.wed.gsub('.', ':') unless wh.wed.nil?
+      # data[:thu] = wh.thu.gsub('.', ':') unless wh.thu.nil?
+      # data[:fri] = wh.fri.gsub('.', ':') unless wh.fri.nil?
+      # data[:sat] = wh.sat.gsub('.', ':') unless wh.sat.nil?
+      # data[:sun] = wh.sun.gsub('.', ':') unless wh.sun.nil?
+      # 
+      # wh.update_attributes(data)
     end
   end
   
