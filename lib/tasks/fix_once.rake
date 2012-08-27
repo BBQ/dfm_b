@@ -21,6 +21,40 @@ end
 
 namespace :fixup do
   
+  task :make_mass => :environment do
+    
+    review_id => 3869
+    users = [122,139,149,28,113]
+    alert = "Тестовый нотификейшен для всех пользователей от ресторана"
+    
+    users.each do |user|
+      
+      if n = APN::Notification.where(:user_id_to => user).order('id DESC')
+        badge = n.badge + 1
+      else
+        badge = 1
+      end
+      
+      APN::Device.where(:user_id => user).each do |device|
+        notification = APN::Notification.new
+        notification.device = device
+        notification.badge = badge
+        notification.sound = 'default'   
+        notification.alert = alert
+        notification.notification_type = 'dishin'
+        notification.review_id = review.id
+        notification.user_id_from = 1
+        notification.user_id_to = user
+        notification.push_allow = 1
+        notification.email_allow = 1            
+        notification.save
+        send = 1
+      end
+    end
+    system "rake apn:notifications:deliver RAILS_ENV=production &"
+    system "rake email:notifications:deliver &"
+  end
+  
   desc "Parse push tokens from log"
   task :push_token_update => :environment do  
     dir = File.dirname(__FILE__).sub('/lib/tasks', '') + '/import'
