@@ -51,7 +51,7 @@ namespace :fixup do
         send = 1
       end
     end
-    system "rake apn:notifications:deliver RAILS_ENV=production &"
+    system "rake apn:notifications:deliver --trace RAILS_ENV=production &"
     system "rake email:notifications:deliver &"
   end
   
