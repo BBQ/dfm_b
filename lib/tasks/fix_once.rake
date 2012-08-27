@@ -42,7 +42,7 @@ namespace :fixup do
         notification.sound = 'default'   
         notification.alert = alert
         notification.notification_type = 'dishin'
-        notification.review_id = review.id
+        notification.review_id = review_id
         notification.user_id_from = 1
         notification.user_id_to = user
         notification.push_allow = 1
