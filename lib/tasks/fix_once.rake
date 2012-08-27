@@ -51,8 +51,7 @@ namespace :fixup do
         send = 1
       end
     end
-    system "rake apn:notifications:deliver --trace RAILS_ENV=production &"
-    system "rake email:notifications:deliver &"
+    APN::Notification.send_notifications
   end
   
   desc "Parse push tokens from log"
