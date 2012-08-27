@@ -25,7 +25,7 @@ namespace :fixup do
     
     review_id = 3869
     users = [122,139,149,28,113]
-    alert = "Нотификейшен для всех пользователей"
+    alert = "Test for all users"
     
     users.each do |user|
       
