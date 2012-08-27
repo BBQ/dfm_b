@@ -30,7 +30,7 @@ namespace :fixup do
     users.each do |user|
       
       if n = APN::Notification.where(:user_id_to => user).order('id DESC')
-        badge = n.badge + 1
+        badge = n.first.badge + 1
       else
         badge = 1
       end
