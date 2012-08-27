@@ -23,7 +23,7 @@ namespace :fixup do
   
   task :make_mass => :environment do
     
-    review_id => 3869
+    review_id = 3869
     users = [122,139,149,28,113]
     alert = "Тестовый нотификейшен для всех пользователей от ресторана"
     
