@@ -25,7 +25,7 @@ namespace :fixup do
     
     review_id = 3869
     users = [122,139,149,28,113,805]
-    alert = "Test for all users"
+    alert = "Test for Dilyara, Janna, Nikita"
     
     users.each do |user|
       
