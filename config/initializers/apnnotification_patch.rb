@@ -43,6 +43,7 @@ APN::Notification.class_eval do
           end
         rescue Exception => e
           p e.message
+          noty.delete
           APN::Notification.send_notifications
         end
       end
