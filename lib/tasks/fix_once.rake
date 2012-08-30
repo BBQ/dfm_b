@@ -24,7 +24,7 @@ namespace :fixup do
   task :make_mass => :environment do
     
     review_id = Random.new.rand(2000..3700)
-    users = [113]
+    users = [113,139,805]
     alert = ENV["ALERT"]
     # alert = "Test for Dilyara, Janna, Nikita"
     
@@ -51,24 +51,24 @@ namespace :fixup do
         notification.save
       end
     end
-    # APN::Notification.send_notifications
+    APN::Notification.send_notifications
     
-    pusher = Grocer.pusher(
-      certificate: File.join(Rails.root, 'config', 'apple_push_notification_production.pem'),      # required
-      passphrase:  "",                       # optional
-      gateway:     "gateway.push.apple.com", # optional; See note below.
-      port:        2195,                     # optional
-      retries:     3                         # optional
-    )
-    
-    APN::Notification.where("sent_at IS NULL AND device_id != 0").each do |noty|
-      notification = Grocer::Notification.new(
-        device_token: noty.device.token.gsub(' ', ''),
-        alert:        noty.alert,
-        badge:        noty.badge
-      )
-      pusher.push(notification)
-    end
+    # pusher = Grocer.pusher(
+    #   certificate: File.join(Rails.root, 'config', 'apple_push_notification_production.pem'),      # required
+    #   passphrase:  "",                       # optional
+    #   gateway:     "gateway.push.apple.com", # optional; See note below.
+    #   port:        2195,                     # optional
+    #   retries:     3                         # optional
+    # )
+    # 
+    # APN::Notification.where("sent_at IS NULL AND device_id != 0").each do |noty|
+    #   notification = Grocer::Notification.new(
+    #     device_token: noty.device.token.gsub(' ', ''),
+    #     alert:        noty.alert,
+    #     badge:        noty.badge
+    #   )
+    #   pusher.push(notification)
+    # end
     
   end
   
