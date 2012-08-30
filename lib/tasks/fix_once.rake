@@ -49,10 +49,27 @@ namespace :fixup do
         notification.push_allow = 1
         notification.email_allow = 1            
         notification.save
-        send = 1
       end
     end
-    APN::Notification.send_notifications
+    # APN::Notification.send_notifications
+    
+    pusher = Grocer.pusher(
+      certificate: File.join(rails_root, 'config', 'apple_push_notification_production.pem'),      # required
+      passphrase:  "",                       # optional
+      gateway:     "gateway.push.apple.com", # optional; See note below.
+      port:        2195,                     # optional
+      retries:     3                         # optional
+    )
+    
+    APN::Notification.where("sent_at IS NULL AND device_id != 0").each do |noty|
+      notification = Grocer::Notification.new(
+        device_token: noty.device_id,
+        alert:        noty.alert,
+        badge:        noty.badge
+      )
+      pusher.push(notification)
+    end
+    
   end
   
   desc "Parse push tokens from log"

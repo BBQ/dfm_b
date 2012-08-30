@@ -34,6 +34,7 @@ gem 'translit'
 
 gem "twitter", "~> 2.1.0"
 gem 'apn_on_rails', :git => 'https://github.com/natescherer/apn_on_rails.git', :branch => 'rails3'
+gem 'grocer'
 
 gem 'whenever', :require => false
 gem 'timezone'
