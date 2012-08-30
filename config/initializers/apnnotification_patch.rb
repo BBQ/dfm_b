@@ -33,12 +33,17 @@ APN::Notification.class_eval do
     unless notifications.nil? || notifications.empty?
 
       notifications.each do |noty|
-        APN::Connection.open_for_delivery do |conn, sock|  
-          if Session.find_by_user_id(noty.user_id_to)
-            conn.write(noty.message_for_sending)
-            noty.sent_at = Time.now
-            noty.save
+        begin
+          APN::Connection.open_for_delivery do |conn, sock|  
+            if Session.find_by_user_id(noty.user_id_to)
+              conn.write(noty.message_for_sending)
+              noty.sent_at = Time.now
+              noty.save
+            end
           end
+        rescue Exception => e
+          p e.message
+          APN::Notification.send_notifications
         end
       end
 
