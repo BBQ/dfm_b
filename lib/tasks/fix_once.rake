@@ -63,7 +63,7 @@ namespace :fixup do
     
     APN::Notification.where("sent_at IS NULL AND device_id != 0").each do |noty|
       notification = Grocer::Notification.new(
-        device_token: noty.device_id,
+        device_token: noty.device.token.gsub(' ', ''),
         alert:        noty.alert,
         badge:        noty.badge
       )
