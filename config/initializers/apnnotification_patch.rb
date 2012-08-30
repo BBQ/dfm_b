@@ -42,8 +42,8 @@ APN::Notification.class_eval do
             end
           end
         rescue Exception => e
-          p e.message
-          noty.delete
+          noty.sent_at = Time.now
+          noty.save
           APN::Notification.send_notifications
         end
       end
