@@ -54,7 +54,7 @@ namespace :fixup do
     # APN::Notification.send_notifications
     
     pusher = Grocer.pusher(
-      certificate: File.join(rails_root, 'config', 'apple_push_notification_production.pem'),      # required
+      certificate: File.join(Rails.root, 'config', 'apple_push_notification_production.pem'),      # required
       passphrase:  "",                       # optional
       gateway:     "gateway.push.apple.com", # optional; See note below.
       port:        2195,                     # optional
