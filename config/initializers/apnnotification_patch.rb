@@ -32,8 +32,8 @@ APN::Notification.class_eval do
   def self.send_notifications(notifications = APN::Notification.where("sent_at IS NULL AND device_id != 0"))
     unless notifications.nil? || notifications.empty?
 
-      APN::Connection.open_for_delivery do |conn, sock|
-        notifications.each do |noty|
+      notifications.each do |noty|
+        APN::Connection.open_for_delivery do |conn, sock|  
           if Session.find_by_user_id(noty.user_id_to)
             conn.write(noty.message_for_sending)
             noty.sent_at = Time.now
