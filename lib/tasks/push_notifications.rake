@@ -5,11 +5,7 @@ namespace :apn do
     
     desc "Deliver all unsent APN notifications."
     task :deliver => [:environment] do
-      begin
-        APN::Notification.send_notifications
-      rescue
-        APN::Notification.where('sent_at IS NULL').order('id DESC').limit(1).delete
-      end
+      APN::Notification.send_notifications
     end
     
   end # notifications
