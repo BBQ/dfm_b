@@ -27,7 +27,7 @@ namespace :fixup do
     # users = [113,139,805]
     users = [113]    
     alert = ENV["ALERT"]
-    alert = "Настоящий турецкий чай в центре москве"
+    alert = "Настоящий турецкий чай"
     
     users.each do |user|
       
