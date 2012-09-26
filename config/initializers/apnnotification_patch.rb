@@ -39,6 +39,7 @@ APN::Notification.class_eval do
         begin
           APN::Connection.open_for_delivery do |conn, sock|  
             if Session.find_by_user_id(noty.user_id_to)
+              p noty.message_for_sending.encoding
               conn.write(noty.message_for_sending)
               noty.sent_at = Time.now
               noty.save
