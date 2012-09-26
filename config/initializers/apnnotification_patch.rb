@@ -45,7 +45,7 @@ APN::Notification.class_eval do
             end
           end
         rescue Exception => e
-          p 'Message is too long'
+          p e.message
           noty.sent_at = Time.now
           noty.save
           APN::Notification.send_notifications
