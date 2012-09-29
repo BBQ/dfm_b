@@ -24,8 +24,8 @@ namespace :fixup do
   task :make_mass => :environment do
     
     review_id = Random.new.rand(2000..3700)
-    # users = [113,139,805]
-    users = [113]    
+    users = [113,139,805,881,858]
+    # users = [113]    
     alert = ENV["ALERT"]
     alert = "Test for Dilyara, Janna, Nikita"
     

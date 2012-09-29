@@ -39,17 +39,16 @@ APN::Notification.class_eval do
         begin
           APN::Connection.open_for_delivery do |conn, sock|  
             if Session.find_by_user_id(noty.user_id_to)
-              p noty.message_for_sending.encoding
               conn.write(noty.message_for_sending)
               noty.sent_at = Time.now
               noty.save
             end
           end
         rescue Exception => e
-          p e.message
+          p 'Message is too long'
           noty.sent_at = Time.now
           noty.save
-          APN::Notification.send_notifications
+          # APN::Notification.send_notifications
         end
       end
 
