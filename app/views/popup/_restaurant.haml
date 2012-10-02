@@ -27,7 +27,7 @@
 							= link_to image_tag(r.photo.thumb.url), dish_path(r.dish_id)
 							%br
 							= link_to truncate(r.dish.name, :length => 10), dish_path(r.dish_id)
-			-elsif @dishes_wimg.any?
+			-elsif @dishes_wimg
 				.hd3r Dishes
 				%ul#best_dishes
 					-@dishes_wimg.each do |d|
