@@ -19,7 +19,7 @@
 				- if @restaurant.description
 					= @restaurant.description.capitalize_first_letter
 			.sp
-			-if @best_reviews.any?
+			-if @best_reviews
 				.hd3r Best dishes
 				%ul#best_dishes
 					-@best_reviews.each do |r|
@@ -35,7 +35,7 @@
 							= link_to image_tag(d.image_p120), dish_path(d.id)
 							%br
 							= link_to truncate(d.name, :length => 10), dish_path(d.id)
-			-elsif @any_dishes.any?
+			-elsif @any_dishes
 				.hd3r Dishes
 				%ul#best_dishes
 					-@any_dishes.each do |d|
