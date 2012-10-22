@@ -208,7 +208,9 @@ class User < ActiveRecord::Base
       require "base64"
       salt = Base64.encode64(password)
       
-      if user = User.create(:email => email, :crypted_password => md5.hexdigest(password + salt), :salt => salt, :name => name)
+      name_only_letters = name.gsub(/\W+/, '')
+      
+      if user = User.create(:email => email, :crypted_password => md5.hexdigest(password + salt), :salt => salt, :name => name_only_letters)
         UserPreference.create({:user_id => user.id})
         token = Session.get_token(user)
         follow_dishfm_user(user.id)
