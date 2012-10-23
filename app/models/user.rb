@@ -207,7 +207,7 @@ class User < ActiveRecord::Base
     elsif !name.blank?
       require "base64"
       salt = Base64.encode64(password)      
-      if user = User.create(:email => email, :crypted_password => md5.hexdigest(password + salt), :salt => salt, :name => name)
+      if user = User.create(:email => email, :crypted_password => md5.hexdigest(password + salt), :salt => salt, :name => name.strip)
         UserPreference.create({:user_id => user.id})
         token = Session.get_token(user)
         follow_dishfm_user(user.id)
