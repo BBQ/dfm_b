@@ -1512,10 +1512,10 @@ class ApiController < ApplicationController
           :read => n.read,
           :text => n.alert,
           :user => {
-            :name => user.name,
-            :id => user.id,
-            :photo => user.user_photo
-          }
+            :name => user.name || '',
+            :id => user.id || '',
+            :photo => user.user_photo || ''
+          } 
         })
       end
       APN::Notification.where("user_id_to = ?", params[:user_id]).limit(limit).order("id DESC").each { |n| n.update_attributes(:read => 1)}
