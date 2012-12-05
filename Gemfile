@@ -38,6 +38,7 @@ gem 'grocer'
 
 gem 'whenever', :require => false
 gem 'timezone'
+gem 'unicorn'
 
 # gem 'fast_trie', '0.5.0', :git => 'git://github.com/tyler/trie.git'
 

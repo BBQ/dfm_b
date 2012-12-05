@@ -1470,15 +1470,15 @@ class ApiController < ApplicationController
           
         end
       end
-      favourite_dishes[:count] = favourite_dishes[:data].count
-      favourite_dishes[:data] = favourite_dishes[:data].sort_by { |k| k[:created_at] }.reverse
-      
-      favourite_restaurants[:count] = favourite_restaurants[:data].count
-      favourite_restaurants[:data] = favourite_restaurants[:data].sort_by { |k| k[:created_at] }.reverse
+      # favourite_dishes[:count] = favourite_dishes[:data].count
+      # favourite_dishes[:data] = favourite_dishes[:data].sort_by { |k| k[:created_at] }.reverse
+      # 
+      # favourite_restaurants[:count] = favourite_restaurants[:data].count
+      # favourite_restaurants[:data] = favourite_restaurants[:data].sort_by { |k| k[:created_at] }.reverse
       
       return render :json => {
-            :favourite_dishes => favourite_dishes,
-            :favourite_restaurants => favourite_restaurants,
+            # :favourite_dishes => favourite_dishes,
+            # :favourite_restaurants => favourite_restaurants,
             :likes => likes,
             :dish_ins => reviews,
             :top_in_dishes => top_in_dishes,
@@ -1629,13 +1629,13 @@ class ApiController < ApplicationController
             :order => sort ? sort.order : 9999
           })
         end
-        categories.sort_by!{|k| k[:order] && k.delete(:order) }
+        categories = categories.sort_by{|k| k[:order] && k.delete(:order) }
       
         dishes.select(:dish_type_id).group(:dish_type_id).each do |dish|
           types.push({:id => dish.dish_type.id, :name => dish.dish_type.name_eng, :order => dish.dish_type.order}) if dish.dish_type
         end
 
-        types.sort_by!{|k| k[:order] }        
+        types = types.sort_by{|k| k[:order] }        
         
         dishes_f = []
         favourite = 0

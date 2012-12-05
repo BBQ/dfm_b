@@ -1,0 +1,278 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>My Page</title> 
+	<meta name="viewport" content="width=device-width, target-densitydpi=high-dpi">
+	<link rel="stylesheet" href="themes/Disherence.min.css" />
+	<link rel="stylesheet" href="stylesheets/jquery.mobile.structure-1.1.0.min.css" />
+	<link rel="stylesheet" href="stylesheets/jquery.mobile.scrollview.css" />
+	<link rel="stylesheet" href="stylesheets/application.css" />
+	<script src="scripts/jquery-1.7.1.min.js"></script>
+	<script src="scripts/jquery.mobile-1.1.0.min.js"></script>
+	<script src="scripts/jquery.easing.1.3.js"></script>
+	<script src="scripts/jquery.mobile.scrollview.js"></script>
+	<script src="scripts/scrollview.js"></script>
+	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAuEnV8Q2S5-Q284dxPFLHohCE37L0gPlo&sensor=false" type="text/javascript"></script>
+	<script src="scripts/application.js"></script>
+</head>
+<body>
+<!-- <div data-role="page" data-theme="a">
+	
+	<div data-role="header">
+		<h1 id="logo"></h1>
+	</div><!-- /header -->
+
+	<div data-role="content fixed">
+
+		<div class="review" style="background-image: url('uploads/2.jpg')">
+			<div class="curtain"></div>
+			<div class="rrinfo">
+				<h2>Lazania</h2>
+				<div class="place_name">	Chipolite Pub</div>
+				<div class="place_address">Fulton str. San Francisco, CA</div>
+				<div class="hr"></div>
+				<div class="stats">
+					<div class="likes">144</div>
+					<div class="users">144</div>
+					<div class="photos">3</div>
+				</div>
+			</div>
+			<div class="urinfo">
+				<div class="photo" style="background-image: url('uploads/user1.jpg')"></div>
+				<div class="stats">
+					<h2 class="name">Brad Ivanovich Pit</h2>
+					<div class="opinion">It`s Awesome</div>
+					<a href="#" class="disagree">#3 user(s) disagree</a>
+				</div>
+				<div class="users">
+					<div class="num">+7</div>
+					<div class="text">think so</div>
+					<div data-scroll="x" class="profiles">
+						<a href= "#" class="profile" style="background-image: url('uploads/user1.jpg')"></a>
+						<a href= "#" class="profile" style="background-image: url('uploads/user1.jpg')"></a>
+						<a href= "#" class="profile" style="background-image: url('uploads/user1.jpg')"></a>
+						<a href= "#" class="profile" style="background-image: url('uploads/user1.jpg')"></a>
+						<a href= "#" class="profile" style="background-image: url('uploads/user1.jpg')"></a>
+						<a href= "#" class="profile" style="background-image: url('uploads/user1.jpg')"></a>
+						<a href= "#" class="profile" style="background-image: url('uploads/user1.jpg')"></a>						
+					</div>
+				</div>
+			</div>
+			<div class="op_status">
+			</div>
+			<div class="op_btns">
+				<a class="btn_agree" href="#"></a>
+				<a class="btn_disagree" href="#"></a>
+			</div>
+			<div class="more_place_info">
+				<div class="cover"></div>
+				<div class="content">
+					<div class="map_canvas" id="map_canvas1"></div>
+					<div class="info">
+						<div class="name">Lazania</div>
+						<div class="dislike">5</div>
+						<div class="like">17</div>
+					</div>
+					<div class="hr"></div>
+					<div class="description">If you are trying to use any method from the script which you are loading using getScript then wait untill the script is loaded.</div>
+					<div class="price">$15</div>
+				</div>
+			</div>
+			<script> 
+			load_map([['Blue Bottle Coffee', 37.7824639581484, -122.407822608948, 1],['Blue Bottle Coffee', 37.7958648561632, -122.393876744337, 1]], 'map_canvas1')
+			</script>
+		</div>
+		<div class="rhr"></div>
+	</div><!-- /content -->
+</div><!-- /page -->
+
+<div data-role="page" data-theme="a">
+	
+	<div data-role="header">
+		<h1 id="logo"></h1>
+	</div><!-- /header -->
+
+	<div data-role="content fixed">
+		<div id="map">
+		
+			<div class="search_map_canvas" id="map_canvas2"></div>
+			<script> 
+			load_map([['Blue Bottle Coffee', 37.7824639581484, -122.407822608948, 1],['Blue Bottle Coffee', 37.7958648561632, -122.393876744337, 1]], 'map_canvas2')
+			</script>
+			
+			<div class="restaurant">
+				<div class="info">
+					<div class="distance">30 m</div>
+					<div class="name">Kokkari Estiatorio</div>
+					<div class="rate">
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star half"></div>
+						<div class="star empty"></div>
+						<div class="rating"><div class="ico"></div>1955 on Yelp</div>
+					</div>
+				</div>
+				<div class="address">200 Jackson St, Sanfrancisco</div>
+				<div class="stats">Greek, Mediterranean | $$$</div>	
+			</div>
+			<div class="hr"></div>
+			
+			<div class="restaurant">
+				<div class="info">
+					<div class="distance">30 m</div>
+					<div class="name">Kokkari Estiatorio</div>
+					<div class="rate">
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star half"></div>
+						<div class="star empty"></div>
+						<div class="rating"><div class="ico"></div>1955 on Yelp</div>
+					</div>
+				</div>
+				<div class="address">200 Jackson St, Sanfrancisco</div>
+				<div class="stats">Greek, Mediterranean | $$$</div>	
+			</div>
+			<div class="hr"></div>
+			<div class="restaurant">
+				<div class="info">
+					<div class="distance">30 m</div>
+					<div class="name">Kokkari Estiatorio</div>
+					<div class="rate">
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star half"></div>
+						<div class="star empty"></div>
+						<div class="rating"><div class="ico"></div>1955 on Yelp</div>
+					</div>
+				</div>
+				<div class="address">200 Jackson St, Sanfrancisco</div>
+				<div class="stats">Greek, Mediterranean | $$$</div>	
+			</div>
+			<div class="hr"></div>
+			<div class="restaurant">
+				<div class="info">
+					<div class="distance">30 m</div>
+					<div class="name">Kokkari Estiatorio</div>
+					<div class="rate">
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star half"></div>
+						<div class="star empty"></div>
+						<div class="rating"><div class="ico"></div>1955 on Yelp</div>
+					</div>
+				</div>
+				<div class="address">200 Jackson St, Sanfrancisco</div>
+				<div class="stats">Greek, Mediterranean | $$$</div>	
+			</div>
+			<div class="hr"></div>
+			<div class="restaurant">
+				<div class="info">
+					<div class="distance">30 m</div>
+					<div class="name">Kokkari Estiatorio</div>
+					<div class="rate">
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star half"></div>
+						<div class="star empty"></div>
+						<div class="rating"><div class="ico"></div>1955 on Yelp</div>
+					</div>
+				</div>
+				<div class="address">200 Jackson St, Sanfrancisco</div>
+				<div class="stats">Greek, Mediterranean | $$$</div>	
+			</div>
+			<div class="hr"></div>
+			<div class="restaurant">
+				<div class="info">
+					<div class="distance">30 m</div>
+					<div class="name">Kokkari Estiatorio</div>
+					<div class="rate">
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star half"></div>
+						<div class="star empty"></div>
+						<div class="rating"><div class="ico"></div>1955 on Yelp</div>
+					</div>
+				</div>
+				<div class="address">200 Jackson St, Sanfrancisco</div>
+				<div class="stats">Greek, Mediterranean | $$$</div>	
+			</div>
+			<div class="hr"></div>
+			<div class="restaurant">
+				<div class="info">
+					<div class="distance">30 m</div>
+					<div class="name">Kokkari Estiatorio</div>
+					<div class="rate">
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star half"></div>
+						<div class="star empty"></div>
+						<div class="rating"><div class="ico"></div>1955 on Yelp</div>
+					</div>
+				</div>
+				<div class="address">200 Jackson St, Sanfrancisco</div>
+				<div class="stats">Greek, Mediterranean | $$$</div>	
+			</div>
+			<div class="hr"></div>
+			<div class="restaurant">
+				<div class="info">
+					<div class="distance">30 m</div>
+					<div class="name">Kokkari Estiatorio</div>
+					<div class="rate">
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star half"></div>
+						<div class="star empty"></div>
+						<div class="rating"><div class="ico"></div>1955 on Yelp</div>
+					</div>
+				</div>
+				<div class="address">200 Jackson St, Sanfrancisco</div>
+				<div class="stats">Greek, Mediterranean | $$$</div>	
+			</div>
+			<div class="hr"></div>
+			
+		
+		</div>
+	</div><!-- /content -->
+</div><!-- /page -->
+-->
+
+<div data-role="page" data-theme="a">
+
+	<div data-role="header">
+		<h1 id="logo"></h1>
+	</div><!-- /header -->
+	<div data-role="content fixed">
+		
+		<div class="top_dishes">
+			
+			<div class="restaurant">
+				<div class="info">
+					<div class="name">Kokkari Estiatorio</div>
+					<div class="rate">
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star fill"></div>
+						<div class="star half"></div>
+						<div class="star empty"></div>
+						<div class="rating"><div class="ico"></div>1955 on Yelp</div>
+					</div>
+				</div>
+				<div class="address">200 Jackson St, Sanfrancisco</div>
+				<div class="stats">Greek, Mediterranean | $$$</div>	
+			
+			</div>
+
+		</div>
+	</div><!-- /content -->
+</div><!-- /page -->
+
+</body>
+</html>
